@@ -6,7 +6,7 @@ require_once __DIR__.'/HASH/Controller/HashController.php';
 require_once __DIR__.'/HASH/Controller/AdminController.php';
 require_once __DIR__.'/config/ProdConfig.php';
 require_once __DIR__.'/vendor/twig/twig/lib/Twig/AutoLoader.php';
-
+//test comment
 
 
 require_once './HASH/UserProvider.php';

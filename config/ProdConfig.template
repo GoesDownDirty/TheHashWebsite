@@ -7,6 +7,4 @@ define("DB_PORT","yourdatabaseport");
 define("DB_USER","yourusername");
 define("DB_PASSWORD","yourpassword");
 
-
-
 define("DEFAULT_USER_PASSWORD","yourlongpasswordstring");

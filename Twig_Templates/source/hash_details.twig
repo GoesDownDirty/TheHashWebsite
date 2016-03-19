@@ -1,4 +1,4 @@
-{% extends "base.twig" %}
+{% extends "fullwidth.twig" %}
 
 {% block content %}
     <h1>{{pageTitle}}</h1>
@@ -19,5 +19,4 @@
     <a href='/hareAnalversariesForEvent/{{hashValue.HASH_KY}}'>Hare Analversaries For This Event</a> <br>
     <a href='/listhashers/byhash/{{hashValue.HASH_KY}}'>Hashsers at this event</a> <br>
     <a href='/listhares/byhash/{{hashValue.HASH_KY}}'>Hares at this event</a> <br>
-
 {% endblock %}

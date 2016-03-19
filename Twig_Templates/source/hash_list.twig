@@ -1,0 +1,32 @@
+{% extends "base.twig" %}
+
+{% block content %}
+  <h1>{{pageTitle}}</h1>
+  <h3>{{pageSubTitle}}</h3>
+  <div class="table-responsive">
+  <table class="table table-condensed table-hover">
+    <caption>{{tableCaption}}</caption>
+    <thead>
+      <tr>
+        <th>Hash Number</th>
+        <td>Location</td>
+        <td>Date</td>
+        <td>City</td>
+        <td>State</td>
+        <td>Description</td>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in theList %}
+        <tr>
+          <td><a href='/hashes/{{item.HASH_KY}}'>{{item.KENNEL_EVENT_NUMBER}}</a></td>
+          <td>{{item.EVENT_LOCATION}}</td>
+          <td>{{item.EVENT_DATE}}</td>
+          <td>{{item.EVENT_CITY}}</td>
+          <td>{{item.EVENT_STATE}}</td>
+          <td>{{item.SPECIAL_EVENT_DESCRIPTION}}</td>
+        </tr>
+      {% endfor %}
+  </table>
+  </div>
+{% endblock %}

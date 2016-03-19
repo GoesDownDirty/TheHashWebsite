@@ -1,0 +1,35 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    <h1>{{pageTitle}}</h1>
+    <h3>{{subTitle1}}</h3>
+      <a href='/listhashers'>List of hashers</a><br>
+      <a href='/listhashes'>List of hashes</a><br>
+      <a href='/hashingCounts'>Hashing Counts</a><br>
+      Haring Counts: <a href='/haringCounts'>(All Hashes)</a> <a href='/nonHyperharingCounts'>(Non Hypers Only)</a><br>
+    <h3>{{subTitle2}}</h3>
+      <a href='/pendingHareAnalversaries'>Pending Hare Analversaries</a><br>
+      <a href='/pendingHasherAnalversaries'>Pending Hasher Analversaries</a><br>
+    <h3>{{subTitle3}}</h3>
+      Hare Percentages: <a href='/haringPercentageAllHashes'>(All Hashes)</a> <a href='/haringPercentageNonHypers'>(Non Hypers Only)</a><br>
+      <a href='/hashattendance/byhare/lowest'>Lowest Attendance by Hare</a><br>
+      <a href='/hashattendance/byhare/highest'>Highest Attendance by Hare</a><br>
+      <a href='/hashattendance/byhare/average'>Average Attendance by Hare</a><br>
+      <a href='/hashattendance/byhare/grandtotal/nondistincthashers'>Total (Non Distinct Hashers) Attendance by Hare</a><br>
+      <a href='/hashattendance/byhare/grandtotal/distincthashers'>Total (Distinct Hashers) Attendance by Hare (Including Themselves)</a><br>
+    <h3>{{subTitle4}}</h3>
+      <a href='/listhashes'>Hashes resulting in pregnancy</a><br>
+      <a href='/listhashes'>Hashes where VD was contracted</a><br>
+      <a href='/listhashes'>Hashes where at least 3 out of the 7 deadly sins were comitted</a><br>
+
+    <h3>User Role Links</h3>
+      <a href='/user/hello'>The user hello page</a><br>
+
+    <h3>Admin Role Links</h3>
+      <a href='/admin/hello'>The admin hello page</a><br>
+
+      <h3>Secret Logon Screen</h3>
+        <a href='/logonscreen'>The Secret Logon Screen</a><br>
+
+
+{% endblock %}

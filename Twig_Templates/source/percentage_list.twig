@@ -1,0 +1,26 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    <h1>{{pageTitle}}</h1>
+    <table class="table table-condensed table-hover">
+      <caption>{{tableCaption}}</caption>
+      <thead>
+        <tr>
+          <th>{{columnOneName}}</th>
+          <th>{{columnTwoName}}</th>
+          <th>{{columnThreeName}}</th>
+          <th>{{columnFourName}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in theList %}
+          <tr>
+            <td>{{item.HASHER_NAME}}</td>
+            <td>{{item.HASH_COUNT}}</td>
+            <td>{{item.HARING_COUNT}}</td>
+            <td>{{item.HARE_PERCENTAGE}}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+{% endblock %}

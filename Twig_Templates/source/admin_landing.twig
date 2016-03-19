@@ -1,0 +1,18 @@
+{% extends "base.twig" %}
+
+{% block content %}
+
+    <h1>{{pageTitle}}</h1>
+    <h3>{{subTitle1}}</h3>
+
+    {% if is_granted('ROLE_USER') %}
+        Welcome, you are in the USER role, and are very special! You are:{{ app.user.username }} <br>
+        <a href="{{ path('logout') }}">Log out</a>
+    {% elseif is_granted('ROLE_ADMIN') %}
+        Welcome, you are in the ADMIN role, and are very special! You are:{{ app.user.username }} <br>
+        <a href="{{ path('admin_logoutaction') }}">Log out</a>
+    {% else %}
+        You seem not to be logged in.
+    {% endif %}
+
+{% endblock %}

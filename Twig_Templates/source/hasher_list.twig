@@ -1,0 +1,12 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    <h1>{{pageTitle}}</h1>
+    <h3>{{pageSubTitle}}</h3>
+      <dl class="dl-horizontal">
+        {% for item in theList %}
+            <dt>{{item.NAME}}</dt>
+            <dd><a href='/hashers/{{item.THE_KEY}}'>Details</a></dd>
+        {% endfor %}
+      </dl>
+{% endblock %}

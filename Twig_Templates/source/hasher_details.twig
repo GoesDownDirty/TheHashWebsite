@@ -1,0 +1,33 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    <h1>{{pageTitle}}</h1>
+    <h2>{{firstHeader}}</h2>
+
+    <dl class="dl-horizontal">
+      <dt>Hasher Name</dt><dd> {{hasherValue.HASHER_NAME}}</dd>
+      <dt>Hasher Abbreviation</dt><dd> {{hasherValue.HASHER_ABBREVIATION}} </dd>
+      <dt>Last Name</dt><dd> {{hasherValue.LAST_NAME}} </dd>
+      <dt>First Name</dt><dd> {{hasherValue.FIRST_NAME}}</dd>
+      <dt>Email</dt><dd> {{hasherValue.EMAIL}} </dd>
+      <dt>Deceased</dt><dd> {{hasherValue.DECEASED}}</dd>
+      <dt>Hashing Count</dt><dd> {{hashCount}}</dd>
+      <dt>Haring Count</dt><dd> {{hareCount}}</dd>
+      <dt>Favorite Hare</dt><dd>Tender</dd>
+      <dt>Favorite Hasher</dt><dd>Tender</dd>
+    </dl>
+
+    <h2>{{secondHeader}}</h2>
+    <a href='/listhashes/byhasher/{{hasherValue.HASHER_KY}}'>Their hashings</a><br>
+    <a href='/listhashes/byhare/{{hasherValue.HASHER_KY}}'>Their harings</a><br>
+    <a href='/coharelist/byhare/allhashes/{{hasherValue.HASHER_KY}}'>Their Cohares</a><br>
+    <a href='/coharelist/byhare/nonhypers/{{hasherValue.HASHER_KY}}'>Their Cohares (Non hyper: HTS must provide hyper data)</a><br>
+    <a href='/coharecount/byhare/allhashes/{{hasherValue.HASHER_KY}}'>Their Cohare Count</a><br>
+    <a href='/coharecount/byhare/nonhypers/{{hasherValue.HASHER_KY}}'>Their Cohare Count (Non hyper: HTS must provide hyper data)</a><br>
+    All of their hashing analversaries (Not written yet)<br>
+    All of their haring analversaries (Not written yet)<br>
+    <a href='/getHasherCountsByHare/{{hasherValue.HASHER_KY}}'>Hounds who have hashed their trails</a><br>
+    <a href='/getHasherCountsByHound/{{hasherValue.HASHER_KY}}'>Hounds who have hashed with them (Not written yet)</a><br>
+
+
+{% endblock %}

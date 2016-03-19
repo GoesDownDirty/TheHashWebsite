@@ -1,0 +1,12 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    <h1>{{pageTitle}}</h1>
+    <h3>{{pageSubTitle}}</h3>
+      <dl class="dl-horizontal">
+        {% for item in theList %}
+            <dt>{{item.HASHER_NAME}}</dt>
+            <dd>{{item.THE_COUNT}}</dd>
+        {% endfor %}
+      </dl>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    <h1>{{pageTitle}}</h1>
+    <h3>{{pageSubTitle}}</h3>
+
+      <table class="table table-condensed table-hover">
+        <caption>{{tableCaption}}</caption>
+        <thead>
+          <tr>
+            <th>{{columnOneName}}</th>
+            <td>{{columnTwoName}}</td>
+            <td>{{columnThreeName}}</td>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in theList %}
+            <tr>
+              <td>{{item.HASHER_NAME}}</td>
+              <td>{{item.THE_COUNT_INCREMENTED}}</td>
+              <td>{{item.YEARS_ABSENCE}}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+{% endblock %}

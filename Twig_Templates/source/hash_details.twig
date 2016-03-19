@@ -1,0 +1,23 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    <h1>{{pageTitle}}</h1>
+    <h2>{{firstHeader}}</h2>
+    <dl class="dl-horizontal">
+      <dt>Kennel Event Number</dt><dd>{{hashValue.KENNEL_EVENT_NUMBER}}</dd>
+      <dt>Event Date</dt><dd>{{hashValue.EVENT_DATE}} </dd>
+      <dt>Event Location</dt><dd>{{hashValue.EVENT_LOCATION}}</dd>
+      <dt>Event City</dt><dd>{{hashValue.EVENT_CITY}}</dd>
+      <dt>Event State</dt><dd>{{hashValue.EVENT_STATE}}</dd>
+      <dt>Event Description</dt><dd>{{hashValue.SPECIAL_EVENT_DESCRIPTION}}</dd>
+      <dt>Virgin Count</dt><dd>{{hashValue.VIRGIN_COUNT}}</dd>
+      <dt>Was a Hyper Hash</dt><dd>{{hashValue.IS_HYPER}}</dd>
+    </dl>
+
+    <h2>{{secondHeader}}</h2>
+    <a href='/hasherAnalversariesForEvent/{{hashValue.HASH_KY}}'>Hasher Analversaries For This Event</a> <br>
+    <a href='/hareAnalversariesForEvent/{{hashValue.HASH_KY}}'>Hare Analversaries For This Event</a> <br>
+    <a href='/listhashers/byhash/{{hashValue.HASH_KY}}'>Hashsers at this event</a> <br>
+    <a href='/listhares/byhash/{{hashValue.HASH_KY}}'>Hares at this event</a> <br>
+
+{% endblock %}

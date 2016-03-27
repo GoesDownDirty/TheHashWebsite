@@ -5,16 +5,18 @@
     <h2>{{firstHeader}}</h2>
 
     <dl class="dl-horizontal">
-      <dt>Hasher Name</dt><dd> {{hasherValue.HASHER_NAME}}</dd>
-      <dt>Hasher Abbreviation</dt><dd> {{hasherValue.HASHER_ABBREVIATION}} </dd>
-      <dt>Last Name</dt><dd> {{hasherValue.LAST_NAME}} </dd>
-      <dt>First Name</dt><dd> {{hasherValue.FIRST_NAME}}</dd>
-      <dt>Email</dt><dd> {{hasherValue.EMAIL}} </dd>
-      <dt>Deceased</dt><dd> {{hasherValue.DECEASED}}</dd>
-      <dt>Hashing Count</dt><dd> {{hashCount}}</dd>
-      <dt>Haring Count</dt><dd> {{hareCount}}</dd>
-      <dt>Favorite Hare</dt><dd>Tender</dd>
-      <dt>Favorite Hasher</dt><dd>Tender</dd>
+      {% autoescape %}
+        <dt>Hasher Name</dt><dd> {{hasherValue.HASHER_NAME}}</dd>
+        <dt>Hasher Abbreviation</dt><dd> {{hasherValue.HASHER_ABBREVIATION}} </dd>
+        <dt>Last Name</dt><dd> {{hasherValue.LAST_NAME}} </dd>
+        <dt>First Name</dt><dd> {{hasherValue.FIRST_NAME}}</dd>
+        <dt>Email</dt><dd> {{hasherValue.EMAIL}} </dd>
+        <dt>Deceased</dt><dd> {{hasherValue.DECEASED}}</dd>
+        <dt>Hashing Count</dt><dd> {{hashCount}}</dd>
+        <dt>Haring Count</dt><dd> {{hareCount}}</dd>
+        <dt>Favorite Hare</dt><dd>Tender</dd>
+        <dt>Favorite Hasher</dt><dd>Tender</dd>
+      {% endautoescape %}
     </dl>
 
     <h2>{{secondHeader}}</h2>

@@ -26,6 +26,9 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\User;
 
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+
 $app = new Silex\Application();
 
 #TWIG Constants
@@ -147,9 +150,9 @@ $app['security.access_rules'] = array(
 
 
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
-#$app->register(new FormServiceProvider());
-#$app->register(new Silex\Provider\ValidatorServiceProvider());
-#$app->register(new Silex\Provider\TranslationServiceProvider(), array('translator.messages' => array(),));
+$app->register(new FormServiceProvider());
+$app->register(new Silex\Provider\ValidatorServiceProvider());
+$app->register(new Silex\Provider\TranslationServiceProvider(), array('translator.messages' => array(),));
 #-------------------------------------------------------------------------------
 
 
@@ -218,6 +221,8 @@ $app->get('/getHasherCountsByHare/{hare_id}',                     'HASH\Controll
 
 #$app->get('/getHasherCountsByHound/{hasher_id}',                     'HASH\Controller\HashController::hasherCountsByHoundAction');
 
+$app->get('/admin/modifyhash/form/{hash_id}',                     'HASH\Controller\AdminController::adminModifyHashAction');
+$app->post('/admin/modifyhash/form/{hash_id}',                    'HASH\Controller\AdminController::adminModifyHashAction');
 
 
 # Set the before/after actions

@@ -224,6 +224,8 @@ $app->get('/getHasherCountsByHare/{hare_id}',                     'HASH\Controll
 $app->get('/admin/modifyhash/form/{hash_id}',                     'HASH\Controller\AdminController::adminModifyHashAction');
 $app->post('/admin/modifyhash/form/{hash_id}',                    'HASH\Controller\AdminController::adminModifyHashAction');
 
+$app->get('/admin/newhash/form',                                  'HASH\Controller\AdminController::adminCreateHashAction');
+$app->post('/admin/newhash/form',                                 'HASH\Controller\AdminController::adminCreateHashAction');
 
 # Set the before/after actions
 $app->before(function (Request $request, Application $app) {

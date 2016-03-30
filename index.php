@@ -3,6 +3,8 @@
 // web/index.php
 require_once __DIR__.'/vendor/autoload.php';
 require_once __DIR__.'/HASH/Controller/HashController.php';
+require_once __DIR__.'/HASH/Controller/HashEventController.php';
+require_once __DIR__.'/HASH/Controller/HashPersonController.php';
 require_once __DIR__.'/HASH/Controller/AdminController.php';
 require_once __DIR__.'/config/ProdConfig.php';
 require_once __DIR__.'/vendor/twig/twig/lib/Twig/AutoLoader.php';
@@ -221,11 +223,22 @@ $app->get('/getHasherCountsByHare/{hare_id}',                     'HASH\Controll
 
 #$app->get('/getHasherCountsByHound/{hasher_id}',                     'HASH\Controller\HashController::hasherCountsByHoundAction');
 
-$app->get('/admin/modifyhash/form/{hash_id}',                     'HASH\Controller\AdminController::adminModifyHashAction');
-$app->post('/admin/modifyhash/form/{hash_id}',                    'HASH\Controller\AdminController::adminModifyHashAction');
+# Hash event modification
+$app->get('/admin/modifyhash/form/{hash_id}',                     'HASH\Controller\HashEventController::adminModifyHashAction');
+$app->post('/admin/modifyhash/form/{hash_id}',                    'HASH\Controller\HashEventController::adminModifyHashAction');
 
-$app->get('/admin/newhash/form',                                  'HASH\Controller\AdminController::adminCreateHashAction');
-$app->post('/admin/newhash/form',                                 'HASH\Controller\AdminController::adminCreateHashAction');
+# Hash event creation
+$app->get('/admin/newhash/form',                                  'HASH\Controller\HashEventController::adminCreateHashAction');
+$app->post('/admin/newhash/form',                                 'HASH\Controller\HashEventController::adminCreateHashAction');
+
+# Hash person modification
+$app->get('/admin/modifyhasher/form/{hasher_id}',                 'HASH\Controller\HashPersonController::modifyHashPersonAction');
+$app->post('/admin/modifyhasher/form/{hasher_id}',                'HASH\Controller\HashPersonController::modifyHashPersonAction');
+
+# Hash person creation
+$app->get('/admin/newhasher/form',                                'HASH\Controller\HashPersonController::createHashPersonAction');
+$app->post('/admin/newhasher/form',                               'HASH\Controller\HashPersonController::createHashPersonAction');
+
 
 # Set the before/after actions
 $app->before(function (Request $request, Application $app) {

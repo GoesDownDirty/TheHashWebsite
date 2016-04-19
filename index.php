@@ -239,9 +239,28 @@ $app->post('/admin/modifyhasher/form/{hasher_id}',                'HASH\Controll
 $app->get('/admin/newhasher/form',                                'HASH\Controller\HashPersonController::createHashPersonAction');
 $app->post('/admin/newhasher/form',                               'HASH\Controller\HashPersonController::createHashPersonAction');
 
+# Modify the participation for an event
+$app->get('/admin/event/manageparticipation/{hash_id}',            'HASH\Controller\HashEventController::hashParticipationAction');
+
+# Functions to add and delete hounds and hares to the hashes
+$app->post('/admin/event/addHasherToHash',                         'HASH\Controller\HashEventController::addHashParticipant');
+$app->post('/admin/event/addHareToHash',                           'HASH\Controller\HashEventController::addHashOrganizer');
+$app->post('/admin/event/deleteHasherFromHash',                    'HASH\Controller\HashEventController::deleteHashParticipant');
+$app->post('/admin/event/deleteHareFromHash',                      'HASH\Controller\HashEventController::deleteHashOrganizer');
+
+$app->post('/admin/event/getHaresForEvent',                        'HASH\Controller\HashEventController::getHaresForEvent');
+$app->post('/admin/event/getHashersForEvent',                      'HASH\Controller\HashEventController::getHashersForEvent');
 
 # Set the before/after actions
 $app->before(function (Request $request, Application $app) {
+});
+
+#Do magic on the json traffic
+$app->before(function (Request $request) {
+    if (0 === strpos($request->headers->get('Content-Type'), 'application/json')) {
+        $data = json_decode($request->getContent(), true);
+        $request->request->replace(is_array($data) ? $data : array());
+    }
 });
 
 $app->after(function (Request $request, Response $response) {

@@ -12,6 +12,7 @@
         "symfony/translation": "^3.0",
         "symfony/security-csrf": "^3.0",
         "twbs/bootstrap": "^3.3",
-        "mbostock/d3": "^3.5"
+        "mbostock/d3": "^3.5",
+        "components/jquery": "^2.2"
     }
 }

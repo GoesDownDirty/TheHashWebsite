@@ -4,6 +4,7 @@ namespace HASH\Controller;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 
 use Symfony\Component\Form\Extension\Core\Type\FormType;
@@ -326,6 +327,112 @@ class HashEventController
     return $returnValue;
 
   }
+
+
+    public function hashParticipationAction(Request $request, Application $app, int $hash_id){
+
+
+      #Define the SQL to execute
+      $hasherListSQL = "SELECT *
+        FROM HASHINGS
+        JOIN HASHERS ON HASHINGS.HASHER_KY = HASHERS.HASHER_KY
+        WHERE HASHINGS.HASH_KY = ? ";
+
+      $hareListSQL = "SELECT *
+        FROM HARINGS
+        JOIN HASHERS ON HARINGS.HARINGS_HASHER_KY = HASHERS.HASHER_KY
+        WHERE HARINGS.HARINGS_HASH_KY = ?";
+
+      $allHashersSQL = "SELECT
+        HASHER_KY, HASHER_NAME, LAST_NAME, FIRST_NAME, EMAIL
+        FROM HASHERS
+        ORDER BY HASHER_NAME";
+
+      #Execute the SQL statement; create an array of rows
+      $hasherList = $app['db']->fetchAll($hasherListSQL,array((int)$hash_id));
+      $hareList = $app['db']->fetchAll($hareListSQL,array((int)$hash_id));
+      $allHashersList = $app['db']->fetchAll($allHashersSQL);
+
+      #Establish the return value
+      $returnValue = $app['twig']->render('event_participation.twig', array (
+        'pageTitle' => 'Hash Event Participation',
+        'pageSubTitle' => 'Not Sure',
+        'pageHeader' => 'Why is this so complicated ?',
+        'hasherList' => $hasherList,
+        'hareList' => $hareList,
+        'allHashersList' => $allHashersList,
+        'hash_key'=> $hash_id
+      ));
+
+      #Return the return value
+      return $returnValue;
+
+    }
+
+    #Test function
+    public function addHashParticipant (Request $request, Application $app){
+
+      #Obtain the post values
+      $hasherKey = $request->request->get('hasher_key');
+      $hashKey = $request->request->get('hash_key');
+
+      #Validate the post values; ensure that they are both numbers
+      if(is_int($hasherKey)  && is_int($hashKey)){
+
+      }
+
+      #Ensure the entry does not already exist
+
+      #Define the sql insert statement
+      $sql = "INSERT INTO HASHINGS (HASHER_KY, HASH_KY) VALUES (?, ?);";
+
+      #Execute the sql insert statement
+      $app['db']->executeUpdate($sql,array($hasherKey,$hashKey));
+
+      #Set the return value
+      $returnValue =  $app->json("Success", 200);
+      return $returnValue;
+    }
+
+    #Obtain hashers for an event
+    public function getHaresForEvent(Request $request, Application $app){
+
+      #Obtain the post values
+      $hashKey = $request->request->get('hash_key');
+
+      #Define the SQL to execute
+      $hareListSQL = "SELECT HASHER_KY, HASHER_NAME
+        FROM HARINGS
+        JOIN HASHERS ON HASHERS.HASHER_KY = HARINGS.HARINGS_HASHER_KY
+        WHERE HARINGS.HARINGS_HASH_KY = ? ";
+
+      #Obtain the hare list
+      $hareList = $app['db']->fetchAll($hareListSQL,array((int)$hashKey));
+
+      #Set the return value
+      $returnValue =  $app->json($hareList, 200);
+      return $returnValue;
+    }
+
+    #Obtain hashers for an event
+    public function getHashersForEvent(Request $request, Application $app){
+
+      #Obtain the post values
+      $hashKey = $request->request->get('hash_key');
+
+      #Define the SQL to execute
+      $hareListSQL = "SELECT HASHERS.HASHER_KY AS HASHER_KY, HASHERS.HASHER_NAME AS HASHER_NAME
+        FROM HASHINGS
+        JOIN HASHERS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY
+        WHERE HASHINGS.HASH_KY = ? ";
+
+      #Obtain the hare list
+      $hareList = $app['db']->fetchAll($hareListSQL,array((int)$hashKey));
+
+      #Set the return value
+      $returnValue =  $app->json($hareList, 200);
+      return $returnValue;
+    }
 
 
 

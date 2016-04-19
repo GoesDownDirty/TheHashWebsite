@@ -1,0 +1,243 @@
+{% extends "fullwidth.twig" %}
+
+{% block content %}
+  <script type = "text/javascript" src = "/vendor/components/jquery/jquery.min.js"></script>
+  <script type = "text/javascript" language = "javascript">
+
+
+  //Function to get hares for the event
+  function getHares(hash_key){
+   var formData = {hash_key:hash_key};
+   $.ajax({
+       url : "/admin/event/getHaresForEvent",
+       type: "POST",
+       data : formData,
+       dataType : 'json',
+       success: function(data, textStatus, jqXHR){
+
+         $('#hare-list').empty();
+
+         $.each(data, function(key,row) {
+           $('#hare-list').append('<dt>'+ row.HASHER_NAME + '</dt>');
+           var linkOne = "<a href=/hashers/" +row.HASHER_KY+ ">Details</a>";
+           var linkTwo = '<a href="javascript:deleteHare(123,1234);">Remove</a>';
+           $('#hare-list').append('<dd>' + linkOne + ' | ' + linkTwo + '</dd>');
+
+         });
+         $('#hare-list').listview('refresh');
+       },
+       error: function (jqXHR, textStatus, errorThrown){
+            alert("failure");
+            alert(jqXHR);
+            alert(textStatus);
+            alert(errorThrown);
+       }
+   });
+ }
+
+ //Function to get hashers for the event
+ function getHashers(hash_key){
+  var formData = {hash_key:hash_key};
+  $.ajax({
+      url : "/admin/event/getHashersForEvent",
+      type: "POST",
+      data : formData,
+      dataType : 'json',
+      success: function(data, textStatus, jqXHR){
+
+        $('#hasher-list').empty();
+
+        $.each(data, function(key,row) {
+          $('#hasher-list').append('<dt>'+ row.HASHER_NAME + '</dt>');
+          var linkOne = "<a href=/hashers/" +row.HASHER_KY+ ">Details</a>";
+          var linkTwo = '<a href="javascript:deleteHasher(123,1234);">Remove</a>';
+          $('#hasher-list').append('<dd>' + linkOne + ' | ' + linkTwo + '</dd>');
+
+        });
+        $('#hasher-list').listview('refresh');
+      },
+      error: function (jqXHR, textStatus, errorThrown){
+           alert("failure");
+           alert(jqXHR);
+           alert(textStatus);
+           alert(errorThrown);
+      }
+  });
+}
+
+
+ $(document).ready(function() {
+    getHares({{hash_key}});
+    getHashers({{hash_key}});
+  });
+
+  //Function to add a hasher to the event
+  function addHasher(hasher_key, hash_key){
+   var formData = {hasher_key:hasher_key,hash_key:hash_key};
+   $.ajax({
+       url : "/admin/event/addHasherToHash",
+       type: "POST",
+       data : formData,
+       dataType : 'json',
+       success: function(data, textStatus, jqXHR){
+           getHashers({{hash_key}});
+       },
+       error: function (jqXHR, textStatus, errorThrown)
+       {
+            alert("failure");
+            alert(jqXHR);
+            alert(textStatus);
+            alert(errorThrown);
+       }
+   });
+ }
+
+ //Function to add a hare to the event
+ function addHare(hasher_key, hash_key){
+  var formData = {hasher_key:hasher_key,hash_key:hash_key};
+  $.ajax({
+      url : "/admin/event/addHareToHash",
+      type: "POST",
+      data : formData,
+      dataType : 'json',
+      success: function(data, textStatus, jqXHR)
+      {
+          alert("add hare:" + data.hasher_key);
+          alert("add hare:" + data.hash_key);
+      },
+      error: function (jqXHR, textStatus, errorThrown)
+      {
+           alert("failure");
+           alert(jqXHR);
+           alert(textStatus);
+           alert(errorThrown);
+      }
+  });
+}
+
+
+//Function to delete hasher from the event
+function deleteHasher(hasher_key, hash_key){
+ var formData = {hasher_key:hasher_key,hash_key:hash_key};
+ $.ajax({
+     url : "/admin/event/deleteHasherFromHash",
+     type: "POST",
+     data : formData,
+     dataType : 'json',
+     success: function(data, textStatus, jqXHR)
+     {
+         alert("delete hasher:" + data.hasher_key);
+         alert("delete hasher:" + data.hash_key);
+     },
+     error: function (jqXHR, textStatus, errorThrown)
+     {
+          alert("failure");
+          alert(jqXHR);
+          alert(textStatus);
+          alert(errorThrown);
+     }
+ });
+}
+
+//Function to delete hare from the event
+function deleteHare(hasher_key, hash_key){
+ var formData = {hasher_key:hasher_key,hash_key:hash_key};
+ $.ajax({
+     url : "/admin/event/deleteHareFromHash",
+     type: "POST",
+     data : formData,
+     dataType : 'json',
+     success: function(data, textStatus, jqXHR)
+     {
+         alert("delete hare:" + data.hasher_key);
+         alert("delete hare:" + data.hash_key);
+     },
+     error: function (jqXHR, textStatus, errorThrown)
+     {
+          alert("failure");
+          alert(jqXHR);
+          alert(textStatus);
+          alert(errorThrown);
+     }
+ });
+}
+
+
+jQuery(document).ready(function($){
+    $('.live-search-list li').each(function(){
+    $(this).attr('data-search-term', $(this).text().toLowerCase());
+});
+
+$('.live-search-box').on('keyup', function(){
+    var searchTerm = $(this).val().toLowerCase();
+    $('.live-search-list li').each(function(){
+        if ($(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0 || searchTerm.length < 1) {
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
+    });
+});
+
+});
+
+  </script>
+
+
+    <h1>{{pageTitle}}</h1>
+
+    <h3>Hares</h3>
+    <dl class="dl-horizontal">
+      <div data-role="content">
+        <ul data-role="listview" id="hare-list">
+        </ul>
+      </div>
+    </dl>
+
+    <h3>Hashers</h3>
+    <dl class="dl-horizontal">
+      <div data-role="content">
+        <ul data-role="listview" id="hasher-list">
+        </ul>
+      </div>
+    </dl>
+
+
+      {#
+      <dl class="dl-horizontal">
+        {% for item in hasherList %}
+            <dt>{{item.HASHER_NAME}}</dt>
+            <dd><a href='/hashers/{{item.HASHER_KY}}'>Details</a> | <a href="javascript:deleteHasher(2367,146986);">Remove hasher from event</a></dd>
+        {% endfor %}
+      </dl>
+      #}
+
+
+      {#
+      <dl class="dl-horizontal">
+        {% for item in hareList %}
+            <dt>{{item.HASHER_NAME}}</dt>
+            <dd><a href='/hashers/{{item.HASHER_KY}}'>Details</a> | <a href="javascript:deleteHare(2367,146986);">Remove hare from event</a> </dd>
+        {% endfor %}
+      </dl>
+      #}
+
+      <ul class="live-search-list">
+        <input type="text" class="live-search-box" placeholder="search here" />
+        {% for item in allHashersList %}
+        <li>
+          {{item.HASHER_NAME}}|
+          {{item.LAST_NAME}}|
+          {{item.FIRST_NAME}}|
+          {{item.EMAIL}}|
+          <a href="javascript:addHasher({{item.HASHER_KY}},{{hash_key}});">Add as hasher</a>|
+          <a href="javascript:addHare({{item.HASHER_KY}},{{hash_key}});">Add as hare</a>
+        </li>
+        {% endfor %}
+      </ul>
+
+
+
+
+
+{% endblock %}

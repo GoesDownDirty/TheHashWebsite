@@ -2,8 +2,34 @@
 
 {% block content %}
   <script type = "text/javascript" src = "/vendor/components/jquery/jquery.min.js"></script>
+  <script type = "text/javascript" src = "/vendor/ifightcrime/bootstrap-growl/jquery.bootstrap-growl.min.js"></script>
   <script type = "text/javascript" language = "javascript">
 
+
+
+function displayMessage(messageValue){
+
+  //Determine the type of message to display
+  var indexLocation = messageValue.indexOf("Success!");
+  var messageType = "";
+  if(indexLocation >= 0){
+    messageType = "success";
+  }else {
+    messageType = "danger";
+  }
+
+  $.bootstrapGrowl(messageValue, {
+    ele: 'body', // which element to append to
+    type: messageType, // (null, 'info', 'error', 'success')
+    offset: {from: 'top', amount: 20}, // 'top', or 'bottom'
+    align: 'center', // ('left', 'right', or 'center')
+    width: 'auto', // (integer, or 'auto')
+    delay: 4000,
+    allow_dismiss: true,
+    stackup_spacing: 10 // spacing between consecutively stacked growls.
+  });
+
+}
 
   //Function to get hares for the event
   function getHares(hash_key){
@@ -20,7 +46,7 @@
          $.each(data, function(key,row) {
            $('#hare-list').append('<dt>'+ row.HASHER_NAME + '</dt>');
            var linkOne = "<a href=/hashers/" +row.HASHER_KY+ ">Details</a>";
-           var linkTwo = '<a href="javascript:deleteHare(123,1234);">Remove</a>';
+           var linkTwo = '<a href="javascript:deleteHare('+row.HASHER_KY+ ',' + {{hash_key}} +');">Remove</a>';
            $('#hare-list').append('<dd>' + linkOne + ' | ' + linkTwo + '</dd>');
 
          });
@@ -50,7 +76,7 @@
         $.each(data, function(key,row) {
           $('#hasher-list').append('<dt>'+ row.HASHER_NAME + '</dt>');
           var linkOne = "<a href=/hashers/" +row.HASHER_KY+ ">Details</a>";
-          var linkTwo = '<a href="javascript:deleteHasher(123,1234);">Remove</a>';
+          var linkTwo = '<a href="javascript:deleteHasher('+row.HASHER_KY+ ',' + {{hash_key}} +');">Remove</a>';
           $('#hasher-list').append('<dd>' + linkOne + ' | ' + linkTwo + '</dd>');
 
         });
@@ -81,6 +107,7 @@
        dataType : 'json',
        success: function(data, textStatus, jqXHR){
            getHashers({{hash_key}});
+           displayMessage(data);
        },
        error: function (jqXHR, textStatus, errorThrown)
        {
@@ -102,8 +129,7 @@
       dataType : 'json',
       success: function(data, textStatus, jqXHR)
       {
-          alert("add hare:" + data.hasher_key);
-          alert("add hare:" + data.hash_key);
+          getHares({{hash_key}});
       },
       error: function (jqXHR, textStatus, errorThrown)
       {
@@ -124,10 +150,9 @@ function deleteHasher(hasher_key, hash_key){
      type: "POST",
      data : formData,
      dataType : 'json',
-     success: function(data, textStatus, jqXHR)
-     {
-         alert("delete hasher:" + data.hasher_key);
-         alert("delete hasher:" + data.hash_key);
+     success: function(data, textStatus, jqXHR){
+        //alert(data);
+         getHashers({{hash_key}});
      },
      error: function (jqXHR, textStatus, errorThrown)
      {
@@ -149,8 +174,7 @@ function deleteHare(hasher_key, hash_key){
      dataType : 'json',
      success: function(data, textStatus, jqXHR)
      {
-         alert("delete hare:" + data.hasher_key);
-         alert("delete hare:" + data.hash_key);
+         getHares({{hash_key}});
      },
      error: function (jqXHR, textStatus, errorThrown)
      {
@@ -185,6 +209,7 @@ $('.live-search-box').on('keyup', function(){
 
 
     <h1>{{pageTitle}}</h1>
+    <div id="statusMessage"></div>
 
     <h3>Hares</h3>
     <dl class="dl-horizontal">

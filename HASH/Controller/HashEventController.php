@@ -372,26 +372,195 @@ class HashEventController
     #Test function
     public function addHashParticipant (Request $request, Application $app){
 
+      #Establish the return message
+      $returnMessage = "This has not been set yet...";
+
       #Obtain the post values
       $hasherKey = $request->request->get('hasher_key');
       $hashKey = $request->request->get('hash_key');
 
       #Validate the post values; ensure that they are both numbers
-      if(is_int($hasherKey)  && is_int($hashKey)){
+      if(ctype_digit($hasherKey)  && ctype_digit($hashKey)){
 
+        #Determine the hasher identity
+        $hasherIdentitySql = "SELECT * FROM HASHERS WHERE HASHERS.HASHER_KY = ? ;";
+
+        # Make a database call to obtain the hasher information
+        $hasherValue = $app['db']->fetchAssoc($hasherIdentitySql, array((int) $hasherKey));
+
+        #Obtain the object from the database results
+        $data = array(
+            'HASHER_KY' => $hasherValue['HASHER_KY'],
+            'HASHER_NAME' => $hasherValue['HASHER_NAME'],
+            'HASHER_ABBREVIATION' => $hasherValue['HASHER_ABBREVIATION'],
+            'LAST_NAME' => $hasherValue['LAST_NAME'],
+            'FIRST_NAME' => $hasherValue['FIRST_NAME'],
+            'EMAIL' => $hasherValue['EMAIL'],
+            'HOME_KENNEL' => $hasherValue['HOME_KENNEL'],
+            'HOME_KENNEL_KY' => $hasherValue['HOME_KENNEL_KY'],
+            'DECEASED' => $hasherValue['DECEASED'],
+        );
+
+        #Obtain the hasher name from the object
+        $tempHasherName = $data['HASHER_NAME'];
+
+        #Ensure the entry does not already exist
+        $existsSql = "SELECT HASHER_NAME
+          FROM HASHINGS
+          JOIN HASHERS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY
+          WHERE HASHERS.HASHER_KY = ? AND HASH_KY = ?;";
+
+        #Retrieve the existing record
+        $hasherToAdd = $app['db']->fetchAll($existsSql,array((int)$hasherKey,(int)$hashKey));
+        if(count($hasherToAdd) < 1){
+
+          #Define the sql insert statement
+          $sql = "INSERT INTO HASHINGS (HASHER_KY, HASH_KY) VALUES (?, ?);";
+
+          #Execute the sql insert statement
+          $app['db']->executeUpdate($sql,array($hasherKey,$hashKey));
+
+          #Set the return message
+          $returnMessage = "Success! $tempHasherName been added";
+        } else {
+
+          #Set the return message
+          $returnMessage = "$tempHasherName were already added.";
+        }
+
+      } else{
+        $returnMessage = "Something is wrong with the input.$hasherKey and $hashKey";
       }
 
-      #Ensure the entry does not already exist
+      #Set the return value
+      $returnValue =  $app->json($returnMessage, 200);
+      return $returnValue;
+    }
 
-      #Define the sql insert statement
-      $sql = "INSERT INTO HASHINGS (HASHER_KY, HASH_KY) VALUES (?, ?);";
+    #Test function
+    public function addHashOrganizer (Request $request, Application $app){
 
-      #Execute the sql insert statement
-      $app['db']->executeUpdate($sql,array($hasherKey,$hashKey));
+      #Establish the return message
+      $returnMessage = "This has not been set yet...";
+
+      #Obtain the post values
+      $hasherKey = $request->request->get('hasher_key');
+      $hashKey = $request->request->get('hash_key');
+
+      #Validate the post values; ensure that they are both numbers
+      if(ctype_digit($hasherKey)  && ctype_digit($hashKey)){
+
+        #Ensure the entry does not already exist
+
+        #Define the sql insert statement
+        $sql = "INSERT INTO HARINGS (HARINGS_HASHER_KY, HARINGS_HASH_KY) VALUES (?, ?);";
+
+        #Execute the sql insert statement
+        $app['db']->executeUpdate($sql,array($hasherKey,$hashKey));
+
+      } else{
+        $returnMessage = "Something is wrong with the input.$hasherKey and $hashKey";
+      }
 
       #Set the return value
-      $returnValue =  $app->json("Success", 200);
+      $returnValue =  $app->json($returnMessage, 200);
       return $returnValue;
+    }
+
+
+    #Delete a participant from a hash
+    public function deleteHashParticipant (Request $request, Application $app){
+
+      #Establish the return message
+      $returnMessage = "This has not been set yet...";
+
+      #Obtain the post values
+      $hasherKey = $request->request->get('hasher_key');
+      $hashKey = $request->request->get('hash_key');
+
+      #Validate the post values; ensure that they are both numbers
+      if(ctype_digit($hasherKey)  && ctype_digit($hashKey)){
+
+        #Check if this exists
+        $existsSql = "SELECT HASHER_NAME
+          FROM HASHINGS
+          JOIN HASHERS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY
+          WHERE HASHERS.HASHER_KY = ? AND HASH_KY = ?;";
+
+        #Retrieve the existing record
+        $hasherToDelete = $app['db']->fetchAll($existsSql,array((int)$hasherKey,(int)$hashKey));
+        if(count($hasherToDelete) > 0){
+
+          #Obtain the name of the person being deleted
+          $tempHasherName = $hasherToDelete[0];
+          $tempHasherName = $tempHasherName['HASHER_NAME'];
+          $returnMessage = "Removed $tempHasherName from this event.";
+
+          #Define the sql insert statement
+          $sql = "DELETE FROM HASHINGS WHERE HASHER_KY = ? AND HASH_KY = ?;";
+
+          #Execute the sql insert statement
+          $app['db']->executeUpdate($sql,array($hasherKey,$hashKey));
+
+        }  else{
+          $returnMessage = "Record cannot be deleted; doesn't exist!";
+        }
+      } else{
+        $returnMessage = "Something is wrong with the input.$hasherKey and $hashKey";
+      }
+
+      #Set the return value
+      $returnValue =  $app->json($returnMessage, 200);
+      return $returnValue;
+
+    }
+
+
+    #Delete a participant from a hash
+    public function deleteHashOrganizer (Request $request, Application $app){
+
+      #Establish the return message
+      $returnMessage = "This has not been set yet...";
+
+      #Obtain the post values
+      $hasherKey = $request->request->get('hasher_key');
+      $hashKey = $request->request->get('hash_key');
+
+      #Validate the post values; ensure that they are both numbers
+      if(ctype_digit($hasherKey)  && ctype_digit($hashKey)){
+
+        #Check if this exists
+        $existsSql = "SELECT HASHER_NAME
+          FROM HARINGS
+          JOIN HASHERS ON HASHERS.HASHER_KY = HARINGS.HARINGS_HASHER_KY
+          WHERE HARINGS.HARINGS_HASHER_KY = ? AND HARINGS.HARINGS_HASH_KY = ?;";
+
+        #Retrieve the existing record
+        $hareToDelete = $app['db']->fetchAll($existsSql,array((int)$hasherKey,(int)$hashKey));
+        if(count($hareToDelete) > 0){
+
+          #Obtain the name of the person being deleted
+          $tempHasherName = $hareToDelete[0];
+          $tempHasherName = $tempHasherName['HASHER_NAME'];
+          $returnMessage = "Removed $tempHasherName as hare from this event.";
+
+          #Define the sql insert statement
+          $sql = "DELETE FROM HARINGS WHERE HARINGS_HASHER_KY = ? AND HARINGS_HASH_KY = ?;";
+
+          #Execute the sql insert statement
+          $app['db']->executeUpdate($sql,array($hasherKey,$hashKey));
+
+        }  else{
+          $returnMessage = "Record cannot be deleted; doesn't exist!";
+        }
+      } else{
+        $returnMessage = "Something is wrong with the input.$hasherKey and $hashKey";
+      }
+
+      #Set the return value
+      $returnValue =  $app->json($returnMessage, 200);
+      return $returnValue;
+
     }
 
     #Obtain hashers for an event

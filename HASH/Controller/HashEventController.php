@@ -421,11 +421,11 @@ class HashEventController
           $app['db']->executeUpdate($sql,array($hasherKey,$hashKey));
 
           #Set the return message
-          $returnMessage = "Success! $tempHasherName been added";
+          $returnMessage = "Success! $tempHasherName has been added as a hound.";
         } else {
 
           #Set the return message
-          $returnMessage = "$tempHasherName were already added.";
+          $returnMessage = "$tempHasherName has already added as a hound.";
         }
 
       } else{
@@ -450,13 +450,53 @@ class HashEventController
       #Validate the post values; ensure that they are both numbers
       if(ctype_digit($hasherKey)  && ctype_digit($hashKey)){
 
+        #Determine the hasher identity
+        $hasherIdentitySql = "SELECT * FROM HASHERS WHERE HASHERS.HASHER_KY = ? ;";
+
+        # Make a database call to obtain the hasher information
+        $hasherValue = $app['db']->fetchAssoc($hasherIdentitySql, array((int) $hasherKey));
+
+        #Obtain the object from the database results
+        $data = array(
+            'HASHER_KY' => $hasherValue['HASHER_KY'],
+            'HASHER_NAME' => $hasherValue['HASHER_NAME'],
+            'HASHER_ABBREVIATION' => $hasherValue['HASHER_ABBREVIATION'],
+            'LAST_NAME' => $hasherValue['LAST_NAME'],
+            'FIRST_NAME' => $hasherValue['FIRST_NAME'],
+            'EMAIL' => $hasherValue['EMAIL'],
+            'HOME_KENNEL' => $hasherValue['HOME_KENNEL'],
+            'HOME_KENNEL_KY' => $hasherValue['HOME_KENNEL_KY'],
+            'DECEASED' => $hasherValue['DECEASED'],
+        );
+
+        #Obtain the hasher name from the object
+        $tempHasherName = $data['HASHER_NAME'];
+
         #Ensure the entry does not already exist
+        $existsSql = "SELECT HASHER_NAME
+          FROM HARINGS
+          JOIN HASHERS ON HASHERS.HASHER_KY = HARINGS.HARINGS_HASHER_KY
+          WHERE HASHERS.HASHER_KY = ? AND HARINGS.HARINGS_HASH_KY = ?;";
 
-        #Define the sql insert statement
-        $sql = "INSERT INTO HARINGS (HARINGS_HASHER_KY, HARINGS_HASH_KY) VALUES (?, ?);";
+        #Retrieve the existing record
+        $hareToAdd = $app['db']->fetchAll($existsSql,array((int)$hasherKey,(int)$hashKey));
+        if(count($hareToAdd) < 1){
 
-        #Execute the sql insert statement
-        $app['db']->executeUpdate($sql,array($hasherKey,$hashKey));
+          #Define the sql insert statement
+          $sql = "INSERT INTO HARINGS (HARINGS_HASHER_KY, HARINGS_HASH_KY) VALUES (?, ?);";
+
+          #Execute the sql insert statement
+          $app['db']->executeUpdate($sql,array($hasherKey,$hashKey));
+
+          #Set the return message
+          $returnMessage = "Success! $tempHasherName has been added as a hare.";
+
+        } else {
+
+          #Set the return message
+          $returnMessage = "$tempHasherName has already added as a hare.";
+
+        }
 
       } else{
         $returnMessage = "Something is wrong with the input.$hasherKey and $hashKey";

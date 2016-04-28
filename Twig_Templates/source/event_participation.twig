@@ -130,6 +130,7 @@ function displayMessage(messageValue){
       success: function(data, textStatus, jqXHR)
       {
           getHares({{hash_key}});
+          displayMessage(data);
       },
       error: function (jqXHR, textStatus, errorThrown)
       {

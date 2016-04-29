@@ -168,7 +168,7 @@ class HashEventController
               EVENT_DATE= ?, EVENT_LOCATION= ?, EVENT_CITY= ?, EVENT_STATE=?,
               SPECIAL_EVENT_DESCRIPTION=?, VIRGIN_COUNT=?, IS_HYPER=?
             WHERE HASH_KY=?";
-          $app['db']->executeUpdate($sql,array(
+          $app['dbs']['mysql_write']->executeUpdate($sql,array(
             $tempEventDate,
             $tempEventLocation,
             $tempEventCity,
@@ -271,15 +271,7 @@ class HashEventController
           $tempVirginCount = $data['Virgin_Count'];
           $tempIsHyper = $data['Is_Hyper'];
 
-          print "tempKennelKy $tempKennelKy <br>";
-          print "tempKennelEventNumber = $tempKennelEventNumber <br>";
-          print "tempEventDateFormatted = $tempEventDateFormatted <br>";
-          print "tempEventLocation $tempEventLocation <br>";
-          print "tempEventCity $tempEventCity <br>";
-          print "tempEventState $tempEventState <br>";
-          print "tempSpecialEventDescription $tempSpecialEventDescription <br>";
-          print "tempVirginCount $tempVirginCount <br>";
-          print "tempIsHyper $tempIsHyper <br>";
+
 
           $sql = "
             INSERT INTO HASHES (
@@ -295,7 +287,7 @@ class HashEventController
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 
-          $app['db']->executeUpdate($sql,array(
+          $app['dbs']['mysql_write']->executeUpdate($sql,array(
             $tempKennelKy,
             $tempKennelEventNumber,
             $tempEventDateFormatted,
@@ -418,7 +410,7 @@ class HashEventController
           $sql = "INSERT INTO HASHINGS (HASHER_KY, HASH_KY) VALUES (?, ?);";
 
           #Execute the sql insert statement
-          $app['db']->executeUpdate($sql,array($hasherKey,$hashKey));
+          $app['dbs']['mysql_write']->executeUpdate($sql,array($hasherKey,$hashKey));
 
           #Set the return message
           $returnMessage = "Success! $tempHasherName has been added as a hound.";
@@ -486,7 +478,7 @@ class HashEventController
           $sql = "INSERT INTO HARINGS (HARINGS_HASHER_KY, HARINGS_HASH_KY) VALUES (?, ?);";
 
           #Execute the sql insert statement
-          $app['db']->executeUpdate($sql,array($hasherKey,$hashKey));
+          $app['dbs']['mysql_write']->executeUpdate($sql,array($hasherKey,$hashKey));
 
           #Set the return message
           $returnMessage = "Success! $tempHasherName has been added as a hare.";
@@ -534,13 +526,13 @@ class HashEventController
           #Obtain the name of the person being deleted
           $tempHasherName = $hasherToDelete[0];
           $tempHasherName = $tempHasherName['HASHER_NAME'];
-          $returnMessage = "Removed $tempHasherName from this event.";
+          $returnMessage = "Success! Removed $tempHasherName as hasher at this event.";
 
           #Define the sql insert statement
           $sql = "DELETE FROM HASHINGS WHERE HASHER_KY = ? AND HASH_KY = ?;";
 
           #Execute the sql insert statement
-          $app['db']->executeUpdate($sql,array($hasherKey,$hashKey));
+          $app['dbs']['mysql_write']->executeUpdate($sql,array($hasherKey,$hashKey));
 
         }  else{
           $returnMessage = "Record cannot be deleted; doesn't exist!";
@@ -582,13 +574,13 @@ class HashEventController
           #Obtain the name of the person being deleted
           $tempHasherName = $hareToDelete[0];
           $tempHasherName = $tempHasherName['HASHER_NAME'];
-          $returnMessage = "Removed $tempHasherName as hare from this event.";
+          $returnMessage = "Success! Removed $tempHasherName as hare from this event.";
 
           #Define the sql insert statement
           $sql = "DELETE FROM HARINGS WHERE HARINGS_HASHER_KY = ? AND HARINGS_HASH_KY = ?;";
 
           #Execute the sql insert statement
-          $app['db']->executeUpdate($sql,array($hasherKey,$hashKey));
+          $app['dbs']['mysql_write']->executeUpdate($sql,array($hasherKey,$hashKey));
 
         }  else{
           $returnMessage = "Record cannot be deleted; doesn't exist!";
@@ -642,10 +634,5 @@ class HashEventController
       $returnValue =  $app->json($hareList, 200);
       return $returnValue;
     }
-
-
-
-
-
 
 }

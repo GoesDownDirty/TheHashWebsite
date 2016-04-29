@@ -152,8 +152,8 @@ function deleteHasher(hasher_key, hash_key){
      data : formData,
      dataType : 'json',
      success: function(data, textStatus, jqXHR){
-        //alert(data);
          getHashers({{hash_key}});
+         displayMessage(data);
      },
      error: function (jqXHR, textStatus, errorThrown)
      {
@@ -176,6 +176,7 @@ function deleteHare(hasher_key, hash_key){
      success: function(data, textStatus, jqXHR)
      {
          getHares({{hash_key}});
+         displayMessage(data);
      },
      error: function (jqXHR, textStatus, errorThrown)
      {

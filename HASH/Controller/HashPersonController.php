@@ -51,44 +51,7 @@ class HashPersonController
       ->add('DECEASED', ChoiceType::class, array('choices'  => array(
         'No' => '0000000000',
         'Yes, let us cherish their memory' => '0000000001',
-      )))
-      /*
-      ->add('Event_City', TextType::class, array(
-              'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 1)))
-          ))
-      */
-
-
-      /*
-      ->add('Event_State', ChoiceType::class, array(
-        'choices' => self::$stateDropdownArray,
-        'preferred_choices' => array('OH','KY','IN'),
-    ))
-    */
-
-      /*
-      ->add('Special_Event_Description')
-      ->add('Virgin_Count', ChoiceType::class, array('choices'  => array(
-        '0'=>'0000000000',
-        '1'=>'0000000001',
-        '2'=>'0000000002',
-        '3'=>'0000000003',
-        '4'=>'0000000004',
-        '5'=>'0000000005',
-        '6'=>'0000000006',
-        '7'=>'0000000007',
-        '8'=>'0000000008',
-        '9'=>'0000000009')))
-      */
-
-      /*
-      ->add('Is_Hyper', ChoiceType::class, array('choices'  => array(
-        'Yes' => '0000000001',
-        'No' => '0000000000',
-      ),
-      ))
-*/
-      ;
+      )));
 
     $formFactoryThing->add('save', SubmitType::class, array('label' => 'Submit the form'));
     $formFactoryThing->setAction('#');
@@ -121,7 +84,7 @@ class HashPersonController
               HASHER_NAME= ?, HASHER_ABBREVIATION= ?, LAST_NAME= ?, FIRST_NAME=?,
               EMAIL=?, HOME_KENNEL=?, HOME_KENNEL_KY=?, DECEASED=?
             WHERE HASHER_KY=?";
-          $app['db']->executeUpdate($sql,array(
+          $app['dbs']['mysql_write']->executeUpdate($sql,array(
             $tempHasherName,
             $tempHasherAbbreviation,
             $tempLastName,
@@ -156,8 +119,6 @@ class HashPersonController
 
   #Define the action
   public function createHashPersonAction(Request $request, Application $app){
-
-
 
     $formFactoryThing = $app['form.factory']->createBuilder(FormType::class)
       ->add('HASHER_NAME')
@@ -211,7 +172,7 @@ class HashPersonController
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
 
-          $app['db']->executeUpdate($sql,array(
+          $app['dbs']['mysql_write']->executeUpdate($sql,array(
             $tempHasherName,
             $tempHasherAbbreviation,
             $tempLastName,
@@ -242,10 +203,5 @@ class HashPersonController
     return $returnValue;
 
   }
-
-
-
-
-
 
 }

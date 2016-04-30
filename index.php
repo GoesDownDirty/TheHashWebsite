@@ -40,19 +40,6 @@ $twigTemplateCompiledDirectory = __DIR__.'/Twig_Templates/compiled';
 # End TWIG Configurations-------------------------------------------------------
 
 #Registers a database connection -----------------------------------------------
-/*
-$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
-  'db.options' => array(
-  	'driver'   	=> DB_DRIVER,
-  	'dbname'	=> DB_NAME,
-  	'host'		=> DB_HOST,
-  	'port'		=> DB_PORT,
-  	'user'		=> DB_USER,
-  	'password'	=> DB_PASSWORD
-    ),
-));
-*/
-
 $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
   'dbs.options' => array(
     'mysql_read' => array(

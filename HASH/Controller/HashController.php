@@ -209,7 +209,18 @@ class HashController
   public function listhashesAction(Request $request, Application $app){
 
     #Define the SQL to execute
-    $sql = "SELECT * FROM HASHES ORDER BY HASH_KY DESC";
+    $sql = "SELECT
+      HASH_KY,
+      KENNEL_EVENT_NUMBER,
+      EVENT_DATE,
+      DAYNAME(EVENT_DATE) AS EVENT_DAY_NAME,
+      EVENT_LOCATION,
+      EVENT_CITY,
+      EVENT_STATE,
+      SPECIAL_EVENT_DESCRIPTION,
+      IS_HYPER,
+      VIRGIN_COUNT
+    FROM HASHES ORDER BY HASH_KY DESC";
 
     #Execute the SQL statement; create an array of rows
     $hashList = $app['db']->fetchAll($sql);
@@ -230,7 +241,20 @@ class HashController
   public function listHashesByHasherAction(Request $request, Application $app, int $hasher_id){
 
     #Define the SQL to execute
-    $sql = "SELECT * FROM HASHES JOIN HASHINGS ON HASHES.HASH_KY = HASHINGS.HASH_KY WHERE HASHINGS.HASHER_KY = ? ORDER BY HASHES.HASH_KY DESC";
+    $sql = "SELECT
+          HASHES.HASH_KY,
+          KENNEL_EVENT_NUMBER,
+          EVENT_DATE,
+          DAYNAME(EVENT_DATE) AS EVENT_DAY_NAME,
+          EVENT_LOCATION,
+          EVENT_CITY,
+          EVENT_STATE,
+          SPECIAL_EVENT_DESCRIPTION,
+          IS_HYPER,
+          VIRGIN_COUNT
+    FROM HASHES JOIN HASHINGS ON HASHES.HASH_KY = HASHINGS.HASH_KY
+    WHERE HASHINGS.HASHER_KY = ?
+    ORDER BY HASHES.HASH_KY DESC";
 
     #Execute the SQL statement; create an array of rows
     $hashList = $app['db']->fetchAll($sql,array((int) $hasher_id));
@@ -261,7 +285,19 @@ class HashController
   public function listHashesByHareAction(Request $request, Application $app, int $hasher_id){
 
     #Define the SQL to execute
-    $sql = "SELECT * FROM HASHES JOIN HARINGS ON HASHES.HASH_KY = HARINGS.HARINGS_HASH_KY WHERE HARINGS.HARINGS_HASHER_KY = ?";
+    $sql = "SELECT
+        HASHES.HASH_KY,
+        KENNEL_EVENT_NUMBER,
+        EVENT_DATE,
+        DAYNAME(EVENT_DATE) AS EVENT_DAY_NAME,
+        EVENT_LOCATION,
+        EVENT_CITY,
+        EVENT_STATE,
+        SPECIAL_EVENT_DESCRIPTION,
+        IS_HYPER,
+        VIRGIN_COUNT
+      FROM HASHES JOIN HARINGS ON HASHES.HASH_KY = HARINGS.HARINGS_HASH_KY
+      WHERE HARINGS.HARINGS_HASHER_KY = ?";
 
     #Execute the SQL statement; create an array of rows
     $hashList = $app['db']->fetchAll($sql,array((int) $hasher_id));

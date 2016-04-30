@@ -1,12 +1,37 @@
 {% extends "fullwidth.twig" %}
 
 {% block content %}
+
+<script type = "text/javascript" src = "/vendor/components/jquery/jquery.min.js"></script>
+<script type = "text/javascript" language = "javascript">
+jQuery(document).ready(function($){
+    $('.live-search-list li').each(function(){
+      $(this).attr('data-search-term', $(this).text().toLowerCase());
+    });
+
+  $('.live-search-box').on('keyup', function(){
+      var searchTerm = $(this).val().toLowerCase();
+      $('.live-search-list li').each(function(){
+          if ($(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0 || searchTerm.length < 1) {
+              $(this).show();
+          } else {
+              $(this).hide();
+          }
+      });
+  });
+
+});
+</script>
+
+
     <h1>{{pageTitle}}</h1>
     <h3>{{pageSubTitle}}</h3>
-      <dl class="dl-horizontal">
-        {% for item in theList %}
-            <dt>{{item.NAME}}</dt>
-            <dd><a href='/hashers/{{item.THE_KEY}}'>Details</a></dd>
-        {% endfor %}
-      </dl>
+    <ul class="live-search-list">
+      <input type="text" class="live-search-box" placeholder="search here" />
+
+          {% for item in theList %}
+              <li>{{item.NAME}} <a href='/hashers/{{item.THE_KEY}}'>Details</a></li>
+          {% endfor %}
+
+    </ul>
 {% endblock %}

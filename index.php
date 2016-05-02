@@ -8,6 +8,7 @@ require_once __DIR__.'/HASH/Controller/HashPersonController.php';
 require_once __DIR__.'/HASH/Controller/AdminController.php';
 require_once __DIR__.'/config/ProdConfig.php';
 require_once __DIR__.'/vendor/twig/twig/lib/Twig/AutoLoader.php';
+require_once __DIR__.'/HASH/Controller/SuperAdminController.php';
 //test comment
 
 
@@ -61,7 +62,7 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
 
 
 #Create users table in database-------------------------------------------------
-$schema = $app['db']->getSchemaManager();
+$schema = $app['dbs']['mysql_write']->getSchemaManager();
 if (!$schema->tablesExist('users')) {
     $users = new Table('users');
     $users->addColumn('id', 'integer', array('unsigned' => true, 'autoincrement' => true));
@@ -73,17 +74,24 @@ if (!$schema->tablesExist('users')) {
 
     $schema->createTable($users);
 
-    $app['db']->insert('users', array(
+    $app['dbs']['mysql_write']->insert('users', array(
       'username' => 'fabien',
       'password' => DEFAULT_USER_PASSWORD,
       'roles' => 'ROLE_USER'
     ));
 
-    $app['db']->insert('users', array(
+    $app['dbs']['mysql_write']->insert('users', array(
       'username' => 'admin',
       'password' => DEFAULT_USER_PASSWORD,
       'roles' => 'ROLE_ADMIN'
     ));
+
+    $app['dbs']['mysql_write']->insert('users', array(
+      'username' => 'superadmin',
+      'password' => DEFAULT_USER_PASSWORD,
+      'roles' => 'ROLE_SUPERADMIN'
+    ));
+
 }
 
 
@@ -131,6 +139,13 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
         'login' => array(
             'pattern' => '^/logonscreen$',
         ),
+        #'supersecured' => array(
+        #    'pattern' => '^/superadmin',
+        #    'form' => array('login_path' => '/logonscreen', 'check_path' => '/admin/login_check'),
+        #    'logout' => array('logout_path' => '/logoutaction'),
+        #    'users' => $app->share(function () use ($app) {return new UserProvider($app['db']);}),
+        #    'logout' => array('logout_path' => '/admin/logoutaction', 'invalidate_session' => true),
+        #),
         'secured' => array(
             'pattern' => '^/admin',
             'form' => array('login_path' => '/logonscreen', 'check_path' => '/admin/login_check'),
@@ -138,12 +153,15 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
             'users' => $app->share(function () use ($app) {return new UserProvider($app['db']);}),
             'logout' => array('logout_path' => '/admin/logoutaction', 'invalidate_session' => true),
         ),
-        #'sortofsecured' => array(
-        #    'pattern' => '^/user',
+        #'secured' => array(
+        #    'pattern' => '^/superadmin|/admin',
         #    'form' => array('login_path' => '/logonscreen', 'check_path' => '/admin/login_check'),
         #    'logout' => array('logout_path' => '/logoutaction'),
         #    'users' => $app->share(function () use ($app) {return new UserProvider($app['db']);}),
         #    'logout' => array('logout_path' => '/admin/logoutaction', 'invalidate_session' => true),
+        #),
+        #'supersecured' => array(
+        #    'pattern' => '^/superadmin',
         #),
         'unsecured' => array(
           'pattern' => '^.*$',
@@ -154,8 +172,9 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
 
 
 $app['security.access_rules'] = array(
-    #array('^/user',   'ROLE_USER'),
-    array('^/admin',  'ROLE_ADMIN'),
+    #array('^/superadmin',   'ROLE_SUPERADMIN'),
+    #array('^/superadmin',   'ROLE_ADMIN'),
+    array('^/admin',        'ROLE_ADMIN')
 );
 
 
@@ -198,6 +217,9 @@ $app->get('/logonscreen',                                         'HASH\Controll
 $app->get('/admin/logoutaction',                                  'HASH\Controller\AdminController::logoutAction');
 
 
+$app->get('/superadmin/hello',                                    'HASH\Controller\SuperAdminController::helloAction');
+
+
 $app->get('/admin/hello',                                         'HASH\Controller\AdminController::adminHelloAction');
 $app->get('/user/hello',                                          'HASH\Controller\AdminController::userHelloAction');
 
@@ -228,7 +250,7 @@ $app->get('/hashattendance/byhare/average',                       'HASH\Controll
 $app->get('/hashattendance/byhare/grandtotal/nondistincthashers', 'HASH\Controller\HashController::hashAttendanceByHareGrandTotalNonDistinctHashersAction');
 $app->get('/hashattendance/byhare/grandtotal/distincthashers',    'HASH\Controller\HashController::hashAttendanceByHareGrandTotalDistinctHashersAction');
 $app->get('/getHasherCountsByHare/{hare_id}',                     'HASH\Controller\HashController::hasherCountsByHareAction');
-
+$app->get('/percentages/percentageofharingsthatwerehypers',       'HASH\Controller\HashController::percentageHaringsHypersVsNonHypers');
 #$app->get('/getHasherCountsByHound/{hasher_id}',                     'HASH\Controller\HashController::hasherCountsByHoundAction');
 
 # Hash event modification

@@ -232,25 +232,6 @@ jQuery(document).ready(function($){
     </dl>
 
 
-      {#
-      <dl class="dl-horizontal">
-        {% for item in hasherList %}
-            <dt>{{item.HASHER_NAME}}</dt>
-            <dd><a href='/hashers/{{item.HASHER_KY}}'>Details</a> | <a href="javascript:deleteHasher(2367,146986);">Remove hasher from event</a></dd>
-        {% endfor %}
-      </dl>
-      #}
-
-
-      {#
-      <dl class="dl-horizontal">
-        {% for item in hareList %}
-            <dt>{{item.HASHER_NAME}}</dt>
-            <dd><a href='/hashers/{{item.HASHER_KY}}'>Details</a> | <a href="javascript:deleteHare(2367,146986);">Remove hare from event</a> </dd>
-        {% endfor %}
-      </dl>
-      #}
-
       <ul class="live-search-list">
         <input type="text" class="live-search-box" placeholder="search here" />
         {% for item in allHashersList %}

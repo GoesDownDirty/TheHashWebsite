@@ -2,6 +2,8 @@
 
 namespace HASH\Controller;
 
+require_once realpath(__DIR__ . '/../..').'/config/SQL_Queries.php';
+
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
@@ -297,7 +299,8 @@ class HashController
         IS_HYPER,
         VIRGIN_COUNT
       FROM HASHES JOIN HARINGS ON HASHES.HASH_KY = HARINGS.HARINGS_HASH_KY
-      WHERE HARINGS.HARINGS_HASHER_KY = ?";
+      WHERE HARINGS.HARINGS_HASHER_KY = ?
+      ORDER BY EVENT_DATE DESC";
 
     #Execute the SQL statement; create an array of rows
     $hashList = $app['db']->fetchAll($sql,array((int) $hasher_id));
@@ -593,6 +596,36 @@ public function haringPercentageNonHypersAction(Request $request, Application $a
   #Return the return value
   return $returnValue;
 }
+
+
+
+public function percentageHaringsHypersVsNonHypers(Request $request, Application $app){
+
+  # Declare the SQL used to retrieve this information
+  $sql = HARING_PERCENTAGES_HYPERS_VS_ALL;
+
+  #Execute the SQL statement; create an array of rows
+  $hasherList = $app['db']->fetchAll($sql);
+
+  # Establish the return value
+  $returnValue = $app['twig']->render('percentage_list_multiple_values.twig',array(
+    'pageTitle' => 'Hyper Haring Percentages',
+    'tableCaption' => 'This shows the percentage of hyper hashes that make up each hare\'s haring list. The hyper haring percentage shows the percentage of harings people have done that were hyper hashes.',
+    'columnOneName' => 'Hasher Name',
+    'columnTwoName' => 'Haring Count (All)',
+    'columnThreeName' => 'Haring Count (Hyper Hashes)',
+    'columnFourName' => 'Hyper Haring Percentage',
+    'columnFiveName' => 'Non-Hyper Haring Percentage',
+    'theList' => $hasherList
+  ));
+
+  #Return the return value
+  return $returnValue;
+}
+
+
+
+
 
 
 public function hashingCountsAction(Request $request, Application $app){

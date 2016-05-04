@@ -2,42 +2,50 @@
 
 {% block content %}
 
-    <h1>{{pageTitle}}</h1>
-    <h3>{{subTitle1}}</h3>
-
-      <a href='/listhashers'>List of hashers</a><br>
-      <a href='/listhashes'>List of hashes</a><br>
-      <a href='/hashingCounts'>Hashing Counts</a><br>
-      Haring Counts: <a href='/haringCounts'>(All Hashes)</a> <a href='/nonHyperharingCounts'>(Non Hypers Only)</a><br>
-    <h3>{{subTitle2}}</h3>
-      <a href='/pendingHareAnalversaries'>Pending Hare Analversaries</a><br>
-      <a href='/pendingHasherAnalversaries'>Pending Hasher Analversaries</a><br>
-    <h3>{{subTitle3}}</h3>
-      Hare Percentages: <a href='/haringPercentageAllHashes'>(All Hashes)</a> <a href='/haringPercentageNonHypers'>(Non Hypers Only)</a><br>
-      <a href='/hashattendance/byhare/lowest'>Lowest Attendance by Hare</a><br>
-      <a href='/hashattendance/byhare/highest'>Highest Attendance by Hare</a><br>
-      <a href='/hashattendance/byhare/average'>Average Attendance by Hare</a><br>
-      <a href='/hashattendance/byhare/grandtotal/nondistincthashers'>Total (Non Distinct Hashers) Attendance by Hare</a><br>
-      <a href='/hashattendance/byhare/grandtotal/distincthashers'>Total (Distinct Hashers) Attendance by Hare (Including Themselves)</a><br>
-      <a href='/percentages/percentageofharingsthatwerehypers'>Percentages of harings that were hypers vs non-hypers </a><br>
-    <h3>{{subTitle4}}</h3>
-      <a href='/listhashes'>Hashes resulting in pregnancy</a><br>
-      <a href='/listhashes'>Hashes where VD was contracted</a><br>
-      <a href='/listhashes'>Hashes where at least 3 out of the 7 deadly sins were comitted</a><br>
-
-    <h3>User Role Links</h3>
-      <a href='/user/hello'>The user hello page</a><br>
-
-    <h3>Admin Role Links</h3>
-      <a href='/admin/hello'>The admin hello page</a><br>
-
-    <h3>Secret Logon Screen</h3>
-      <a href='/logonscreen'>The Secret Logon Screen</a><br>
-
-    <h3>Super Admin Links</h3>
-      <a href='/superadmin/hello'>The super admin screen</a><br>
-
-
-    <br><br><br>
+    <div class="container">
+      <h1>{{pageTitle}}</h1>
+      <p>This site is dedicated to the advancement of mankind, world peace, and mature behavior.</p>
+      <div class="row">
+        <div class="col-sm-4" style="background-color:yellow;">
+          <h3>Standard Stuff</h3>
+          <a href='/listhashers'>The Hashers (People. And dogs.)</a><br>
+          <a href='/hashingCounts'>The Hashing Counts</a><br>
+          <a href='/haringCounts'>The Haring Counts</a><br>
+          <a href='/nonHyperharingCounts'>The Haring Counts (Hypers excluded)</a><br>
+          <a href='/listhashes'>The Hashes (Events)</a><br>
+        </div>
+        <div class="col-sm-4" style="background-color:pink;">
+          <h3>Analversaries</h3>
+          <a href='/pendingHareAnalversaries'>Impending Hare Analversaries</a><br>
+          <a href='/pendingHasherAnalversaries'>Impending Hasher Analversaries</a><br>
+        </div>
+        <div class="col-sm-4" style="background-color:yellow;">
+          <h3>Haring Statistics</h3>
+          <a href='/haringPercentageAllHashes'>Hashings to harings percentage</a> <br>
+          <a href='/haringPercentageNonHypers'>Hashings to harings percentage (excluding hypers)</a><br>
+          <a href='/hashattendance/byhare/lowest'>Lowest Attendances by Hare</a><br>
+          <a href='/hashattendance/byhare/highest'>Highest Attendances by Hare</a><br>
+          <a href='/hashattendance/byhare/average'>Average Attendances by Hare</a><br>
+          <a href='/hashattendance/byhare/grandtotal/nondistincthashers'> Grand total Attendance by Hare</a><br>
+          <a href='/hashattendance/byhare/grandtotal/distincthashers'>Grand total attendance by Hare (distinct people excluding themselves)</a><br>
+          <a href='/percentages/percentageofharingsthatwerehypers'>Hyper vs non-hyper haring percentages </a><br>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-4" style="background-color:pink;">
+          <h3>Cautionary Stats</h3>
+          <a href='/listhashes'>Hashes resulting in pregnancy</a><br>
+          <a href='/listhashes'>Hashes where VD was contracted</a><br>
+          <a href='/listhashes'>Hashes where at least 3 out of the 7 deadly sins were comitted</a><br>
+        </div>
+        <div class="col-sm-4" style="background-color:yellow;">
+          <h3>Secret Logon Pages</h3>
+          <a href='/logonscreen'>The Admin Logon Screen</a><br>
+          <a href='/superadmin/hello'>The Super Admin Logon Screen</a><br>
+          <a href='/admin/hello'>The Admin Landing Screen</a><br>
+          <a href='/superadmin/hello'>The Super Admin Landing Screen</a><br>
+        </div>
+      </div>
+    </div>
 
 {% endblock %}

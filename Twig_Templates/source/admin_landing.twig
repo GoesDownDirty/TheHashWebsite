@@ -6,8 +6,9 @@
     <h3>{{subTitle1}}</h3>
 
     {% if is_granted('ROLE_USER') %}
-        Welcome, you are in the USER role, and are very special! You are:{{ app.user.username }} <br>
-        <a href="{{ path('logout') }}">Log out</a>
+        Welcome, you are in the ROLE_USER role, and are very special! You are:{{ app.user.username }} <br>
+        <a href="{{ path('logout') }}">Log out (Regular)</a>
+        <a href="{{ path('admin_logoutaction') }}">Log out (Admin)</a><br>
     {% elseif is_granted('ROLE_ADMIN') %}
         Welcome, you are in the ROLE_ADMIN role, and are very special! You are:{{ app.user.username }} <br>
         <a href="{{ path('admin_logoutaction') }}">Log out</a><br>
@@ -16,10 +17,13 @@
         <a href="/admin/modifyhasher/form/1432">Modify Elephant</a><br>
         <a href="/admin/newhasher/form">Create a person!</a><br>
         <a href="/admin/event/manageparticipation/989">Modify an event's participation</a><br>
-
-
+    {% elseif is_granted('ROLE_SUPERADMIN') %}
+        Elseif condition. You are the ROLE_SUPERADMIN. You are:{{ app.user.username }}
+        <a href="{{ path('admin_logoutaction') }}">Log out (Admin)</a><br>
     {% else %}
         You seem not to be logged in.
+
+        <a href="{{ path('admin_logoutaction') }}">Log out (Admin)</a><br>
     {% endif %}
 
 {% endblock %}

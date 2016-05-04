@@ -134,6 +134,7 @@ $app->register(new Silex\Provider\SessionServiceProvider());
 
 $app['debug'] = true;
 
+
 $app->register(new Silex\Provider\SecurityServiceProvider(), array(
     'security.firewalls' => array(
         'login' => array(
@@ -146,20 +147,20 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
         #    'users' => $app->share(function () use ($app) {return new UserProvider($app['db']);}),
         #    'logout' => array('logout_path' => '/admin/logoutaction', 'invalidate_session' => true),
         #),
-        'secured' => array(
-            'pattern' => '^/admin',
-            'form' => array('login_path' => '/logonscreen', 'check_path' => '/admin/login_check'),
-            'logout' => array('logout_path' => '/logoutaction'),
-            'users' => $app->share(function () use ($app) {return new UserProvider($app['db']);}),
-            'logout' => array('logout_path' => '/admin/logoutaction', 'invalidate_session' => true),
-        ),
         #'secured' => array(
-        #    'pattern' => '^/superadmin|/admin',
+        #    'pattern' => '^/admin',
         #    'form' => array('login_path' => '/logonscreen', 'check_path' => '/admin/login_check'),
         #    'logout' => array('logout_path' => '/logoutaction'),
         #    'users' => $app->share(function () use ($app) {return new UserProvider($app['db']);}),
         #    'logout' => array('logout_path' => '/admin/logoutaction', 'invalidate_session' => true),
         #),
+        'secured' => array(
+            'pattern' => '^/superadmin|/admin',
+            'form' => array('login_path' => '/logonscreen', 'check_path' => '/admin/login_check'),
+            'logout' => array('logout_path' => '/logoutaction'),
+            'users' => $app->share(function () use ($app) {return new UserProvider($app['db']);}),
+            'logout' => array('logout_path' => '/admin/logoutaction', 'invalidate_session' => true),
+        ),
         #'supersecured' => array(
         #    'pattern' => '^/superadmin',
         #),
@@ -169,14 +170,19 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
     )
 ));
 
+$app['security.access_rules'] = array(
+    array('^/superadmin',   'ROLE_SUPERADMIN',),
+    array('^/admin',        'ROLE_ADMIN',),
+);
 
 
+/*
 $app['security.access_rules'] = array(
     #array('^/superadmin',   'ROLE_SUPERADMIN'),
     #array('^/superadmin',   'ROLE_ADMIN'),
     array('^/admin',        'ROLE_ADMIN')
 );
-
+*/
 
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new FormServiceProvider());
@@ -300,5 +306,11 @@ $app->after(function (Request $request, Response $response) {
    $response->headers->set('x-frame-options','SAMEORIGIN');
 });
 
+
+/*$app['security.access_rules'] = array(
+    array('^/superadmin',   'ROLE_SUPERADMIN',),
+    array('^/admin',        'ROLE_ADMIN',),
+);
+*/
 
 $app->run();

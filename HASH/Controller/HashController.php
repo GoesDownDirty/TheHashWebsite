@@ -977,7 +977,7 @@ public function hashAttendanceByHareHighestAction(Request $request, Application 
     $sql = "SELECT HASHER_NAME AS NAME, GRAND_NUMBER_OF_PEOPLE_AT_THEIR_EVENTS AS VALUE FROM GRANDTOTAL_NONDISTINCT_HASH_ATTENDANCE_BY_HARE";
 
     #Execute the SQL statement; create an array of rows
-    $hashList = $app['db']->fetchAll($sql,array((int) $hasher_id, (int) $hasher_id,0,0));
+    $hashList = $app['db']->fetchAll($sql);
 
     # Establish and set the return value
     $returnValue = $app['twig']->render('name_number_list.twig',array(

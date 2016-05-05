@@ -1,0 +1,182 @@
+{% extends "fullwidth.twig" %}
+
+{% block content %}
+  <script type = "text/javascript" src = "/vendor/components/jquery/jquery.min.js"></script>
+  <script type = "text/javascript" src = "/vendor/ifightcrime/bootstrap-growl/jquery.bootstrap-growl.min.js"></script>
+  <script type = "text/javascript" language = "javascript">
+
+ //Function to get hashers for the event
+ function getHasherCountsByYear(yearValue){
+  var formData = {year_value:yearValue};
+  $.ajax({
+      url : "/statistics/getHasherCountsByYear",
+      type: "POST",
+      data : formData,
+      dataType : 'json',
+      success: function(data, textStatus, jqXHR){
+
+        $('#hasherCounts-list').empty();
+
+        $.each(data, function(key,row) {
+          $('#hasherCounts-list').append('<dt>'+ row.HASHER_NAME + '</dt>');
+          $('#hasherCounts-list').append('<dd>'+ row.THE_COUNT + '</dd>');
+
+        });
+        $('#hasherCounts-list').listview('refresh');
+      },
+      error: function (jqXHR, textStatus, errorThrown){
+           alert("failure");
+           alert(jqXHR);
+           alert(textStatus);
+           alert(errorThrown);
+      }
+  });
+}
+
+
+//Function to get total hare counts for the year
+function getTotalHareCountsByYear(yearValue){
+ var formData = {year_value:yearValue};
+ $.ajax({
+     url : "/statistics/getTotalHareCountsByYear",
+     type: "POST",
+     data : formData,
+     dataType : 'json',
+     success: function(data, textStatus, jqXHR){
+
+       $('#totalHareCounts-list').empty();
+
+       $.each(data, function(key,row) {
+         $('#totalHareCounts-list').append('<dt>'+ row.HASHER_NAME + '</dt>');
+         $('#totalHareCounts-list').append('<dd>'+ row.THE_COUNT + '</dd>');
+
+       });
+       $('#totalHareCounts-list').listview('refresh');
+     },
+     error: function (jqXHR, textStatus, errorThrown){
+          alert("failure");
+          alert(jqXHR);
+          alert(textStatus);
+          alert(errorThrown);
+     }
+ });
+}
+
+//Function to get total hare counts for the year
+function getHyperHareCountsByYear(yearValue){
+ var formData = {year_value:yearValue};
+ $.ajax({
+     url : "/statistics/getHyperHareCountsByYear",
+     type: "POST",
+     data : formData,
+     dataType : 'json',
+     success: function(data, textStatus, jqXHR){
+
+       $('#hyperHareCounts-list').empty();
+
+       $.each(data, function(key,row) {
+         $('#hyperHareCounts-list').append('<dt>'+ row.HASHER_NAME + '</dt>');
+         $('#hyperHareCounts-list').append('<dd>'+ row.THE_COUNT + '</dd>');
+
+       });
+       $('#hyperHareCounts-list').listview('refresh');
+     },
+     error: function (jqXHR, textStatus, errorThrown){
+          alert("failure");
+          alert(jqXHR);
+          alert(textStatus);
+          alert(errorThrown);
+     }
+ });
+}
+
+//Function to get total hare counts for the year
+function getNonHyperHareCountsByYear(yearValue){
+ var formData = {year_value:yearValue};
+ $.ajax({
+     url : "/statistics/getNonHyperHareCountsByYear",
+     type: "POST",
+     data : formData,
+     dataType : 'json',
+     success: function(data, textStatus, jqXHR){
+
+       $('#nonHyperHareCounts-list').empty();
+
+       $.each(data, function(key,row) {
+         $('#nonHyperHareCounts-list').append('<dt>'+ row.HASHER_NAME + '</dt>');
+         $('#nonHyperHareCounts-list').append('<dd>'+ row.THE_COUNT + '</dd>');
+
+       });
+       $('#nonHyperHareCounts-list').listview('refresh');
+     },
+     error: function (jqXHR, textStatus, errorThrown){
+          alert("failure");
+          alert(jqXHR);
+          alert(textStatus);
+          alert(errorThrown);
+     }
+ });
+}
+
+
+//This function loads when the pages loads
+ $(document).ready(function() {
+    getHasherCountsByYear({{yearValue}});
+    getTotalHareCountsByYear({{yearValue}});
+    getHyperHareCountsByYear({{yearValue}});
+    getNonHyperHareCountsByYear({{yearValue}});
+  });
+
+
+  </script>
+
+
+
+
+<div class="container">
+  <h1>{{pageTitle}}</h1>
+  <div class="row">
+    <div class="col-sm-3" style="background-color:yellow;">
+      <h3>Hasher Counts</h3>
+      <dl class="dl-horizontal">
+        <div data-role="content">
+          <ul data-role="listview" id="hasherCounts-list">
+          </ul>
+        </div>
+      </dl>
+    </div>
+
+    <div class="col-sm-3" style="background-color:pink;">
+      <h3>Hare Counts</h3>
+      <dl class="dl-horizontal">
+        <div data-role="content">
+          <ul data-role="listview" id="totalHareCounts-list">
+          </ul>
+        </div>
+      </dl>
+    </div>
+
+    <div class="col-sm-3" style="background-color:yellow;">
+      <h3>Hyper Hare Counts</h3>
+      <dl class="dl-horizontal">
+        <div data-role="content">
+          <ul data-role="listview" id="hyperHareCounts-list">
+          </ul>
+        </div>
+      </dl>
+    </div>
+
+    <div class="col-sm-3" style="background-color:pink;">
+      <h3>NonHyper Hare Counts</h3>
+      <dl class="dl-horizontal">
+        <div data-role="content">
+          <ul data-role="listview" id="nonHyperHareCounts-list">
+          </ul>
+        </div>
+      </dl>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

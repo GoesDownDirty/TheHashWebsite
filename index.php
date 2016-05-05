@@ -9,6 +9,7 @@ require_once __DIR__.'/HASH/Controller/AdminController.php';
 require_once __DIR__.'/config/ProdConfig.php';
 require_once __DIR__.'/vendor/twig/twig/lib/Twig/AutoLoader.php';
 require_once __DIR__.'/HASH/Controller/SuperAdminController.php';
+require_once __DIR__.'/HASH/Controller/ObscureStatisticsController.php';
 //test comment
 
 
@@ -102,6 +103,7 @@ $app['controllers']
   ->assert("hash_id", "\d+")
   ->assert("hasher_id", "\d+")
   ->assert("hare_id", "\d+")
+  ->assert("year_value", "\d+")
   ;
 #-------------------------------------------------------------------------------
 
@@ -286,6 +288,14 @@ $app->post('/admin/event/deleteHareFromHash',                      'HASH\Control
 
 $app->post('/admin/event/getHaresForEvent',                        'HASH\Controller\HashEventController::getHaresForEvent');
 $app->post('/admin/event/getHashersForEvent',                      'HASH\Controller\HashEventController::getHashersForEvent');
+
+# Functions for the "by year" statistics
+$app->get('/statistics/getYearInReview/{year_value}',               'HASH\Controller\ObscureStatisticsController::getYearInReviewAction');
+$app->post('/statistics/getHasherCountsByYear',                     'HASH\Controller\ObscureStatisticsController::getHasherCountsByYear');
+$app->post('/statistics/getTotalHareCountsByYear',                  'HASH\Controller\ObscureStatisticsController::getTotalHareCountsByYear');
+$app->post('/statistics/getHyperHareCountsByYear',                  'HASH\Controller\ObscureStatisticsController::getHyperHareCountsByYear');
+$app->post('/statistics/getNonHyperHareCountsByYear',               'HASH\Controller\ObscureStatisticsController::getNonHyperHareCountsByYear');
+
 
 # Set the before/after actions
 $app->before(function (Request $request, Application $app) {

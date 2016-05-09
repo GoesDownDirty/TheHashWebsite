@@ -1,37 +1,242 @@
 {% extends "fullwidth.twig" %}
 
 {% block content %}
-    <h1>{{pageTitle}}</h1>
-    <h2>{{firstHeader}}</h2>
 
-    <dl class="dl-horizontal">
-      {% autoescape %}
-        <dt>Hasher Name</dt><dd> {{hasherValue.HASHER_NAME}}</dd>
-        <dt>Hasher Abbreviation</dt><dd> {{hasherValue.HASHER_ABBREVIATION}} </dd>
-        <dt>Last Name</dt><dd> {{hasherValue.LAST_NAME}} </dd>
-        <dt>First Name</dt><dd> {{hasherValue.FIRST_NAME}}</dd>
-        <dt>Email</dt><dd> {{hasherValue.EMAIL}} </dd>
-        <dt>Deceased</dt><dd> {{hasherValue.DECEASED}}</dd>
-        <dt>Hashing Count</dt><dd> {{hashCount}}</dd>
-        <dt>Haring Count</dt><dd> {{hareCount}}</dd>
-        <dt>Favorite Hare</dt><dd>Tender</dd>
-        <dt>Favorite Hasher</dt><dd>Tender</dd>
-      {% endautoescape %}
-    </dl>
+    <script type = "text/javascript" src = "/vendor/components/jquery/jquery.min.js"></script>
+    <script type = "text/javascript" src = "/vendor/ifightcrime/bootstrap-growl/jquery.bootstrap-growl.min.js"></script>
+    <script type = "text/javascript" language = "javascript">
 
-    <h2>{{secondHeader}}</h2>
-    <a href='/listhashes/byhasher/{{hasherValue.HASHER_KY}}'>Their hashings</a><br>
-    <a href='/listhashes/byhare/{{hasherValue.HASHER_KY}}'>Their harings</a><br>
-    <a href='/coharelist/byhare/allhashes/{{hasherValue.HASHER_KY}}'>Their Cohares</a><br>
-    <a href='/coharelist/byhare/nonhypers/{{hasherValue.HASHER_KY}}'>Their Cohares (Non hyper: HTS must provide hyper data)</a><br>
-    <a href='/coharecount/byhare/allhashes/{{hasherValue.HASHER_KY}}'>Their Cohare Count</a><br>
-    <a href='/coharecount/byhare/nonhypers/{{hasherValue.HASHER_KY}}'>Their Cohare Count (Non hyper: HTS must provide hyper data)</a><br>
-    All of their hashing analversaries (Not written yet)<br>
-    All of their haring analversaries (Not written yet)<br>
-    <a href='/getHasherCountsByHare/{{hasherValue.HASHER_KY}}'>Hounds who have hashed their trails</a><br>
-    Hounds who have hashed with them (Not written yet)<br>
-    {#
-    <a href='/getHasherCountsByHound/{{hasherValue.HASHER_KY}}'>Hounds who have hashed with them (Not written yet)</a><br>
-    #}
+    //Function to get hares for the event
+    function getVirginHash(hasher_id, kennel_id){
+     var formData = {hasher_id:hasher_id, kennel_id:kennel_id};
+     $.ajax({
+         url : "/statistics/hasher/firstHash",
+         type: "POST",
+         data : formData,
+         dataType : 'json',
+         success: function(data, textStatus, jqXHR){
+
+          var virginHashEventNumber = "<a href=/hashes/" +data.HASH_KY+ ">" + data.KENNEL_EVENT_NUMBER + "</a>";
+          $('#virgin_hash_hash_number').empty();
+          $('#virgin_hash_hash_number').append(virginHashEventNumber);
+          //$('#virgin_hash_hash_number').listview('refresh');
+
+          var virginHashEventDate = data.EVENT_DATE_FORMATTED;
+          $('#virgin_hash_event_date').empty();
+          $('#virgin_hash_event_date').append(virginHashEventDate);
+
+          var virgin_hash_location = data.EVENT_LOCATION;
+          $('#virgin_hash_location').empty();
+          $('#virgin_hash_location').append(virgin_hash_location);
+
+
+          var years_elapsed = data.YEARS_SINCE_EVENT;
+          var months_elapsed = data.MONTHS_SINCE_EVENT;
+          var days_elapsed = data.DAYS_SINCE_EVENT;
+          var time_elapsed = years_elapsed + " years, " + months_elapsed + " months, " + days_elapsed + " days";
+          $('#virgin_hashing_elapsed_time').empty();
+          $('#virgin_hashing_elapsed_time').append(time_elapsed);
+
+         },
+         error: function (jqXHR, textStatus, errorThrown){
+              alert("failure");
+              alert(jqXHR);
+              alert(textStatus);
+              alert(errorThrown);
+         }
+     });
+   }
+
+   //Function to get hares for the event
+   function getMostRecentHash(hasher_id, kennel_id){
+    var formData = {hasher_id:hasher_id, kennel_id:kennel_id};
+    $.ajax({
+        url : "/statistics/hasher/mostRecentHash",
+        type: "POST",
+        data : formData,
+        dataType : 'json',
+        success: function(data, textStatus, jqXHR){
+
+         var latestHashEventNumber = "<a href=/hashes/" +data.HASH_KY+ ">" + data.KENNEL_EVENT_NUMBER + "</a>";
+         $('#latest_hash_hash_number').empty();
+         $('#latest_hash_hash_number').append(latestHashEventNumber);
+         //$('#virgin_hash_hash_number').listview('refresh');
+
+         var latestHashEventDate = data.EVENT_DATE_FORMATTED;
+         $('#latest_hash_event_date').empty();
+         $('#latest_hash_event_date').append(latestHashEventDate);
+
+         var latest_hash_location = data.EVENT_LOCATION;
+         $('#latest_hash_location').empty();
+         $('#latest_hash_location').append(latest_hash_location);
+
+
+         var years_elapsed = data.YEARS_SINCE_EVENT;
+         var months_elapsed = data.MONTHS_SINCE_EVENT;
+         var days_elapsed = data.DAYS_SINCE_EVENT;
+         var time_elapsed = years_elapsed + " years, " + months_elapsed + " months, " + days_elapsed + " days";
+         $('#latest_hashing_elapsed_time').empty();
+         $('#latest_hashing_elapsed_time').append(time_elapsed);
+
+        },
+        error: function (jqXHR, textStatus, errorThrown){
+             alert("failure");
+             alert(jqXHR);
+             alert(textStatus);
+             alert(errorThrown);
+        }
+    });
+  }
+
+
+
+   //Call these functions upon page load
+   $(document).ready(function() {
+      getVirginHash({{hasherValue.HASHER_KY}},1);
+      getMostRecentHash({{hasherValue.HASHER_KY}},1);
+    });
+
+   </script>
+
+
+    <div class="container">
+      <h1>{{pageTitle}}</h1>
+      <div class="row">
+
+        <div class="col-sm-4" style="background-color:pink;">
+          <h3>Basic Details</h3>
+          <dl class="dl-horizontal">
+            <dl class="dl-horizontal">
+              {% autoescape %}
+                <dt>Hasher Name</dt><dd> {{hasherValue.HASHER_NAME}}</dd>
+                <dt>Hasher Abbreviation</dt><dd> {{hasherValue.HASHER_ABBREVIATION}} </dd>
+                <dt>Last Name</dt><dd> {{hasherValue.LAST_NAME}} </dd>
+                <dt>First Name</dt><dd> {{hasherValue.FIRST_NAME}}</dd>
+                <dt>Email</dt><dd> {{hasherValue.EMAIL}} </dd>
+                <dt>Deceased</dt><dd> {{hasherValue.DECEASED}}</dd>
+                <dt>Hashing Count</dt><dd> {{hashCount}}</dd>
+                <dt>Haring Count</dt><dd> {{hareCount}}</dd>
+                <dt>Favorite Hare</dt><dd>Tender</dd>
+                <dt>Favorite Hasher</dt><dd>Tender</dd>
+              {% endautoescape %}
+            </dl>
+          </dl>
+        </div>
+
+        <div class="col-sm-4" style="background-color:yellow;">
+          <h3>Their hashings</h3>
+          <dl class="dl-horizontal">
+            <a href='/listhashes/byhasher/{{hasherValue.HASHER_KY}}'>Their hashings</a><br>
+            All of their hashing analversaries (Not written yet)<br>
+            Hounds who have hashed with them (Not written yet)<br>
+            {#
+            <a href='/getHasherCountsByHound/{{hasherValue.HASHER_KY}}'>Hounds who have hashed with them (Not written yet)</a><br>
+            #}
+          </dl>
+        </div>
+
+        <div class="col-sm-4" style="background-color:pink;">
+          <h3>Their harings</h3>
+          <dl class="dl-horizontal">
+            <a href='/listhashes/byhare/{{hasherValue.HASHER_KY}}'>Their harings</a><br>
+            <a href='/coharelist/byhare/allhashes/{{hasherValue.HASHER_KY}}'>Their Cohares</a><br>
+            <a href='/coharelist/byhare/nonhypers/{{hasherValue.HASHER_KY}}'>Their Cohares (non-hypers)</a><br>
+            <a href='/coharecount/byhare/allhashes/{{hasherValue.HASHER_KY}}'>Their Cohare Count</a><br>
+            <a href='/coharecount/byhare/nonhypers/{{hasherValue.HASHER_KY}}'>Their Cohare Count (non-hypers)</a><br>
+            All of their haring analversaries (Not written yet)<br>
+            <a href='/getHasherCountsByHare/{{hasherValue.HASHER_KY}}'>Hounds who have hashed their trails</a><br>
+          </dl>
+        </div>
+
+      </div>
+
+      <div class="row">
+
+        <div class="col-sm-4" style="background-color:yellow">
+          <h3>Their first hashing</h3>
+          <dl class="dl-horizontal">
+            <dt>Hash Number</dt>
+            <dd>
+              <div data-role="content">
+                <ul data-role="listview" id="virgin_hash_hash_number">
+                </ul>
+              </div>
+            </dd>
+            <dt>Hash Date</dt>
+            <dd>
+              <div data-role="content">
+                <ul data-role="listview" id="virgin_hash_event_date">
+                </ul>
+              </div>
+            </dd>
+            <dt>Hash Location</dt>
+            <dd>
+              <div data-role="content">
+                <ul data-role="listview" id="virgin_hash_location">
+                </ul>
+              </div>
+            </dd>
+            <dt>Time Elapsed</dt>
+            <dd>
+              <div data-role="content">
+                <ul data-role="listview" id="virgin_hashing_elapsed_time">
+                </ul>
+              </div>
+            </dd>
+          </dl>
+        </div>
+
+
+
+
+        <div class="col-sm-4" style="background-color:pink">
+          <h3>Chronological Statistics</h3>
+          <dl class="dl-horizontal">
+            Hashes by year <br>
+            Harings by year <br>
+            Hashes by month <br>
+            Harings by month <br>
+            Hashes by state <br>
+            Harings by state <br>
+          </dl>
+        </div>
+
+        <div class="col-sm-4" style="background-color:yellow">
+          <h3>Their latest hashing</h3>
+          <dl class="dl-horizontal">
+            <dt>Hash Number</dt>
+            <dd>
+              <div data-role="content">
+                <ul data-role="listview" id="latest_hash_hash_number">
+                </ul>
+              </div>
+            </dd>
+            <dt>Hash Date</dt>
+            <dd>
+              <div data-role="content">
+                <ul data-role="listview" id="latest_hash_event_date">
+                </ul>
+              </div>
+            </dd>
+            <dt>Hash Location</dt>
+            <dd>
+              <div data-role="content">
+                <ul data-role="listview" id="latest_hash_location">
+                </ul>
+              </div>
+            </dd>
+            <dt>Time Elapsed</dt>
+            <dd>
+              <div data-role="content">
+                <ul data-role="listview" id="latest_hashing_elapsed_time">
+                </ul>
+              </div>
+            </dd>
+          </dl>
+        </div>
+
+
+      </div>
+    </div>
 
 {% endblock %}

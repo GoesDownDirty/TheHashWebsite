@@ -104,6 +104,7 @@ $app['controllers']
   ->assert("hasher_id", "\d+")
   ->assert("hare_id", "\d+")
   ->assert("year_value", "\d+")
+  ->assert("kennel_id","\d+")
   ;
 #-------------------------------------------------------------------------------
 
@@ -296,6 +297,9 @@ $app->post('/statistics/getTotalHareCountsByYear',                  'HASH\Contro
 $app->post('/statistics/getHyperHareCountsByYear',                  'HASH\Controller\ObscureStatisticsController::getHyperHareCountsByYear');
 $app->post('/statistics/getNonHyperHareCountsByYear',               'HASH\Controller\ObscureStatisticsController::getNonHyperHareCountsByYear');
 
+# Mappings for hasher specific statistics
+$app->post('/statistics/hasher/firstHash',                           'HASH\Controller\ObscureStatisticsController::getHashersVirginHash');
+$app->post('/statistics/hasher/mostRecentHash',                      'HASH\Controller\ObscureStatisticsController::getHashersLatestHash');
 
 # Set the before/after actions
 $app->before(function (Request $request, Application $app) {

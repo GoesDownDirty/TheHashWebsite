@@ -102,6 +102,46 @@ class ObscureStatisticsController{
 
     }
 
+    #Obtain the first hash of a given hasher
+    public function getHashersVirginHash(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = SELECT_HASHERS_VIRGIN_HASH;
+
+      #Query the database
+      $theirVirginHash = $app['db']->fetchAssoc($theSql, array((int) $theHasherKey, (int) $theKennelKey));
+
+      #Set the return value
+      $returnValue = $app->json($theirVirginHash,200);
+      return $returnValue;
+
+    }
+
+    #Obtain the latest hash of a given hasher
+    public function getHashersLatestHash(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = SELECT_HASHERS_MOST_RECENT_HASH;
+
+      #Query the database
+      $theirLatestHash = $app['db']->fetchAssoc($theSql, array((int) $theHasherKey, (int) $theKennelKey));
+
+      #Set the return value
+      $returnValue = $app->json($theirLatestHash,200);
+      return $returnValue;
+
+    }
+
+
+
 
 
 }

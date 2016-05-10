@@ -141,6 +141,124 @@ class ObscureStatisticsController{
     }
 
 
+    #Obtain the hasher hashes attended by year
+    public function getHasherHashesByYear(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = HASHER_HASH_COUNTS_BY_YEAR;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $theKennelKey));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+    #Obtain the hasher hashes attended by quarter
+    public function getHasherHashesByQuarter(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = HASHER_HASH_COUNTS_BY_QUARTER;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $theKennelKey));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+
+    #Obtain the hasher hashes attended by quarter
+    public function getHasherHashesByMonth(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = HASHER_HASH_COUNTS_BY_MONTH;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $theKennelKey));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+
+    #Obtain the hasher hashes attended by day name
+    public function getHasherHashesByDayName(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = HASHER_HASH_COUNTS_BY_DAYNAME;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $theKennelKey));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+    #Obtain the hasher hashes attended by state
+    public function getHasherHashesByState(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = HASHER_HASH_COUNTS_BY_STATE;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $theKennelKey));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+    #Obtain the hasher hashes attended by city
+    public function getHasherHashesByCity(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = HASHER_HASH_COUNTS_BY_CITY;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $theKennelKey));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+
+
 
 
 

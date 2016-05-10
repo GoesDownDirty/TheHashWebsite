@@ -301,6 +301,14 @@ $app->post('/statistics/getNonHyperHareCountsByYear',               'HASH\Contro
 $app->post('/statistics/hasher/firstHash',                           'HASH\Controller\ObscureStatisticsController::getHashersVirginHash');
 $app->post('/statistics/hasher/mostRecentHash',                      'HASH\Controller\ObscureStatisticsController::getHashersLatestHash');
 
+# Mappings for hasher hashes by (year/month/state/etc)
+$app->post('/statistics/hasher/hashes/by/year',                      'HASH\Controller\ObscureStatisticsController::getHasherHashesByYear');
+$app->post('/statistics/hasher/hashes/by/quarter',                   'HASH\Controller\ObscureStatisticsController::getHasherHashesByQuarter');
+$app->post('/statistics/hasher/hashes/by/month',                     'HASH\Controller\ObscureStatisticsController::getHasherHashesByMonth');
+$app->post('/statistics/hasher/hashes/by/dayname',                   'HASH\Controller\ObscureStatisticsController::getHasherHashesByDayName');
+$app->post('/statistics/hasher/hashes/by/state',                     'HASH\Controller\ObscureStatisticsController::getHasherHashesByState');
+$app->post('/statistics/hasher/hashes/by/city',                      'HASH\Controller\ObscureStatisticsController::getHasherHashesByCity');
+
 # Set the before/after actions
 $app->before(function (Request $request, Application $app) {
 });

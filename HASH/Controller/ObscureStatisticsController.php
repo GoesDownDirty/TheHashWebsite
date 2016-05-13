@@ -258,6 +258,225 @@ class ObscureStatisticsController{
     }
 
 
+    public function getHasherAllHaringsByYear(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = HASHER_ALL_HARING_COUNTS_BY_YEAR;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $theKennelKey));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+    public function getHasherAllHaringsByQuarter(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = HASHER_ALL_HARING_COUNTS_BY_QUARTER;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $theKennelKey));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+    public function getHasherAllHaringsByMonth(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = HASHER_ALL_HARING_COUNTS_BY_MONTH;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $theKennelKey));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+    public function getHasherAllHaringsByDayName(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = HASHER_ALL_HARING_COUNTS_BY_DAYNAME;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $theKennelKey));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+    public function getHasherAllHaringsByState(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = HASHER_ALL_HARING_COUNTS_BY_STATE;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $theKennelKey));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+    public function getHasherAllHaringsByCity(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = HASHER_ALL_HARING_COUNTS_BY_CITY;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $theKennelKey));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+
+    # Mappings for hasher (non hyper) harings by (year/month/state/etc)
+    public function getHasherNonHyperHaringsByYear(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = HASHER_NONHYPER_HARING_COUNTS_BY_YEAR;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $theKennelKey));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+    public function getHasherNonHyperHaringsByQuarter(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = HASHER_NONHYPER_HARING_COUNTS_BY_QUARTER;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $theKennelKey));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+    public function getHasherNonHyperHaringsByMonth(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = HASHER_NONHYPER_HARING_COUNTS_BY_MONTH;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $theKennelKey));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+    public function getHasherNonHyperHaringsByDayName(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = HASHER_NONHYPER_HARING_COUNTS_BY_DAYNAME;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $theKennelKey));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+    public function getHasherNonHyperHaringsByState(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = HASHER_NONHYPER_HARING_COUNTS_BY_STATE;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $theKennelKey));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+
+    public function getHasherNonHyperHaringsByCity(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = HASHER_NONHYPER_HARING_COUNTS_BY_CITY;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $theKennelKey));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
 
 
 

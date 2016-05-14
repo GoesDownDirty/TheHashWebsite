@@ -145,6 +145,12 @@ function getListData(hasher_id, kennel_id,url_value,div_value){
       getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/nonhyper/harings/by/state","#hasherNonHyperHaringsByState-list");
       getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/nonhyper/harings/by/city","#hasherNonHyperHaringsByCity-list");
 
+
+      getListData({{hasherValue.HASHER_KY}},1,"/coharecount/byhare/nonhypers","#cohareCountByHareNonHypers-list");
+      getListData({{hasherValue.HASHER_KY}},1,"/coharecount/byhare/onlyhypers","#cohareCountByHareOnlyHypers-list");
+      getListData({{hasherValue.HASHER_KY}},1,"/coharecount/byhare/allhashes","#cohareCountByHareAllHashes-list");
+
+
     });
 
    </script>
@@ -157,7 +163,7 @@ function getListData(hasher_id, kennel_id,url_value,div_value){
 
       <div class="row">
 
-        <div class="col-sm-4" style="background-color:pink;">
+        <div class="col-sm-5" style="background-color:pink;">
           <h3>Basic Details</h3>
           <dl class="dl-horizontal">
               {% autoescape %}
@@ -175,7 +181,7 @@ function getListData(hasher_id, kennel_id,url_value,div_value){
           </dl>
         </div>
 
-        <div class="col-sm-4" style="background-color:yellow;">
+        <div class="col-sm-3" style="background-color:yellow;">
           <h3>Their hashings</h3>
           <dl class="dl-horizontal">
             <a href='/listhashes/byhasher/{{hasherValue.HASHER_KY}}'>Their hashings</a><br>
@@ -383,6 +389,29 @@ function getListData(hasher_id, kennel_id,url_value,div_value){
           <dl class="dl-horizontal">
             <h4>(Non-Hyper) Harings by city</h4>
             <div data-role="content" id="hasherNonHyperHaringsByCity-list"></div>
+          </dl>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4" style="background-color:purple">
+          <dl class="dl-horizontal">
+            <h4>Favorite Non-Hyper CoHares</h4>
+            <div data-role="content" id="cohareCountByHareNonHypers-list"></div>
+          </dl>
+        </div>
+
+        <div class="col-sm-4" style="background-color:teal">
+          <dl class="dl-horizontal">
+            <h4>Favorite Only-Hyper CoHares</h4>
+            <div data-role="content" id="cohareCountByHareOnlyHypers-list"></div>
+          </dl>
+        </div>
+
+        <div class="col-sm-4" style="background-color:gold">
+          <dl class="dl-horizontal">
+            <h4>Favorite CoHares</h4>
+            <div data-role="content" id="cohareCountByHareAllHashes-list"></div>
           </dl>
         </div>
 

@@ -479,6 +479,75 @@ class ObscureStatisticsController{
 
 
 
+    public function getCohareCountByHareNonHypers(Request $request, Application $app){
 
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = COHARE_COUNT_BY_HARE;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array(
+        (int) $theKennelKey,
+        (int) $theHasherKey,
+        (int) $theHasherKey,
+        0,
+        0,));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+
+    public function getCohareCountByHareOnlyHypers(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = COHARE_COUNT_BY_HARE;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array(
+        (int) $theKennelKey,
+        (int) $theHasherKey,
+        (int) $theHasherKey,
+        1,
+        1,));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+
+    public function getCohareCountByHareAllHashes(Request $request, Application $app){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+      $theKennelKey = $request->request->get('kennel_id');
+
+      #Define the sql statement to execute
+      $theSql = COHARE_COUNT_BY_HARE;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array(
+        (int) $theKennelKey,
+        (int) $theHasherKey,
+        (int) $theHasherKey,
+        0,
+        1,));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
 
 }

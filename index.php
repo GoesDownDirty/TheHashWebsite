@@ -325,7 +325,10 @@ $app->post('/statistics/hasher/nonhyper/harings/by/dayname',                   '
 $app->post('/statistics/hasher/nonhyper/harings/by/state',                     'HASH\Controller\ObscureStatisticsController::getHasherNonHyperHaringsByState');
 $app->post('/statistics/hasher/nonhyper/harings/by/city',                      'HASH\Controller\ObscureStatisticsController::getHasherNonHyperHaringsByCity');
 
-
+# Per person stats (more of them)
+$app->post('/coharecount/byhare/nonhypers','HASH\Controller\ObscureStatisticsController::getCohareCountByHareNonHypers');
+$app->post('/coharecount/byhare/onlyhypers','HASH\Controller\ObscureStatisticsController::getCohareCountByHareOnlyHypers');
+$app->post('/coharecount/byhare/allhashes','HASH\Controller\ObscureStatisticsController::getCohareCountByHareAllHashes');
 
 # Set the before/after actions
 $app->before(function (Request $request, Application $app) {

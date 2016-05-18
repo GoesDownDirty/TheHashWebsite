@@ -5,6 +5,46 @@
   <script type = "text/javascript" src = "/vendor/ifightcrime/bootstrap-growl/jquery.bootstrap-growl.min.js"></script>
   <script type = "text/javascript" language = "javascript">
 
+  //Generic function to retrieve data
+  function getListData(kennel_id,url_value,div_value, column_one_header, column_two_header, year_value){
+   var formData = {year_value:year_value};
+   $.ajax({
+       url : url_value,
+       type: "POST",
+       data : formData,
+       dataType : 'json',
+       success: function(data, textStatus, jqXHR){
+         $(div_value).empty();
+
+         $(div_value).append('<table class="table table-condensed">');
+         $(div_value).append('<thead>');
+         $(div_value).append('<tr><td><b>' +column_one_header+'</b></td><td>&nbsp;' +column_two_header+'</td></tr>');
+         $(div_value).append('</thead>');
+
+
+
+         $.each(data, function(key,row) {
+           $(div_value).append('<tr>');
+           $(div_value).append('<td><b>'+ row.HASHER_NAME + '</b></td>');
+           $(div_value).append('<td>&nbsp;'+ row.THE_COUNT + '</td>');
+           $(div_value).append('</tr>');
+         });
+
+         $(div_value).append('</table>');
+
+       },
+       error: function (jqXHR, textStatus, errorThrown){
+            alert("failure");
+            alert(jqXHR);
+            alert(textStatus);
+            alert(errorThrown);
+       }
+   });
+  }
+
+
+
+
  //Function to get hashers for the event
  function getHasherCountsByYear(yearValue){
   var formData = {year_value:yearValue};
@@ -17,11 +57,20 @@
 
         $('#hasherCounts-list').empty();
 
+        $('#hasherCounts-list').append('<table class="table table-condensed">');
+        $('#hasherCounts-list').append('<thead>');
+        $('#hasherCounts-list').append('<tr><td><b>Hasher</b></td><td>&nbsp;Count</td></tr>');
+        $('#hasherCounts-list').append('</thead>');
+
         $.each(data, function(key,row) {
-          $('#hasherCounts-list').append('<dt>'+ row.HASHER_NAME + '</dt>');
-          $('#hasherCounts-list').append('<dd>'+ row.THE_COUNT + '</dd>');
+          $('#hasherCounts-list').append('<tr>');
+          $('#hasherCounts-list').append('<td><b>'+ row.HASHER_NAME + '</b></td>');
+          $('#hasherCounts-list').append('<td>&nbsp;'+ row.THE_COUNT + '</td>');
+          $('#hasherCounts-list').append('</tr>');
 
         });
+
+        $(div_value).append('</table>');
         $('#hasherCounts-list').listview('refresh');
       },
       error: function (jqXHR, textStatus, errorThrown){
@@ -32,6 +81,8 @@
       }
   });
 }
+
+
 
 
 //Function to get total hare counts for the year
@@ -121,10 +172,15 @@ function getNonHyperHareCountsByYear(yearValue){
 
 //This function loads when the pages loads
  $(document).ready(function() {
-    getHasherCountsByYear({{yearValue}});
-    getTotalHareCountsByYear({{yearValue}});
-    getHyperHareCountsByYear({{yearValue}});
-    getNonHyperHareCountsByYear({{yearValue}});
+    //getHasherCountsByYear({{yearValue}});
+    //getTotalHareCountsByYear({{yearValue}});
+    //getHyperHareCountsByYear({{yearValue}});
+    //getNonHyperHareCountsByYear({{yearValue}});
+
+    getListData(1,"/statistics/getHasherCountsByYear","#hasherCounts-list","Hasher","Count",{{yearValue}});
+    getListData(1,"/statistics/getTotalHareCountsByYear","#totalHareCounts-list","Hasher","Count",{{yearValue}});
+    getListData(1,"/statistics/getHyperHareCountsByYear","#hyperHareCounts-list","Hasher","Count",{{yearValue}});
+    getListData(1,"/statistics/getNonHyperHareCountsByYear","#nonHyperHareCounts-list","Hasher","Count",{{yearValue}});
   });
 
 
@@ -136,7 +192,7 @@ function getNonHyperHareCountsByYear(yearValue){
 <div class="container">
   <h1>{{pageTitle}}</h1>
   <div class="row">
-    <div class="col-sm-3" style="background-color:yellow;">
+    <div class="col-sm-3" style="background-color:#35A1A5;">
       <h3>Hasher Counts</h3>
       <dl class="dl-horizontal">
         <div data-role="content">
@@ -146,7 +202,7 @@ function getNonHyperHareCountsByYear(yearValue){
       </dl>
     </div>
 
-    <div class="col-sm-3" style="background-color:pink;">
+    <div class="col-sm-3" style="background-color:#81459E;">
       <h3>Hare Counts</h3>
       <dl class="dl-horizontal">
         <div data-role="content">
@@ -156,7 +212,7 @@ function getNonHyperHareCountsByYear(yearValue){
       </dl>
     </div>
 
-    <div class="col-sm-3" style="background-color:yellow;">
+    <div class="col-sm-3" style="background-color:#35A1A5;">
       <h3>Hyper Hare Counts</h3>
       <dl class="dl-horizontal">
         <div data-role="content">
@@ -166,7 +222,7 @@ function getNonHyperHareCountsByYear(yearValue){
       </dl>
     </div>
 
-    <div class="col-sm-3" style="background-color:pink;">
+    <div class="col-sm-3" style="background-color:#81459E;">
       <h3>NonHyper Hare Counts</h3>
       <dl class="dl-horizontal">
         <div data-role="content">

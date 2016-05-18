@@ -2,8 +2,7 @@
 
 {% block content %}
 
-    <script type = "text/javascript" src = "/vendor/components/jquery/jquery.min.js"></script>
-    <script type = "text/javascript" src = "/vendor/ifightcrime/bootstrap-growl/jquery.bootstrap-growl.min.js"></script>
+
     <script type = "text/javascript" language = "javascript">
 
     //Function to get hares for the event
@@ -95,7 +94,7 @@
 
 
 //Generic function to retrieve data
-function getListData(hasher_id, kennel_id,url_value,div_value){
+function getListData(hasher_id, kennel_id,url_value,div_value, column_one_header, column_two_header){
  var formData = {hasher_id:hasher_id, kennel_id:kennel_id};
  $.ajax({
      url : url_value,
@@ -105,12 +104,22 @@ function getListData(hasher_id, kennel_id,url_value,div_value){
      success: function(data, textStatus, jqXHR){
        $(div_value).empty();
 
-       $.each(data, function(key,row) {
-         $(div_value).append('<dt>'+ row.THE_VALUE + '</dt>');
-         $(div_value).append('<dd>'+ row.THE_COUNT + '</dd>');
+       $(div_value).append('<table class="table table-condensed">');
+       $(div_value).append('<thead>');
+       $(div_value).append('<tr><td><b>' +column_one_header+'</b></td><td>&nbsp;' +column_two_header+'</td></tr>');
+       $(div_value).append('</thead>');
 
+
+
+       $.each(data, function(key,row) {
+         $(div_value).append('<tr>');
+         $(div_value).append('<td><b>'+ row.THE_VALUE + '</b></td>');
+         $(div_value).append('<td>&nbsp;'+ row.THE_COUNT + '</td>');
+         $(div_value).append('</tr>');
        });
-       //$(div_value).listview('refresh');
+
+       $(div_value).append('</table>');
+
      },
      error: function (jqXHR, textStatus, errorThrown){
           alert("failure");
@@ -126,34 +135,42 @@ function getListData(hasher_id, kennel_id,url_value,div_value){
    $(document).ready(function() {
       getVirginHash({{hasherValue.HASHER_KY}},1);
       getMostRecentHash({{hasherValue.HASHER_KY}},1);
-      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/hashes/by/year","#hasherHashesByYear-list");
-      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/hashes/by/quarter","#hasherHashesByQuarter-list");
-      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/hashes/by/month","#hasherHashesByMonth-list");
-      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/hashes/by/dayname","#hasherHashesByDay-list");
-      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/hashes/by/city","#hasherHashesByCity-list");
-      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/hashes/by/state","#hasherHashesByState-list");
+      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/hashes/by/year","#hasherHashesByYear-list","Year","Count");
+      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/hashes/by/quarter","#hasherHashesByQuarter-list","Quarter","Count");
+      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/hashes/by/month","#hasherHashesByMonth-list","Month","Count");
+      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/hashes/by/dayname","#hasherHashesByDay-list","Day Name","Count");
+      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/hashes/by/city","#hasherHashesByCity-list","City","Count");
+      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/hashes/by/state","#hasherHashesByState-list","State","Count");
 
 
-      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/all/harings/by/year","#hasherHaringsByYear-list");
-      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/all/harings/by/quarter","#hasherHaringsByQuarter-list");
-      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/all/harings/by/month","#hasherHaringsByMonth-list");
-      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/all/harings/by/state","#hasherHaringsByState-list");
-
-      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/nonhyper/harings/by/year","#hasherNonHyperHaringsByYear-list");
-      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/nonhyper/harings/by/quarter","#hasherNonHyperHaringsByQuarter-list");
-      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/nonhyper/harings/by/month","#hasherNonHyperHaringsByMonth-list");
-      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/nonhyper/harings/by/state","#hasherNonHyperHaringsByState-list");
-      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/nonhyper/harings/by/city","#hasherNonHyperHaringsByCity-list");
+      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/all/harings/by/year","#hasherHaringsByYear-list","Year","Count");
+      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/all/harings/by/quarter","#hasherHaringsByQuarter-list","Quarter","Count");
+      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/all/harings/by/month","#hasherHaringsByMonth-list","Month","Count");
+      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/all/harings/by/dayname","#hasherHaringsByDay-list","Day Name","Count");
+      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/all/harings/by/city","#hasherHaringsByCity-list","City","Count");
+      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/all/harings/by/state","#hasherHaringsByState-list","State","Count");
 
 
-      getListData({{hasherValue.HASHER_KY}},1,"/coharecount/byhare/nonhypers","#cohareCountByHareNonHypers-list");
-      getListData({{hasherValue.HASHER_KY}},1,"/coharecount/byhare/onlyhypers","#cohareCountByHareOnlyHypers-list");
-      getListData({{hasherValue.HASHER_KY}},1,"/coharecount/byhare/allhashes","#cohareCountByHareAllHashes-list");
+
+
+
+      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/nonhyper/harings/by/year","#hasherNonHyperHaringsByYear-list","Year","Count");
+      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/nonhyper/harings/by/quarter","#hasherNonHyperHaringsByQuarter-list","Quarter","Count");
+      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/nonhyper/harings/by/month","#hasherNonHyperHaringsByMonth-list","Month","Count");
+      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/nonhyper/harings/by/state","#hasherNonHyperHaringsByState-list","State","Count");
+      getListData({{hasherValue.HASHER_KY}},1,"/statistics/hasher/nonhyper/harings/by/city","#hasherNonHyperHaringsByCity-list","City","Count");
+
+
+      getListData({{hasherValue.HASHER_KY}},1,"/coharecount/byhare/nonhypers","#cohareCountByHareNonHypers-list","Hasher","Count");
+      getListData({{hasherValue.HASHER_KY}},1,"/coharecount/byhare/onlyhypers","#cohareCountByHareOnlyHypers-list","Hasher","Count");
+      getListData({{hasherValue.HASHER_KY}},1,"/coharecount/byhare/allhashes","#cohareCountByHareAllHashes-list","Hasher","Count");
 
 
     });
 
    </script>
+
+
 
 
     <div class="container">
@@ -259,104 +276,98 @@ function getListData(hasher_id, kennel_id,url_value,div_value){
 
       <div class="row">
 
-        <div class="col-sm-3" style="background-color:#35A1A5">
+        <div class="col-sm-2" style="background-color:#35A1A5">
           <dl class="dl-horizontal">
             <h4>Hashes by year</h4>
             <div data-role="content" id="hasherHashesByYear-list"></div>
           </dl>
         </div>
 
-        <div class="col-sm-3" style="background-color:#E00585">
+        <div class="col-sm-2" style="background-color:#E00585">
           <dl class="dl-horizontal">
             <h4>Hashes by quarter</h4>
             <div data-role="content" id="hasherHashesByQuarter-list"></div>
           </dl>
         </div>
 
-        <div class="col-sm-3" style="background-color:pink">
+        <div class="col-sm-2" style="background-color:pink">
           <dl class="dl-horizontal">
             <h4>Hashes by month</h4>
             <div data-role="content" id="hasherHashesByMonth-list"></div>
           </dl>
         </div>
 
-        <div class="col-sm-3" style="background-color:orange">
+        <div class="col-sm-2" style="background-color:orange">
           <dl class="dl-horizontal">
             <h4>Hashes by state</h4>
             <div data-role="content" id="hasherHashesByState-list"></div>
           </dl>
         </div>
 
-        <!--
-        <div class="col-sm-3" style="background-color:yellow">
+
+        <div class="col-sm-2" style="background-color:yellow">
           <dl class="dl-horizontal">
             <h4>Hashes by day</h4>
             <div data-role="content" id="hasherHashesByDay-list"></div>
           </dl>
         </div>
-        -->
 
-
-        <!--
-        <div class="col-sm-3" style="background-color:yellow">
+        <div class="col-sm-2" style="background-color:yellow">
           <dl class="dl-horizontal">
             <h4>Hashes by city</h4>
             <div data-role="content" id="hasherHashesByCity-list"></div>
           </dl>
         </div>
-      -->
+
 
 
       </div>
 
       <div class="row">
 
-        <div class="col-sm-3" style="background-color:#35A1A5">
+        <div class="col-sm-2" style="background-color:#35A1A5">
           <dl class="dl-horizontal">
             <h4>Harings by year</h4>
             <div data-role="content" id="hasherHaringsByYear-list"></div>
           </dl>
         </div>
 
-        <div class="col-sm-3" style="background-color:#E00585">
+        <div class="col-sm-2" style="background-color:#E00585">
           <dl class="dl-horizontal">
             <h4>Harings by quarter</h4>
             <div data-role="content" id="hasherHaringsByQuarter-list"></div>
           </dl>
         </div>
 
-        <div class="col-sm-3" style="background-color:pink">
+        <div class="col-sm-2" style="background-color:pink">
           <dl class="dl-horizontal">
             <h4>Harings by month</h4>
             <div data-role="content" id="hasherHaringsByMonth-list"></div>
           </dl>
         </div>
 
-        <div class="col-sm-3" style="background-color:orange">
+        <div class="col-sm-2" style="background-color:orange">
           <dl class="dl-horizontal">
             <h4>Harings by state</h4>
             <div data-role="content" id="hasherHaringsByState-list"></div>
           </dl>
         </div>
 
-        <!--
-        <div class="col-sm-3" style="background-color:yellow">
+
+        <div class="col-sm-2" style="background-color:yellow">
           <dl class="dl-horizontal">
             <h4>Harings by day</h4>
             <div data-role="content" id="hasherHaringsByDay-list"></div>
           </dl>
         </div>
-        -->
 
-
-        <!--
-        <div class="col-sm-3" style="background-color:yellow">
+        <div class="col-sm-2" style="background-color:yellow">
           <dl class="dl-horizontal">
             <h4>Harings by city</h4>
             <div data-role="content" id="hasherHaringsByCity-list"></div>
           </dl>
         </div>
-      -->
+
 
 
       </div>

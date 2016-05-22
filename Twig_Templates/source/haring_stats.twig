@@ -1,0 +1,29 @@
+{% extends "main_page.twig" %}
+
+{% block main_page_content %}
+
+      <div class="row marketing">
+        <div class="col-lg-4">
+          <h3>Percentages</h3>
+          <a href='/haringPercentageAllHashes' >Hashings to harings percentage</a> <br>
+          <a href='/haringPercentageNonHypers' >Hashings to harings percentage (excluding hypers)</a><br>
+          <a href='/percentages/percentageofharingsthatwerehypers' >Hyper vs non-hyper haring percentages </a><br>
+        </div>
+
+        <div class="col-lg-4">
+          <h3>By Attendance</h3>
+          <a href='/hashattendance/byhare/lowest' >Lowest Attendances by Hare</a><br>
+          <a href='/hashattendance/byhare/highest' >Highest Attendances by Hare</a><br>
+          <a href='/hashattendance/byhare/average' >Average Attendances by Hare</a><br>
+        </div>
+
+        <div class="col-lg-4">
+          <h3>Totals</h3>
+          <a href='/hashattendance/byhare/grandtotal/nondistincthashers' > Grand total Attendance by Hare</a><br>
+          <a href='/hashattendance/byhare/grandtotal/distincthashers' >Grand total attendance by Hare (distinct people excluding themselves)</a><br>
+        </div>
+
+
+      </div>
+
+{% endblock %}

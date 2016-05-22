@@ -84,39 +84,28 @@ class HashController
     $token = $app['security.token_storage']->getToken();
     $app['monolog']->addDebug($token);
 
-    // Symfony 2.6+
-    /*
-    if ($app['security.authorization_checker']->isGranted('ROLE_ADMIN')) {
-        // ...
-    }
-    */
-
-    #$token = $app['security.token_storage']->getToken();
-    #$token = $app['security']->getToken();
-
-    #$encoder = $app['security.encoder_factory']->getEncoder($user);
-
     # Obtain the logged in user
     $user = $app['session']->get('user');
     $userName = $user['username'];
 
-     // find the encoder for a UserInterface instance
-    #$encoder = $app['security.encoder_factory']->getEncoder($user);
-    // compute the encoded password for foo
-    #$password = $encoder->encodePassword('foo', $user->getSalt());
-
     #Establish the page caption
     $pageCaption = "You are logged in as: $userName and your password is password";
 
+    #Establish the kennel abbreviation. By default, it is sch4
+    $kennelAbbreviation = "SCH4";
+
+    #Establish the page title
+    $pageTitle = "$kennelAbbreviation Stats";
 
     #Set the return value
     $returnValue = $app['twig']->render('slash.twig',array(
-      'pageTitle' => 'SCH4 Stats Home Page',
+      'pageTitle' => $pageTitle,
       'pageCaption' => $pageCaption,
       'subTitle1' => 'Standard Statistics',
       'subTitle2' => 'Analversary Statistics',
       'subTitle3' => 'Hare Statistics',
-      'subTitle4' => 'Other Statistics'
+      'subTitle4' => 'Other Statistics',
+      'kennel_abbreviation' => $kennelAbbreviation
     ));
 
     #Return the return value
@@ -1048,6 +1037,92 @@ public function hasherCountsByHareAction(Request $request, Application $app, int
     'columnTwoName' => 'Hash Count',
     'tableCaption' => $captionValue,
     'theList' => $hashList
+  ));
+
+  #Return the return value
+  return $returnValue;
+
+}
+
+
+
+
+public function basicStatsAction(Request $request, Application $app, string $kennel_abbreviation){
+
+  # Establish and set the return value
+  $returnValue = $app['twig']->render('basic_stats.twig',array(
+    'pageTitle' => 'Basic Information and Statistics',
+    'kennel_abbreviation' => $kennel_abbreviation
+  ));
+
+  #Return the return value
+  return $returnValue;
+
+}
+
+
+public function hashingStatsAction(Request $request, Application $app, string $kennel_abbreviation){
+
+  # Establish and set the return value
+  $returnValue = $app['twig']->render('hashing_stats.twig',array(
+    'pageTitle' => 'Hashing Statistics',
+    'kennel_abbreviation' => $kennel_abbreviation
+  ));
+
+  #Return the return value
+  return $returnValue;
+
+}
+
+
+public function haringStatsAction(Request $request, Application $app, string $kennel_abbreviation){
+
+  # Establish and set the return value
+  $returnValue = $app['twig']->render('haring_stats.twig',array(
+    'pageTitle' => 'Haring Statistics',
+    'kennel_abbreviation' => $kennel_abbreviation
+  ));
+
+  #Return the return value
+  return $returnValue;
+
+}
+
+
+public function analversaryStatsAction(Request $request, Application $app, string $kennel_abbreviation){
+
+  # Establish and set the return value
+  $returnValue = $app['twig']->render('analversary_stats.twig',array(
+    'pageTitle' => 'Analversary Statistics',
+    'kennel_abbreviation' => $kennel_abbreviation
+  ));
+
+  #Return the return value
+  return $returnValue;
+
+}
+
+
+public function cautionaryStatsAction(Request $request, Application $app, string $kennel_abbreviation){
+
+  # Establish and set the return value
+  $returnValue = $app['twig']->render('cautionary_stats.twig',array(
+    'pageTitle' => 'Cautionary Statistics',
+    'kennel_abbreviation' => $kennel_abbreviation
+  ));
+
+  #Return the return value
+  return $returnValue;
+
+}
+
+
+public function miscellaneousStatsAction(Request $request, Application $app, string $kennel_abbreviation){
+
+  # Establish and set the return value
+  $returnValue = $app['twig']->render('miscellaneous_stats.twig',array(
+    'pageTitle' => 'Miscellaneous Statistics',
+    'kennel_abbreviation' => $kennel_abbreviation
   ));
 
   #Return the return value

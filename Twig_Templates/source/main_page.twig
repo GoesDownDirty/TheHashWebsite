@@ -1,0 +1,17 @@
+{% extends "fullwidth.twig" %}
+
+{% block content %}
+
+    <div class="container">
+
+      <div class="jumbotron">
+        <h1>{{pageTitle}}</h1>
+        <p>This site is dedicated to the advancement of mankind, world peace, and mature behavior.</p>
+      </div>
+
+      {% block main_page_content %}{% endblock %}
+
+      <br>
+    </div>
+
+{% endblock %}

@@ -1,64 +1,48 @@
-{% extends "fullwidth.twig" %}
+{% extends "main_page.twig" %}
 
-{% block content %}
+{% block main_page_content %}
 
-    <div class="container">
+      <div class="row marketing">
+        <div class="col-lg-4">
+          <h3><a href="/{{kennel_abbreviation}}/basic/stats">Basic Info and Statistics</a></h3>
+          This section contains the basic information such as <a href='/listhashers'>the hashers</a>, <a href='/listhashes' >the hashes</a>, and the <a href='/hashingCounts'>hashing</a> and <a href='/haringCounts' >haring counts</a>.
 
-      <div class="jumbotron">
-        <h1>{{pageTitle}}</h1>
-        <p>This site is dedicated to the advancement of mankind, world peace, and mature behavior.</p>
+
+          <h3><a href="/{{kennel_abbreviation}}/analversary/stats">Analversaries</a></h3>
+          This section contains the <a href='/pendingHareAnalversaries' >pending hare analversaries</a>, <a href='/pendingHasherAnalversaries' >pending hasher analversaries</a>, and other such information.
+        </div>
+
+
+        <div class="col-lg-4">
+          <h3><a href="/{{kennel_abbreviation}}/haring/stats">Haring Statistics</a></h3>
+          The statistics here are all about the hares. How often they've hared, the number of people they've hared for, etc.
+        </div>
+
+        <div class="col-lg-4">
+          <h3><a href="/{{kennel_abbreviation}}/hashing/stats">Hashing Statistics</a></h3>
+          These statistics are all about the hahsers. How often they've hared, their favorite hares, all the people they've hashed with, etc.
+        </div>
+
+
       </div>
-
-
-      <div class="row">
-        <div class="col-sm-4" style="background-color:#35A1A5;">
-          <h3>Standard Stuff</h3>
-          <a href='/listhashers' style="color: white">The Hashers (People and dogs.)</a><br>
-          <a href='/hashingCounts' style="color: white">The Hashing Counts</a><br>
-          <a href='/haringCounts' style="color: white">The Haring Counts</a><br>
-          <a href='/nonHyperharingCounts' style="color: white">The Haring Counts (Hypers excluded)</a><br>
-          <a href='/listhashes' style="color: white">The Hashes (Events)</a><br>
+      <div class="row marketing">
+        <div class="col-lg-4">
+          <h3><a href="/{{kennel_abbreviation}}/cautionary/stats">Cautionary Stats</a></h3>
+          Events where shenanigans and toomfoolery ensued
         </div>
-        <div class="col-sm-4" style="background-color:#81459E;">
-          <h3>Analversaries</h3>
-          <a href='/pendingHareAnalversaries' style="color: white">Impending Hare Analversaries</a><br>
-          <a href='/pendingHasherAnalversaries' style="color: white">Impending Hasher Analversaries</a><br>
-        </div>
-        <div class="col-sm-4" style="background-color:#35A1A5;">
-          <h3>Haring Statistics</h3>
-          <a href='/haringPercentageAllHashes' style="color: white">Hashings to harings percentage</a> <br>
-          <a href='/haringPercentageNonHypers' style="color: white">Hashings to harings percentage (excluding hypers)</a><br>
-          <a href='/hashattendance/byhare/lowest' style="color: white">Lowest Attendances by Hare</a><br>
-          <a href='/hashattendance/byhare/highest' style="color: white">Highest Attendances by Hare</a><br>
-          <a href='/hashattendance/byhare/average' style="color: white">Average Attendances by Hare</a><br>
-          <a href='/hashattendance/byhare/grandtotal/nondistincthashers' style="color: white"> Grand total Attendance by Hare</a><br>
-          <a href='/hashattendance/byhare/grandtotal/distincthashers' style="color: white">Grand total attendance by Hare (distinct people excluding themselves)</a><br>
-          <a href='/percentages/percentageofharingsthatwerehypers' style="color: white">Hyper vs non-hyper haring percentages </a><br>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-4" style="background-color:#81459E;">
-          <h3>Cautionary Stats</h3>
-          <a href='/listhashes' style="color: white">Hashes resulting in pregnancy</a><br>
-          <a href='/listhashes' style="color: white">Hashes where VD was contracted</a><br>
-          <a href='/listhashes' style="color: white">Hashes where at least 3 out of the 7 deadly sins were comitted</a><br>
-        </div>
-        <div class="col-sm-4" style="background-color:#35A1A5;">
+        <div class="col-lg-4">
           <h3>Secret Logon Pages</h3>
-          <a href='/logonscreen' style="color: white">The Admin Logon Screen</a><br>
-          <a href='/superadmin/hello' style="color: white">The Super Admin Logon Screen</a><br>
-          <a href='/admin/hello' style="color: white">The Admin Landing Screen</a><br>
-          <a href='/superadmin/hello' style="color: white">The Super Admin Landing Screen</a><br>
+          <a href='/logonscreen' >The Admin Logon Screen</a><br>
+          <a href='/superadmin/hello' >The Super Admin Logon Screen</a><br>
+          <a href='/admin/hello' >The Admin Landing Screen</a><br>
+          <a href='/superadmin/hello' >The Super Admin Landing Screen</a><br>
         </div>
-        <div class="col-sm-4" style="background-color:#81459E;">
-          <h3>Years in Review</h3>
-          <a href='/statistics/getYearInReview/2016' style="color: white">2016</a><br>
-          <a href='/statistics/getYearInReview/2015' style="color: white">2015</a><br>
-          <a href='/statistics/getYearInReview/2014' style="color: white">2014</a><br>
-          <a href='/statistics/getYearInReview/2013' style="color: white">2013</a><br>
+        <div class="col-lg-4">
+          <h3><a href="/{{kennel_abbreviation}}/miscellaneous/stats">Miscellaneous Stats</a></h3>
+          Statistics and information that don't fit into the other categories
         </div>
       </div>
-      <br>
-    </div>
+
+
 
 {% endblock %}

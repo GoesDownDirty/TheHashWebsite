@@ -105,6 +105,7 @@ $app['controllers']
   ->assert("hare_id", "\d+")
   ->assert("year_value", "\d+")
   ->assert("kennel_id","\d+")
+  ->assert("kennel_abbreviation","^(sch4|SCH4)$")
   ;
 #-------------------------------------------------------------------------------
 
@@ -329,6 +330,15 @@ $app->post('/statistics/hasher/nonhyper/harings/by/city',                      '
 $app->post('/coharecount/byhare/nonhypers','HASH\Controller\ObscureStatisticsController::getCohareCountByHareNonHypers');
 $app->post('/coharecount/byhare/onlyhypers','HASH\Controller\ObscureStatisticsController::getCohareCountByHareOnlyHypers');
 $app->post('/coharecount/byhare/allhashes','HASH\Controller\ObscureStatisticsController::getCohareCountByHareAllHashes');
+
+
+$app->get('/{kennel_abbreviation}/basic/stats',         'HASH\Controller\HashController::basicStatsAction');
+$app->get('/{kennel_abbreviation}/hashing/stats',       'HASH\Controller\HashController::hashingStatsAction');
+$app->get('/{kennel_abbreviation}/haring/stats',        'HASH\Controller\HashController::haringStatsAction');
+$app->get('/{kennel_abbreviation}/analversary/stats',   'HASH\Controller\HashController::analversaryStatsAction');
+$app->get('/{kennel_abbreviation}/cautionary/stats',    'HASH\Controller\HashController::cautionaryStatsAction');
+$app->get('/{kennel_abbreviation}/miscellaneous/stats', 'HASH\Controller\HashController::miscellaneousStatsAction');
+
 
 # Set the before/after actions
 $app->before(function (Request $request, Application $app) {

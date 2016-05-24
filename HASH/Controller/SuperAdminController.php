@@ -24,7 +24,8 @@ class SuperAdminController{
       #return $app->redirect('/');
       return $app['twig']->render('superadmin_landing.twig', array (
         'pageTitle' => 'This is the super admin landing screen',
-        'subTitle1' => 'This is the super admin landing screen'));
+        'subTitle1' => 'This is the super admin landing screen',
+      ));
   }
 
 }

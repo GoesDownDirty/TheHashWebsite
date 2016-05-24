@@ -12,7 +12,21 @@ class HashController
 {
 
 
+  private function obtainKennelKeyFromKennelAbbreviation(Request $request, Application $app, string $kennel_abbreviation){
 
+    #Define the SQL to RuntimeException
+    $sql = "SELECT * FROM KENNELS WHERE KENNEL_ABBREVIATION = ?";
+
+    #Query the database
+    $kennelValue = $app['db']->fetchAssoc($sql, array((string) $kennel_abbreviation));
+
+    #Obtain the kennel ky from the returned object
+    $returnValue = $kennelValue['KENNEL_KY'];
+
+    #return the return value
+    return $returnValue;
+
+  }
 
   #Define the action
   public function logonScreenAction(Request $request, Application $app){
@@ -115,7 +129,7 @@ class HashController
 
 
   #Define the action
-  public function listHashersAction(Request $request, Application $app){
+  public function listHashersAction(Request $request, Application $app, string $kennel_abbreviation){
 
     #Define the SQL to execute
     $sql = "SELECT HASHER_KY AS THE_KEY, HASHER_NAME AS NAME FROM HASHERS";
@@ -127,7 +141,8 @@ class HashController
     $returnValue = $app['twig']->render('hasher_list.twig',array(
       'pageTitle' => 'The List of Hashers',
       'pageSubTitle' => 'The List of *ALL* Hashers',
-      'theList' => $hasherList
+      'theList' => $hasherList,
+      'kennel_abbreviation' => $kennel_abbreviation
     ));
 
     #Return the return value
@@ -135,7 +150,7 @@ class HashController
 
   }
 
-  public function listHashersByHashAction(Request $request, Application $app, int $hash_id){
+  public function listHashersByHashAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
 
     #Define the SQL to execute
     $sql = "SELECT HASHERS.HASHER_KY AS THE_KEY, HASHERS.HASHER_NAME AS NAME FROM HASHERS JOIN HASHINGS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY WHERE HASHINGS.HASH_KY = ?";
@@ -158,7 +173,8 @@ class HashController
     $returnValue = $app['twig']->render('hasher_list.twig',array(
       'pageTitle' => 'The List of Hashers',
       'pageSubTitle' => $theSubTitle,
-      'theList' => $hasherList
+      'theList' => $hasherList,
+      'kennel_abbreviation' => $kennel_abbreviation
     ));
 
     #Return the return value
@@ -166,7 +182,7 @@ class HashController
 
   }
 
-  public function listHaresByHashAction(Request $request, Application $app, int $hash_id){
+  public function listHaresByHashAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
 
 
     #Define the SQL to execute
@@ -190,14 +206,17 @@ class HashController
     $returnValue = $app['twig']->render('hasher_list.twig',array(
       'pageTitle' => 'The List of Hares',
       'pageSubTitle' => $theSubTitle,
-      'theList' => $hasherList
+      'theList' => $hasherList,
+      'kennel_abbreviation' => $kennel_abbreviation
     ));
 
     #Return the return value
     return $returnValue;
   }
 
-  public function listhashesAction(Request $request, Application $app){
+
+
+  public function listhashesAction(Request $request, Application $app, string $kennel_abbreviation){
 
     #Define the SQL to execute
     $sql = "SELECT
@@ -211,10 +230,15 @@ class HashController
       SPECIAL_EVENT_DESCRIPTION,
       IS_HYPER,
       VIRGIN_COUNT
-    FROM HASHES ORDER BY HASH_KY DESC";
+    FROM HASHES
+    WHERE KENNEL_KY = ?
+    ORDER BY HASH_KY DESC";
+
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
     #Execute the SQL statement; create an array of rows
-    $hashList = $app['db']->fetchAll($sql);
+    $hashList = $app['db']->fetchAll($sql,array((int) $kennelKy));
 
     # Establish and set the return value
     $returnValue = $app['twig']->render('hash_list.twig',array(
@@ -222,6 +246,7 @@ class HashController
       'pageSubTitle' => 'The List of *All* Hashes',
       'theList' => $hashList,
       'tableCaption' => 'A list of all hashes ever, since forever.',
+      'kennel_abbreviation' => $kennel_abbreviation
     ));
 
 
@@ -229,7 +254,7 @@ class HashController
     return $returnValue;
   }
 
-  public function listHashesByHasherAction(Request $request, Application $app, int $hasher_id){
+  public function listHashesByHasherAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
     #Define the SQL to execute
     $sql = "SELECT
@@ -263,7 +288,8 @@ class HashController
       'pageTitle' => 'The List of Hashes',
       'pageSubTitle' => $pageSubtitle,
       'theList' => $hashList,
-      'tableCaption' => ''
+      'tableCaption' => '',
+      'kennel_abbreviation' => $kennel_abbreviation
     ));
 
     #Return the return value
@@ -273,7 +299,7 @@ class HashController
 
 
 
-  public function listHashesByHareAction(Request $request, Application $app, int $hasher_id){
+  public function listHashesByHareAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
     #Define the SQL to execute
     $sql = "SELECT
@@ -308,6 +334,7 @@ class HashController
       'pageSubTitle' => $pageSubtitle,
       'theList' => $hashList,
       'tableCaption' => '',
+      'kennel_abbreviation' => $kennel_abbreviation
     ));
 
     #Return the return value
@@ -315,7 +342,7 @@ class HashController
   }
 
 
-  public function viewHasherAction(Request $request, Application $app, int $hasher_id){
+  public function viewHasherAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
     # Declare the SQL used to retrieve this information
     $sql = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
@@ -339,6 +366,7 @@ class HashController
       'hasherValue' => $hasher,
       'hashCount' => $hashCountValue['THE_COUNT'],
       'hareCount' => $hareCountValue['THE_COUNT'],
+      'kennel_abbreviation' => $kennel_abbreviation
     ));
 
     # Return the return value
@@ -347,7 +375,7 @@ class HashController
   }
 
 
-  public function viewHashAction(Request $request, Application $app, int $hash_id){
+  public function viewHashAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
 
     # Declare the SQL used to retrieve this information
     $sql = "SELECT * FROM HASHES WHERE HASH_KY = ?";
@@ -360,7 +388,8 @@ class HashController
       'pageTitle' => 'Hash Details',
       'firstHeader' => 'Basic Details',
       'secondHeader' => 'Statistics',
-      'hashValue' => $theHashValue
+      'hashValue' => $theHashValue,
+      'kennel_abbreviation' => $kennel_abbreviation
     ));
 
     # Return the return value
@@ -368,7 +397,7 @@ class HashController
 
   }
 
-  public function hasherAnalversariesForEventAction(Request $request, Application $app, int $hash_id){
+  public function hasherAnalversariesForEventAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
 
     # Declare the SQL used to retrieve this information
     $sql = "    SELECT
@@ -408,14 +437,15 @@ class HashController
     $returnValue = $app['twig']->render('analversary_list.twig',array(
       'pageTitle' => 'Hasher Analversaries',
       'pageSubTitle' => $pageSubtitle,
-      'theList' => $analversaryList
+      'theList' => $analversaryList,
+      'kennel_abbreviation' => $kennel_abbreviation
     ));
 
     # Return the return value
     return $returnValue;
   }
 
-  public function hareAnalversariesForEventAction(Request $request, Application $app, int $hash_id){
+  public function hareAnalversariesForEventAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
 
     # Declare the SQL used to retrieve this information
     $sql = "	SELECT
@@ -457,7 +487,8 @@ class HashController
     $returnValue = $app['twig']->render('analversary_list.twig',array(
       'pageTitle' => 'Hare Analversaries',
       'pageSubTitle' => $pageSubtitle,
-      'theList' => $analversaryList
+      'theList' => $analversaryList,
+      'kennel_abbreviation' => $kennel_abbreviation
     ));
 
 
@@ -465,7 +496,7 @@ class HashController
     return $returnValue;
   }
 
-public function pendingHasherAnalversariesAction(Request $request, Application $app){
+public function pendingHasherAnalversariesAction(Request $request, Application $app, string $kennel_abbreviation){
 
   # Declare the SQL used to retrieve this information
   $sql = "SELECT * FROM PENDING_HASHER_ANALVERSARIES";
@@ -494,6 +525,7 @@ public function pendingHasherAnalversariesAction(Request $request, Application $
     'columnOneName' => 'Hasher Name',
     'columnTwoName' => 'Pending Count',
     'columnThreeName' => 'Years Absent',
+    'kennel_abbreviation' => $kennel_abbreviation
   ));
 
 
@@ -502,7 +534,7 @@ public function pendingHasherAnalversariesAction(Request $request, Application $
 
 }
 
-public function pendingHareAnalversariesAction(Request $request, Application $app){
+public function pendingHareAnalversariesAction(Request $request, Application $app, string $kennel_abbreviation){
 
   # Declare the SQL used to retrieve this information
   $sql = "SELECT * FROM PENDING_HARE_ANALVERSARIES";
@@ -531,6 +563,7 @@ public function pendingHareAnalversariesAction(Request $request, Application $ap
     'columnOneName' => 'Hare Name',
     'columnTwoName' => 'Pending Count',
     'columnThreeName' => 'Years Absent',
+    'kennel_abbreviation' => $kennel_abbreviation
   ));
 
   #Return the return value
@@ -538,13 +571,19 @@ public function pendingHareAnalversariesAction(Request $request, Application $ap
 
 }
 
-public function haringPercentageAllHashesAction(Request $request, Application $app){
+public function haringPercentageAllHashesAction(Request $request, Application $app, string $kennel_abbreviation){
 
   # Declare the SQL used to retrieve this information
-  $sql = "SELECT * FROM HARING_PERCENTAGE_ALL_HASHES";
+  $sql = HARING_PERCENTAGE_ALL_HASHES;
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  #define the minimum number of hashes
+  $minHashCount = 4;
 
   #Execute the SQL statement; create an array of rows
-  $hasherList = $app['db']->fetchAll($sql);
+  $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy,(int) $kennelKy,(int) $minHashCount));
 
   # Establish the return value
   $returnValue = $app['twig']->render('percentage_list.twig',array(
@@ -554,7 +593,8 @@ public function haringPercentageAllHashesAction(Request $request, Application $a
     'columnTwoName' => 'Hashing Count',
     'columnThreeName' => 'Haring Count',
     'columnFourName' => 'Haring Percentage',
-    'theList' => $hasherList
+    'theList' => $hasherList,
+    'kennel_abbreviation' => $kennel_abbreviation
   ));
 
   #Return the return value
@@ -563,7 +603,7 @@ public function haringPercentageAllHashesAction(Request $request, Application $a
 }
 
 
-public function haringPercentageNonHypersAction(Request $request, Application $app){
+public function haringPercentageNonHypersAction(Request $request, Application $app, string $kennel_abbreviation){
 
   # Declare the SQL used to retrieve this information
   $sql = "SELECT * FROM HARING_PERCENTAGE_NON_HYPERS";
@@ -579,7 +619,8 @@ public function haringPercentageNonHypersAction(Request $request, Application $a
     'columnTwoName' => 'Hashing Count',
     'columnThreeName' => 'Haring Count',
     'columnFourName' => 'Haring Percentage',
-    'theList' => $hasherList
+    'theList' => $hasherList,
+    'kennel_abbreviation' => $kennel_abbreviation
   ));
 
   #Return the return value
@@ -588,7 +629,7 @@ public function haringPercentageNonHypersAction(Request $request, Application $a
 
 
 
-public function percentageHaringsHypersVsNonHypers(Request $request, Application $app){
+public function percentageHaringsHypersVsNonHypers(Request $request, Application $app, string $kennel_abbreviation){
 
   # Declare the SQL used to retrieve this information
   $sql = HARING_PERCENTAGES_HYPERS_VS_ALL;
@@ -605,7 +646,8 @@ public function percentageHaringsHypersVsNonHypers(Request $request, Application
     'columnThreeName' => 'Haring Count (Hyper Hashes)',
     'columnFourName' => 'Hyper Haring Percentage',
     'columnFiveName' => 'Non-Hyper Haring Percentage',
-    'theList' => $hasherList
+    'theList' => $hasherList,
+    'kennel_abbreviation' => $kennel_abbreviation
   ));
 
   #Return the return value
@@ -617,13 +659,16 @@ public function percentageHaringsHypersVsNonHypers(Request $request, Application
 
 
 
-public function hashingCountsAction(Request $request, Application $app){
+public function hashingCountsAction(Request $request, Application $app, string $kennel_abbreviation){
 
   # Declare the SQL used to retrieve this information
-  $sql = "SELECT HASHER_NAME AS NAME, THE_COUNT as VALUE FROM HASHER_COUNTS";
+  $sql = HASHING_COUNTS;
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
   #Execute the SQL statement; create an array of rows
-  $hasherList = $app['db']->fetchAll($sql);
+  $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy));
 
   # Establish and set the return value
   $returnValue = $app['twig']->render('name_number_list.twig',array(
@@ -631,7 +676,8 @@ public function hashingCountsAction(Request $request, Application $app){
     'columnOneName' => 'Hasher Name',
     'columnTwoName' => 'Hash Count',
     'tableCaption' => 'Hashers, and the number of hashes they have done. More is better.',
-    'theList' => $hasherList
+    'theList' => $hasherList,
+    'kennel_abbreviation' => $kennel_abbreviation
   ));
 
   #Return the return value
@@ -640,13 +686,16 @@ public function hashingCountsAction(Request $request, Application $app){
 }
 
 
-public function haringCountsAction(Request $request, Application $app){
+public function haringCountsAction(Request $request, Application $app, string $kennel_abbreviation){
 
   # Declare the SQL used to retrieve this information
-  $sql = "SELECT HASHER_NAME AS NAME, THE_COUNT AS VALUE FROM HARING_COUNTS";
+  $sql = HARING_COUNTS;
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
   #Execute the SQL statement; create an array of rows
-  $hasherList = $app['db']->fetchAll($sql);
+  $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy));
 
   # Establish and set the return value
   $returnValue = $app['twig']->render('name_number_list.twig',array(
@@ -654,7 +703,8 @@ public function haringCountsAction(Request $request, Application $app){
     'columnOneName' => 'Hasher Name',
     'columnTwoName' => 'Haring Count',
     'tableCaption' => 'Hares, and the number of times they have hared. More is better.',
-    'theList' => $hasherList
+    'theList' => $hasherList,
+    'kennel_abbreviation' => $kennel_abbreviation
   ));
 
   #Return the return value
@@ -662,13 +712,16 @@ public function haringCountsAction(Request $request, Application $app){
 
 }
 
-public function nonHyperHaringCountsAction(Request $request, Application $app){
+public function nonHyperHaringCountsAction(Request $request, Application $app, string $kennel_abbreviation){
 
   # Declare the SQL used to retrieve this information
-  $sql = "SELECT HASHER_NAME AS NAME, THE_COUNT AS VALUE FROM NON_HYPER_HARING_COUNTS";
+  $sql = NON_HYPER_HARING_COUNTS;
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
   #Execute the SQL statement; create an array of rows
-  $hasherList = $app['db']->fetchAll($sql);
+  $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy));
 
   # Establish and set the return value
   $returnValue = $app['twig']->render('name_number_list.twig',array(
@@ -676,7 +729,8 @@ public function nonHyperHaringCountsAction(Request $request, Application $app){
     'columnOneName' => 'Hare Name',
     'columnTwoName' => 'Hash Count',
     'tableCaption' => 'Hares, and the number of (non hyper-hash) hashes they have hared. More is better. These numbers will never truely be accurate until Hot Tub Slut gets me the list of all hyper hashes.',
-    'theList' => $hasherList
+    'theList' => $hasherList,
+    'kennel_abbreviation' => $kennel_abbreviation
   ));
 
   #Return the return value
@@ -685,7 +739,7 @@ public function nonHyperHaringCountsAction(Request $request, Application $app){
 }
 
 
-  public function coharelistByHareAllHashesAction(Request $request, Application $app, int $hasher_id){
+  public function coharelistByHareAllHashesAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
     #Define the SQL to execute
     $sql = "SELECT
@@ -728,7 +782,8 @@ public function nonHyperHaringCountsAction(Request $request, Application $app){
       'pageTitle' => 'Cohare List (All Hashes)',
       'pageSubTitle' => 'All Hashes',
       'tableCaption' => $captionValue,
-      'theList' => $cohareList
+      'theList' => $cohareList,
+      'kennel_abbreviation' => $kennel_abbreviation
     ));
 
 
@@ -739,7 +794,7 @@ public function nonHyperHaringCountsAction(Request $request, Application $app){
   }
 
 
-  public function coharelistByHareNonHypersAction(Request $request, Application $app, int $hasher_id){
+  public function coharelistByHareNonHypersAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
     #Define the SQL to execute
     $sql = "SELECT
@@ -782,7 +837,8 @@ public function nonHyperHaringCountsAction(Request $request, Application $app){
       'pageTitle' => 'Cohare List (Non Hyper Hashes)',
       'pageSubTitle' => 'Non Hyper Hashes Only',
       'tableCaption' => $captionValue,
-      'theList' => $cohareList
+      'theList' => $cohareList,
+      'kennel_abbreviation' => $kennel_abbreviation
     ));
 
     #Return the return value
@@ -791,7 +847,7 @@ public function nonHyperHaringCountsAction(Request $request, Application $app){
   }
 
 
-  public function cohareCountByHareAllHashesAction(Request $request, Application $app, int $hasher_id){
+  public function cohareCountByHareAllHashesAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
     #Define the SQL to execute
     $sql = "SELECT
@@ -834,7 +890,8 @@ public function nonHyperHaringCountsAction(Request $request, Application $app){
       'columnOneName' => 'Hare Name',
       'columnTwoName' => 'Hare Count',
       'tableCaption' => $captionValue,
-      'theList' => $hashList
+      'theList' => $hashList,
+      'kennel_abbreviation' => $kennel_abbreviation
     ));
 
     #Return the return value
@@ -842,7 +899,7 @@ public function nonHyperHaringCountsAction(Request $request, Application $app){
 
   }
 
-  public function cohareCountByHareNonHypersAction(Request $request, Application $app, int $hasher_id){
+  public function cohareCountByHareNonHypersAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
     #Define the SQL to execute
     $sql = "SELECT
@@ -885,14 +942,15 @@ public function nonHyperHaringCountsAction(Request $request, Application $app){
       'columnOneName' => 'Hare Name',
       'columnTwoName' => 'Hare Count',
       'tableCaption' => $captionValue,
-      'theList' => $hashList
+      'theList' => $hashList,
+      'kennel_abbreviation' => $kennel_abbreviation
     ));
 
     #Return the return value
     return $returnValue;
   }
 
-  public function hashAttendanceByHareLowestAction(Request $request, Application $app){
+  public function hashAttendanceByHareLowestAction(Request $request, Application $app, string $kennel_abbreviation){
 
     #Define the SQL to execute
     $sql = "SELECT HASHER_NAME AS NAME, MIN_NUMBER_OF_PEOPLE_AT_THEIR_EVENTS AS VALUE FROM LOWEST_HASH_ATTENDANCE_BY_HARE";
@@ -906,7 +964,8 @@ public function nonHyperHaringCountsAction(Request $request, Application $app){
       'columnOneName' => 'Hare Name',
       'columnTwoName' => 'Hasher Count',
       'tableCaption' => 'The lowest hash attendance for each hare.',
-      'theList' => $hashList
+      'theList' => $hashList,
+      'kennel_abbreviation' => $kennel_abbreviation
     ));
 
     #Return the return value
@@ -915,7 +974,7 @@ public function nonHyperHaringCountsAction(Request $request, Application $app){
   }
 
 
-public function hashAttendanceByHareHighestAction(Request $request, Application $app){
+public function hashAttendanceByHareHighestAction(Request $request, Application $app, string $kennel_abbreviation){
 
   #Define the SQL to execute
   $sql = "SELECT HASHER_NAME AS NAME, MAX_NUMBER_OF_PEOPLE_AT_THEIR_EVENTS AS VALUE FROM HIGHEST_HASH_ATTENDANCE_BY_HARE";
@@ -929,7 +988,8 @@ public function hashAttendanceByHareHighestAction(Request $request, Application 
     'columnOneName' => 'Hare Name',
     'columnTwoName' => 'Hasher Count',
     'tableCaption' => 'The highest attended hashes for each hare.',
-    'theList' => $hashList
+    'theList' => $hashList,
+    'kennel_abbreviation' => $kennel_abbreviation
   ));
 
   #Return the return value
@@ -938,7 +998,7 @@ public function hashAttendanceByHareHighestAction(Request $request, Application 
 
 
 
-  public function hashAttendanceByHareAverageAction(Request $request, Application $app){
+  public function hashAttendanceByHareAverageAction(Request $request, Application $app, string $kennel_abbreviation){
 
     #Define the SQL to execute
     $sql = "SELECT HASHER_NAME AS NAME, AVERAGE_NUMBER_OF_PEOPLE_AT_THEIR_EVENTS AS VALUE FROM AVERAGE_HASH_ATTENDANCE_BY_HARE";
@@ -952,7 +1012,8 @@ public function hashAttendanceByHareHighestAction(Request $request, Application 
       'columnOneName' => 'Hare Name',
       'columnTwoName' => 'Hasher Count',
       'tableCaption' => 'The average hash attendance for each hare.',
-      'theList' => $hashList
+      'theList' => $hashList,
+      'kennel_abbreviation' => $kennel_abbreviation
     ));
 
     #Return the return value
@@ -960,7 +1021,7 @@ public function hashAttendanceByHareHighestAction(Request $request, Application 
   }
 
 
-  public function hashAttendanceByHareGrandTotalNonDistinctHashersAction(Request $request, Application $app){
+  public function hashAttendanceByHareGrandTotalNonDistinctHashersAction(Request $request, Application $app, string $kennel_abbreviation){
 
     #Define the SQL to execute
     $sql = "SELECT HASHER_NAME AS NAME, GRAND_NUMBER_OF_PEOPLE_AT_THEIR_EVENTS AS VALUE FROM GRANDTOTAL_NONDISTINCT_HASH_ATTENDANCE_BY_HARE";
@@ -974,14 +1035,15 @@ public function hashAttendanceByHareHighestAction(Request $request, Application 
       'columnOneName' => 'Hare Name',
       'columnTwoName' => 'Hash Count',
       'tableCaption' => 'If hasher X has done 100 of hare Y\'s events, they contribute 100 to the hash count.',
-      'theList' => $hashList
+      'theList' => $hashList,
+      'kennel_abbreviation' => $kennel_abbreviation
     ));
 
     #Return the return value
     return $returnValue;
   }
 
-public function hashAttendanceByHareGrandTotalDistinctHashersAction(Request $request, Application $app){
+public function hashAttendanceByHareGrandTotalDistinctHashersAction(Request $request, Application $app, string $kennel_abbreviation){
 
   #Define the SQL to execute
   $sql = "SELECT HASHER_NAME AS NAME, THE_COUNT AS VALUE FROM GRANDTOTAL_DISTINCT_HASH_ATTENDANCE_BY_HARE";
@@ -995,7 +1057,8 @@ public function hashAttendanceByHareGrandTotalDistinctHashersAction(Request $req
     'columnOneName' => 'Hare Name',
     'columnTwoName' => 'Hash Count',
     'tableCaption' => 'If hasher X has done 100 of hare Y\'s events, they contribute 1 to the hash count.',
-    'theList' => $hashList
+    'theList' => $hashList,
+    'kennel_abbreviation' => $kennel_abbreviation
   ));
 
   #Return the return value
@@ -1003,7 +1066,7 @@ public function hashAttendanceByHareGrandTotalDistinctHashersAction(Request $req
 
 }
 
-public function hasherCountsByHareAction(Request $request, Application $app, int $hare_id){
+public function hasherCountsByHareAction(Request $request, Application $app, int $hare_id, string $kennel_abbreviation){
 
   #Define the SQL to execute
   $sql = "SELECT
@@ -1036,7 +1099,8 @@ public function hasherCountsByHareAction(Request $request, Application $app, int
     'columnOneName' => 'Hasher Name',
     'columnTwoName' => 'Hash Count',
     'tableCaption' => $captionValue,
-    'theList' => $hashList
+    'theList' => $hashList,
+    'kennel_abbreviation' => $kennel_abbreviation
   ));
 
   #Return the return value

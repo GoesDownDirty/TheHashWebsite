@@ -1,6 +1,6 @@
-{% extends "fullwidth.twig" %}
+{% extends "admin_base.twig" %}
 
-{% block content %}
+{% block template %}
 
   {% if is_granted('ROLE_USER') %}
           Welcome {{ app.security.token.user.username }}! You are in the ROLE_USER role, and are very special.

@@ -30,7 +30,7 @@ jQuery(document).ready(function($){
       <input type="text" class="live-search-box" placeholder="search here" />
 
           {% for item in theList %}
-              <li>{{item.NAME}} <a href='/hashers/{{item.THE_KEY}}'>Details</a></li>
+              <li>{{item.NAME}} <a href='/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}'>Details</a></li>
           {% endfor %}
 
     </ul>

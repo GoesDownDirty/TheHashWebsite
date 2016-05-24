@@ -89,7 +89,8 @@ class AdminController
       #return $app->redirect('/');
       return $app['twig']->render('admin_landing.twig', array (
         'pageTitle' => 'This is the admin landing screen',
-        'subTitle1' => 'This is the admin landing screen'));
+        'subTitle1' => 'This is the admin landing screen',
+    ));
   }
 
   #Define the action
@@ -98,7 +99,8 @@ class AdminController
       #return $app->redirect('/');
       return $app['twig']->render('admin_landing.twig', array (
         'pageTitle' => 'This is the admin hello landing screen (page title)',
-        'subTitle1' => 'This is the admin hello landing screen (sub title 1)'));
+        'subTitle1' => 'This is the admin hello landing screen (sub title 1)',
+      ));
   }
 
 
@@ -108,7 +110,8 @@ class AdminController
       #return $app->redirect('/');
       return $app['twig']->render('admin_landing.twig', array (
         'pageTitle' => 'This is the user hello landing screen (page title)',
-        'subTitle1' => 'This is the user hello landing screen (sub title 1)'));
+        'subTitle1' => 'This is the user hello landing screen (sub title 1)',
+      ));
   }
 
 

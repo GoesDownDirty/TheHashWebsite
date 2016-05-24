@@ -15,7 +15,7 @@ use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 class ObscureStatisticsController{
 
     #Landing screen for year in review
-    public function getYearInReviewAction(Request $request, Application $app, int $year_value){
+    public function getYearInReviewAction(Request $request, Application $app, int $year_value, string $kennel_abbreviation){
 
       #Establish the page title
       $pageTitle = "$year_value: Year in review";
@@ -24,6 +24,7 @@ class ObscureStatisticsController{
       $returnValue = $app['twig']->render('year_in_review.twig', array (
         'pageTitle' => $pageTitle,
         'yearValue' => $year_value,
+        'kennel_abbreviation' => $kennel_abbreviation
       ));
 
       #Return the return value
@@ -32,7 +33,7 @@ class ObscureStatisticsController{
     }
 
     #Obtain hashers for an event
-    public function getHasherCountsByYear(Request $request, Application $app){
+    public function getHasherCountsByYear(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theYear = $request->request->get('year_value');
@@ -49,7 +50,7 @@ class ObscureStatisticsController{
     }
 
     #Obtain total hare counts per year
-    public function getTotalHareCountsByYear(Request $request, Application $app){
+    public function getTotalHareCountsByYear(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theYear = $request->request->get('year_value');
@@ -67,7 +68,7 @@ class ObscureStatisticsController{
     }
 
     #Obtain total hare counts per year
-    public function getHyperHareCountsByYear(Request $request, Application $app){
+    public function getHyperHareCountsByYear(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theYear = $request->request->get('year_value');
@@ -85,7 +86,7 @@ class ObscureStatisticsController{
     }
 
     #Obtain total hare counts per year
-    public function getNonHyperHareCountsByYear(Request $request, Application $app){
+    public function getNonHyperHareCountsByYear(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theYear = $request->request->get('year_value');
@@ -103,7 +104,7 @@ class ObscureStatisticsController{
     }
 
     #Obtain the first hash of a given hasher
-    public function getHashersVirginHash(Request $request, Application $app){
+    public function getHashersVirginHash(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -122,7 +123,7 @@ class ObscureStatisticsController{
     }
 
     #Obtain the latest hash of a given hasher
-    public function getHashersLatestHash(Request $request, Application $app){
+    public function getHashersLatestHash(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -142,7 +143,7 @@ class ObscureStatisticsController{
 
 
     #Obtain the hasher hashes attended by year
-    public function getHasherHashesByYear(Request $request, Application $app){
+    public function getHasherHashesByYear(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -161,7 +162,7 @@ class ObscureStatisticsController{
     }
 
     #Obtain the hasher hashes attended by quarter
-    public function getHasherHashesByQuarter(Request $request, Application $app){
+    public function getHasherHashesByQuarter(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -181,7 +182,7 @@ class ObscureStatisticsController{
 
 
     #Obtain the hasher hashes attended by quarter
-    public function getHasherHashesByMonth(Request $request, Application $app){
+    public function getHasherHashesByMonth(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -201,7 +202,7 @@ class ObscureStatisticsController{
 
 
     #Obtain the hasher hashes attended by day name
-    public function getHasherHashesByDayName(Request $request, Application $app){
+    public function getHasherHashesByDayName(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -220,7 +221,7 @@ class ObscureStatisticsController{
     }
 
     #Obtain the hasher hashes attended by state
-    public function getHasherHashesByState(Request $request, Application $app){
+    public function getHasherHashesByState(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -239,7 +240,7 @@ class ObscureStatisticsController{
     }
 
     #Obtain the hasher hashes attended by city
-    public function getHasherHashesByCity(Request $request, Application $app){
+    public function getHasherHashesByCity(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -258,7 +259,7 @@ class ObscureStatisticsController{
     }
 
 
-    public function getHasherAllHaringsByYear(Request $request, Application $app){
+    public function getHasherAllHaringsByYear(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -276,7 +277,7 @@ class ObscureStatisticsController{
 
     }
 
-    public function getHasherAllHaringsByQuarter(Request $request, Application $app){
+    public function getHasherAllHaringsByQuarter(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -294,7 +295,7 @@ class ObscureStatisticsController{
 
     }
 
-    public function getHasherAllHaringsByMonth(Request $request, Application $app){
+    public function getHasherAllHaringsByMonth(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -312,7 +313,7 @@ class ObscureStatisticsController{
 
     }
 
-    public function getHasherAllHaringsByDayName(Request $request, Application $app){
+    public function getHasherAllHaringsByDayName(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -330,7 +331,7 @@ class ObscureStatisticsController{
 
     }
 
-    public function getHasherAllHaringsByState(Request $request, Application $app){
+    public function getHasherAllHaringsByState(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -348,7 +349,7 @@ class ObscureStatisticsController{
 
     }
 
-    public function getHasherAllHaringsByCity(Request $request, Application $app){
+    public function getHasherAllHaringsByCity(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -368,7 +369,7 @@ class ObscureStatisticsController{
 
 
     # Mappings for hasher (non hyper) harings by (year/month/state/etc)
-    public function getHasherNonHyperHaringsByYear(Request $request, Application $app){
+    public function getHasherNonHyperHaringsByYear(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -386,7 +387,7 @@ class ObscureStatisticsController{
 
     }
 
-    public function getHasherNonHyperHaringsByQuarter(Request $request, Application $app){
+    public function getHasherNonHyperHaringsByQuarter(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -404,7 +405,7 @@ class ObscureStatisticsController{
 
     }
 
-    public function getHasherNonHyperHaringsByMonth(Request $request, Application $app){
+    public function getHasherNonHyperHaringsByMonth(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -422,7 +423,7 @@ class ObscureStatisticsController{
 
     }
 
-    public function getHasherNonHyperHaringsByDayName(Request $request, Application $app){
+    public function getHasherNonHyperHaringsByDayName(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -440,7 +441,7 @@ class ObscureStatisticsController{
 
     }
 
-    public function getHasherNonHyperHaringsByState(Request $request, Application $app){
+    public function getHasherNonHyperHaringsByState(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -459,7 +460,7 @@ class ObscureStatisticsController{
     }
 
 
-    public function getHasherNonHyperHaringsByCity(Request $request, Application $app){
+    public function getHasherNonHyperHaringsByCity(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -479,7 +480,7 @@ class ObscureStatisticsController{
 
 
 
-    public function getCohareCountByHareNonHypers(Request $request, Application $app){
+    public function getCohareCountByHareNonHypers(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -503,7 +504,7 @@ class ObscureStatisticsController{
     }
 
 
-    public function getCohareCountByHareOnlyHypers(Request $request, Application $app){
+    public function getCohareCountByHareOnlyHypers(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -527,7 +528,7 @@ class ObscureStatisticsController{
     }
 
 
-    public function getCohareCountByHareAllHashes(Request $request, Application $app){
+    public function getCohareCountByHareAllHashes(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');

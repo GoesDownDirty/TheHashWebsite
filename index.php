@@ -222,6 +222,8 @@ $app->register(new Silex\Provider\MonologServiceProvider(), array(
 
 # Register the URls
 $app->get('/',                                                    'HASH\Controller\HashController::slashAction')->bind('homepage');
+$app->get('/{kennel_abbreviation}',                               'HASH\Controller\HashController::slashKennelAction');
+
 
 $app->get('/logonscreen',                                         'HASH\Controller\HashController::logonScreenAction');
 $app->get('/admin/logoutaction',                                  'HASH\Controller\AdminController::logoutAction');

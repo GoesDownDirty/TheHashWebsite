@@ -127,6 +127,28 @@ class HashController
 
   }
 
+  #Define the action
+  public function slashKennelAction(Request $request, Application $app, string $kennel_abbreviation){
+
+    #Establish the page title
+    $pageTitle = "$kennel_abbreviation Stats";
+
+    #Set the return value
+    $returnValue = $app['twig']->render('slash.twig',array(
+      'pageTitle' => $pageTitle,
+      'pageCaption' => $pageCaption,
+      'subTitle1' => 'Standard Statistics',
+      'subTitle2' => 'Analversary Statistics',
+      'subTitle3' => 'Hare Statistics',
+      'subTitle4' => 'Other Statistics',
+      'kennel_abbreviation' => $kennel_abbreviation
+    ));
+
+    #Return the return value
+    return $returnValue;
+
+  }
+
 
   #Define the action
   public function listHashersAction(Request $request, Application $app, string $kennel_abbreviation){
@@ -580,7 +602,7 @@ public function haringPercentageAllHashesAction(Request $request, Application $a
   $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
   #define the minimum number of hashes
-  $minHashCount = 4;
+  $minHashCount = 0;
 
   #Execute the SQL statement; create an array of rows
   $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy,(int) $kennelKy,(int) $minHashCount));
@@ -606,10 +628,16 @@ public function haringPercentageAllHashesAction(Request $request, Application $a
 public function haringPercentageNonHypersAction(Request $request, Application $app, string $kennel_abbreviation){
 
   # Declare the SQL used to retrieve this information
-  $sql = "SELECT * FROM HARING_PERCENTAGE_NON_HYPERS";
+  $sql = HARING_PERCENTAGE_NON_HYPER_HASHES;
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  #define the minimum number of hashes
+  $minHashCount = 0;
 
   #Execute the SQL statement; create an array of rows
-  $hasherList = $app['db']->fetchAll($sql);
+  $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy,(int) $kennelKy,(int) $minHashCount));
 
   # Establish the return value
   $returnValue = $app['twig']->render('percentage_list.twig',array(
@@ -634,8 +662,12 @@ public function percentageHaringsHypersVsNonHypers(Request $request, Application
   # Declare the SQL used to retrieve this information
   $sql = HARING_PERCENTAGES_HYPERS_VS_ALL;
 
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
   #Execute the SQL statement; create an array of rows
-  $hasherList = $app['db']->fetchAll($sql);
+  $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy,(int) $kennelKy));
+
 
   # Establish the return value
   $returnValue = $app['twig']->render('percentage_list_multiple_values.twig',array(
@@ -953,10 +985,13 @@ public function nonHyperHaringCountsAction(Request $request, Application $app, s
   public function hashAttendanceByHareLowestAction(Request $request, Application $app, string $kennel_abbreviation){
 
     #Define the SQL to execute
-    $sql = "SELECT HASHER_NAME AS NAME, MIN_NUMBER_OF_PEOPLE_AT_THEIR_EVENTS AS VALUE FROM LOWEST_HASH_ATTENDANCE_BY_HARE";
+    $sql = LOWEST_HASH_ATTENDANCE_BY_HARE;
+
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
     #Execute the SQL statement; create an array of rows
-    $hashList = $app['db']->fetchAll($sql);
+    $hashList = $app['db']->fetchAll($sql,array((int) $kennelKy));
 
     # Establish and set the return value
     $returnValue = $app['twig']->render('name_number_list.twig',array(
@@ -977,10 +1012,13 @@ public function nonHyperHaringCountsAction(Request $request, Application $app, s
 public function hashAttendanceByHareHighestAction(Request $request, Application $app, string $kennel_abbreviation){
 
   #Define the SQL to execute
-  $sql = "SELECT HASHER_NAME AS NAME, MAX_NUMBER_OF_PEOPLE_AT_THEIR_EVENTS AS VALUE FROM HIGHEST_HASH_ATTENDANCE_BY_HARE";
+  $sql = HIGHEST_HASH_ATTENDANCE_BY_HARE;
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
   #Execute the SQL statement; create an array of rows
-  $hashList = $app['db']->fetchAll($sql,array((int) $hasher_id, (int) $hasher_id,0,0));
+  $hashList = $app['db']->fetchAll($sql,array((int) $kennelKy));
 
   # Establish and set the return value
   $returnValue = $app['twig']->render('name_number_list.twig',array(
@@ -1001,10 +1039,13 @@ public function hashAttendanceByHareHighestAction(Request $request, Application 
   public function hashAttendanceByHareAverageAction(Request $request, Application $app, string $kennel_abbreviation){
 
     #Define the SQL to execute
-    $sql = "SELECT HASHER_NAME AS NAME, AVERAGE_NUMBER_OF_PEOPLE_AT_THEIR_EVENTS AS VALUE FROM AVERAGE_HASH_ATTENDANCE_BY_HARE";
+    $sql = AVERAGE_HASH_ATTENDANCE_BY_HARE;
+
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
     #Execute the SQL statement; create an array of rows
-    $hashList = $app['db']->fetchAll($sql);
+    $hashList = $app['db']->fetchAll($sql,array((int) $kennelKy));
 
     # Establish and set the return value
     $returnValue = $app['twig']->render('name_number_list.twig',array(
@@ -1024,10 +1065,13 @@ public function hashAttendanceByHareHighestAction(Request $request, Application 
   public function hashAttendanceByHareGrandTotalNonDistinctHashersAction(Request $request, Application $app, string $kennel_abbreviation){
 
     #Define the SQL to execute
-    $sql = "SELECT HASHER_NAME AS NAME, GRAND_NUMBER_OF_PEOPLE_AT_THEIR_EVENTS AS VALUE FROM GRANDTOTAL_NONDISTINCT_HASH_ATTENDANCE_BY_HARE";
+    $sql = GRANDTOTAL_NONDISTINCT_HASH_ATTENDANCE_BY_HARE;
+
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
     #Execute the SQL statement; create an array of rows
-    $hashList = $app['db']->fetchAll($sql);
+    $hashList = $app['db']->fetchAll($sql,array((int) $kennelKy));
 
     # Establish and set the return value
     $returnValue = $app['twig']->render('name_number_list.twig',array(
@@ -1046,10 +1090,13 @@ public function hashAttendanceByHareHighestAction(Request $request, Application 
 public function hashAttendanceByHareGrandTotalDistinctHashersAction(Request $request, Application $app, string $kennel_abbreviation){
 
   #Define the SQL to execute
-  $sql = "SELECT HASHER_NAME AS NAME, THE_COUNT AS VALUE FROM GRANDTOTAL_DISTINCT_HASH_ATTENDANCE_BY_HARE";
+  $sql = GRANDTOTAL_DISTINCT_HASH_ATTENDANCE_BY_HARE;
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
   #Execute the SQL statement; create an array of rows
-  $hashList = $app['db']->fetchAll($sql);
+  $hashList = $app['db']->fetchAll($sql,array((int) $kennelKy));
 
   # Establish and set the return value
   $returnValue = $app['twig']->render('name_number_list.twig',array(

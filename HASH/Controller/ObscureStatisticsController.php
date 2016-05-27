@@ -14,6 +14,23 @@ use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 
 class ObscureStatisticsController{
 
+
+  private function obtainKennelKeyFromKennelAbbreviation(Request $request, Application $app, string $kennel_abbreviation){
+
+    #Define the SQL to RuntimeException
+    $sql = "SELECT * FROM KENNELS WHERE KENNEL_ABBREVIATION = ?";
+
+    #Query the database
+    $kennelValue = $app['db']->fetchAssoc($sql, array((string) $kennel_abbreviation));
+
+    #Obtain the kennel ky from the returned object
+    $returnValue = $kennelValue['KENNEL_KY'];
+
+    #return the return value
+    return $returnValue;
+
+  }
+
     #Landing screen for year in review
     public function getYearInReviewAction(Request $request, Application $app, int $year_value, string $kennel_abbreviation){
 
@@ -35,6 +52,9 @@ class ObscureStatisticsController{
     #Obtain hashers for an event
     public function getHasherCountsByYear(Request $request, Application $app, string $kennel_abbreviation){
 
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
       #Obtain the post values
       $theYear = $request->request->get('year_value');
 
@@ -42,7 +62,7 @@ class ObscureStatisticsController{
       $hasherCountSQL = HASHER_COUNTS_BY_YEAR;
 
       #Obtain the hare list
-      $hasherCountList = $app['db']->fetchAll($hasherCountSQL,array((int)$theYear));
+      $hasherCountList = $app['db']->fetchAll($hasherCountSQL,array((int)$theYear, (int) $kennelKy));
 
       #Set the return value
       $returnValue =  $app->json($hasherCountList, 200);
@@ -52,6 +72,9 @@ class ObscureStatisticsController{
     #Obtain total hare counts per year
     public function getTotalHareCountsByYear(Request $request, Application $app, string $kennel_abbreviation){
 
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
       #Obtain the post values
       $theYear = $request->request->get('year_value');
 
@@ -59,7 +82,7 @@ class ObscureStatisticsController{
       $hareCountSQL = TOTAL_HARE_COUNTS_BY_YEAR;
 
       #Obtain the hare list
-      $hareCountList = $app['db']->fetchAll($hareCountSQL,array((int)$theYear));
+      $hareCountList = $app['db']->fetchAll($hareCountSQL,array((int)$theYear, (int) $kennelKy));
 
       #Set the return value
       $returnValue =  $app->json($hareCountList, 200);
@@ -70,6 +93,9 @@ class ObscureStatisticsController{
     #Obtain total hare counts per year
     public function getHyperHareCountsByYear(Request $request, Application $app, string $kennel_abbreviation){
 
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
       #Obtain the post values
       $theYear = $request->request->get('year_value');
 
@@ -77,7 +103,7 @@ class ObscureStatisticsController{
       $hareCountSQL = HYPER_HARE_COUNTS_BY_YEAR;
 
       #Obtain the hare list
-      $hareCountList = $app['db']->fetchAll($hareCountSQL,array((int)$theYear));
+      $hareCountList = $app['db']->fetchAll($hareCountSQL,array((int)$theYear, (int) $kennelKy));
 
       #Set the return value
       $returnValue =  $app->json($hareCountList, 200);
@@ -88,6 +114,9 @@ class ObscureStatisticsController{
     #Obtain total hare counts per year
     public function getNonHyperHareCountsByYear(Request $request, Application $app, string $kennel_abbreviation){
 
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
       #Obtain the post values
       $theYear = $request->request->get('year_value');
 
@@ -95,7 +124,7 @@ class ObscureStatisticsController{
       $hareCountSQL = NONHYPER_HARE_COUNTS_BY_YEAR;
 
       #Obtain the hare list
-      $hareCountList = $app['db']->fetchAll($hareCountSQL,array((int)$theYear));
+      $hareCountList = $app['db']->fetchAll($hareCountSQL,array((int)$theYear, (int) $kennelKy));
 
       #Set the return value
       $returnValue =  $app->json($hareCountList, 200);

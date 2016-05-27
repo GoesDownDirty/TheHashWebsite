@@ -16,8 +16,8 @@
       <tbody>
         {% for item in theList %}
           <tr>
-            <td><a href='/hashers/{{item.HASHER_KY}}'>{{item.HASHER_NAME}}</a></td>
-            <td><a href='/hashes/{{item.HASH_KY}}'>{{item.KENNEL_EVENT_NUMBER}}</a></td>
+            <td><a href='/{{kennel_abbreviation}}/hashers/{{item.HASHER_KY}}'>{{item.HASHER_NAME}}</a></td>
+            <td><a href='/{{kennel_abbreviation}}/hashes/{{item.HASH_KY}}'>{{item.KENNEL_EVENT_NUMBER}}</a></td>
             <td>{{item.EVENT_LOCATION}}</td>
           </tr>
         {% endfor %}

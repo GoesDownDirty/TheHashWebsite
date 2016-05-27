@@ -93,17 +93,17 @@ class HashController
   #Define the action
   public function slashAction(Request $request, Application $app){
 
-    $app['monolog']->addDebug('Entering the slash action');
+    #$app['monolog']->addDebug('Entering the slash action');
 
-    $token = $app['security.token_storage']->getToken();
-    $app['monolog']->addDebug($token);
+    #$token = $app['security.token_storage']->getToken();
+    #$app['monolog']->addDebug($token);
 
     # Obtain the logged in user
-    $user = $app['session']->get('user');
-    $userName = $user['username'];
+    #$user = $app['session']->get('user');
+    #$userName = $user['username'];
 
     #Establish the page caption
-    $pageCaption = "You are logged in as: $userName and your password is password";
+    #$pageCaption = "You are logged in as: $userName and your password is password";
 
     #Establish the kennel abbreviation. By default, it is sch4
     $kennelAbbreviation = "SCH4";
@@ -114,7 +114,7 @@ class HashController
     #Set the return value
     $returnValue = $app['twig']->render('slash.twig',array(
       'pageTitle' => $pageTitle,
-      'pageCaption' => $pageCaption,
+      #'pageCaption' => $pageCaption,
       'subTitle1' => 'Standard Statistics',
       'subTitle2' => 'Analversary Statistics',
       'subTitle3' => 'Hare Statistics',
@@ -278,6 +278,9 @@ class HashController
 
   public function listHashesByHasherAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
     #Define the SQL to execute
     $sql = "SELECT
           HASHES.HASH_KY,
@@ -291,11 +294,11 @@ class HashController
           IS_HYPER,
           VIRGIN_COUNT
     FROM HASHES JOIN HASHINGS ON HASHES.HASH_KY = HASHINGS.HASH_KY
-    WHERE HASHINGS.HASHER_KY = ?
+    WHERE HASHINGS.HASHER_KY = ? AND HASHES.KENNEL_KY = ?
     ORDER BY HASHES.HASH_KY DESC";
 
     #Execute the SQL statement; create an array of rows
-    $hashList = $app['db']->fetchAll($sql,array((int) $hasher_id));
+    $hashList = $app['db']->fetchAll($sql,array((int) $hasher_id, (int)$kennelKy));
 
     # Declare the SQL used to retrieve this information
     $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
@@ -323,6 +326,9 @@ class HashController
 
   public function listHashesByHareAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
     #Define the SQL to execute
     $sql = "SELECT
         HASHES.HASH_KY,
@@ -336,14 +342,14 @@ class HashController
         IS_HYPER,
         VIRGIN_COUNT
       FROM HASHES JOIN HARINGS ON HASHES.HASH_KY = HARINGS.HARINGS_HASH_KY
-      WHERE HARINGS.HARINGS_HASHER_KY = ?
+      WHERE HARINGS.HARINGS_HASHER_KY = ? AND HASHES.KENNEL_KY = ?
       ORDER BY EVENT_DATE DESC";
 
     #Execute the SQL statement; create an array of rows
-    $hashList = $app['db']->fetchAll($sql,array((int) $hasher_id));
+    $hashList = $app['db']->fetchAll($sql,array((int) $hasher_id, (int) $kennelKy));
 
     # Declare the SQL used to retrieve this information
-    $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
+    $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ? ";
 
     # Make a database call to obtain the hasher information
     $hasher = $app['db']->fetchAssoc($sql_for_hasher_lookup, array((int) $hasher_id));
@@ -369,16 +375,21 @@ class HashController
     # Declare the SQL used to retrieve this information
     $sql = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
 
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
     # Make a database call to obtain the hasher information
     $hasher = $app['db']->fetchAssoc($sql, array((int) $hasher_id));
 
     # Obtain the number of hashings
-    $sqlHashCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHINGS WHERE HASHER_KY = ?";
-    $hashCountValue = $app['db']->fetchAssoc($sqlHashCount, array((int) $hasher_id));
+    $sqlHashCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+    WHERE HASHER_KY = ? AND KENNEL_KY = ?";
+    $hashCountValue = $app['db']->fetchAssoc($sqlHashCount, array((int) $hasher_id, (int) $kennelKy));
 
     # Obtain the number of harings
-    $sqlHareCount = "SELECT COUNT(*) AS THE_COUNT FROM HARINGS WHERE HARINGS_HASHER_KY = ?";
-    $hareCountValue = $app['db']->fetchAssoc($sqlHareCount, array((int) $hasher_id));
+    $sqlHareCount = "SELECT COUNT(*) AS THE_COUNT FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+    WHERE HARINGS_HASHER_KY = ? AND HASHES.KENNEL_KY = ?";
+    $hareCountValue = $app['db']->fetchAssoc($sqlHareCount, array((int) $hasher_id, (int) $kennelKy));
 
     # Establish and set the return value
     $returnValue = $app['twig']->render('hasher_details.twig',array(
@@ -421,8 +432,11 @@ class HashController
 
   public function hasherAnalversariesForEventAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
 
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
     # Declare the SQL used to retrieve this information
-    $sql = "    SELECT
+    $sql = "SELECT
         hashers.HASHER_NAME AS HASHER_NAME,
         (COUNT(*)) AS THE_COUNT,
         MAX(HASHINGS.HASH_KY) AS MAX_HASH_KY
@@ -432,7 +446,8 @@ class HashController
         JOIN hashes ON ((hashings.HASH_KY = hashes.HASH_KY)))
     WHERE
         (hashers.DECEASED = 0) AND
-        HASHES.HASH_KY <= ?
+        HASHES.HASH_KY <= ? AND
+        HASHES.KENNEL_KY = ?
     GROUP BY hashers.HASHER_NAME
     HAVING ((((THE_COUNT % 5) = 0)
         OR ((THE_COUNT % 69) = 0)
@@ -442,7 +457,7 @@ class HashController
     ORDER BY THE_COUNT DESC";
 
     # Make a database call to obtain the hasher information
-    $analversaryList = $app['db']->fetchAll($sql, array((int) $hash_id,(int) $hash_id));
+    $analversaryList = $app['db']->fetchAll($sql, array((int) $hash_id,(int) $kennelKy, (int) $hash_id));
 
     # Declare the SQL used to retrieve this information
     $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
@@ -469,6 +484,9 @@ class HashController
 
   public function hareAnalversariesForEventAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
 
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
     # Declare the SQL used to retrieve this information
     $sql = "	SELECT
         		HASHERS.HASHER_NAME AS HASHER_NAME,
@@ -480,7 +498,8 @@ class HashController
                 JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
         	WHERE
         		HASHERS.DECEASED = 0 AND
-                HARINGS.HARINGS_HASH_KY <= ?
+                HARINGS.HARINGS_HASH_KY <= ? AND
+                HASHES.KENNEL_KY = ?
         	GROUP BY
         		HASHERS.HASHER_NAME
         	HAVING
@@ -492,7 +511,7 @@ class HashController
         	ORDER BY THE_COUNT DESC";
 
     # Make a database call to obtain the hasher information
-    $analversaryList = $app['db']->fetchAll($sql, array((int) $hash_id,(int) $hash_id));
+    $analversaryList = $app['db']->fetchAll($sql, array((int) $hash_id, (int) $kennelKy, (int) $hash_id));
 
     # Declare the SQL used to retrieve this information
     $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
@@ -521,19 +540,33 @@ class HashController
 public function pendingHasherAnalversariesAction(Request $request, Application $app, string $kennel_abbreviation){
 
   # Declare the SQL used to retrieve this information
-  $sql = "SELECT * FROM PENDING_HASHER_ANALVERSARIES";
+  $sql = PENDING_HASHER_ANALVERSARIES;
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  #The number of harings into the future in which the analversaries will take place
+  $fastForwardValue = 1;
+
+  #The number of years absence before removing from the list...
+  $yearsAbsenceLimit = 7;
 
   #Execute the SQL statement; create an array of rows
-  $hasherList = $app['db']->fetchAll($sql);
+  $hasherList = $app['db']->fetchAll($sql, array((int) $fastForwardValue, (int) $kennelKy, (int) $yearsAbsenceLimit));
 
   # Declare the SQL to get the most recent hash
   $sqlMostRecentHash = "SELECT KENNEL_EVENT_NUMBER, EVENT_DATE, EVENT_LOCATION, SPECIAL_EVENT_DESCRIPTION
     FROM HASHES
-    JOIN (select max(hash_ky) as HASH_KY from hashings) AS TEMPTABLE
+    JOIN (
+        select max(HASHINGS.hash_ky) as HASH_KY
+        from hashings
+        JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+        WHERE HASHES.KENNEL_KY = ?
+      ) AS TEMPTABLE
     ON HASHES.HASH_KY = TEMPTABLE.HASH_KY";
 
   # Execute the SQL to get the most recent hash
-  $theMostRecentHashValue = $app['db']->fetchAssoc($sqlMostRecentHash);
+  $theMostRecentHashValue = $app['db']->fetchAssoc($sqlMostRecentHash, array((int) $kennelKy));
 
   $tableCaption = "The most recent hash was: $theMostRecentHashValue[KENNEL_EVENT_NUMBER]
   at $theMostRecentHashValue[EVENT_LOCATION]";
@@ -559,19 +592,34 @@ public function pendingHasherAnalversariesAction(Request $request, Application $
 public function pendingHareAnalversariesAction(Request $request, Application $app, string $kennel_abbreviation){
 
   # Declare the SQL used to retrieve this information
-  $sql = "SELECT * FROM PENDING_HARE_ANALVERSARIES";
+  $sql = PENDING_HARE_ANALVERSARIES;
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  #The number of harings into the future in which the analversaries will take place
+  $fastForwardValue = 1;
+
+  #The number of years absence before removing from the list...
+  $yearsAbsenceLimit = 7;
 
   #Execute the SQL statement; create an array of rows
-  $hasherList = $app['db']->fetchAll($sql);
+  $hasherList = $app['db']->fetchAll($sql, array((int) $fastForwardValue, (int) $kennelKy, (int) $yearsAbsenceLimit));
 
   # Declare the SQL to get the most recent hash
   $sqlMostRecentHash = "SELECT KENNEL_EVENT_NUMBER, EVENT_DATE, EVENT_LOCATION, SPECIAL_EVENT_DESCRIPTION
     FROM HASHES
-    JOIN (select max(harings_hash_ky) as HASH_KY from harings) AS TEMPTABLE
+    JOIN
+		(
+			SELECT MAX(harings_hash_ky) as HASH_KY
+            FROM HARINGS
+            JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+            WHERE HASHES.KENNEL_KY = ?
+		) AS TEMPTABLE
     ON HASHES.HASH_KY = TEMPTABLE.HASH_KY";
 
   # Execute the SQL to get the most recent hash
-  $theMostRecentHashValue = $app['db']->fetchAssoc($sqlMostRecentHash);
+  $theMostRecentHashValue = $app['db']->fetchAssoc($sqlMostRecentHash, array((int) $kennelKy));
 
   $tableCaption = "The most recent hash was: $theMostRecentHashValue[KENNEL_EVENT_NUMBER]
   at $theMostRecentHashValue[EVENT_LOCATION]";
@@ -773,6 +821,9 @@ public function nonHyperHaringCountsAction(Request $request, Application $app, s
 
   public function coharelistByHareAllHashesAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
     #Define the SQL to execute
     $sql = "SELECT
       	TEMPTABLE.HASHER_NAME,TEMPTABLE.HARINGS_HASHER_KY AS HASHER_KY,
@@ -795,11 +846,11 @@ public function nonHyperHaringCountsAction(Request $request, Application $app, s
       WHERE
       	HARINGS.HARINGS_HASHER_KY = ?
           AND TEMPTABLE.HARINGS_HASHER_KY <> ?
-          AND HASHES.IS_HYPER IN (?,?)
+          AND HASHES.IS_HYPER IN (?,?) AND HASHES.KENNEL_KY = ?
       ORDER BY HARINGS.HARINGS_HASH_KY ASC";
 
     #Execute the SQL statement; create an array of rows
-    $cohareList = $app['db']->fetchAll($sql,array((int) $hasher_id, (int) $hasher_id,0,1));
+    $cohareList = $app['db']->fetchAll($sql,array((int) $hasher_id, (int) $hasher_id,0,1, (int) $kennelKy));
 
     # Declare the SQL used to retrieve this information
     $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
@@ -828,6 +879,10 @@ public function nonHyperHaringCountsAction(Request $request, Application $app, s
 
   public function coharelistByHareNonHypersAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
+
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
     #Define the SQL to execute
     $sql = "SELECT
       	TEMPTABLE.HASHER_NAME, TEMPTABLE.HARINGS_HASHER_KY AS HASHER_KY,
@@ -850,11 +905,11 @@ public function nonHyperHaringCountsAction(Request $request, Application $app, s
       WHERE
       	HARINGS.HARINGS_HASHER_KY = ?
           AND TEMPTABLE.HARINGS_HASHER_KY <> ?
-          AND HASHES.IS_HYPER IN (?,?)
+          AND HASHES.IS_HYPER IN (?,?) AND HASHES.KENNEL_KY = ?
       ORDER BY HARINGS.HARINGS_HASH_KY ASC";
 
     #Execute the SQL statement; create an array of rows
-    $cohareList = $app['db']->fetchAll($sql,array((int) $hasher_id, (int) $hasher_id,0,0));
+    $cohareList = $app['db']->fetchAll($sql,array((int) $hasher_id, (int) $hasher_id,0,0, (int) $kennelKy));
 
     # Declare the SQL used to retrieve this information
     $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
@@ -881,6 +936,9 @@ public function nonHyperHaringCountsAction(Request $request, Application $app, s
 
   public function cohareCountByHareAllHashesAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
     #Define the SQL to execute
     $sql = "SELECT
       	   TEMPTABLE.HASHER_NAME AS NAME,
@@ -901,12 +959,12 @@ public function nonHyperHaringCountsAction(Request $request, Application $app, s
       WHERE
       	HARINGS.HARINGS_HASHER_KY = ?
           AND TEMPTABLE.HARINGS_HASHER_KY <> ?
-          AND HASHES.IS_HYPER IN (?,?)
+          AND HASHES.IS_HYPER IN (?,?) AND HASHES.KENNEL_KY = ?
       GROUP BY TEMPTABLE.HASHER_NAME
       ORDER BY VALUE DESC";
 
     #Execute the SQL statement; create an array of rows
-    $hashList = $app['db']->fetchAll($sql,array((int) $hasher_id, (int) $hasher_id,0,1));
+    $hashList = $app['db']->fetchAll($sql,array((int) $hasher_id, (int) $hasher_id,0,1, (int) $kennelKy));
 
     # Declare the SQL used to retrieve this information
     $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
@@ -933,6 +991,9 @@ public function nonHyperHaringCountsAction(Request $request, Application $app, s
 
   public function cohareCountByHareNonHypersAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
     #Define the SQL to execute
     $sql = "SELECT
       	TEMPTABLE.HASHER_NAME AS NAME,
@@ -953,12 +1014,12 @@ public function nonHyperHaringCountsAction(Request $request, Application $app, s
       WHERE
       	HARINGS.HARINGS_HASHER_KY = ?
           AND TEMPTABLE.HARINGS_HASHER_KY <> ?
-          AND HASHES.IS_HYPER IN (?,?)
+          AND HASHES.IS_HYPER IN (?,?) AND HASHES.KENNEL_KY = ?
       GROUP BY TEMPTABLE.HASHER_NAME
       ORDER BY VALUE DESC";
 
     #Execute the SQL statement; create an array of rows
-    $hashList = $app['db']->fetchAll($sql,array((int) $hasher_id, (int) $hasher_id,0,0));
+    $hashList = $app['db']->fetchAll($sql,array((int) $hasher_id, (int) $hasher_id,0,0, (int) $kennelKy));
 
     # Declare the SQL used to retrieve this information
     $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
@@ -1115,6 +1176,9 @@ public function hashAttendanceByHareGrandTotalDistinctHashersAction(Request $req
 
 public function hasherCountsByHareAction(Request $request, Application $app, int $hare_id, string $kennel_abbreviation){
 
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
   #Define the SQL to execute
   $sql = "SELECT
     	HASHERS.HASHER_NAME AS NAME,
@@ -1123,14 +1187,16 @@ public function hasherCountsByHareAction(Request $request, Application $app, int
     	HARINGS
         JOIN HASHINGS ON HARINGS.HARINGS_HASH_KY = HASHINGS.HASH_KY
         JOIN HASHERS ON HASHINGS.HASHER_KY = HASHERS.HASHER_KY
+        JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
     WHERE
     	HARINGS.HARINGS_HASHER_KY = ?
         AND HASHINGS.HASHER_KY != ?
+        AND HASHES.KENNEL_KY = ?
     GROUP BY HASHERS.HASHER_NAME
     ORDER BY VALUE DESC";
 
   #Execute the SQL statement; create an array of rows
-  $hashList = $app['db']->fetchAll($sql,array( (int) $hare_id, (int)$hare_id));
+  $hashList = $app['db']->fetchAll($sql,array( (int) $hare_id, (int)$hare_id, (int) $kennelKy));
 
   # Declare the SQL used to retrieve this information
   $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";

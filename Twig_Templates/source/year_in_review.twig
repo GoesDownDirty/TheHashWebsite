@@ -49,7 +49,7 @@
  function getHasherCountsByYear(yearValue){
   var formData = {year_value:yearValue};
   $.ajax({
-      url : "/statistics/getHasherCountsByYear",
+      url : "/{{kennel_abbreviation}}/statistics/getHasherCountsByYear",
       type: "POST",
       data : formData,
       dataType : 'json',
@@ -89,7 +89,7 @@
 function getTotalHareCountsByYear(yearValue){
  var formData = {year_value:yearValue};
  $.ajax({
-     url : "/statistics/getTotalHareCountsByYear",
+     url : "/{{kennel_abbreviation}}/statistics/getTotalHareCountsByYear",
      type: "POST",
      data : formData,
      dataType : 'json',
@@ -117,7 +117,7 @@ function getTotalHareCountsByYear(yearValue){
 function getHyperHareCountsByYear(yearValue){
  var formData = {year_value:yearValue};
  $.ajax({
-     url : "/statistics/getHyperHareCountsByYear",
+     url : "/{{kennel_abbreviation}}/statistics/getHyperHareCountsByYear",
      type: "POST",
      data : formData,
      dataType : 'json',
@@ -145,7 +145,7 @@ function getHyperHareCountsByYear(yearValue){
 function getNonHyperHareCountsByYear(yearValue){
  var formData = {year_value:yearValue};
  $.ajax({
-     url : "/statistics/getNonHyperHareCountsByYear",
+     url : "/{{kennel_abbreviation}}/statistics/getNonHyperHareCountsByYear",
      type: "POST",
      data : formData,
      dataType : 'json',
@@ -177,10 +177,10 @@ function getNonHyperHareCountsByYear(yearValue){
     //getHyperHareCountsByYear({{yearValue}});
     //getNonHyperHareCountsByYear({{yearValue}});
 
-    getListData(1,"/statistics/getHasherCountsByYear","#hasherCounts-list","Hasher","Count",{{yearValue}});
-    getListData(1,"/statistics/getTotalHareCountsByYear","#totalHareCounts-list","Hasher","Count",{{yearValue}});
-    getListData(1,"/statistics/getHyperHareCountsByYear","#hyperHareCounts-list","Hasher","Count",{{yearValue}});
-    getListData(1,"/statistics/getNonHyperHareCountsByYear","#nonHyperHareCounts-list","Hasher","Count",{{yearValue}});
+    getListData(1,"/{{kennel_abbreviation}}/statistics/getHasherCountsByYear","#hasherCounts-list","Hasher","Count",{{yearValue}});
+    getListData(1,"/{{kennel_abbreviation}}/statistics/getTotalHareCountsByYear","#totalHareCounts-list","Hasher","Count",{{yearValue}});
+    getListData(1,"/{{kennel_abbreviation}}/statistics/getHyperHareCountsByYear","#hyperHareCounts-list","Hasher","Count",{{yearValue}});
+    getListData(1,"/{{kennel_abbreviation}}/statistics/getNonHyperHareCountsByYear","#nonHyperHareCounts-list","Hasher","Count",{{yearValue}});
   });
 
 

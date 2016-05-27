@@ -161,12 +161,13 @@ class HashEventController
           $tempSpecialEventDescription = $data['Special_Event_Description'];
           $tempVirginCount = $data['Virgin_Count'];
           $tempIsHyper = $data['Is_Hyper'];
+          $tempKennelKy = $data['Kennel_KY'];
 
           $sql = "
             UPDATE HASHES
             SET
               EVENT_DATE= ?, EVENT_LOCATION= ?, EVENT_CITY= ?, EVENT_STATE=?,
-              SPECIAL_EVENT_DESCRIPTION=?, VIRGIN_COUNT=?, IS_HYPER=?
+              SPECIAL_EVENT_DESCRIPTION=?, VIRGIN_COUNT=?, IS_HYPER=?, KENNEL_KY=?
             WHERE HASH_KY=?";
           $app['dbs']['mysql_write']->executeUpdate($sql,array(
             $tempEventDate,
@@ -176,6 +177,7 @@ class HashEventController
             $tempSpecialEventDescription,
             $tempVirginCount,
             $tempIsHyper,
+            $tempKennelKy,
             $hash_id
           ));
 

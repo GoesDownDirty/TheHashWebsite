@@ -105,6 +105,7 @@ $app['controllers']
   ->assert("hare_id", "\d+")
   ->assert("year_value", "\d+")
   ->assert("kennel_id","\d+")
+  ->assert("analversary_number","\d+")
   ->assert("kennel_abbreviation","^(sch4|SCH4|SCH4BASH|sch4bash)$")
   ;
 #-------------------------------------------------------------------------------
@@ -336,6 +337,15 @@ $app->get('/{kennel_abbreviation}/haring/stats',        'HASH\Controller\HashCon
 $app->get('/{kennel_abbreviation}/analversary/stats',   'HASH\Controller\HashController::analversaryStatsAction');
 $app->get('/{kennel_abbreviation}/cautionary/stats',    'HASH\Controller\HashController::cautionaryStatsAction');
 $app->get('/{kennel_abbreviation}/miscellaneous/stats', 'HASH\Controller\HashController::miscellaneousStatsAction');
+
+#URLs for fastest/slowest to reach analversaries
+$app->get('/{kennel_abbreviation}/{analversary_number}/quickest/to/reach/bydays', 'HASH\Controller\ObscureStatisticsController::quickestToReachAnalversaryByDaysPreAction');
+$app->get('/{kennel_abbreviation}/{analversary_number}/slowest/to/reach/bydays',  'HASH\Controller\ObscureStatisticsController::slowestToReachAnalversaryByDaysPreAction');
+#$app->get('/{kennel_abbreviation}/{analversary_number}/earliest/to/reach',        'HASH\Controller\ObscureStatisticsController::earliestToReachAnalversaryByDatePreAction');
+#$app->get('/{kennel_abbreviation}/{analversary_number}/most/recent/to/reach',     'HASH\Controller\ObscureStatisticsController::mostRecentToReachAnalversaryByDatePreAction');
+
+$app->post('/{kennel_abbreviation}/{analversary_number}/quickest/to/reach/bydays', 'HASH\Controller\ObscureStatisticsController::quickestToReachAnalversaryByDaysAction');
+$app->post('/{kennel_abbreviation}/{analversary_number}/slowest/to/reach/bydays', 'HASH\Controller\ObscureStatisticsController::slowestToReachAnalversaryByDaysAction');
 
 
 # Set the before/after actions

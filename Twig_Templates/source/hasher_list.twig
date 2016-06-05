@@ -2,36 +2,42 @@
 
 {% block content %}
 
-<script type = "text/javascript" src = "/vendor/components/jquery/jquery.min.js"></script>
+
 <script type = "text/javascript" language = "javascript">
-jQuery(document).ready(function($){
-    $('.live-search-list li').each(function(){
-      $(this).attr('data-search-term', $(this).text().toLowerCase());
+
+  //Call these functions upon page load
+  $(document).ready(function() {
+    //Convert the main table into a data table
+    $('#the_main_table').DataTable({
+      "paging":   false,
+      "aaSorting": []
     });
 
-  $('.live-search-box').on('keyup', function(){
-      var searchTerm = $(this).val().toLowerCase();
-      $('.live-search-list li').each(function(){
-          if ($(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0 || searchTerm.length < 1) {
-              $(this).show();
-          } else {
-              $(this).hide();
-          }
-      });
   });
-
-});
 </script>
 
+    <div class="table-responsive">
+    <h3>{{pageTitle}}</h3>
+    <h4>{{pageSubTitle}}</h4>
+    <table class="table table-condensed table-hover" id="the_main_table">
+      <thead>
+        <tr>
+          <th>Hasher Name</th>
+          <td>First Name</td>
+          <td>Last Name</td>
+          <td>Email</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in theList %}
+          <tr>
+            <td><a href='/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}'>{{item.NAME}}</a></td>
+            <td>{{item.FIRST_NAME}}</td>
+            <td>{{item.LAST_NAME}}</td>
+            <td>{{item.EMAIL|replace({'@': '_at_', '.': "_dot_"})}}</td>
+          </tr>
+        {% endfor %}
+    </table>
+    </div>
 
-    <h1>{{pageTitle}}</h1>
-    <h3>{{pageSubTitle}}</h3>
-    <ul class="live-search-list">
-      <input type="text" class="live-search-box" placeholder="search here" />
-
-          {% for item in theList %}
-              <li>{{item.NAME}} <a href='/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}'>Details</a></li>
-          {% endfor %}
-
-    </ul>
 {% endblock %}

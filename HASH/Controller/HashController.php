@@ -154,7 +154,12 @@ class HashController
   public function listHashersAction(Request $request, Application $app, string $kennel_abbreviation){
 
     #Define the SQL to execute
-    $sql = "SELECT HASHER_KY AS THE_KEY, HASHER_NAME AS NAME FROM HASHERS";
+    $sql = "SELECT
+      HASHER_KY AS THE_KEY,
+      HASHER_NAME AS NAME,
+      FIRST_NAME,
+      LAST_NAME,
+      EMAIL FROM HASHERS";
 
     #Execute the SQL statement; create an array of rows
     $hasherList = $app['db']->fetchAll($sql);
@@ -164,7 +169,9 @@ class HashController
       'pageTitle' => 'The List of Hashers',
       'pageSubTitle' => 'The List of *ALL* Hashers',
       'theList' => $hasherList,
-      'kennel_abbreviation' => $kennel_abbreviation
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'pageCaption' => "",
+      'tableCaption' => ""
     ));
 
     #Return the return value
@@ -175,7 +182,13 @@ class HashController
   public function listHashersByHashAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
 
     #Define the SQL to execute
-    $sql = "SELECT HASHERS.HASHER_KY AS THE_KEY, HASHERS.HASHER_NAME AS NAME FROM HASHERS JOIN HASHINGS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY WHERE HASHINGS.HASH_KY = ?";
+    $sql = "SELECT
+      HASHERS.HASHER_KY AS THE_KEY,
+      HASHERS.HASHER_NAME AS NAME,
+      HASHERS.FIRST_NAME,
+      HASHERS.LAST_NAME,
+      HASHERS.EMAIL
+      FROM HASHERS JOIN HASHINGS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY WHERE HASHINGS.HASH_KY = ?";
 
     #Execute the SQL statement; create an array of rows
     $hasherList = $app['db']->fetchAll($sql,array((int) $hash_id));
@@ -196,6 +209,7 @@ class HashController
       'pageTitle' => 'The List of Hashers',
       'pageSubTitle' => $theSubTitle,
       'theList' => $hasherList,
+      'tableCaption' => $theSubTitle,
       'kennel_abbreviation' => $kennel_abbreviation
     ));
 
@@ -208,7 +222,13 @@ class HashController
 
 
     #Define the SQL to execute
-    $sql = "SELECT HASHERS.HASHER_KY AS THE_KEY, HASHERS.HASHER_NAME AS NAME FROM HASHERS JOIN HARINGS ON HASHERS.HASHER_KY = HARINGS.HARINGS_HASHER_KY WHERE HARINGS.HARINGS_HASH_KY = ?";
+    $sql = "SELECT
+      HASHERS.HASHER_KY AS THE_KEY,
+      HASHERS.HASHER_NAME AS NAME ,
+      HASHERS.FIRST_NAME,
+      HASHERS.LAST_NAME,
+      HASHERS.EMAIL
+      FROM HASHERS JOIN HARINGS ON HASHERS.HASHER_KY = HARINGS.HARINGS_HASHER_KY WHERE HARINGS.HARINGS_HASH_KY = ?";
 
     #Execute the SQL statement; create an array of rows
     $hasherList = $app['db']->fetchAll($sql,array((int) $hash_id));

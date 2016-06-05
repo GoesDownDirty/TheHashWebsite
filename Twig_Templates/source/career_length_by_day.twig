@@ -1,0 +1,46 @@
+{% extends "fullwidth.twig" %}
+
+{% block content %}
+
+    <script type = "text/javascript" language = "javascript">
+
+      //Call these functions upon page load
+      $(document).ready(function() {
+        //Convert the main table into a data table
+        $('#the_main_table').DataTable({
+          "paging":   false,
+          "aaSorting": []
+        });
+
+      });
+    </script>
+
+    <h1>{{pageTitle}}</h1>
+    <h3>{{pageSubTitle}}</h3>
+    <div class="table-responsive" >
+    <table class="table table-condensed table-hover" id="the_main_table">
+      <caption>{{tableCaption}}</caption>
+      <thead>
+        <tr>
+          <th>Hasher Name</th>
+          <td>Hashing Count</td>
+          <td>First Hash</td>
+          <td>Latest Hash</td>
+          <td>Career Length (days)</td>
+          <td>Average days between hashes</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in theList %}
+          <tr>
+            <td><a href='/{{kennel_abbreviation}}/hashers/{{item.HASHER_KY}}'>{{item.HASHER_NAME}}</a></td>
+            <td>{{item.HASH_COUNT}}</td>
+            <td><a href='/{{kennel_abbreviation}}/hashes/{{item.FIRST_HASH_KEY}}'>{{item.FIRST_HASH_DATE|date("Y/m/d", false)}}</a></td>
+            <td><a href='/{{kennel_abbreviation}}/hashes/{{item.LATEST_HASH_KEY}}'>{{item.LATEST_HASH_DATE|date("Y/m/d", false)}}</a></td>
+            <td>{{item.DIFFERENCE}}</td>
+            <td>{{item.DAYS_BETWEEN_HASHES}}</td>
+          </tr>
+        {% endfor %}
+    </table>
+  </div>
+{% endblock %}

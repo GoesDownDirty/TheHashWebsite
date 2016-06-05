@@ -136,7 +136,7 @@ class HashController
     #Set the return value
     $returnValue = $app['twig']->render('slash.twig',array(
       'pageTitle' => $pageTitle,
-      'pageCaption' => $pageCaption,
+      'pageCaption' => "Provide page caption",
       'subTitle1' => 'Standard Statistics',
       'subTitle2' => 'Analversary Statistics',
       'subTitle3' => 'Hare Statistics',

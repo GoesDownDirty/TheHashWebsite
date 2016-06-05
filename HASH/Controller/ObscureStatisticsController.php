@@ -732,7 +732,152 @@ class ObscureStatisticsController{
       $returnValue = $app->json($theResults,200);
 
       return $returnValue;
+    }
 
+    public function longestCareerAction(Request $request, Application $app, string $kennel_abbreviation){
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      #Define the sql
+      $theSql = LONGEST_HASHING_CAREER_IN_DAYS;
+      $theSql = str_replace("XORDERCOLUMNX","DIFFERENCE",LONGEST_HASHING_CAREER_IN_DAYS);
+      $theSql = str_replace("XUPORDOWNX","DESC",$theSql);
+
+      #Define the minimum hashing count
+      $minHashingCount = 4;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array(
+        (int) $kennelKy,
+        (int) $kennelKy,
+        (int) $kennelKy,
+        (int)$minHashingCount
+      ));
+
+      #Define the page sub title
+      $pageSubTitle = "Days between first hashes and most recent hashes";
+
+      #Define the table caption
+      $tableCaption = "Minimum hashing count: $minHashingCount";
+
+      #Add the results into the twig template
+      $returnValue = $app['twig']->render('career_length_by_day.twig',array(
+        'pageTitle' => "Longest Hashing Career (By Days)",
+        'pageSubTitle' => $pageSubTitle,
+        'tableCaption' => $tableCaption,
+        #'pageCaption' => $pageCaption,
+        #'subTitle1' => 'Standard Statistics',
+        #'subTitle2' => 'Analversary Statistics',
+        #'subTitle3' => 'Hare Statistics',
+        #'subTitle4' => 'Other Statistics',
+        #'url_value' => $urlValue,
+        'theList' => $theResults,
+        #'analversary_number' => $analversary_number,
+        'kennel_abbreviation' => $kennel_abbreviation
+      ));
+
+      #Return the return value
+      return $returnValue;
 
     }
+
+
+    public function highestAverageDaysBetweenHashesAction(Request $request, Application $app, string $kennel_abbreviation){
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      #Define the sql
+      $theSql = LONGEST_HASHING_CAREER_IN_DAYS;
+      $theSql = str_replace("XORDERCOLUMNX","DAYS_BETWEEN_HASHES",LONGEST_HASHING_CAREER_IN_DAYS);
+      $theSql = str_replace("XUPORDOWNX","DESC",$theSql);
+
+      #Define the minimum hashing count
+      $minHashingCount = 2;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array(
+        (int) $kennelKy,
+        (int) $kennelKy,
+        (int) $kennelKy,
+        (int)$minHashingCount
+      ));
+
+      #Define the page sub title
+      $pageSubTitle = "Days between first and last hashes, divided by pi";
+
+      #Define the table caption
+      $tableCaption = "Minimum hashing count: $minHashingCount";
+
+      #Add the results into the twig template
+      $returnValue = $app['twig']->render('career_length_by_day.twig',array(
+        'pageTitle' => "Average days between hashing",
+        'pageSubTitle' => $pageSubTitle,
+        'tableCaption' => $tableCaption,
+        #'pageCaption' => $pageCaption,
+        #'subTitle1' => 'Standard Statistics',
+        #'subTitle2' => 'Analversary Statistics',
+        #'subTitle3' => 'Hare Statistics',
+        #'subTitle4' => 'Other Statistics',
+        #'url_value' => $urlValue,
+        'theList' => $theResults,
+        #'analversary_number' => $analversary_number,
+        'kennel_abbreviation' => $kennel_abbreviation
+      ));
+
+      #Return the return value
+      return $returnValue;
+
+    }
+
+
+    public function lowestAverageDaysBetweenHashesAction(Request $request, Application $app, string $kennel_abbreviation){
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      #Define the sql
+      $theSql = LONGEST_HASHING_CAREER_IN_DAYS;
+      $theSql = str_replace("XORDERCOLUMNX","DAYS_BETWEEN_HASHES",LONGEST_HASHING_CAREER_IN_DAYS);
+      $theSql = str_replace("XUPORDOWNX","ASC",$theSql);
+
+      #Define the minimum hashing count
+      $minHashingCount = 6;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array(
+        (int) $kennelKy,
+        (int) $kennelKy,
+        (int) $kennelKy,
+        (int)$minHashingCount
+      ));
+
+      #Define the page sub title
+      $pageSubTitle = "Days between first and last hashes, divided by pi";
+
+      #Define the table caption
+      $tableCaption = "Minimum hashing count: $minHashingCount";
+
+      #Add the results into the twig template
+      $returnValue = $app['twig']->render('career_length_by_day.twig',array(
+        'pageTitle' => "Average days between hashing",
+        'pageSubTitle' => $pageSubTitle,
+        'tableCaption' => $tableCaption,
+        #'pageCaption' => $pageCaption,
+        #'subTitle1' => 'Standard Statistics',
+        #'subTitle2' => 'Analversary Statistics',
+        #'subTitle3' => 'Hare Statistics',
+        #'subTitle4' => 'Other Statistics',
+        #'url_value' => $urlValue,
+        'theList' => $theResults,
+        #'analversary_number' => $analversary_number,
+        'kennel_abbreviation' => $kennel_abbreviation
+      ));
+
+      #Return the return value
+      return $returnValue;
+
+    }
+
 }

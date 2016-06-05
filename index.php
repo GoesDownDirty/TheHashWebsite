@@ -347,6 +347,10 @@ $app->get('/{kennel_abbreviation}/{analversary_number}/slowest/to/reach/bydays',
 $app->post('/{kennel_abbreviation}/{analversary_number}/quickest/to/reach/bydays', 'HASH\Controller\ObscureStatisticsController::quickestToReachAnalversaryByDaysAction');
 $app->post('/{kennel_abbreviation}/{analversary_number}/slowest/to/reach/bydays', 'HASH\Controller\ObscureStatisticsController::slowestToReachAnalversaryByDaysAction');
 
+$app->get('/{kennel_abbreviation}/longest/career','HASH\Controller\ObscureStatisticsController::longestCareerAction');
+$app->get('/{kennel_abbreviation}/highest/averageDaysBetweenHashes','HASH\Controller\ObscureStatisticsController::highestAverageDaysBetweenHashesAction');
+$app->get('/{kennel_abbreviation}/lowest/averageDaysBetweenHashes','HASH\Controller\ObscureStatisticsController::lowestAverageDaysBetweenHashesAction');
+
 
 # Set the before/after actions
 $app->before(function (Request $request, Application $app) {

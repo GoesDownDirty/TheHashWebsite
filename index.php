@@ -290,6 +290,10 @@ $app->post('/admin/event/deleteHareFromHash',                      'HASH\Control
 $app->post('/admin/event/getHaresForEvent',                        'HASH\Controller\HashEventController::getHaresForEvent');
 $app->post('/admin/event/getHashersForEvent',                      'HASH\Controller\HashEventController::getHashersForEvent');
 
+$app->get('/admin/listhashes',                                     'HASH\Controller\AdminController::listHashesAction');
+$app->get('/admin/listhashers',                                    'HASH\Controller\AdminController::listHashersAction');
+
+
 # Functions for the "by year" statistics
 $app->get('/{kennel_abbreviation}/statistics/getYearInReview/{year_value}',               'HASH\Controller\ObscureStatisticsController::getYearInReviewAction');
 $app->post('/{kennel_abbreviation}/statistics/getHasherCountsByYear',                     'HASH\Controller\ObscureStatisticsController::getHasherCountsByYear');

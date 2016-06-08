@@ -8,9 +8,12 @@
   <head>
     {% block head %}
         <link rel = "stylesheet" href="/vendor/twbs/bootstrap/dist/css/bootstrap.min.css">
+        <link rel = "stylesheet" href="/vendor/datatables/datatables/media/css/dataTables.bootstrap.css">
         <script type = "text/javascript" src = "/vendor/components/jquery/jquery.min.js"></script>
         <script type = "text/javascript" src = "/vendor/ifightcrime/bootstrap-growl/jquery.bootstrap-growl.min.js"></script>
         <script type = "text/javascript" src = "/vendor/twbs/bootstrap/js/collapse.js"></script>
+        <script type = "text/javascript" src = "/vendor/datatables/datatables/media/js/jquery.dataTables.js"></script>
+        <script type = "text/javascript" src = "/vendor/datatables/datatables/media/js/dataTables.bootstrap.min.js"></script>
         <title>{{pageTitle}}</title>
     {% endblock %}
   </head>
@@ -37,7 +40,7 @@
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-8">
             <ul class="nav navbar-nav">
               <li class="active"><a href="/">Home</a></li>
-              <li><a href="/admin/logoutaction">Logout</a></li>
+              <li><a href="{{ path('admin_logoutaction') }}">Logout</a></li>
             </ul>
           </div>
         </div>

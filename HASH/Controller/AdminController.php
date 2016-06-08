@@ -98,7 +98,7 @@ class AdminController
 
       #return $app->redirect('/');
       return $app['twig']->render('admin_landing.twig', array (
-        'pageTitle' => 'This is the admin hello landing screen (page title)',
+        'pageTitle' => 'Site Administration',
         'subTitle1' => 'This is the admin hello landing screen (sub title 1)',
       ));
   }
@@ -114,5 +114,69 @@ class AdminController
       ));
   }
 
+  public function listhashesAction(Request $request, Application $app){
+
+    #Define the SQL to execute
+    $sql = "SELECT
+      KENNEL_ABBREVIATION,
+      HASH_KY,
+      KENNEL_EVENT_NUMBER,
+      EVENT_DATE,
+      DAYNAME(EVENT_DATE) AS EVENT_DAY_NAME,
+      EVENT_LOCATION,
+      EVENT_CITY,
+      EVENT_STATE,
+      SPECIAL_EVENT_DESCRIPTION,
+      IS_HYPER,
+      VIRGIN_COUNT
+    FROM HASHES JOIN KENNELS on HASHES.KENNEL_KY = KENNELS.KENNEL_KY
+    ORDER BY EVENT_DATE DESC";
+
+    #Execute the SQL statement; create an array of rows
+    $hashList = $app['db']->fetchAll($sql);
+
+    # Establish and set the return value
+    $returnValue = $app['twig']->render('admin_hash_list.twig',array(
+      'pageTitle' => 'The List of Hashes',
+      'pageSubTitle' => 'The List of *All* Hashes',
+      'theList' => $hashList,
+      'tableCaption' => 'A list of all hashes ever, since forever.',
+      'kennel_abbreviation' => 'XXX'
+    ));
+
+
+    #Return the return value
+    return $returnValue;
+  }
+
+
+
+  #Define the action
+  public function listHashersAction(Request $request, Application $app){
+
+    #Define the SQL to execute
+    $sql = "SELECT
+      HASHER_KY AS THE_KEY,
+      HASHER_NAME AS NAME,
+      FIRST_NAME,
+      LAST_NAME,
+      EMAIL FROM HASHERS";
+
+    #Execute the SQL statement; create an array of rows
+    $hasherList = $app['db']->fetchAll($sql);
+
+    # Establish and set the return value
+    $returnValue = $app['twig']->render('admin_hasher_list.twig',array(
+      'pageTitle' => 'The List of Hashers',
+      'pageSubTitle' => 'The List of *ALL* Hashers',
+      'theList' => $hasherList,
+      'pageCaption' => "",
+      'tableCaption' => ""
+    ));
+
+    #Return the return value
+    return $returnValue;
+
+  }
 
 }

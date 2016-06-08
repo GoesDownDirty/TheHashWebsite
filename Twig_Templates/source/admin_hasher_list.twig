@@ -1,0 +1,40 @@
+{% extends "admin_base.twig" %}
+
+{% block template %}
+
+
+<script type = "text/javascript" language = "javascript">
+
+  //Call these functions upon page load
+  $(document).ready(function() {
+    //Convert the main table into a data table
+    $('#the_main_table').DataTable({
+      "paging":   false,
+      "aaSorting": []
+    });
+
+  });
+</script>
+
+    <div class="table-responsive">
+    <h3>{{pageTitle}}</h3>
+    <h4>{{pageSubTitle}}</h4>
+    <table class="table table-condensed table-hover" id="the_main_table">
+      <caption><a href="/admin/newhasher/form"><b>Create a person!</b></a></caption>
+      <thead>
+        <tr>
+          <th>Hasher Name</th>
+          <td>Actions</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in theList %}
+          <tr>
+            <td>{{item.NAME}}</td>
+            <td><a href='/admin/modifyhasher/form/{{item.THE_KEY}}'>Modify Person</a></td>
+          </tr>
+        {% endfor %}
+    </table>
+    </div>
+
+{% endblock %}

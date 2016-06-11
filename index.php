@@ -293,6 +293,7 @@ $app->post('/admin/event/getHashersForEvent',                      'HASH\Control
 $app->get('/admin/listhashes',                                     'HASH\Controller\AdminController::listHashesAction');
 $app->get('/admin/listhashers',                                    'HASH\Controller\AdminController::listHashersAction');
 
+$app->get('/admin/d3test','HASH\Controller\AdminController::d3testAction');
 
 # Functions for the "by year" statistics
 $app->get('/{kennel_abbreviation}/statistics/getYearInReview/{year_value}',               'HASH\Controller\ObscureStatisticsController::getYearInReviewAction');

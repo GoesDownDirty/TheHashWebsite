@@ -9,7 +9,7 @@
       {% if is_granted('ROLE_ADMIN') %}
           You are in the ROLE_ADMIN role, and are very special!<br>
       {% elseif is_granted('ROLE_SUPERADMIN') %}
-          You are the ROLE_SUPERADMIN. 
+          You are the ROLE_SUPERADMIN.
       {% else %}
           You seem not to be logged in. How did you get here ?
       {% endif %}
@@ -30,7 +30,9 @@
 
       <div class="col-lg-4">
         <h3><a href="XXX">Secret and dangerous reports</a></h3>
-        These statistics are all about the hahsers. How often they've hared, their favorite hares, all the people they've hashed with, etc.
+        These statistics are all about the hahsers. How often they've hared, their favorite hares, all the people they've hashed with, etc.<br>
+        <a href="/admin/d3test">D3 Test</a>
+
       </div>
     </div>
 

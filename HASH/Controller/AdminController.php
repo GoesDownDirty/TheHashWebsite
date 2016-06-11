@@ -179,4 +179,23 @@ class AdminController
 
   }
 
+  #Define the action
+  public function d3testAction(Request $request, Application $app){
+
+    # Establish and set the return value
+    $returnValue = $app['twig']->render('d3_test.twig',array(
+      'pageTitle' => 'D3 Test Title',
+      'pageSubTitle' => 'D3 Test Subtitle',
+      'pageCaption' => 'D3 Test Page Caption',
+      'tableCaption' => 'D3 Test Table Caption'
+    ));
+
+    # Return the return value
+    return $returnValue;
+
+  }
+
+
+
+
 }

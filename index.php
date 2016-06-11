@@ -106,7 +106,7 @@ $app['controllers']
   ->assert("year_value", "\d+")
   ->assert("kennel_id","\d+")
   ->assert("analversary_number","\d+")
-  ->assert("kennel_abbreviation","^(sch4|SCH4|SCH4BASH|sch4bash)$")
+  ->assert("kennel_abbreviation","^(sch4|SCH4|SCH4BASH|sch4bash|LVH3|lvh3)$")
   ;
 #-------------------------------------------------------------------------------
 

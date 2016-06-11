@@ -101,12 +101,31 @@ class HashEventController
         'Is_Hyper' => $hashValue['IS_HYPER'],
     );
 
+    #Obtain list of kennels
+    $kennelsSQL = "SELECT KENNEL_KY, KENNEL_ABBREVIATION  FROM KENNELS WHERE IN_RECORD_KEEPING = 1";
+
+    #Execute the SQL statement; create an array of rows
+    $kennelList = $app['db']->fetchAll($kennelsSQL);
+
+    #Convert kennel list to the appropriate format for a dropdown menu
+    $kennelDropdown = array();
+    foreach ($kennelList as $kennelValue){
+      $tempKennelAbbreviation = $kennelValue['KENNEL_ABBREVIATION'];
+      $tempKennelKey = $kennelValue['KENNEL_KY'];
+      $kennelDropdown[$tempKennelAbbreviation] = $tempKennelKey;
+    }
+
     $formFactoryThing = $app['form.factory']->createBuilder(FormType::class, $data)
-      ->add('Kennel_KY', TextType::class, array(
-              'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 1)))
-          ))
+      #->add('Kennel_KY', TextType::class, array(
+      #        'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 1)))
+      #    ))
+
+      ->add('Kennel_KY', ChoiceType::class, array(
+        'choices' => array($kennelDropdown)
+      ))
+
       ->add('Hash_KY')
-      ->add('Kennel_KY')
+      #->add('Kennel_KY')
       ->add('Kennel_Event_Number')
       ->add('Event_Date')
       ->add('Event_Location')
@@ -205,13 +224,33 @@ class HashEventController
   #Define the action
   public function adminCreateHashAction(Request $request, Application $app){
 
+
+    #Obtain list of kennels
+    $kennelsSQL = "SELECT KENNEL_KY, KENNEL_ABBREVIATION  FROM KENNELS WHERE IN_RECORD_KEEPING = 1";
+
+    #Execute the SQL statement; create an array of rows
+    $kennelList = $app['db']->fetchAll($kennelsSQL);
+
+    #Convert kennel list to the appropriate format for a dropdown menu
+    $kennelDropdown = array();
+    foreach ($kennelList as $kennelValue){
+      $tempKennelAbbreviation = $kennelValue['KENNEL_ABBREVIATION'];
+      $tempKennelKey = $kennelValue['KENNEL_KY'];
+      $kennelDropdown[$tempKennelAbbreviation] = $tempKennelKey;
+    }
+
     $tempDateTime = new \DateTime();
     $tempDateTime->setTime(16,0,0);
 
     $formFactoryThing = $app['form.factory']->createBuilder(FormType::class)
-      ->add('Kennel_KY', TextType::class, array(
-              'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 1)))
-          ))
+      #->add('Kennel_KY', TextType::class, array(
+      #        'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 1)))
+      #    ))
+
+
+      ->add('Kennel_KY', ChoiceType::class, array(
+        'choices' => array($kennelDropdown)
+      ))
       ->add('Hash_KY')
       ->add('Kennel_Event_Number')
       ->add('Event_Date', DatetimeType::class,array(

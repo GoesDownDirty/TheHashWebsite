@@ -254,7 +254,8 @@ class HashEventController
       ->add('Hash_KY')
       ->add('Kennel_Event_Number')
       ->add('Event_Date', DatetimeType::class,array(
-        'data' => $tempDateTime
+        'data' => $tempDateTime,
+        'years' => range(Date('Y'), 1980),
         ))
       ->add('Event_Location')
       ->add('Event_City', TextType::class, array(
@@ -381,14 +382,23 @@ class HashEventController
         FROM HASHERS
         ORDER BY HASHER_NAME";
 
+      #Obtain hash event information
+      $hashEventInfoSQL = "SELECT * FROM HASHES JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
+
       #Execute the SQL statement; create an array of rows
       $hasherList = $app['db']->fetchAll($hasherListSQL,array((int)$hash_id));
       $hareList = $app['db']->fetchAll($hareListSQL,array((int)$hash_id));
       $allHashersList = $app['db']->fetchAll($allHashersSQL);
+      $hashEvent = $app['db']->fetchAssoc($hashEventInfoSQL,array((int)$hash_id));
+
+      $kennelAbbreviation = $hashEvent['KENNEL_ABBREVIATION'];
+      $kennelEventNumber = $hashEvent['KENNEL_EVENT_NUMBER'];
+      $eventDate = $hashEvent['EVENT_DATE'];
+      $pageTitle = "Participation: $kennelAbbreviation # $kennelEventNumber ($eventDate)";
 
       #Establish the return value
       $returnValue = $app['twig']->render('event_participation.twig', array (
-        'pageTitle' => 'Hash Event Participation',
+        'pageTitle' => $pageTitle,
         'pageSubTitle' => 'Not Sure',
         'pageHeader' => 'Why is this so complicated ?',
         'hasherList' => $hasherList,

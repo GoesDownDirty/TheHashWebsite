@@ -23,10 +23,10 @@
          $(div_value).append('<table id="maintable1">');
           $(div_value).append('<thead>');
             $(div_value).append('<tr>');
-              $(div_value).append('<th>' +c1+ '</th>');
-              $(div_value).append('<th>' +c2+ '</th>');
-              $(div_value).append('<th>' +c3+ '</th>');
-              $(div_value).append('<th>' +c4+ '</th>');
+              $(div_value).append('<th>' +c1+ '</th> &nbsp; | ');
+              $(div_value).append('<th>' +c2+ '</th> &nbsp; | ');
+              $(div_value).append('<th>' +c3+ '</th> &nbsp; | ');
+              $(div_value).append('<th>' +c4+ '</th> &nbsp; | ');
             $(div_value).append('</tr>');
           $(div_value).append('</thead>');
          $(div_value).append('<tbody>');
@@ -34,11 +34,11 @@
          $.each(data, function(key,row) {
            $(div_value).append('<tr>');
             $(div_value).append('<td>'+ row.HASHER_NAME + '</td>');
-            $(div_value).append('<td>'+row.FIRST_HASH_KEY+'</td>');
-            $(div_value).append('<td>'+row.ANALVERSARY_HASH_KY+'</td>');
+            //$(div_value).append('<td>'+row.FIRST_HASH_KEY+'</td>');
+            //$(div_value).append('<td>'+row.ANALVERSARY_HASH_KY+'</td>');
 
-            //$(div_value).append('<td><a href="/{{kennel_abbreviation}}/hashes/'+row.FIRST_HASH_KEY+'">'+ row.FIRST_HASH_DATE + '</a></td>');
-            //$(div_value).append('<td><a href="/{{kennel_abbreviation}}/hashes/'+row.ANALVERSARY_HASH_KY+'">'+ row.ANALVERSARY_DATE + '</a></td>');
+            $(div_value).append('<td><a href="/{{kennel_abbreviation}}/hashes/'+row.FIRST_HASH_KEY+'">'+ row.FIRST_HASH_DATE + '</a></td>');
+            $(div_value).append('<td><a href="/{{kennel_abbreviation}}/hashes/'+row.ANALVERSARY_HASH_KY+'">'+ row.ANALVERSARY_DATE + '</a></td>');
             $(div_value).append('<td>'+ row.DAYS_TO_REACH_ANALVERSARY + '</td>');
            $(div_value).append('</tr>');
          });
@@ -64,7 +64,7 @@
 
     //Call these functions upon page load
     $(document).ready(function() {
-      getListData("{{url_value}}","#location_of_main_table","Hasher","First Hash Date","Analversary Hash Date","Days to reach analversary");
+      getListData("{{url_value}}","#location_of_main_table","Hasher Name","First Hash Date","Analversary Hash Date","Days to Reach Analversary");
 
 
     });
@@ -74,6 +74,7 @@
 
   <h1>{{pageTitle}}</h1>
   <div id="location_of_main_table">
+    <!--
     <table id="maintable1">
       <thead>
         <tr>
@@ -84,8 +85,10 @@
         </tr>
       </thead>
     </table>
+  -->
   </div>
 
+<!--
   <table id="maintable2">
     <thead>
             <tr>
@@ -108,6 +111,6 @@
           </tr>
         </tbody>
       </table>
-
+-->
 
 {% endblock %}

@@ -671,7 +671,7 @@ class ObscureStatisticsController{
       $theSql = str_replace("XORDERX","ASC",$theSql);
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $kennelKy));
+      $theResults = $app['db']->fetchAll($theSql, array((int) $kennelKy,(int) $kennelKy));
 
       #Set the return value
       $returnValue = $app->json($theResults,200);
@@ -726,7 +726,7 @@ class ObscureStatisticsController{
       $theSql = str_replace("XORDERX","DESC",$theSql);
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $kennelKy));
+      $theResults = $app['db']->fetchAll($theSql, array((int) $kennelKy,(int) $kennelKy));
 
       #Set the return value
       $returnValue = $app->json($theResults,200);

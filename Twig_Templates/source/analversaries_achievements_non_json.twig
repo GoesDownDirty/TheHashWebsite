@@ -1,0 +1,45 @@
+{% extends "fullwidth.twig" %}
+
+{% block content %}
+
+<script type = "text/javascript" language = "javascript">
+
+  //Call these functions upon page load
+  $(document).ready(function() {
+    //Convert the main table into a data table
+    $('#the_main_table').DataTable({
+      "paging":   false,
+      "aaSorting": []
+    });
+
+  });
+</script>
+
+
+<h1>{{pageTitle}}</h1>
+<h3>{{pageSubTitle}}</h3>
+<div class="table-responsive">
+<table class="table table-condensed table-hover" id="the_main_table">
+  <caption>{{tableCaption}}</caption>
+  <thead>
+    <tr>
+      <th>Hasher Name</th>
+      <td>First Hash</td>
+      <td>Analversary Hash</td>
+      <td>Days to reach analversary</td>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in theList %}
+      <tr>
+        <td><a href='/{{kennel_abbreviation}}/hashers/{{item.HASHER_KY}}'>{{item.HASHER_NAME}}</a></td>
+        <td><a href='/{{kennel_abbreviation}}/hashes/{{item.FIRST_HASH_KY}}'>{{item.FIRST_HASH_DATE}}</a></td>
+        <td><a href='/{{kennel_abbreviation}}/hashes/{{item.ANALVERSARY_HASH_KY}}'>{{item.ANALVERSARY_DATE}}</a></td>
+        <td>{{item.DAYS_TO_REACH_ANALVERSARY}}</td>
+      </tr>
+    {% endfor %}
+</table>
+</div>
+
+
+{% endblock %}

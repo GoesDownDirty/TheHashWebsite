@@ -196,6 +196,126 @@ class AdminController
   }
 
 
+  public function newPasswordAction(Request $request, Application $app){
+
+
+    $formFactoryThing = $app['form.factory']->createBuilder(FormType::class, $data)
+
+      ->add('Current_Password', TextType::class, array('constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 3)))))
+      ->add('New_Password_Initial', TextType::class, array('constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 8)))))
+      ->add('New_Password_Confirmation', TextType::class, array('constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 8)))));
+
+
+    $formFactoryThing->add('save', SubmitType::class, array('label' => 'Change your password!'));
+    $formFactoryThing->setAction('#');
+    $formFactoryThing->setMethod('POST');
+    $form=$formFactoryThing->getForm();
+
+
+    $form->handleRequest($request);
+
+    if($request->getMethod() == 'POST'){
+
+      if ($form->isValid()) {
+          #Obtain the name/value pairs from the form
+          $data = $form->getData();
+
+          #Establish the values from the form
+          $tempCurrentPassword = $data['Current_Password'];
+          $tempNewPasswordInitial = $data['New_Password_Initial'];
+          $tempNewPasswordConfirmation = $data['New_Password_Confirmation'];
+
+          #Establish the userid value
+          $token = $app['security.token_storage']->getToken();
+          if (null !== $token) {
+            $userid = $token->getUser();
+          }
+
+          // find the encoder for a UserInterface instance
+          $encoder = $app['security.encoder_factory']->getEncoder($userid);
+
+          // compute the encoded password for the new password
+          $encodedNewPassword = $encoder->encodePassword($tempNewPasswordInitial, $userid->getSalt());
+
+          // compute the encoded password for the current password
+          $encodedCurrentPassword = $encoder->encodePassword($tempCurrentPassword, $userid->getSalt());
+
+
+
+          #Check if the current password is valid
+          # Declare the SQL used to retrieve this information
+          $sql = "SELECT * FROM USERS WHERE USERNAME = ? AND PASSWORD = ?";
+
+          # Make a database call to obtain the hasher information
+          $retrievedUserValue = $app['db']->fetchAssoc($sql, array((string) $userid, (string) $encodedCurrentPassword));
+          $sizeOfRetrievedUserValueArray = sizeof($retrievedUserValue);
+
+
+          # If there are more than one columns, then it is valid
+          $foundValidationError=FALSE;
+          $validCurrentPassword = FALSE;
+          if($sizeOfRetrievedUserValueArray > 1){
+            $validCurrentPassword = TRUE;
+          }else{
+            $app['session']->getFlashBag()->add('danger', 'Wrong! You screwed up your current password.');
+            $foundValidationError=TRUE;
+          }
+
+          #Check if the initial new password and the confirmation new password match
+          $validNewPasswordsMatch = FALSE;
+          if($tempNewPasswordInitial == $tempNewPasswordConfirmation){
+            $validNewPasswordsMatch = TRUE;
+          }else{
+            $app['session']->getFlashBag()->add('danger', 'Wrong! The new passwords do not match.');
+            $foundValidationError=TRUE;
+          }
+
+
+          #Check if the new password matches password complexity requirements
+          $validPasswordComplexity = FALSE;
+          if (preg_match_all('$\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])(?=\S*[\W])\S*$', $tempNewPasswordInitial)){
+            $validPasswordComplexity = TRUE;
+          }else{
+            $app['session']->getFlashBag()->add('danger', 'Wrong! Your proposed password is too simple. It must be 8 characters long, contain a lower case letter, an upper case letter, and a special character!');
+            $foundValidationError=TRUE;
+          }
+
+          if(!$foundValidationError){
+            #Define the SQL for the password update
+            $updateSql = "UPDATE USERS SET PASSWORD = ? WHERE USERNAME = ?";
+
+            #Run the update SQL
+            $app['dbs']['mysql_write']->executeUpdate($updateSql,array($encodedNewPassword,$userid));
+
+            #Show the confirmation message
+            $app['session']->getFlashBag()->add('success', 'Success! You updated your password. Probably.');
+          }
+
+      } else{
+        $app['session']->getFlashBag()->add('danger', 'Wrong! You screwed up.');
+      }
+
+    }
+
+    #Establish the userid value
+    $token = $app['security.token_storage']->getToken();
+    if (null !== $token) {
+      $userid = $token->getUser();
+    }
+
+    $returnValue = $app['twig']->render('admin_change_password_form.twig', array (
+      'pageTitle' => 'Password change',
+      'pageHeader' => 'Your new password must contain letters, numbers, an odd number of prime numbers.',
+      'form' => $form->createView(),
+      'userid' => $userid,
+    ));
+
+    #Return the return value
+    return $returnValue;
+
+  }
+
+
 
 
 }

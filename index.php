@@ -278,6 +278,12 @@ $app->post('/admin/modifyhasher/form/{hasher_id}',                'HASH\Controll
 $app->get('/admin/newhasher/form',                                'HASH\Controller\HashPersonController::createHashPersonAction');
 $app->post('/admin/newhasher/form',                               'HASH\Controller\HashPersonController::createHashPersonAction');
 
+# Change admin password
+#XXXXXXX
+$app->get('/admin/newPassword/form',                                'HASH\Controller\AdminController::newPasswordAction');
+$app->post('/admin/newPassword/form',                               'HASH\Controller\AdminController::newPasswordAction');
+
+
 # Modify the participation for an event
 $app->get('/admin/event/manageparticipation/{hash_id}',            'HASH\Controller\HashEventController::hashParticipationAction');
 

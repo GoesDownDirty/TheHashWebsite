@@ -1302,8 +1302,27 @@ public function analversaryStatsAction(Request $request, Application $app, strin
 
 public function cautionaryStatsAction(Request $request, Application $app, string $kennel_abbreviation){
 
+  #Establish an array of ridiculous statistics
+  $arrayOfRidiculousness = array(
+    "Hashes where multiple hare crimes were comitted",
+    "Hashes where multiple STDs were contrated",
+    "Hashes where someone got pregnant",
+    "Hashes where someone was sexually harassed",
+    "Hashes where several of the seven deadly sins were comitted",
+    "Hashes where Hot Tub talked about his childhood friend, Abe Lincoln",
+    "Hashes where someone coveted their neighbor's wife",
+    "Hashes where blaspheming took place",
+    "Hashes where hashers were mocked for their Kentucky heritage",
+    "Hashes where hashers were mocked for their Michigan heritage"
+  );
+
+  #Establish the keys of the random values to display
+  $randomKeys = array_rand($arrayOfRidiculousness, 5);
+
   # Establish and set the return value
   $returnValue = $app['twig']->render('cautionary_stats.twig',array(
+    'listOfRidiculousness' => $arrayOfRidiculousness,
+    'randomKeys' => $randomKeys,
     'pageTitle' => 'Cautionary Statistics',
     'kennel_abbreviation' => $kennel_abbreviation
   ));
@@ -1316,8 +1335,33 @@ public function cautionaryStatsAction(Request $request, Application $app, string
 
 public function miscellaneousStatsAction(Request $request, Application $app, string $kennel_abbreviation){
 
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  #SQL to determine the distinct year values
+  $sql = "SELECT YEAR(EVENT_DATE) AS YEAR, COUNT(*) AS THE_COUNT
+  FROM HASHES
+  WHERE
+  	KENNEL_KY = ?
+  GROUP BY YEAR(EVENT_DATE)
+  ORDER BY YEAR(EVENT_DATE) DESC";
+
+  #Execute the SQL statement; create an array of rows
+  $yearValues = $app['db']->fetchAll($sql,array( (int) $kennelKy));
+
+  #Obtain the first hash
+  $firstHashSQL = "SELECT * FROM HASHES WHERE KENNEL_KY = ? ORDER BY EVENT_DATE ASC LIMIT 1";
+  $firstHashValue = $app['db']->fetchAssoc($firstHashSQL, array((int) $kennelKy));
+
+  #Obtain the most recent hash
+  $mostRecentHashSQL = "SELECT * FROM HASHES WHERE KENNEL_KY = ? ORDER BY EVENT_DATE DESC LIMIT 1";
+  $mostRecentHashValue = $app['db']->fetchAssoc($mostRecentHashSQL, array((int) $kennelKy));
+
   # Establish and set the return value
   $returnValue = $app['twig']->render('miscellaneous_stats.twig',array(
+    'firstEvent' => $firstHashValue,
+    'mostRecentEvent' => $mostRecentHashValue,
+    'theYearValues' => $yearValues,
     'pageTitle' => 'Miscellaneous Statistics',
     'kennel_abbreviation' => $kennel_abbreviation
   ));

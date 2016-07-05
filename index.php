@@ -366,6 +366,14 @@ $app->get('/{kennel_abbreviation}/highest/averageDaysBetweenHashes','HASH\Contro
 $app->get('/{kennel_abbreviation}/lowest/averageDaysBetweenHashes','HASH\Controller\ObscureStatisticsController::lowestAverageDaysBetweenHashesAction');
 
 
+$app->get('/{kennel_abbreviation}/highest/allharings/averageDaysBetweenHarings','HASH\Controller\ObscureStatisticsController::highestAverageDaysBetweenAllHaringsAction');
+$app->get('/{kennel_abbreviation}/lowest/allharings/averageDaysBetweenHarings','HASH\Controller\ObscureStatisticsController::lowestAverageDaysBetweenAllHaringsAction');
+$app->get('/{kennel_abbreviation}/highest/nonhyperharings/averageDaysBetweenHarings','HASH\Controller\ObscureStatisticsController::highestAverageDaysBetweenNonHyperHaringsAction');
+$app->get('/{kennel_abbreviation}/lowest/nonhyperharings/averageDaysBetweenHarings','HASH\Controller\ObscureStatisticsController::lowestAverageDaysBetweenNonHyperHaringsAction');
+
+$app->get('/{kennel_abbreviation}/highest/attendedHashes','HASH\Controller\HashController::highestAttendedHashesAction');
+$app->get('/{kennel_abbreviation}/lowest/attendedHashes','HASH\Controller\HashController::lowestAttendedHashesAction');
+
 # Set the before/after actions
 $app->before(function (Request $request, Application $app) {
 });

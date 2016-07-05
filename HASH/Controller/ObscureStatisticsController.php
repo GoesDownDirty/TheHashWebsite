@@ -965,4 +965,198 @@ class ObscureStatisticsController{
 
     }
 
+
+
+    public function lowestAverageDaysBetweenAllHaringsAction(Request $request, Application $app, string $kennel_abbreviation){
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      #Define the sql
+      $theSql = LOWEST_NUMBER_OF_DAYS_BETWEEN_HARINGS;
+      $theSql = str_replace("XORDERCOLUMNX","DAYS_BETWEEN_HARINGS",$theSql);
+      $theSql = str_replace("XUPORDOWNX","ASC",$theSql);
+
+      #Define the minimum haring count
+      $minHaringCount = 2;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array(
+        (int) $kennelKy,
+        (int) 0,
+        (int) 1,
+        (int) $kennelKy,
+        (int) 0,
+        (int) 1,
+        (int) $kennelKy,
+        (int) 0,
+        (int) 1,
+        (int)$minHaringCount
+      ));
+
+      #Define the page sub title
+      $pageSubTitle = "Days between first and last harings, divided by pi";
+
+      #Define the table caption
+      $tableCaption = "Minimum haring count: $minHaringCount";
+
+      #Add the results into the twig template
+      $returnValue = $app['twig']->render('haring_career_length_by_day.twig',array(
+        'pageTitle' => "Average days between harings",
+        'pageSubTitle' => $pageSubTitle,
+        'tableCaption' => $tableCaption,
+        'theList' => $theResults,
+        'kennel_abbreviation' => $kennel_abbreviation
+      ));
+
+      #Return the return value
+      return $returnValue;
+
+    }
+
+    public function highestAverageDaysBetweenAllHaringsAction(Request $request, Application $app, string $kennel_abbreviation){
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      #Define the sql
+      $theSql = LOWEST_NUMBER_OF_DAYS_BETWEEN_HARINGS;
+      $theSql = str_replace("XORDERCOLUMNX","DAYS_BETWEEN_HARINGS",$theSql);
+      $theSql = str_replace("XUPORDOWNX","DESC",$theSql);
+
+      #Define the minimum haring count
+      $minHaringCount = 2;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array(
+        (int) $kennelKy,
+        (int) 0,
+        (int) 1,
+        (int) $kennelKy,
+        (int) 0,
+        (int) 1,
+        (int) $kennelKy,
+        (int) 0,
+        (int) 1,
+        (int)$minHaringCount
+      ));
+
+      #Define the page sub title
+      $pageSubTitle = "Days between first and last harings, divided by pi";
+
+      #Define the table caption
+      $tableCaption = "Minimum haring count: $minHaringCount";
+
+      #Add the results into the twig template
+      $returnValue = $app['twig']->render('haring_career_length_by_day.twig',array(
+        'pageTitle' => "Average days between harings",
+        'pageSubTitle' => $pageSubTitle,
+        'tableCaption' => $tableCaption,
+        'theList' => $theResults,
+        'kennel_abbreviation' => $kennel_abbreviation
+      ));
+
+      #Return the return value
+      return $returnValue;
+
+    }
+
+
+
+    public function lowestAverageDaysBetweenNonHyperHaringsAction(Request $request, Application $app, string $kennel_abbreviation){
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      #Define the sql
+      $theSql = LOWEST_NUMBER_OF_DAYS_BETWEEN_HARINGS;
+      $theSql = str_replace("XORDERCOLUMNX","DAYS_BETWEEN_HARINGS",$theSql);
+      $theSql = str_replace("XUPORDOWNX","ASC",$theSql);
+
+      #Define the minimum haring count
+      $minHaringCount = 5;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array(
+        (int) $kennelKy,
+        (int) 0,
+        (int) 0,
+        (int) $kennelKy,
+        (int) 0,
+        (int) 0,
+        (int) $kennelKy,
+        (int) 0,
+        (int) 0,
+        (int)$minHaringCount
+      ));
+
+      #Define the page sub title
+      $pageSubTitle = "Days between first and last harings (non-hyper hashes only)";
+
+      #Define the table caption
+      $tableCaption = "Minimum haring count: $minHaringCount";
+
+      #Add the results into the twig template
+      $returnValue = $app['twig']->render('haring_career_length_by_day.twig',array(
+        'pageTitle' => "Average days between harings",
+        'pageSubTitle' => $pageSubTitle,
+        'tableCaption' => $tableCaption,
+        'theList' => $theResults,
+        'kennel_abbreviation' => $kennel_abbreviation
+      ));
+
+      #Return the return value
+      return $returnValue;
+
+    }
+
+
+    public function highestAverageDaysBetweenNonHyperHaringsAction(Request $request, Application $app, string $kennel_abbreviation){
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      #Define the sql
+      $theSql = LOWEST_NUMBER_OF_DAYS_BETWEEN_HARINGS;
+      $theSql = str_replace("XORDERCOLUMNX","DAYS_BETWEEN_HARINGS",$theSql);
+      $theSql = str_replace("XUPORDOWNX","DESC",$theSql);
+
+      #Define the minimum haring count
+      $minHaringCount = 2;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array(
+        (int) $kennelKy,
+        (int) 0,
+        (int) 0,
+        (int) $kennelKy,
+        (int) 0,
+        (int) 0,
+        (int) $kennelKy,
+        (int) 0,
+        (int) 0,
+        (int)$minHaringCount
+      ));
+
+      #Define the page sub title
+      $pageSubTitle = "Days between first and last harings (non-hyper hashes only)";
+
+      #Define the table caption
+      $tableCaption = "Minimum haring count: $minHaringCount";
+
+      #Add the results into the twig template
+      $returnValue = $app['twig']->render('haring_career_length_by_day.twig',array(
+        'pageTitle' => "Average days between harings",
+        'pageSubTitle' => $pageSubTitle,
+        'tableCaption' => $tableCaption,
+        'theList' => $theResults,
+        'kennel_abbreviation' => $kennel_abbreviation
+      ));
+
+      #Return the return value
+      return $returnValue;
+
+    }
+
+
 }

@@ -1302,29 +1302,54 @@ public function analversaryStatsAction(Request $request, Application $app, strin
 
 public function cautionaryStatsAction(Request $request, Application $app, string $kennel_abbreviation){
 
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  #Establish the hasher keys for all hares for this kennel
+  $hareKeysSQL = "SELECT HARINGS_HASHER_KY AS HARE_KEY
+    FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+    WHERE HASHES.KENNEL_KY = ? ORDER BY RAND() LIMIT 5";
+
+  #Execute the SQL statement; create an array of rows
+  $hareKeys = $app['db']->fetchAll($hareKeysSQL,array( (int) $kennelKy));
+
   #Establish an array of ridiculous statistics
   $arrayOfRidiculousness = array(
-    "Hashes where multiple hare crimes were comitted",
-    "Hashes where multiple STDs were contrated",
+    "Hashes where VD was contrated",
     "Hashes where someone got pregnant",
     "Hashes where someone was sexually harassed",
-    "Hashes where several of the seven deadly sins were comitted",
     "Hashes where Hot Tub talked about his childhood friend, Abe Lincoln",
     "Hashes where someone coveted their neighbor's wife",
-    "Hashes where blaspheming took place",
     "Hashes where hashers were mocked for their Kentucky heritage",
-    "Hashes where hashers were mocked for their Michigan heritage"
+    "Hashes where hashers were mocked for their Michigan heritage",
+    "Hashes where people did it on trail",
+    "Hashes where a hasher was arrested",
+    "Hashes where the police showed up",
+    "Hashes where religious leaders drank with us",
+    "Hashes where the Pope ran trail",
+    "Hashes where the streams were crossed",
+    "Hashes where no harriettes showed up",
+    "Hashes that could have used better beer",
+    "Hashes that could have used a better trail",
+    "Hashes that could have used better hares",
+    "Hashes that caused somebody to move away",
+    "Hashes where someone shat on trail",
+    "Hashes where someone called the police on us",
+    "Hashes that brought great shame to everyone involved",
+    "Hashes where dogs did it on trail"
+
   );
 
   #Establish the keys of the random values to display
-  $randomKeys = array_rand($arrayOfRidiculousness, 5);
+  $randomKeysForRidiculousStats = array_rand($arrayOfRidiculousness, 5);
 
   # Establish and set the return value
   $returnValue = $app['twig']->render('cautionary_stats.twig',array(
     'listOfRidiculousness' => $arrayOfRidiculousness,
-    'randomKeys' => $randomKeys,
+    'randomKeysForRidiculousStats' => $randomKeysForRidiculousStats,
     'pageTitle' => 'Cautionary Statistics',
-    'kennel_abbreviation' => $kennel_abbreviation
+    'kennel_abbreviation' => $kennel_abbreviation,
+    'hareKeys' => $hareKeys
   ));
 
   #Return the return value
@@ -1363,6 +1388,62 @@ public function miscellaneousStatsAction(Request $request, Application $app, str
     'mostRecentEvent' => $mostRecentHashValue,
     'theYearValues' => $yearValues,
     'pageTitle' => 'Miscellaneous Statistics',
+    'kennel_abbreviation' => $kennel_abbreviation
+  ));
+
+  #Return the return value
+  return $returnValue;
+
+}
+
+
+public function highestAttendedHashesAction(Request $request, Application $app, string $kennel_abbreviation){
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  #Define the sql
+  $theSql = HASH_EVENTS_WITH_COUNTS;
+  $theSql = str_replace("XLIMITX","25",$theSql);
+  $theSql = str_replace("XUPORDOWNX","DESC",$theSql);
+
+  #Execute the SQL statement; create an array of rows
+  $theList = $app['db']->fetchAll($theSql,array((int) $kennelKy));
+
+  # Establish and set the return value
+  $returnValue = $app['twig']->render('hash_events_with_participation_counts.twig',array(
+    'theList' => $theList,
+    'pageTitle' => 'The Hashes',
+    'pageSubTitle' => '...with the best attendances',
+    'tableCaption' => '',
+    'kennel_abbreviation' => $kennel_abbreviation
+  ));
+
+  #Return the return value
+  return $returnValue;
+
+}
+
+
+public function lowestAttendedHashesAction(Request $request, Application $app, string $kennel_abbreviation){
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  #Define the sql
+  $theSql = HASH_EVENTS_WITH_COUNTS;
+  $theSql = str_replace("XLIMITX","25",$theSql);
+  $theSql = str_replace("XUPORDOWNX","ASC",$theSql);
+
+  #Execute the SQL statement; create an array of rows
+  $theList = $app['db']->fetchAll($theSql,array((int) $kennelKy));
+
+  # Establish and set the return value
+  $returnValue = $app['twig']->render('hash_events_with_participation_counts.twig',array(
+    'theList' => $theList,
+    'pageTitle' => 'The Hashes',
+    'pageSubTitle' => '...with the worst attendances',
+    'tableCaption' => '',
     'kennel_abbreviation' => $kennel_abbreviation
   ));
 

@@ -6,8 +6,13 @@
         <div class="col-lg-6">
           <h3>Hashes where bad things happened</h3>
 
-          {% for randomKey in randomKeys %}
-            <a href='/{{kennel_abbreviation}}/listhashes' >{{listOfRidiculousness[randomKey]}}</a><br>
+          {% for randomKey in randomKeysForRidiculousStats %}
+            {% if (loop.index0 is even) %}
+              <a href='/{{kennel_abbreviation}}/listhashes/byhasher/{{hareKeys[loop.index0].HARE_KEY}}'>{{listOfRidiculousness[randomKey]}}</a><br>
+            {% endif %}
+            {% if (loop.index0 is odd) %} 
+              <a href='/{{kennel_abbreviation}}/listhashes/byhare/{{hareKeys[loop.index0].HARE_KEY}}'>{{listOfRidiculousness[randomKey]}}</a><br>
+            {% endif %}
           {% endfor %}
 
 

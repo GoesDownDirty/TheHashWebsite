@@ -1452,5 +1452,81 @@ public function lowestAttendedHashesAction(Request $request, Application $app, s
 
 }
 
+public function hashersOfTheYearsAction(Request $request, Application $app, string $kennel_abbreviation){
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  #SQL to determine the distinct year values
+  $distinctYearsSql = "SELECT YEAR(EVENT_DATE) AS YEAR, COUNT(*) AS THE_COUNT
+  FROM HASHES
+  WHERE
+  	KENNEL_KY = ?
+  GROUP BY YEAR(EVENT_DATE)
+  ORDER BY YEAR(EVENT_DATE) DESC";
+
+  #Execute the SQL statement; create an array of rows
+  $yearValues = $app['db']->fetchAll($distinctYearsSql,array( (int) $kennelKy));
+
+  #Define the sql
+  $topHashersSql = "SELECT 		* , ? AS THE_YEAR,
+	  (SELECT COUNT(*) AS THE_HASH_COUNT FROM HASHES WHERE KENNEL_KY = ? AND YEAR(HASHES.EVENT_DATE) = ?) AS THE_YEARS_HASH_COUNT,
+    (THE_TEMPORARY_TABLE.THE_COUNT / (SELECT COUNT(*) AS THE_HASH_COUNT FROM HASHES WHERE KENNEL_KY = ? AND YEAR(HASHES.EVENT_DATE) = ?))*100 AS HASHING_PERCENTAGE
+  FROM HASHERS JOIN (
+    	SELECT HASHERS.HASHER_KY AS THE_HASHER_KY, COUNT(*) AS THE_COUNT
+    	FROM HASHINGS
+    		JOIN HASHERS ON HASHINGS.HASHER_KY = HASHERS.HASHER_KY
+    		JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+    	WHERE
+    		HASHES.KENNEL_KY = ?
+    		AND YEAR(HASHES.EVENT_DATE) = ?
+    	GROUP BY HASHERS.HASHER_KY
+    	ORDER BY THE_COUNT DESC
+    	LIMIT XLIMITX
+    ) AS THE_TEMPORARY_TABLE on HASHERS.HASHER_KY = THE_TEMPORARY_TABLE.THE_HASHER_KY";
+  $topHashersSql = str_replace("XLIMITX","12",$topHashersSql);
+
+
+  #Initialize the array of arrays
+  $array = array();
+
+  #Loop through the year values
+  for ($tempCounter = 1; $tempCounter <= sizeof($yearValues); $tempCounter++){
+
+    #Establish the year for this loop iteration
+    $tempYear = $yearValues[$tempCounter-1]["YEAR"];
+
+    #Make a database call passing in this iteration's year value
+    $tempResult = $app['db']->fetchAll($topHashersSql,array(
+      (int) $tempYear,
+      (int) $kennelKy,
+      (int) $tempYear,
+      (int) $kennelKy,
+      (int) $tempYear,
+      (int) $kennelKy,
+      (int) $tempYear));
+
+    #Add the database result set to the array of arrays
+    $array[] = $tempResult;
+
+  }
+
+
+
+  # Establish and set the return value
+  $returnValue = $app['twig']->render('top_participants_by_years.twig',array(
+    'theListOfLists' => $array,
+    #'tempList' => $tempResult,
+    'pageTitle' => 'Top Hashers Per Year',
+    'pageSubTitle' => '',
+    'tableCaption' => '',
+    'kennel_abbreviation' => $kennel_abbreviation
+  ));
+
+  #Return the return value
+  return $returnValue;
+
+}
+
 
 }

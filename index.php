@@ -375,6 +375,8 @@ $app->get('/{kennel_abbreviation}/highest/attendedHashes','HASH\Controller\HashC
 $app->get('/{kennel_abbreviation}/lowest/attendedHashes','HASH\Controller\HashController::lowestAttendedHashesAction');
 
 $app->get('/{kennel_abbreviation}/hashers/of/the/years','HASH\Controller\HashController::hashersOfTheYearsAction');
+$app->get('/{kennel_abbreviation}/hares/overall/of/the/years','HASH\Controller\HashController::overallHaresOfTheYearsAction');
+$app->get('/{kennel_abbreviation}/hares/nonhyper/of/the/years','HASH\Controller\HashController::nonHyperHaresOfTheYearsAction');
 
 # Set the before/after actions
 $app->before(function (Request $request, Application $app) {

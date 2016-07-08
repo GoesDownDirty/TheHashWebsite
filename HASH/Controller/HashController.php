@@ -1382,13 +1382,18 @@ public function miscellaneousStatsAction(Request $request, Application $app, str
   $mostRecentHashSQL = "SELECT * FROM HASHES WHERE KENNEL_KY = ? ORDER BY EVENT_DATE DESC LIMIT 1";
   $mostRecentHashValue = $app['db']->fetchAssoc($mostRecentHashSQL, array((int) $kennelKy));
 
+  #Obtain the kennels that are being tracked in this website instance
+  $listOfKennelsSQL = "SELECT * FROM KENNELS WHERE IN_RECORD_KEEPING = 1";
+  $kennelValues = $app['db']->fetchAll($listOfKennelsSQL);
+
   # Establish and set the return value
   $returnValue = $app['twig']->render('miscellaneous_stats.twig',array(
     'firstEvent' => $firstHashValue,
     'mostRecentEvent' => $mostRecentHashValue,
     'theYearValues' => $yearValues,
     'pageTitle' => 'Miscellaneous Statistics',
-    'kennel_abbreviation' => $kennel_abbreviation
+    'kennel_abbreviation' => $kennel_abbreviation,
+    'kennelValues' => $kennelValues
   ));
 
   #Return the return value

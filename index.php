@@ -356,9 +356,10 @@ $app->get('/{kennel_abbreviation}/miscellaneous/stats', 'HASH\Controller\HashCon
 #$app->get('/{kennel_abbreviation}/{analversary_number}/most/recent/to/reach',     'HASH\Controller\ObscureStatisticsController::mostRecentToReachAnalversaryByDatePreAction');
 $app->get('/{kennel_abbreviation}/{analversary_number}/quickest/to/reach/bydays', 'HASH\Controller\ObscureStatisticsController::quickestToReachAnalversaryByDaysAction');
 $app->get('/{kennel_abbreviation}/{analversary_number}/slowest/to/reach/bydays',  'HASH\Controller\ObscureStatisticsController::slowestToReachAnalversaryByDaysAction');
+$app->get('/{kennel_abbreviation}/{analversary_number}/quickest/to/reach/date', 'HASH\Controller\ObscureStatisticsController::quickestToReachAnalversaryByDate');
 
 
-$app->post('/{kennel_abbreviation}/{analversary_number}/quickest/to/reach/bydays', 'HASH\Controller\ObscureStatisticsController::quickestToReachAnalversaryByDaysAction');
+#$app->post('/{kennel_abbreviation}/{analversary_number}/quickest/to/reach/bydays', 'HASH\Controller\ObscureStatisticsController::quickestToReachAnalversaryByDaysAction');
 #$app->post('/{kennel_abbreviation}/{analversary_number}/slowest/to/reach/bydays', 'HASH\Controller\ObscureStatisticsController::slowestToReachAnalversaryByDaysAction');
 
 $app->get('/{kennel_abbreviation}/longest/career','HASH\Controller\ObscureStatisticsController::longestCareerAction');

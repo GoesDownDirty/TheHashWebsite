@@ -16,6 +16,7 @@
 </script>
 
 
+
 <h1>{{pageTitle}}</h1>
 <h3>{{pageSubTitle}}</h3>
 <div class="table-responsive">
@@ -33,8 +34,8 @@
     {% for item in theList %}
       <tr>
         <td><a href='/{{kennel_abbreviation}}/hashers/{{item.HASHER_KY}}'>{{item.HASHER_NAME}}</a></td>
-        <td><a href='/{{kennel_abbreviation}}/hashes/{{item.FIRST_HASH_KY}}'>{{item.FIRST_HASH_DATE}}</a></td>
-        <td><a href='/{{kennel_abbreviation}}/hashes/{{item.ANALVERSARY_HASH_KY}}'>{{item.ANALVERSARY_DATE}}</a></td>
+        <td><a href='/{{kennel_abbreviation}}/hashes/{{item.FIRST_HASH_KY}}'>{{item.FIRST_HASH_DATE|date("Y/m/d", false)}}</a></td>
+        <td><a href='/{{kennel_abbreviation}}/hashes/{{item.ANALVERSARY_HASH_KY}}'>{{item.ANALVERSARY_DATE|date("Y/m/d", false)}}</a></td>
         <td>{{item.DAYS_TO_REACH_ANALVERSARY}}</td>
       </tr>
     {% endfor %}

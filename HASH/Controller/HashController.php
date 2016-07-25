@@ -1716,5 +1716,70 @@ public function nonHyperHaresOfTheYearsAction(Request $request, Application $app
 
 }
 
+public function getHasherAnalversariesAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  # Declare the SQL used to retrieve this information
+  $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
+
+  # Make a database call to obtain the hasher information
+  $hasher = $app['db']->fetchAssoc($sql_for_hasher_lookup, array((int) $hasher_id));
+
+  # Define the SQL to retrieve all of their hashes
+  $sql_all_hashes_for_this_hasher = "	SELECT
+	HASHERS.HASHER_KY, HASHERS.HASHER_NAME , HASHES.*
+	FROM HASHINGS
+		JOIN HASHERS ON HASHINGS.HASHER_KY = HASHERS.HASHER_KY
+		JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+	WHERE
+		HASHERS.HASHER_KY = ?
+		AND HASHES.KENNEL_KY = ?
+	ORDER By HASHES.EVENT_DATE ASC";
+
+  #Retrieve all of this hasher's hashes
+  $theInitialListOfHashes = $app['db']->fetchAll($sql_all_hashes_for_this_hasher,array(
+        (int) $hasher_id,
+        (int) $kennelKy));
+
+  # Add a count into their list of hashes
+  $destinationArray = array();
+  $tempCounter = 1;
+  foreach ($theInitialListOfHashes as &$individualHash) {
+    $individualHash['ANALVERSARY_NUMBER'] = $tempCounter;
+    if(
+      ($tempCounter % 5 == 0) ||
+      ($tempCounter % 69 == 0) ||
+      ($tempCounter % 666 == 0) ||
+      (($tempCounter - 69) % 100 == 0)
+      ){
+      array_push($destinationArray,$individualHash);
+    }
+    $tempCounter ++;
+  }
+
+  # Establish and set the return value
+  $hasherName = $hasher['HASHER_NAME'];
+  $pageTitle = "Hashing Analversaries: $hasherName";
+  $returnValue = $app['twig']->render('hasher_analversary_list.twig',array(
+    'theList' => $destinationArray,
+    'pageTitle' => $pageTitle,
+    'pageSubTitle' => '',
+    'tableCaption' => '',
+    'kennel_abbreviation' => $kennel_abbreviation,
+    'participant_column_header' => 'Hasher',
+    'number_column_header' => 'Number of non-hyper harings',
+    'percentage_column_header' => 'Percentage of non-hypers hared',
+    'overall_boolean' => 'FALSE'
+  ));
+
+  #Return the return value
+  return $returnValue;
+
+
+
+}
+
 
 }

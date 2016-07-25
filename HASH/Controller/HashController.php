@@ -1246,10 +1246,23 @@ public function hasherCountsByHareAction(Request $request, Application $app, int
 
 public function basicStatsAction(Request $request, Application $app, string $kennel_abbreviation){
 
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  #Obtain the first hash
+  $firstHashSQL = "SELECT * FROM HASHES WHERE KENNEL_KY = ? ORDER BY EVENT_DATE ASC LIMIT 1";
+  $firstHashValue = $app['db']->fetchAssoc($firstHashSQL, array((int) $kennelKy));
+
+  #Obtain the most recent hash
+  $mostRecentHashSQL = "SELECT * FROM HASHES WHERE KENNEL_KY = ? ORDER BY EVENT_DATE DESC LIMIT 1";
+  $mostRecentHashValue = $app['db']->fetchAssoc($mostRecentHashSQL, array((int) $kennelKy));
+
   # Establish and set the return value
   $returnValue = $app['twig']->render('basic_stats.twig',array(
     'pageTitle' => 'Basic Information and Statistics',
-    'kennel_abbreviation' => $kennel_abbreviation
+    'kennel_abbreviation' => $kennel_abbreviation,
+    'first_hash' => $firstHashValue,
+    'latest_hash' => $mostRecentHashValue
   ));
 
   #Return the return value

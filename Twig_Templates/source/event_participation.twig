@@ -1,7 +1,7 @@
 {% extends "admin_base.twig" %}
 
 {% block template %}
-  <script type = "text/javascript" src = "/vendor/components/jquery/jquery.min.js"></script>
+
   <script type = "text/javascript" src = "/vendor/ifightcrime/bootstrap-growl/jquery.bootstrap-growl.min.js"></script>
   <script type = "text/javascript" language = "javascript">
 
@@ -108,6 +108,16 @@ function displayMessage(messageValue){
  $(document).ready(function() {
     getHares({{hash_key}});
     getHashers({{hash_key}});
+
+
+      //Convert the main table into a data table
+      $('#the_main_table').DataTable({
+        "paging":   false,
+        "aaSorting": []
+      });
+
+
+
   });
 
   //Function to add a hasher to the event
@@ -202,25 +212,11 @@ function deleteHare(hasher_key, hash_key){
 }
 
 
-jQuery(document).ready(function($){
-    $('.live-search-list li').each(function(){
-      $(this).attr('data-search-term', $(this).text().toLowerCase());
-    });
 
-  $('.live-search-box').on('keyup', function(){
-      var searchTerm = $(this).val().toLowerCase();
-      $('.live-search-list li').each(function(){
-          if ($(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0 || searchTerm.length < 1) {
-              $(this).show();
-          } else {
-              $(this).hide();
-          }
-      });
-  });
+</script>
 
-});
 
-  </script>
+
 
 
     <h1>{{pageTitle}}</h1>
@@ -243,19 +239,30 @@ jQuery(document).ready(function($){
     </dl>
 
 
-      <ul class="live-search-list">
-        <input type="text" class="live-search-box" placeholder="search here" />
-        {% for item in allHashersList %}
-        <li>
-          {{item.HASHER_NAME}}|
-          {{item.LAST_NAME}}|
-          {{item.FIRST_NAME}}|
-          {{item.EMAIL}}|
-          <a href="javascript:addHasher({{item.HASHER_KY}},{{hash_key}});">Add as hasher</a>|
-          <a href="javascript:addHare({{item.HASHER_KY}},{{hash_key}});">Add as hare</a>
-        </li>
-        {% endfor %}
-      </ul>
+
+<div class="table-responsive">
+<table class="table table-condensed table-hover" id="the_main_table">
+  <thead>
+    <tr>
+      <th>Hashers</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in allHashersList %}
+    <tr><td>
+      <a href="javascript:addHasher({{item.HASHER_KY}},{{hash_key}});">+ Hasher</a> |
+      <a href="javascript:addHare({{item.HASHER_KY}},{{hash_key}});">+ Hare</a> |
+      {{item.HASHER_NAME}}|
+      {{item.LAST_NAME}}|
+      {{item.FIRST_NAME}}|
+      {{item.EMAIL}}|
+      {{item.HASHER_ABBREVIATION}}
+    </td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
 
 <br><br><br><br>
 

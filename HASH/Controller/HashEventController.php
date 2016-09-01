@@ -343,7 +343,8 @@ class HashEventController
 
 
           #Add a confirmation that everything worked
-          $app['session']->getFlashBag()->add('success', 'Success! You created the event.');
+          $theSuccessMessage = "Success! You created the event. (Number $tempKennelEventNumber)";
+          $app['session']->getFlashBag()->add('success', $theSuccessMessage);
 
       } else{
         $app['session']->getFlashBag()->add('danger', 'Wrong! You broke it.');

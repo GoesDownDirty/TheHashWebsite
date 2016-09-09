@@ -185,7 +185,8 @@ class HashPersonController
 
 
           #Add a confirmation that everything worked
-          $app['session']->getFlashBag()->add('success', 'Success! You created a person.');
+          $theSuccessMessage = "Success! You created a person. (Hasher $tempHasherName)";
+          $app['session']->getFlashBag()->add('success', $theSuccessMessage);
 
       } else{
         $app['session']->getFlashBag()->add('danger', 'Wrong! You broke it.');

@@ -31,16 +31,16 @@ class HashController
   #Define the action
   public function logonScreenAction(Request $request, Application $app){
 
-    $app['monolog']->addDebug('Entering the logonScreenAction');
+    #$app['monolog']->addDebug('Entering the logonScreenAction');
 
     # Establisht the last error
     $lastError = $app['security.last_error']($request);
-    $app['monolog']->addDebug($lastError);
+    #$app['monolog']->addDebug($lastError);
 
     # Establish the last username
     $lastUserName = $app['session']->get('_security.last_username');
     #$lastUserName = $app['session']->get('_security.last_username');
-    $app['monolog']->addDebug($lastUserName);
+    #$app['monolog']->addDebug($lastUserName);
 
 
     # Establish the return value
@@ -51,7 +51,7 @@ class HashController
       'last_username' => $lastUserName,
     ));
 
-    $app['monolog']->addDebug('Leaving the logonScreenAction');
+    #$app['monolog']->addDebug('Leaving the logonScreenAction');
 
     # Return the return value;
     return $returnValue;

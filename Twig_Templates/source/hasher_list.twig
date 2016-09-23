@@ -5,15 +5,23 @@
 
 <script type = "text/javascript" language = "javascript">
 
+
+
   //Call these functions upon page load
   $(document).ready(function() {
     //Convert the main table into a data table
     $('#the_main_table').DataTable({
-      "paging":   false,
-      "aaSorting": []
+      "paging":   true,
+      "pageLength": 25,
+      "lengthMenu": [ [10, 25, 69, -1], [10, 25, 69, "All"]],
+      "aaSorting": [],
+      "responsive": true,
+      "autoWidth": false
     });
 
   });
+
+
 </script>
 
     <div class="table-responsive">
@@ -26,6 +34,7 @@
           <td>First Name</td>
           <td>Last Name</td>
           <td>Email</td>
+          <td>Abbreviation</td>
         </tr>
       </thead>
       <tbody>
@@ -34,7 +43,8 @@
             <td><a href='/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}'>{{item.NAME}}</a></td>
             <td>{{item.FIRST_NAME}}</td>
             <td>{{item.LAST_NAME}}</td>
-            <td>{{item.EMAIL|replace({'@': '_at_', '.': "_dot_"})}}</td>
+            <td>{{item.EMAIL|replace({'@': '_at_', '.': "_dot_",'a':'*', 'e':'*'})}}</td>
+            <td>{{item.HASHER_ABBREVIATION}}</td>
           </tr>
         {% endfor %}
     </table>

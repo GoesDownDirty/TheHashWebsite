@@ -159,7 +159,8 @@ class HashController
       HASHER_NAME AS NAME,
       FIRST_NAME,
       LAST_NAME,
-      EMAIL FROM HASHERS";
+      EMAIL,
+      HASHER_ABBREVIATION FROM HASHERS";
 
     #Execute the SQL statement; create an array of rows
     $hasherList = $app['db']->fetchAll($sql);
@@ -187,7 +188,8 @@ class HashController
       HASHERS.HASHER_NAME AS NAME,
       HASHERS.FIRST_NAME,
       HASHERS.LAST_NAME,
-      HASHERS.EMAIL
+      HASHERS.EMAIL,
+      HASHERS.HASHER_ABBREVIATION
       FROM HASHERS JOIN HASHINGS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY WHERE HASHINGS.HASH_KY = ?";
 
     #Execute the SQL statement; create an array of rows
@@ -227,7 +229,8 @@ class HashController
       HASHERS.HASHER_NAME AS NAME ,
       HASHERS.FIRST_NAME,
       HASHERS.LAST_NAME,
-      HASHERS.EMAIL
+      HASHERS.EMAIL,
+      HASHERS.HASHER_ABBREVIATION
       FROM HASHERS JOIN HARINGS ON HASHERS.HASHER_KY = HARINGS.HARINGS_HASHER_KY WHERE HARINGS.HARINGS_HASH_KY = ?";
 
     #Execute the SQL statement; create an array of rows

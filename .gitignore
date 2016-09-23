@@ -8,3 +8,4 @@ development.log
 Twig_Templates/compiled/*
 
 vendor/*
+node_modules/*

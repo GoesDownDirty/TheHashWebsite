@@ -232,7 +232,11 @@ $app->get('/superadmin/hello',                                    'HASH\Controll
 $app->get('/admin/hello',                                         'HASH\Controller\AdminController::adminHelloAction');
 $app->get('/user/hello',                                          'HASH\Controller\AdminController::userHelloAction');
 
-$app->get('/{kennel_abbreviation}/listhashers',                                         'HASH\Controller\HashController::listHashersAction');
+$app->get('/{kennel_abbreviation}/listhashers',                                        'HASH\Controller\HashController::listHashersAction');
+
+$app->get('/{kennel_abbreviation}/listhashers2',                                       'HASH\Controller\HashController::listHashersPreActionJson');
+$app->post('/{kennel_abbreviation}/listhashers2',                                       'HASH\Controller\HashController::getHasherListJson');
+
 $app->get('/{kennel_abbreviation}/listhashers/byhash/{hash_id}',                        'HASH\Controller\HashController::listHashersByHashAction');
 $app->get('/{kennel_abbreviation}/listhares/byhash/{hash_id}',                          'HASH\Controller\HashController::listHaresByHashAction');
 $app->get('/{kennel_abbreviation}/listhashes',                                          'HASH\Controller\HashController::listHashesAction');

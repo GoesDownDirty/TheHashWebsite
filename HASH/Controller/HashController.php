@@ -293,7 +293,7 @@ class HashController
 
   public function getHasherListJson(Request $request, Application $app, string $kennel_abbreviation){
 
-    $app['monolog']->addDebug("Entering the function------------------------");
+    #$app['monolog']->addDebug("Entering the function------------------------");
 
     #Obtain the post parameters
     #$inputDraw = $_POST['draw'] ;

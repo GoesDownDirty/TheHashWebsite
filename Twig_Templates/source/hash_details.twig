@@ -2,21 +2,45 @@
 
 {% block content %}
     <h1>{{pageTitle}}</h1>
-    <h2>{{firstHeader}}</h2>
-    <dl class="dl-horizontal">
-      <dt>Kennel Event Number</dt><dd>{{hashValue.KENNEL_EVENT_NUMBER}}</dd>
-      <dt>Event Date</dt><dd>{{hashValue.EVENT_DATE}} </dd>
-      <dt>Event Location</dt><dd>{{hashValue.EVENT_LOCATION}}</dd>
-      <dt>Event City</dt><dd>{{hashValue.EVENT_CITY}}</dd>
-      <dt>Event State</dt><dd>{{hashValue.EVENT_STATE}}</dd>
-      <dt>Event Description</dt><dd>{{hashValue.SPECIAL_EVENT_DESCRIPTION}}</dd>
-      <dt>Virgin Count</dt><dd>{{hashValue.VIRGIN_COUNT}}</dd>
-      <dt>Was a Hyper Hash</dt><dd>{{hashValue.IS_HYPER}}</dd>
-    </dl>
 
-    <h2>{{secondHeader}}</h2>
-    <a href='/{{kennel_abbreviation}}/hasherAnalversariesForEvent/{{hashValue.HASH_KY}}'>Hasher Analversaries For This Event</a> <br>
-    <a href='/{{kennel_abbreviation}}/hareAnalversariesForEvent/{{hashValue.HASH_KY}}'>Hare Analversaries For This Event</a> <br>
-    <a href='/{{kennel_abbreviation}}/listhashers/byhash/{{hashValue.HASH_KY}}'>Hashers at this event</a> <br>
-    <a href='/{{kennel_abbreviation}}/listhares/byhash/{{hashValue.HASH_KY}}'>Hares at this event</a> <br>
+    <div class="col-sm-6">
+      <div class="list-group">
+        <a href="#" class="list-group-item active">
+          More Info
+        </a>
+        <a class="list-group-item" href='/{{kennel_abbreviation}}/hasherAnalversariesForEvent/{{hashValue.HASH_KY}}'>Hound Analversaries For This Event</a>
+        <a class="list-group-item" href='/{{kennel_abbreviation}}/hareAnalversariesForEvent/{{hashValue.HASH_KY}}'>Hare Analversaries For This Event</a>
+        <a class="list-group-item" href='/{{kennel_abbreviation}}/listhashers/byhash/{{hashValue.HASH_KY}}'>Hounds at this event</a>
+        <a class="list-group-item" href='/{{kennel_abbreviation}}/listhares/byhash/{{hashValue.HASH_KY}}'>Hares at this event</a>
+      </div>
+    </div>
+
+    <div class="col-sm-6">
+      <div class="list-group">
+        <a href="#" class="list-group-item active">
+          Basic Info
+        </a>
+      <table id="table" class="table table-hover">
+          <tbody>
+            <tr data-index="0"><td class="key" style="">Event Number</td><td style="">{{hashValue.KENNEL_EVENT_NUMBER}}</td></tr>
+            <tr data-index="1"><td class="key" style="">Date</td><td style="">{{hashValue.EVENT_DATE}}</td></tr>
+            <tr data-index="2"><td class="key" style="">Location</td><td style="">{{hashValue.EVENT_LOCATION}}</td></tr>
+            <tr data-index="3"><td class="key" style="">City</td><td style="">{{hashValue.EVENT_CITY}}</td></tr>
+            <tr data-index="4"><td class="key" style="">State</td><td style="">{{hashValue.EVENT_STATE}}</td></tr>
+            <tr data-index="5"><td class="key" style="">Description</td><td style="">{{hashValue.SPECIAL_EVENT_DESCRIPTION}}</td></tr>
+            <tr data-index="6">
+              <td class="key" style="">Hyper Hash ?</td>
+              <td style="">
+                {% if hashValue.IS_HYPER == "0000000000" %}
+                  No
+                {% else %}
+                  Yes
+                {% endif %}
+            </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
 {% endblock %}

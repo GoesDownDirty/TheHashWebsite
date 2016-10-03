@@ -127,7 +127,6 @@ class HashPersonController
       ->add('FIRST_NAME')
       ->add('EMAIL')
       ->add('HOME_KENNEL')
-      ->add('HOME_KENNEL_KY')
       ->add('DECEASED', ChoiceType::class, array('choices'  => array(
         'No' => '0000000000',
         'Yes, let us cherish their memory' => '0000000001',
@@ -155,7 +154,8 @@ class HashPersonController
           $tempFirstName = $data['FIRST_NAME'];
           $tempEmail = $data['EMAIL'];
           $tempHomeKennel = $data['HOME_KENNEL'];
-          $tempKennelKy = $data['HOME_KENNEL_KY'];
+          #$tempKennelKy = $data['HOME_KENNEL_KY'];
+          $tempKennelKy = 0;
           $tempDeceased = $data['DECEASED'];
 
 

@@ -1413,6 +1413,17 @@ public function basicStatsAction(Request $request, Application $app, string $ken
   #Obtain the kennel key
   $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
+  #SQL to determine the distinct year values
+  $sql = "SELECT YEAR(EVENT_DATE) AS YEAR, COUNT(*) AS THE_COUNT
+  FROM HASHES
+  WHERE
+    KENNEL_KY = ?
+  GROUP BY YEAR(EVENT_DATE)
+  ORDER BY YEAR(EVENT_DATE) DESC";
+
+  #Execute the SQL statement; create an array of rows
+  $yearValues = $app['db']->fetchAll($sql,array( (int) $kennelKy));
+
   #Obtain the first hash
   $firstHashSQL = "SELECT * FROM HASHES WHERE KENNEL_KY = ? ORDER BY EVENT_DATE ASC LIMIT 1";
   $firstHashValue = $app['db']->fetchAssoc($firstHashSQL, array((int) $kennelKy));
@@ -1426,7 +1437,8 @@ public function basicStatsAction(Request $request, Application $app, string $ken
     'pageTitle' => 'Basic Information and Statistics',
     'kennel_abbreviation' => $kennel_abbreviation,
     'first_hash' => $firstHashValue,
-    'latest_hash' => $mostRecentHashValue
+    'latest_hash' => $mostRecentHashValue,
+    'theYearValues' => $yearValues
   ));
 
   #Return the return value
@@ -1564,11 +1576,11 @@ public function miscellaneousStatsAction(Request $request, Application $app, str
   $kennelValues = $app['db']->fetchAll($listOfKennelsSQL);
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('miscellaneous_stats.twig',array(
+  $returnValue = $app['twig']->render('switch_kennel_screen.twig',array(
     'firstEvent' => $firstHashValue,
     'mostRecentEvent' => $mostRecentHashValue,
     'theYearValues' => $yearValues,
-    'pageTitle' => 'Miscellaneous Statistics',
+    'pageTitle' => 'Switch Kennel',
     'kennel_abbreviation' => $kennel_abbreviation,
     'kennelValues' => $kennelValues
   ));

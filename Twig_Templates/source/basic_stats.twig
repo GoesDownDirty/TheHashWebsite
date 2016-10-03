@@ -3,7 +3,7 @@
 {% block main_page_content %}
 
       <div class="row marketing">
-        <div class="col-lg-6">
+        <div class="col-lg-4">
           <h3>Standard Statistics</h3>
           <a href="/{{kennel_abbreviation}}/listhashers2">List of All Hashers (People and dogs)</a><br>
           <a href="/{{kennel_abbreviation}}/listhashes">List of All Hashes (Events)</a><br>
@@ -12,10 +12,17 @@
           <a href="/{{kennel_abbreviation}}/nonHyperharingCounts">Proper Haring Counts (excludes hyper hashes)</a><br>
         </div>
 
-        <div class="col-lg-6">
+        <div class="col-lg-4">
           <h3>Standard Statistics</h3>
           First Event: <a href="/{{kennel_abbreviation}}/hashes/{{first_hash.HASH_KY}}">Hash # {{first_hash.KENNEL_EVENT_NUMBER}} on {{first_hash.EVENT_DATE |date("Y/m/d", false)}}</a><br>
           Latest Event: <a href="/{{kennel_abbreviation}}/hashes/{{latest_hash.HASH_KY}}">Hash # {{latest_hash.KENNEL_EVENT_NUMBER}} on {{latest_hash.EVENT_DATE |date("Y/m/d", false)}}</a><br>
+        </div>
+
+        <div class="col-lg-4">
+          <h3>Year by year summaries</h3>
+          {% for item in theYearValues %}
+            <a href='/{{kennel_abbreviation}}/statistics/getYearInReview/{{item.YEAR}}' >{{item.YEAR}} ({{item.THE_COUNT}} events)</a><br>
+          {% endfor %}
         </div>
 
 

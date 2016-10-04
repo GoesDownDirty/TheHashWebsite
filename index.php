@@ -245,6 +245,10 @@ $app->get('/{kennel_abbreviation}/listhashes/byhare/{hasher_id}',               
 $app->get('/{kennel_abbreviation}/hashers/{hasher_id}',                                 'HASH\Controller\HashController::viewHasherAction');
 $app->get('/{kennel_abbreviation}/hashes/{hash_id}',                                    'HASH\Controller\HashController::viewHashAction');
 $app->get('/{kennel_abbreviation}/hasherAnalversariesForEvent/{hash_id}',               'HASH\Controller\HashController::hasherAnalversariesForEventAction');
+
+$app->get('/{kennel_abbreviation}/backSlidersForEvent/{hash_id}',                       'HASH\Controller\HashController::backSlidersForEventAction');
+
+
 $app->get('/{kennel_abbreviation}/hareAnalversariesForEvent/{hash_id}',                 'HASH\Controller\HashController::hareAnalversariesForEventAction');
 $app->get('/{kennel_abbreviation}/pendingHasherAnalversaries',                          'HASH\Controller\HashController::pendingHasherAnalversariesAction');
 $app->get('/{kennel_abbreviation}/pendingHareAnalversaries',                            'HASH\Controller\HashController::pendingHareAnalversariesAction');

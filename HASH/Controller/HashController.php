@@ -666,6 +666,44 @@ class HashController
     return $returnValue;
   }
 
+
+
+    public function backSlidersForEventAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      # Declare the SQL used to retrieve this information
+      $sql = BACKSLIDERS_FOR_SPECIFIC_HASH_EVENT;
+
+      # Make a database call to obtain the hasher information
+      $backSliderList = $app['db']->fetchAll($sql, array((int) $hash_id,(int) $kennelKy, (int) $hash_id));
+
+      # Declare the SQL used to retrieve this information
+      $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+
+      # Make a database call to obtain the hasher information
+      $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
+
+      # Establish and set the return value
+      $hashNumber = $theHashValue['KENNEL_EVENT_NUMBER'];
+      $hashLocation = $theHashValue['EVENT_LOCATION'];
+      $pageSubtitle = "Back Sliders at the $hashNumber ($hashLocation) Hash";
+
+      # Establish the return value
+      $returnValue = $app['twig']->render('backslider_list.twig',array(
+        'pageTitle' => 'Back Sliders',
+        'pageSubTitle' => $pageSubtitle,
+        'theList' => $backSliderList,
+        'kennel_abbreviation' => $kennel_abbreviation
+      ));
+
+      # Return the return value
+      return $returnValue;
+    }
+
+
+
   public function hareAnalversariesForEventAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
 
     #Obtain the kennel key

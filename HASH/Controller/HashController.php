@@ -677,7 +677,7 @@ class HashController
       $sql = BACKSLIDERS_FOR_SPECIFIC_HASH_EVENT;
 
       # Make a database call to obtain the hasher information
-      $backSliderList = $app['db']->fetchAll($sql, array((int) $hash_id,(int) $kennelKy, (int) $hash_id));
+      $backSliderList = $app['db']->fetchAll($sql, array((int) $kennelKy,(int) $hash_id,(int) $kennelKy, (int) $hash_id));
 
       # Declare the SQL used to retrieve this information
       $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";

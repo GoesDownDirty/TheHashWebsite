@@ -31,6 +31,7 @@
       <thead>
         <tr>
           <th nowrap>Hasher Name</th>
+          <th nowrap>Hashes Missed</th>
           <th nowrap>Days Absent</td>
           <th nowrap>Last Hash</td>
           <th nowrap>Last Hash Date</td>
@@ -38,7 +39,7 @@
       </thead>
       <tbody>
         {% for item in theList %}
-        {% if item.DAYS_SINCE_LAST_EVENT > 42 %}
+        {% if item.DAYS_SINCE_LAST_EVENT > 100 %}
           <tr bgcolor = "#F1A5B7">
         {% elseif item.DAYS_SINCE_LAST_EVENT > 21 %}
           <tr bgcolor = "#FBD46E">
@@ -48,6 +49,9 @@
           <tr bgcolor = "#F1CFDF">
         {% endif %}
             <td><a href='/{{kennel_abbreviation}}/hashers/{{item.HASHER_KY}}'>{{item.HASHER_NAME}}</a></td>
+            <td>
+              {{item.PREVIOUS_EVENT_DATE is empty ? "" : item.THE_NUMBER_OF_MISSED_HASHES}}
+            </td>
             <td>{{item.DAYS_SINCE_LAST_EVENT}}</td>
             <td><a href='/{{kennel_abbreviation}}/hashes/{{item.PREVIOUS_HASH_KEY}}'>{{item.PREVIOUS_EVENT_NUMBER}}</a></td>
             <td>

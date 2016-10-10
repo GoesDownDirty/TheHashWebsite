@@ -83,7 +83,7 @@ class HashEventController
   public function adminModifyHashAction(Request $request, Application $app, int $hash_id){
 
     # Declare the SQL used to retrieve this information
-    $sql = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+    $sql = "SELECT * FROM HASHES JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
     # Make a database call to obtain the hasher information
     $hashValue = $app['db']->fetchAssoc($sql, array((int) $hash_id));
@@ -199,6 +199,13 @@ class HashEventController
             $tempKennelKy,
             $hash_id
           ));
+
+          #Audit this activity
+          $actionType = "Event Modification";
+          $tempKennelEventNumber = $hashValue['KENNEL_EVENT_NUMBER'];
+          $tempKennelAbbrevation = $hashValue['KENNEL_ABBREVIATION'];
+          $actionDescription = "Modified event ($tempKennelAbbrevation # $tempKennelEventNumber)";
+          AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
 
           #Add a confirmation that everything worked
           $app['session']->getFlashBag()->add('success', 'Success! You modified the event.');
@@ -341,6 +348,17 @@ class HashEventController
             $tempIsHyper
           ));
 
+          #Audit this activity
+          $actionType = "Event Creation";
+          $tempKennelAbbreviation2 = "Unknown";
+          foreach ($kennelList as $kennelValue){
+            if($kennelValue['KENNEL_KY'] == $tempKennelKy){
+              $tempKennelAbbreviation2 = $kennelValue['KENNEL_ABBREVIATION'];
+            }
+          }
+          $actionDescription = "Created event ($tempKennelAbbreviation2 # $tempKennelEventNumber)";
+          AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+
 
           #Add a confirmation that everything worked
           $theSuccessMessage = "Success! You created the event. (Number $tempKennelEventNumber)";
@@ -464,6 +482,20 @@ class HashEventController
           #Execute the sql insert statement
           $app['dbs']['mysql_write']->executeUpdate($sql,array($hasherKey,$hashKey));
 
+          #Audit the activity
+
+          # Declare the SQL used to retrieve this information
+          $sql = "SELECT * FROM HASHES JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
+
+          # Make a database call to obtain the hasher information
+          $hashValue = $app['db']->fetchAssoc($sql, array((int) $hashKey));
+          $tempKennelEventNumber = $hashValue['KENNEL_EVENT_NUMBER'];
+          $tempKennelAbbreviation = $hashValue['KENNEL_ABBREVIATION'];
+
+          $tempActionType = "Add Hound to Hash";
+          $tempActionDescription = "Added $tempHasherName to $tempKennelAbbreviation # $tempKennelEventNumber";
+          AdminController::auditTheThings($request, $app, $tempActionType, $tempActionDescription);
+
           #Set the return message
           $returnMessage = "Success! $tempHasherName has been added as a hound.";
         } else {
@@ -532,6 +564,19 @@ class HashEventController
           #Execute the sql insert statement
           $app['dbs']['mysql_write']->executeUpdate($sql,array($hasherKey,$hashKey));
 
+          #Add the audit statement
+          # Declare the SQL used to retrieve this information
+          $sql = "SELECT * FROM HASHES JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
+
+          # Make a database call to obtain the hasher information
+          $hashValue = $app['db']->fetchAssoc($sql, array((int) $hashKey));
+          $tempKennelEventNumber = $hashValue['KENNEL_EVENT_NUMBER'];
+          $tempKennelAbbreviation = $hashValue['KENNEL_ABBREVIATION'];
+
+          $tempActionType = "Add Hare to Hash";
+          $tempActionDescription = "Added $tempHasherName to $tempKennelAbbreviation # $tempKennelEventNumber";
+          AdminController::auditTheThings($request, $app, $tempActionType, $tempActionDescription);
+
           #Set the return message
           $returnMessage = "Success! $tempHasherName has been added as a hare.";
 
@@ -586,6 +631,19 @@ class HashEventController
           #Execute the sql insert statement
           $app['dbs']['mysql_write']->executeUpdate($sql,array($hasherKey,$hashKey));
 
+          #Add the audit statement
+          # Declare the SQL used to retrieve this information
+          $sql = "SELECT * FROM HASHES JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
+
+          # Make a database call to obtain the hasher information
+          $hashValue = $app['db']->fetchAssoc($sql, array((int) $hashKey));
+          $tempKennelEventNumber = $hashValue['KENNEL_EVENT_NUMBER'];
+          $tempKennelAbbreviation = $hashValue['KENNEL_ABBREVIATION'];
+
+          $tempActionType = "Delete Hound From Event";
+          $tempActionDescription = "Deleted $tempHasherName from $tempKennelAbbreviation # $tempKennelEventNumber";
+          AdminController::auditTheThings($request, $app, $tempActionType, $tempActionDescription);
+
         }  else{
           $returnMessage = "Record cannot be deleted; doesn't exist!";
         }
@@ -633,6 +691,19 @@ class HashEventController
 
           #Execute the sql insert statement
           $app['dbs']['mysql_write']->executeUpdate($sql,array($hasherKey,$hashKey));
+
+          #Add the audit statement
+          # Declare the SQL used to retrieve this information
+          $sql = "SELECT * FROM HASHES JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
+
+          # Make a database call to obtain the hasher information
+          $hashValue = $app['db']->fetchAssoc($sql, array((int) $hashKey));
+          $tempKennelEventNumber = $hashValue['KENNEL_EVENT_NUMBER'];
+          $tempKennelAbbreviation = $hashValue['KENNEL_ABBREVIATION'];
+
+          $tempActionType = "Delete Hare From Event";
+          $tempActionDescription = "Deleted $tempHasherName from $tempKennelAbbreviation # $tempKennelEventNumber";
+          AdminController::auditTheThings($request, $app, $tempActionType, $tempActionDescription);
 
         }  else{
           $returnMessage = "Record cannot be deleted; doesn't exist!";

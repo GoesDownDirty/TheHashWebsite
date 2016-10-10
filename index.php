@@ -292,6 +292,10 @@ $app->post('/admin/newhasher/form',                               'HASH\Controll
 $app->get('/admin/newPassword/form',                                'HASH\Controller\AdminController::newPasswordAction');
 $app->post('/admin/newPassword/form',                               'HASH\Controller\AdminController::newPasswordAction');
 
+# View audit records
+$app->get('/admin/viewAuditRecords',                                  'HASH\Controller\AdminController::viewAuditRecordsPreActionJson');
+$app->post('/admin/viewAuditRecords',                                 'HASH\Controller\AdminController::viewAuditRecordsJson');
+
 
 # Modify the participation for an event
 $app->get('/admin/event/manageparticipation/{hash_id}',            'HASH\Controller\HashEventController::hashParticipationAction');

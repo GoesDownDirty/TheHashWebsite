@@ -287,6 +287,11 @@ class AdminController
             #Run the update SQL
             $app['dbs']['mysql_write']->executeUpdate($updateSql,array($encodedNewPassword,$userid));
 
+            #Audit this activity
+            $actionType = "Password Change";
+            $actionDescription = "Changed their password";
+            $this->auditTheThings($request, $app, $actionType, $actionDescription);
+
             #Show the confirmation message
             $app['session']->getFlashBag()->add('success', 'Success! You updated your password. Probably.');
           }
@@ -312,6 +317,198 @@ class AdminController
 
     #Return the return value
     return $returnValue;
+
+  }
+
+
+
+
+  #Define the action
+  public function viewAuditRecordsPreActionJson(Request $request, Application $app){
+
+    # Establish and set the return value
+    $returnValue = $app['twig']->render('audit_records_json.twig',array(
+      'pageTitle' => 'The audit records',
+      'pageSubTitle' => 'Stuff that the admins have done',
+    ));
+
+    #Return the return value
+    return $returnValue;
+
+  }
+
+
+  public function viewAuditRecordsJson(Request $request, Application $app){
+
+    $app['monolog']->addDebug("Entering the function viewAuditRecordsJson");
+
+    #Obtain the post parameters
+    #$inputDraw = $_POST['draw'] ;
+    $inputStart = $_POST['start'] ;
+    $inputLength = $_POST['length'] ;
+    $inputColumns = $_POST['columns'];
+    $inputSearch = $_POST['search'];
+    $inputSearchValue = $inputSearch['value'];
+
+    #-------------- Begin: Validate the post parameters ------------------------
+    #Validate input start
+    if(!is_numeric($inputStart)){
+      $app['monolog']->addDebug("input start is not numeric: $inputStart");
+      $inputStart = 0;
+    }
+
+    #Validate input length
+    if(!is_numeric($inputLength)){
+      $app['monolog']->addDebug("input length is not numeric");
+      $inputStart = "0";
+      $inputLength = "50";
+    } else if($inputLength == "-1"){
+      $app['monolog']->addDebug("input length is negative one (all rows selected)");
+      $inputStart = "0";
+      $inputLength = "1000000000";
+    }
+
+    #Validate input search
+    #We are using database parameterized statements, so we are good already...
+
+    #---------------- End: Validate the post parameters ------------------------
+
+    #-------------- Begin: Modify the input parameters  ------------------------
+    #Modify the search string
+    $inputSearchValueModified = "%$inputSearchValue%";
+
+    #Obtain the column/order information
+    $inputOrderRaw = isset($_POST['order']) ? $_POST['order'] : null;
+    $inputOrderColumnExtracted = "1";
+    $inputOrderColumnIncremented = "1";
+    $inputOrderDirectionExtracted = "asc";
+    if(!is_null($inputOrderRaw)){
+      $app['monolog']->addDebug("inside inputOrderRaw not null");
+      $inputOrderColumnExtracted = $inputOrderRaw[0]['column'];
+      $inputOrderColumnIncremented = $inputOrderColumnExtracted + 1;
+      $inputOrderDirectionExtracted = $inputOrderRaw[0]['dir'];
+    }else{
+      $app['monolog']->addDebug("inside inputOrderRaw is null");
+    }
+
+    #-------------- End: Modify the input parameters  --------------------------
+
+
+    #-------------- Begin: Define the SQL used here   --------------------------
+
+    #Define the sql that performs the filtering
+    $sql = "SELECT
+      AUDIT_KY,
+      USERNAME,
+      AUDIT_TIME,
+      ACTION_TYPE,
+      ACTION_DESCRIPTION,
+      IP_ADDR
+      FROM AUDIT
+      WHERE
+        (
+          USERNAME LIKE ? OR
+          AUDIT_TIME LIKE ? OR
+          ACTION_TYPE LIKE ? OR
+          ACTION_DESCRIPTION LIKE ? OR
+          IP_ADDR LIKE ?)
+      ORDER BY $inputOrderColumnIncremented $inputOrderDirectionExtracted
+      LIMIT $inputStart,$inputLength";
+      $app['monolog']->addDebug("sql: $sql");
+
+    #Define the SQL that gets the count for the filtered results
+    $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT
+      FROM AUDIT
+      WHERE
+          USERNAME LIKE ? OR
+          AUDIT_TIME LIKE ? OR
+          ACTION_TYPE LIKE ? OR
+          ACTION_DESCRIPTION LIKE ? OR
+          IP_ADDR LIKE ?";
+    $app['monolog']->addDebug("sqlFilteredCount: $sqlFilteredCount");
+
+    #Define the sql that gets the overall counts
+    $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM AUDIT";
+    $app['monolog']->addDebug("sqlUnfilteredCount: $sqlUnfilteredCount");
+
+    #-------------- End: Define the SQL used here   ----------------------------
+
+    #-------------- Begin: Query the database   --------------------------------
+    #Perform the filtered search
+    $theResults = $app['db']->fetchAll($sql,array(
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified));
+
+    #Perform the untiltered count
+    $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
+    $app['monolog']->addDebug("theUnfilteredCount: $theUnfilteredCount");
+
+    #Perform the filtered count
+    $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified)))['THE_COUNT'];
+    $app['monolog']->addDebug("theFilteredCount: $theFilteredCount");
+    #-------------- End: Query the database   --------------------------------
+
+    #Establish the output
+    $output = array(
+      "sEcho" => "foo",
+      "iTotalRecords" => $theUnfilteredCount,
+      "iTotalDisplayRecords" => $theFilteredCount,
+      "aaData" => $theResults
+    );
+
+    #Set the return value
+    $returnValue = $app->json($output,200);
+    $app['monolog']->addDebug("returnValue: $returnValue");
+
+    #Return the return value
+    return $returnValue;
+  }
+
+
+  public static function auditTheThings(Request $request, Application $app, string $actionType, string $actionDescription){
+
+    #Define the client ip address
+    $theClientIP = $request->getClientIp();
+
+    #Establish the datetime representation of "now"
+    date_default_timezone_set('US/Eastern');
+    $nowDateTime = date("Y-m-d H:i:s");
+
+    #Define the username (default to UNKNOWN)
+    $user = "UNKNOWN";
+
+    #Determine the username
+    $token = $app['security.token_storage']->getToken();
+    if (null !== $token) {
+      $user = $token->getUser();
+    }
+
+    #Define the sql insert statement
+    $sql = "
+      INSERT INTO AUDIT (
+        USERNAME,
+        AUDIT_TIME,
+        ACTION_TYPE,
+        ACTION_DESCRIPTION,
+        IP_ADDR
+      ) VALUES (?, ?, ?, ?, ?)";
+
+    #Execute the insert statement
+    $app['dbs']['mysql_write']->executeUpdate($sql,array(
+      $user,
+      $nowDateTime,
+      $actionType,
+      $actionDescription,
+      $theClientIP
+    ));
 
   }
 

@@ -99,6 +99,11 @@ class HashPersonController
           #Add a confirmation that everything worked
           $app['session']->getFlashBag()->add('success', 'Success! You modified the person. They were not good enough as they were, so you made them better.');
 
+          #Audit the action
+          $tempActionType = "Modify Person";
+          $tempActionDescription = "Modified $tempHasherName";
+          AdminController::auditTheThings($request, $app, $tempActionType, $tempActionDescription);
+
       } else{
         $app['session']->getFlashBag()->add('danger', 'Wrong! You broke it.');
       }
@@ -187,6 +192,11 @@ class HashPersonController
           #Add a confirmation that everything worked
           $theSuccessMessage = "Success! You created a person. (Hasher $tempHasherName)";
           $app['session']->getFlashBag()->add('success', $theSuccessMessage);
+
+          #Audit the action
+          $tempActionType = "Create Person";
+          $tempActionDescription = "Created $tempHasherName";
+          AdminController::auditTheThings($request, $app, $tempActionType, $tempActionDescription);
 
       } else{
         $app['session']->getFlashBag()->add('danger', 'Wrong! You broke it.');

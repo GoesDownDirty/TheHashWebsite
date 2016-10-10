@@ -23,11 +23,11 @@
     <caption><a href="/admin/newhash/form"><b>Click to create an event!</b></a></caption>
     <thead>
       <tr>
-        <th>Kennel</td>
         <td>Hash Number</td>
-        <td>Location</td>
-        <td>Date</td>
+        <th>Kennel</td>
         <td>Actions</td>
+        <td>Date</td>
+        <td>Location</td>
       </tr>
     </thead>
     <tbody>
@@ -37,14 +37,14 @@
         {% else %}
           <tr bgcolor = "#EDC9AF">
         {% endif %}
-          <td>{{item.KENNEL_ABBREVIATION}}</td>
           <td><a href='/{{item.KENNEL_ABBREVIATION}}/hashes/{{item.HASH_KY}}'>{{item.KENNEL_EVENT_NUMBER}}</a></td>
-          <td>{{item.EVENT_LOCATION}}</td>
-          <td nowrap="nowrap">{{item.EVENT_DATE|date("Y/m/d", false)}}</td>
+          <td>{{item.KENNEL_ABBREVIATION}}</td>
           <td>
             <a href="/admin/modifyhash/form/{{item.HASH_KY}}">Modify Event</a> |
             <a href="/admin/event/manageparticipation/{{item.HASH_KY}}">Modify Participation</a>
           </td>
+          <td nowrap="nowrap">{{item.EVENT_DATE|date("Y/m/d", false)}}</td>
+          <td>{{item.EVENT_LOCATION}}</td>
         </tr>
       {% endfor %}
   </table>

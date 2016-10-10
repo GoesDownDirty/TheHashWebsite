@@ -340,7 +340,7 @@ class AdminController
 
   public function viewAuditRecordsJson(Request $request, Application $app){
 
-    $app['monolog']->addDebug("Entering the function viewAuditRecordsJson");
+    #$app['monolog']->addDebug("Entering the function viewAuditRecordsJson");
 
     #Obtain the post parameters
     #$inputDraw = $_POST['draw'] ;
@@ -353,17 +353,17 @@ class AdminController
     #-------------- Begin: Validate the post parameters ------------------------
     #Validate input start
     if(!is_numeric($inputStart)){
-      $app['monolog']->addDebug("input start is not numeric: $inputStart");
+      #$app['monolog']->addDebug("input start is not numeric: $inputStart");
       $inputStart = 0;
     }
 
     #Validate input length
     if(!is_numeric($inputLength)){
-      $app['monolog']->addDebug("input length is not numeric");
+      #$app['monolog']->addDebug("input length is not numeric");
       $inputStart = "0";
       $inputLength = "50";
     } else if($inputLength == "-1"){
-      $app['monolog']->addDebug("input length is negative one (all rows selected)");
+      #$app['monolog']->addDebug("input length is negative one (all rows selected)");
       $inputStart = "0";
       $inputLength = "1000000000";
     }
@@ -383,12 +383,12 @@ class AdminController
     $inputOrderColumnIncremented = "1";
     $inputOrderDirectionExtracted = "asc";
     if(!is_null($inputOrderRaw)){
-      $app['monolog']->addDebug("inside inputOrderRaw not null");
+      #$app['monolog']->addDebug("inside inputOrderRaw not null");
       $inputOrderColumnExtracted = $inputOrderRaw[0]['column'];
       $inputOrderColumnIncremented = $inputOrderColumnExtracted + 1;
       $inputOrderDirectionExtracted = $inputOrderRaw[0]['dir'];
     }else{
-      $app['monolog']->addDebug("inside inputOrderRaw is null");
+      #$app['monolog']->addDebug("inside inputOrderRaw is null");
     }
 
     #-------------- End: Modify the input parameters  --------------------------
@@ -414,7 +414,7 @@ class AdminController
           IP_ADDR LIKE ?)
       ORDER BY $inputOrderColumnIncremented $inputOrderDirectionExtracted
       LIMIT $inputStart,$inputLength";
-      $app['monolog']->addDebug("sql: $sql");
+      #$app['monolog']->addDebug("sql: $sql");
 
     #Define the SQL that gets the count for the filtered results
     $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT
@@ -425,11 +425,11 @@ class AdminController
           ACTION_TYPE LIKE ? OR
           ACTION_DESCRIPTION LIKE ? OR
           IP_ADDR LIKE ?";
-    $app['monolog']->addDebug("sqlFilteredCount: $sqlFilteredCount");
+    #$app['monolog']->addDebug("sqlFilteredCount: $sqlFilteredCount");
 
     #Define the sql that gets the overall counts
     $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM AUDIT";
-    $app['monolog']->addDebug("sqlUnfilteredCount: $sqlUnfilteredCount");
+    #$app['monolog']->addDebug("sqlUnfilteredCount: $sqlUnfilteredCount");
 
     #-------------- End: Define the SQL used here   ----------------------------
 
@@ -444,7 +444,7 @@ class AdminController
 
     #Perform the untiltered count
     $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
-    $app['monolog']->addDebug("theUnfilteredCount: $theUnfilteredCount");
+    #$app['monolog']->addDebug("theUnfilteredCount: $theUnfilteredCount");
 
     #Perform the filtered count
     $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
@@ -453,7 +453,7 @@ class AdminController
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified)))['THE_COUNT'];
-    $app['monolog']->addDebug("theFilteredCount: $theFilteredCount");
+    #$app['monolog']->addDebug("theFilteredCount: $theFilteredCount");
     #-------------- End: Query the database   --------------------------------
 
     #Establish the output
@@ -466,7 +466,7 @@ class AdminController
 
     #Set the return value
     $returnValue = $app->json($output,200);
-    $app['monolog']->addDebug("returnValue: $returnValue");
+    #$app['monolog']->addDebug("returnValue: $returnValue");
 
     #Return the return value
     return $returnValue;
@@ -514,5 +514,302 @@ class AdminController
 
 
 
+
+  #Define the action
+  public function listHashesPreActionJson(Request $request, Application $app){
+
+    # Establish and set the return value
+    $returnValue = $app['twig']->render('admin_hash_list_json.twig',array(
+      'pageTitle' => 'The List of Hashes (Experimental Page)',
+      'pageSubTitle' => 'The List of *ALL* Hashes',
+      'pageCaption' => "",
+      'tableCaption' => ""
+    ));
+
+    #Return the return value
+    return $returnValue;
+
+  }
+
+
+
+  public function getHashListJson(Request $request, Application $app){
+
+    #$app['monolog']->addDebug("Entering the function------------------------");
+
+    #Obtain the post parameters
+    #$inputDraw = $_POST['draw'] ;
+    $inputStart = $_POST['start'] ;
+    $inputLength = $_POST['length'] ;
+    $inputColumns = $_POST['columns'];
+    $inputSearch = $_POST['search'];
+    $inputSearchValue = $inputSearch['value'];
+
+    #-------------- Begin: Validate the post parameters ------------------------
+    #Validate input start
+    if(!is_numeric($inputStart)){
+      #$app['monolog']->addDebug("input start is not numeric: $inputStart");
+      $inputStart = 0;
+    }
+
+    #Validate input length
+    if(!is_numeric($inputLength)){
+      #$app['monolog']->addDebug("input length is not numeric");
+      $inputStart = "0";
+      $inputLength = "50";
+    } else if($inputLength == "-1"){
+      #$app['monolog']->addDebug("input length is negative one (all rows selected)");
+      $inputStart = "0";
+      $inputLength = "1000000000";
+    }
+
+    #Validate input search
+    #We are using database parameterized statements, so we are good already...
+
+    #---------------- End: Validate the post parameters ------------------------
+
+    #-------------- Begin: Modify the input parameters  ------------------------
+    #Modify the search string
+    $inputSearchValueModified = "%$inputSearchValue%";
+
+    #Obtain the column/order information
+    $inputOrderRaw = isset($_POST['order']) ? $_POST['order'] : null;
+    $inputOrderColumnExtracted = "3";
+    $inputOrderColumnIncremented = "3";
+    $inputOrderDirectionExtracted = "desc";
+    if(!is_null($inputOrderRaw)){
+      #$app['monolog']->addDebug("inside inputOrderRaw not null");
+      $inputOrderColumnExtracted = $inputOrderRaw[0]['column'];
+      $inputOrderColumnIncremented = $inputOrderColumnExtracted + 1;
+      $inputOrderDirectionExtracted = $inputOrderRaw[0]['dir'];
+      #$app['monolog']->addDebug("inputOrderColumnExtracted $inputOrderColumnExtracted");
+      #$app['monolog']->addDebug("inputOrderColumnIncremented $inputOrderColumnIncremented");
+      #$app['monolog']->addDebug("inputOrderDirectionExtracted $inputOrderDirectionExtracted");
+    }else{
+      #$app['monolog']->addDebug("inside inputOrderRaw is null");
+    }
+
+    #-------------- End: Modify the input parameters  --------------------------
+
+
+    #-------------- Begin: Define the SQL used here   --------------------------
+
+    #Define the sql that performs the filtering
+    $sql = "SELECT
+        KENNEL_EVENT_NUMBER,
+        KENNEL_ABBREVIATION,
+        HASH_KY,
+        EVENT_DATE,
+        EVENT_LOCATION,
+        IS_HYPER
+      FROM HASHES JOIN KENNELS on HASHES.KENNEL_KY = KENNELS.KENNEL_KY
+      WHERE
+        (
+          KENNEL_EVENT_NUMBER LIKE ? OR
+          KENNEL_ABBREVIATION LIKE ? OR
+          EVENT_DATE LIKE ? OR
+          EVENT_LOCATION LIKE ? )
+      ORDER BY $inputOrderColumnIncremented $inputOrderDirectionExtracted
+      LIMIT $inputStart,$inputLength";
+      #$app['monolog']->addDebug("sql: $sql");
+
+    #Define the SQL that gets the count for the filtered results
+    $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT
+    FROM HASHES JOIN KENNELS on HASHES.KENNEL_KY = KENNELS.KENNEL_KY
+    WHERE
+      (
+        KENNEL_EVENT_NUMBER LIKE ? OR
+        KENNEL_ABBREVIATION LIKE ? OR
+        EVENT_DATE LIKE ? OR
+        EVENT_LOCATION LIKE ? )";
+
+    #Define the sql that gets the overall counts
+    $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHES";
+
+    #-------------- End: Define the SQL used here   ----------------------------
+
+    #-------------- Begin: Query the database   --------------------------------
+    #Perform the filtered search
+    $theResults = $app['db']->fetchAll($sql,array(
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified));
+
+    #Perform the untiltered count
+    $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
+
+    #Perform the filtered count
+    $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified)))['THE_COUNT'];
+    #-------------- End: Query the database   --------------------------------
+
+    #Establish the output
+    $output = array(
+      "sEcho" => "foo",
+      "iTotalRecords" => $theUnfilteredCount,
+      "iTotalDisplayRecords" => $theFilteredCount,
+      "aaData" => $theResults
+    );
+
+    #Set the return value
+    $returnValue = $app->json($output,200);
+
+    #Return the return value
+    return $returnValue;
+  }
+
+
+  #Define the action
+  public function listHashersPreActionJson(Request $request, Application $app){
+
+    # Establish and set the return value
+    $returnValue = $app['twig']->render('admin_hasher_list_json.twig',array(
+      'pageTitle' => 'The List of Hashers (Experimental Page)',
+      'pageSubTitle' => 'The List of *ALL* Hashers',
+      'pageCaption' => "",
+      'tableCaption' => ""
+    ));
+
+    #Return the return value
+    return $returnValue;
+
+  }
+
+  public function getHashersListJson(Request $request, Application $app){
+
+    #$app['monolog']->addDebug("Entering the function------------------------");
+
+    #Obtain the post parameters
+    #$inputDraw = $_POST['draw'] ;
+    $inputStart = $_POST['start'] ;
+    $inputLength = $_POST['length'] ;
+    $inputColumns = $_POST['columns'];
+    $inputSearch = $_POST['search'];
+    $inputSearchValue = $inputSearch['value'];
+
+    #-------------- Begin: Validate the post parameters ------------------------
+    #Validate input start
+    if(!is_numeric($inputStart)){
+      #$app['monolog']->addDebug("input start is not numeric: $inputStart");
+      $inputStart = 0;
+    }
+
+    #Validate input length
+    if(!is_numeric($inputLength)){
+      #$app['monolog']->addDebug("input length is not numeric");
+      $inputStart = "0";
+      $inputLength = "50";
+    } else if($inputLength == "-1"){
+      #$app['monolog']->addDebug("input length is negative one (all rows selected)");
+      $inputStart = "0";
+      $inputLength = "1000000000";
+    }
+
+    #Validate input search
+    #We are using database parameterized statements, so we are good already...
+
+    #---------------- End: Validate the post parameters ------------------------
+
+    #-------------- Begin: Modify the input parameters  ------------------------
+    #Modify the search string
+    $inputSearchValueModified = "%$inputSearchValue%";
+
+    #Obtain the column/order information
+    $inputOrderRaw = isset($_POST['order']) ? $_POST['order'] : null;
+    $inputOrderColumnExtracted = "2";
+    $inputOrderColumnIncremented = "2";
+    $inputOrderDirectionExtracted = "desc";
+    if(!is_null($inputOrderRaw)){
+      #$app['monolog']->addDebug("inside inputOrderRaw not null");
+      $inputOrderColumnExtracted = $inputOrderRaw[0]['column'];
+      $inputOrderColumnIncremented = $inputOrderColumnExtracted + 1;
+      $inputOrderDirectionExtracted = $inputOrderRaw[0]['dir'];
+      #$app['monolog']->addDebug("inputOrderColumnExtracted $inputOrderColumnExtracted");
+      #$app['monolog']->addDebug("inputOrderColumnIncremented $inputOrderColumnIncremented");
+      #$app['monolog']->addDebug("inputOrderDirectionExtracted $inputOrderDirectionExtracted");
+    }else{
+      #$app['monolog']->addDebug("inside inputOrderRaw is null");
+    }
+
+    #-------------- End: Modify the input parameters  --------------------------
+
+
+    #-------------- Begin: Define the SQL used here   --------------------------
+
+    #Define the sql that performs the filtering
+    $sql = "SELECT
+        HASHER_NAME AS NAME,
+        HASHER_KY AS THE_KEY,
+        FIRST_NAME,
+        LAST_NAME,
+        EMAIL,
+        HASHER_ABBREVIATION
+      FROM HASHERS
+      WHERE
+        (
+          HASHER_NAME LIKE ? OR
+          FIRST_NAME LIKE ? OR
+          LAST_NAME LIKE ? OR
+          EMAIL LIKE ? OR
+          HASHER_ABBREVIATION LIKE ?)
+      ORDER BY $inputOrderColumnIncremented $inputOrderDirectionExtracted
+      LIMIT $inputStart,$inputLength";
+      #$app['monolog']->addDebug("sql: $sql");
+
+    #Define the SQL that gets the count for the filtered results
+    $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT
+    FROM HASHERS
+    WHERE
+      (
+        HASHER_NAME LIKE ? OR
+        FIRST_NAME LIKE ? OR
+        LAST_NAME LIKE ? OR
+        EMAIL LIKE ? OR
+        HASHER_ABBREVIATION LIKE ?)";
+
+    #Define the sql that gets the overall counts
+    $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHERS";
+
+    #-------------- End: Define the SQL used here   ----------------------------
+
+    #-------------- Begin: Query the database   --------------------------------
+    #Perform the filtered search
+    $theResults = $app['db']->fetchAll($sql,array(
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified));
+
+    #Perform the untiltered count
+    $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
+
+    #Perform the filtered count
+    $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified)))['THE_COUNT'];
+    #-------------- End: Query the database   --------------------------------
+
+    #Establish the output
+    $output = array(
+      "sEcho" => "foo",
+      "iTotalRecords" => $theUnfilteredCount,
+      "iTotalDisplayRecords" => $theFilteredCount,
+      "aaData" => $theResults
+    );
+
+    #Set the return value
+    $returnValue = $app->json($output,200);
+
+    #Return the return value
+    return $returnValue;
+  }
 
 }

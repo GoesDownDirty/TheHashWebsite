@@ -312,6 +312,13 @@ $app->post('/admin/event/getHashersForEvent',                      'HASH\Control
 $app->get('/admin/listhashes',                                     'HASH\Controller\AdminController::listHashesAction');
 $app->get('/admin/listhashers',                                    'HASH\Controller\AdminController::listHashersAction');
 
+$app->get('/admin/listhashes2',                                    'HASH\Controller\AdminController::listHashesPreActionJson');
+$app->post('/admin/listhashes2',                                   'HASH\Controller\AdminController::getHashListJson');
+
+$app->get('/admin/listhashers2',                                    'HASH\Controller\AdminController::listHashersPreActionJson');
+$app->post('/admin/listhashers2',                                   'HASH\Controller\AdminController::getHashersListJson');
+
+
 $app->get('/admin/d3test','HASH\Controller\AdminController::d3testAction');
 
 # Functions for the "by year" statistics

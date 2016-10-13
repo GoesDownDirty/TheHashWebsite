@@ -300,6 +300,11 @@ $app->post('/admin/viewAuditRecords',                                 'HASH\Cont
 # Modify the participation for an event
 $app->get('/admin/event/manageparticipation/{hash_id}',            'HASH\Controller\HashEventController::hashParticipationAction');
 
+# Modify the participation for an event
+$app->get('/admin/event/manageparticipation2/{hash_id}',            'HASH\Controller\HashEventController::hashParticipationJsonPreAction');
+$app->post('/admin/event/manageparticipation2/{hash_id}',           'HASH\Controller\HashEventController::hashParticipationJsonPostAction');
+
+
 # Functions to add and delete hounds and hares to the hashes
 $app->post('/admin/event/addHasherToHash',                         'HASH\Controller\HashEventController::addHashParticipant');
 $app->post('/admin/event/addHareToHash',                           'HASH\Controller\HashEventController::addHashOrganizer');

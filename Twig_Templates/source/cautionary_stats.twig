@@ -3,28 +3,19 @@
 {% block main_page_content %}
 
       <div class="row marketing">
-        <div class="col-lg-6">
-          <h3>Hashes where bad things happened</h3>
-
-          {% for randomKey in randomKeysForRidiculousStats %}
-            {% if (loop.index0 is even) %}
-              <a href='/{{kennel_abbreviation}}/listhashes/byhasher/{{hareKeys[loop.index0].HARE_KEY}}'>{{listOfRidiculousness[randomKey]}}</a><br>
-            {% endif %}
-            {% if (loop.index0 is odd) %} 
-              <a href='/{{kennel_abbreviation}}/listhashes/byhare/{{hareKeys[loop.index0].HARE_KEY}}'>{{listOfRidiculousness[randomKey]}}</a><br>
-            {% endif %}
-          {% endfor %}
-
-
+        <div class="col-lg-12">
+          <div class="list-group">
+            <a href="#1" class="list-group-item active">Hashes where bad things happened</a>
+            {% for randomKey in randomKeysForRidiculousStats %}
+              {% if (loop.index0 is even) %}
+                <a class="list-group-item" href='/{{kennel_abbreviation}}/listhashes/byhasher/{{hareKeys[loop.index0].HARE_KEY}}'>{{listOfRidiculousness[randomKey]}}</a>
+              {% endif %}
+              {% if (loop.index0 is odd) %}
+                <a class="list-group-item" href='/{{kennel_abbreviation}}/listhashes/byhare/{{hareKeys[loop.index0].HARE_KEY}}'>{{listOfRidiculousness[randomKey]}}</a>
+              {% endif %}
+            {% endfor %}
+          </div>
         </div>
-
-        <div class="col-lg-6">
-          <h3>Other</h3>
-          Not written<br>
-          Not written<br>
-        </div>
-
-
       </div>
 
 {% endblock %}

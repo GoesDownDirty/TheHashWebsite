@@ -297,6 +297,15 @@ $app->get('/admin/viewAuditRecords',                                  'HASH\Cont
 $app->post('/admin/viewAuditRecords',                                 'HASH\Controller\AdminController::viewAuditRecordsJson');
 
 
+# View the jumbo counts table
+$app->get('/{kennel_abbreviation}/jumboCountsTable',                 'HASH\Controller\HashController::jumboCountsTablePreActionJson');
+$app->post('/{kennel_abbreviation}/jumboCountsTable',                'HASH\Controller\HashController::jumboCountsTablePostActionJson');
+
+# View the jumbo percentages table
+$app->get('/{kennel_abbreviation}/jumboPercentagesTable',                 'HASH\Controller\HashController::jumboPercentagesTablePreActionJson');
+$app->post('/{kennel_abbreviation}/jumboPercentagesTable',                'HASH\Controller\HashController::jumboPercentagesTablePostActionJson');
+
+
 # Modify the participation for an event
 $app->get('/admin/event/manageparticipation/{hash_id}',            'HASH\Controller\HashEventController::hashParticipationAction');
 

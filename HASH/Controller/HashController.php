@@ -1545,15 +1545,12 @@ public function cautionaryStatsAction(Request $request, Application $app, string
     "Hashes where VD was contrated",
     "Hashes where someone got pregnant",
     "Hashes where someone was sexually harassed",
-    "Hashes where Hot Tub talked about his childhood friend, Abe Lincoln",
     "Hashes where someone coveted their neighbor's wife",
     "Hashes where hashers were mocked for their Kentucky heritage",
     "Hashes where hashers were mocked for their Michigan heritage",
     "Hashes where people did it on trail",
     "Hashes where a hasher was arrested",
     "Hashes where the police showed up",
-    "Hashes where religious leaders drank with us",
-    "Hashes where the Pope ran trail",
     "Hashes where the streams were crossed",
     "Hashes where no harriettes showed up",
     "Hashes that could have used better beer",
@@ -1561,6 +1558,7 @@ public function cautionaryStatsAction(Request $request, Application $app, string
     "Hashes that could have used better hares",
     "Hashes that caused somebody to move away",
     "Hashes where someone shat on trail",
+    "Hashes where someone shat themselves",
     "Hashes where someone called the police on us",
     "Hashes that brought great shame to everyone involved",
     "Hashes where dogs did it on trail"
@@ -2007,6 +2005,568 @@ public function getHasherAnalversariesAction(Request $request, Application $app,
 
 
 }
+
+
+
+
+
+
+#Define the action
+public function jumboCountsTablePreActionJson(Request $request, Application $app, string $kennel_abbreviation){
+
+  #Establish the subTitle
+  $minimumHashCount = JUMBO_COUNTS_MINIMUM_HASH_COUNT;
+  $subTitle = "Minimum of $minimumHashCount hashes";
+
+  # Establish and set the return value
+  $returnValue = $app['twig']->render('jumbo_counts_list_json.twig',array(
+    'pageTitle' => 'The Jumbo List of Counts (Experimental Page)',
+    'pageSubTitle' => $subTitle,
+    #'theList' => $hasherList,
+    'kennel_abbreviation' => $kennel_abbreviation,
+    'pageCaption' => "",
+    'tableCaption' => ""
+  ));
+
+  #Return the return value
+  return $returnValue;
+
+}
+
+
+public function jumboCountsTablePostActionJson(Request $request, Application $app, string $kennel_abbreviation){
+
+  #$app['monolog']->addDebug("Entering the function jumboStatsTablePostActionJson------------------------");
+
+  #Establish he minimum hash count
+  $minimumHashCount = JUMBO_COUNTS_MINIMUM_HASH_COUNT;
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  #Obtain the post parameters
+  #$inputDraw = $_POST['draw'] ;
+  $inputStart = $_POST['start'] ;
+  $inputLength = $_POST['length'] ;
+  $inputColumns = $_POST['columns'];
+  $inputSearch = $_POST['search'];
+  $inputSearchValue = $inputSearch['value'];
+
+  #-------------- Begin: Validate the post parameters ------------------------
+  #Validate input start
+  if(!is_numeric($inputStart)){
+    #$app['monolog']->addDebug("input start is not numeric: $inputStart");
+    $inputStart = 0;
+  }
+
+  #Validate input length
+  if(!is_numeric($inputLength)){
+    #$app['monolog']->addDebug("input length is not numeric");
+    $inputStart = "0";
+    $inputLength = "50";
+  } else if($inputLength == "-1"){
+    #$app['monolog']->addDebug("input length is negative one (all rows selected)");
+    $inputStart = "0";
+    $inputLength = "1000000000";
+  }
+
+  #Validate input search
+  #We are using database parameterized statements, so we are good already...
+
+  #---------------- End: Validate the post parameters ------------------------
+
+  #-------------- Begin: Modify the input parameters  ------------------------
+  #Modify the search string
+  $inputSearchValueModified = "%$inputSearchValue%";
+
+  #Obtain the column/order information
+  $inputOrderRaw = isset($_POST['order']) ? $_POST['order'] : null;
+  $inputOrderColumnExtracted = "3";
+  $inputOrderColumnIncremented = "3";
+  $inputOrderDirectionExtracted = "desc";
+  if(!is_null($inputOrderRaw)){
+    #$app['monolog']->addDebug("inside inputOrderRaw not null");
+    $inputOrderColumnExtracted = $inputOrderRaw[0]['column'];
+    $inputOrderColumnIncremented = $inputOrderColumnExtracted + 1;
+    $inputOrderDirectionExtracted = $inputOrderRaw[0]['dir'];
+  }else{
+    #$app['monolog']->addDebug("inside inputOrderRaw is null");
+  }
+
+  #-------------- End: Modify the input parameters  --------------------------
+
+
+  #-------------- Begin: Define the SQL used here   --------------------------
+
+  #Define the sql that performs the filtering
+  $sql = "SELECT
+      HASHER_NAME,
+      HASH_COUNT,
+      HARE_COUNT,
+      NON_HYPER_HARE_COUNT,
+      HYPER_HARE_COUNT,
+      LATEST_HASH.EVENT_DATE AS LATEST_EVENT_DATE,
+      HASHER_ABBREVIATION,
+      LAST_NAME,
+      FIRST_NAME,
+      EMAIL,
+      HOME_KENNEL,
+      HOME_KENNEL_KY,
+      DECEASED,
+      (HARE_COUNT/HASH_COUNT) AS HARING_TO_HASHING_PERCENTAGE,
+      (NON_HYPER_HARE_COUNT/HASH_COUNT) AS NON_HYPER_HARING_TO_HASHING_PERCENTAGE,
+      (HYPER_HARE_COUNT/HARE_COUNT) AS HYPER_TO_OVERALL_HARING_PERCENTAGE,
+      (NON_HYPER_HARE_COUNT/HARE_COUNT) AS NON_HYPER_TO_OVERALL_HARING_PERCENTAGE,
+      FIRST_HASH_KEY,
+  	  FIRST_HASH.KENNEL_EVENT_NUMBER AS FIRST_KENNEL_EVENT_NUMBER,
+      FIRST_HASH.EVENT_DATE AS FIRST_EVENT_DATE,
+      LATEST_HASH_KEY,
+      LATEST_HASH.KENNEL_EVENT_NUMBER AS LATEST_KENNEL_EVENT_NUMBER,
+      HASHER_KY
+  FROM
+  	(
+  	SELECT
+  		HASHERS.*,
+  		HASHERS.HASHER_KY AS OUTER_HASHER_KY,
+  		(
+  			SELECT COUNT(*)
+  			FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+  			WHERE HASHINGS.HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?) AS HASH_COUNT,
+  		(
+  			SELECT COUNT(*)
+  			FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+  			WHERE HARINGS_HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?) AS HARE_COUNT,
+  		(
+  			SELECT COUNT(*)
+  			FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+  			WHERE HARINGS_HASHER_KY = OUTER_HASHER_KY
+  			AND HASHES.KENNEL_KY = ?
+  			AND HASHES.IS_HYPER = 0) AS NON_HYPER_HARE_COUNT,
+  		(
+  			SELECT COUNT(*)
+  			FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+  			WHERE HARINGS_HASHER_KY = OUTER_HASHER_KY
+  			AND HASHES.KENNEL_KY = ?
+  			AND HASHES.IS_HYPER = 1) AS HYPER_HARE_COUNT,
+  		(
+  			SELECT HASHES.HASH_KY
+  			FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+  			WHERE HASHINGS.HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?
+              ORDER BY HASHES.EVENT_DATE ASC LIMIT 1) AS FIRST_HASH_KEY,
+  		(
+  			SELECT HASHES.HASH_KY
+  			FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+  			WHERE HASHINGS.HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?
+              ORDER BY HASHES.EVENT_DATE DESC LIMIT 1) AS LATEST_HASH_KEY
+  	FROM
+  		HASHERS
+  )
+  MAIN_TABLE
+  JOIN HASHES LATEST_HASH ON LATEST_HASH.HASH_KY = LATEST_HASH_KEY
+  JOIN HASHES FIRST_HASH ON FIRST_HASH.HASH_KY = FIRST_HASH_KEY
+  WHERE HASH_COUNT > $minimumHashCount AND (HASHER_NAME LIKE ? )
+  ORDER BY $inputOrderColumnIncremented $inputOrderDirectionExtracted
+  LIMIT $inputStart,$inputLength";
+  #$app['monolog']->addDebug("sql: $sql");
+
+  #Define the SQL that gets the count for the filtered results
+  $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT
+  FROM
+    (
+    SELECT
+      HASHERS.*,
+      HASHERS.HASHER_KY AS OUTER_HASHER_KY,
+      (
+        SELECT COUNT(*)
+        FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+        WHERE HASHINGS.HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?) AS HASH_COUNT
+    FROM
+      HASHERS
+  )
+  MAIN_TABLE
+  WHERE HASH_COUNT > $minimumHashCount AND (
+        HASHER_NAME LIKE ? )";
+
+  #Define the sql that gets the overall counts
+  $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT
+  FROM
+      (
+      SELECT
+        HASHERS.*,
+        HASHERS.HASHER_KY AS OUTER_HASHER_KY,
+        (
+          SELECT COUNT(*)
+          FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+          WHERE HASHINGS.HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?) AS HASH_COUNT,
+        (
+          SELECT COUNT(*)
+          FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+          WHERE HARINGS_HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?) AS HARE_COUNT,
+        (
+          SELECT COUNT(*)
+          FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+          WHERE HARINGS_HASHER_KY = OUTER_HASHER_KY
+          AND HASHES.KENNEL_KY = ?
+          AND HASHES.IS_HYPER = 0) AS NON_HYPER_HARE_COUNT,
+        (
+          SELECT COUNT(*)
+          FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+          WHERE HARINGS_HASHER_KY = OUTER_HASHER_KY
+          AND HASHES.KENNEL_KY = ?
+          AND HASHES.IS_HYPER = 1) AS HYPER_HARE_COUNT,
+        (
+          SELECT HASHES.HASH_KY
+          FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+          WHERE HASHINGS.HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?
+                ORDER BY HASHES.EVENT_DATE ASC LIMIT 1) AS FIRST_HASH_KEY,
+        (
+          SELECT HASHES.HASH_KY
+          FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+          WHERE HASHINGS.HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?
+                ORDER BY HASHES.EVENT_DATE DESC LIMIT 1) AS LATEST_HASH_KEY
+      FROM
+        HASHERS
+    )
+    MAIN_TABLE
+    JOIN HASHES LATEST_HASH ON LATEST_HASH.HASH_KY = LATEST_HASH_KEY
+    JOIN HASHES FIRST_HASH ON FIRST_HASH.HASH_KY = FIRST_HASH_KEY
+    WHERE HASH_COUNT > $minimumHashCount";
+
+  #-------------- End: Define the SQL used here   ----------------------------
+
+  #-------------- Begin: Query the database   --------------------------------
+  #$app['monolog']->addDebug("Point A");
+
+  #Perform the filtered search
+  $theResults = $app['db']->fetchAll($sql,array(
+    (int) $kennelKy,
+    (int) $kennelKy,
+    (int) $kennelKy,
+    (int) $kennelKy,
+    (int) $kennelKy,
+    (int) $kennelKy,
+    (string) $inputSearchValueModified));
+  #$app['monolog']->addDebug("Point B");
+
+  #Perform the untiltered count
+  $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array(
+    (int) $kennelKy,
+    (int) $kennelKy,
+    (int) $kennelKy,
+    (int) $kennelKy,
+    (int) $kennelKy,
+    (int) $kennelKy,
+  )))['THE_COUNT'];
+  #$app['monolog']->addDebug("Point C");
+
+  #Perform the filtered count
+  $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
+    (int) $kennelKy,
+    (string) $inputSearchValueModified)))['THE_COUNT'];
+  #$app['monolog']->addDebug("Point D");
+  #-------------- End: Query the database   --------------------------------
+
+  #$app['monolog']->addDebug("Point theUnfilteredCount $theUnfilteredCount");
+  #$app['monolog']->addDebug("Point theFilteredCount $theFilteredCount");
+
+  #Establish the output
+  $output = array(
+    "sEcho" => "foo",
+    "iTotalRecords" => $theUnfilteredCount,
+    "iTotalDisplayRecords" => $theFilteredCount,
+    "aaData" => $theResults
+  );
+
+  #Set the return value
+  $returnValue = $app->json($output,200);
+
+  #Return the return value
+  return $returnValue;
+}
+
+
+
+
+
+
+
+
+
+
+#Define the action
+public function jumboPercentagesTablePreActionJson(Request $request, Application $app, string $kennel_abbreviation){
+
+  #Establish the sub title
+  $minimumHashCount = JUMBO_PERCENTAGES_MINIMUM_HASH_COUNT;
+  $subTitle = "Minimum of $minimumHashCount hashes";
+
+  # Establish and set the return value
+  $returnValue = $app['twig']->render('jumbo_percentages_list_json.twig',array(
+    'pageTitle' => 'The Jumbo List of Percentages (Experimental Page)',
+    'pageSubTitle' => $subTitle,
+    #'theList' => $hasherList,
+    'kennel_abbreviation' => $kennel_abbreviation,
+    'pageCaption' => "",
+    'tableCaption' => ""
+  ));
+
+  #Return the return value
+  return $returnValue;
+
+}
+
+
+public function jumboPercentagesTablePostActionJson(Request $request, Application $app, string $kennel_abbreviation){
+
+  #$app['monolog']->addDebug("Entering the function jumboPercentagesTablePostActionJson------------------------");
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  #Define the minimum hash count
+  $minimumHashCount = JUMBO_PERCENTAGES_MINIMUM_HASH_COUNT;
+
+  #Obtain the post parameters
+  #$inputDraw = $_POST['draw'] ;
+  $inputStart = $_POST['start'] ;
+  $inputLength = $_POST['length'] ;
+  $inputColumns = $_POST['columns'];
+  $inputSearch = $_POST['search'];
+  $inputSearchValue = $inputSearch['value'];
+
+  #-------------- Begin: Validate the post parameters ------------------------
+  #Validate input start
+  if(!is_numeric($inputStart)){
+    #$app['monolog']->addDebug("input start is not numeric: $inputStart");
+    $inputStart = 0;
+  }
+
+  #Validate input length
+  if(!is_numeric($inputLength)){
+    #$app['monolog']->addDebug("input length is not numeric");
+    $inputStart = "0";
+    $inputLength = "50";
+  } else if($inputLength == "-1"){
+    #$app['monolog']->addDebug("input length is negative one (all rows selected)");
+    $inputStart = "0";
+    $inputLength = "1000000000";
+  }
+
+  #Validate input search
+  #We are using database parameterized statements, so we are good already...
+
+  #---------------- End: Validate the post parameters ------------------------
+
+  #-------------- Begin: Modify the input parameters  ------------------------
+  #Modify the search string
+  $inputSearchValueModified = "%$inputSearchValue%";
+
+  #Obtain the column/order information
+  $inputOrderRaw = isset($_POST['order']) ? $_POST['order'] : null;
+  $inputOrderColumnExtracted = "3";
+  $inputOrderColumnIncremented = "3";
+  $inputOrderDirectionExtracted = "desc";
+  if(!is_null($inputOrderRaw)){
+    #$app['monolog']->addDebug("inside inputOrderRaw not null");
+    $inputOrderColumnExtracted = $inputOrderRaw[0]['column'];
+    $inputOrderColumnIncremented = $inputOrderColumnExtracted + 1;
+    $inputOrderDirectionExtracted = $inputOrderRaw[0]['dir'];
+  }else{
+    #$app['monolog']->addDebug("inside inputOrderRaw is null");
+  }
+
+  #-------------- End: Modify the input parameters  --------------------------
+
+
+  #-------------- Begin: Define the SQL used here   --------------------------
+
+  #Define the sql that performs the filtering
+  $sql = "SELECT
+      HASHER_NAME,
+      (HARE_COUNT/HASH_COUNT) AS HARING_TO_HASHING_PERCENTAGE,
+      (NON_HYPER_HARE_COUNT/HASH_COUNT) AS NON_HYPER_HARING_TO_HASHING_PERCENTAGE,
+      (HYPER_HARE_COUNT/HARE_COUNT) AS HYPER_TO_OVERALL_HARING_PERCENTAGE,
+      (NON_HYPER_HARE_COUNT/HARE_COUNT) AS NON_HYPER_TO_OVERALL_HARING_PERCENTAGE,
+      HASH_COUNT,
+      HARE_COUNT,
+      HYPER_HARE_COUNT,
+      NON_HYPER_HARE_COUNT,
+
+      LATEST_HASH.EVENT_DATE AS LATEST_EVENT_DATE,
+      HASHER_ABBREVIATION,
+      LAST_NAME,
+      FIRST_NAME,
+      EMAIL,
+      HOME_KENNEL,
+      HOME_KENNEL_KY,
+      DECEASED,
+      FIRST_HASH_KEY,
+  	  FIRST_HASH.KENNEL_EVENT_NUMBER AS FIRST_KENNEL_EVENT_NUMBER,
+      FIRST_HASH.EVENT_DATE AS FIRST_EVENT_DATE,
+      LATEST_HASH_KEY,
+      LATEST_HASH.KENNEL_EVENT_NUMBER AS LATEST_KENNEL_EVENT_NUMBER,
+      HASHER_KY
+  FROM
+  	(
+  	SELECT
+  		HASHERS.*,
+  		HASHERS.HASHER_KY AS OUTER_HASHER_KY,
+  		(
+  			SELECT COUNT(*)
+  			FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+  			WHERE HASHINGS.HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?) AS HASH_COUNT,
+  		(
+  			SELECT COUNT(*)
+  			FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+  			WHERE HARINGS_HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?) AS HARE_COUNT,
+  		(
+  			SELECT COUNT(*)
+  			FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+  			WHERE HARINGS_HASHER_KY = OUTER_HASHER_KY
+  			AND HASHES.KENNEL_KY = ?
+  			AND HASHES.IS_HYPER = 0) AS NON_HYPER_HARE_COUNT,
+  		(
+  			SELECT COUNT(*)
+  			FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+  			WHERE HARINGS_HASHER_KY = OUTER_HASHER_KY
+  			AND HASHES.KENNEL_KY = ?
+  			AND HASHES.IS_HYPER = 1) AS HYPER_HARE_COUNT,
+  		(
+  			SELECT HASHES.HASH_KY
+  			FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+  			WHERE HASHINGS.HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?
+              ORDER BY HASHES.EVENT_DATE ASC LIMIT 1) AS FIRST_HASH_KEY,
+  		(
+  			SELECT HASHES.HASH_KY
+  			FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+  			WHERE HASHINGS.HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?
+              ORDER BY HASHES.EVENT_DATE DESC LIMIT 1) AS LATEST_HASH_KEY
+  	FROM
+  		HASHERS
+  )
+  MAIN_TABLE
+  JOIN HASHES LATEST_HASH ON LATEST_HASH.HASH_KY = LATEST_HASH_KEY
+  JOIN HASHES FIRST_HASH ON FIRST_HASH.HASH_KY = FIRST_HASH_KEY
+  WHERE HASH_COUNT > $minimumHashCount AND (HASHER_NAME LIKE ? )
+  ORDER BY $inputOrderColumnIncremented $inputOrderDirectionExtracted
+  LIMIT $inputStart,$inputLength";
+  #$app['monolog']->addDebug("sql: $sql");
+
+  #Define the SQL that gets the count for the filtered results
+  $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT
+  FROM
+    (
+    SELECT
+      HASHERS.*,
+      HASHERS.HASHER_KY AS OUTER_HASHER_KY,
+      (
+        SELECT COUNT(*)
+        FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+        WHERE HASHINGS.HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?) AS HASH_COUNT
+    FROM
+      HASHERS
+  )
+  MAIN_TABLE
+  WHERE HASH_COUNT > $minimumHashCount AND (
+        HASHER_NAME LIKE ? )";
+
+  #Define the sql that gets the overall counts
+  $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT
+  FROM
+      (
+      SELECT
+        HASHERS.*,
+        HASHERS.HASHER_KY AS OUTER_HASHER_KY,
+        (
+          SELECT COUNT(*)
+          FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+          WHERE HASHINGS.HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?) AS HASH_COUNT,
+        (
+          SELECT COUNT(*)
+          FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+          WHERE HARINGS_HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?) AS HARE_COUNT,
+        (
+          SELECT COUNT(*)
+          FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+          WHERE HARINGS_HASHER_KY = OUTER_HASHER_KY
+          AND HASHES.KENNEL_KY = ?
+          AND HASHES.IS_HYPER = 0) AS NON_HYPER_HARE_COUNT,
+        (
+          SELECT COUNT(*)
+          FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+          WHERE HARINGS_HASHER_KY = OUTER_HASHER_KY
+          AND HASHES.KENNEL_KY = ?
+          AND HASHES.IS_HYPER = 1) AS HYPER_HARE_COUNT,
+        (
+          SELECT HASHES.HASH_KY
+          FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+          WHERE HASHINGS.HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?
+                ORDER BY HASHES.EVENT_DATE ASC LIMIT 1) AS FIRST_HASH_KEY,
+        (
+          SELECT HASHES.HASH_KY
+          FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+          WHERE HASHINGS.HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?
+                ORDER BY HASHES.EVENT_DATE DESC LIMIT 1) AS LATEST_HASH_KEY
+      FROM
+        HASHERS
+    )
+    MAIN_TABLE
+    JOIN HASHES LATEST_HASH ON LATEST_HASH.HASH_KY = LATEST_HASH_KEY
+    JOIN HASHES FIRST_HASH ON FIRST_HASH.HASH_KY = FIRST_HASH_KEY
+    WHERE HASH_COUNT > $minimumHashCount";
+
+  #-------------- End: Define the SQL used here   ----------------------------
+
+  #-------------- Begin: Query the database   --------------------------------
+  #$app['monolog']->addDebug("Point A");
+
+  #Perform the filtered search
+  $theResults = $app['db']->fetchAll($sql,array(
+    (int) $kennelKy,
+    (int) $kennelKy,
+    (int) $kennelKy,
+    (int) $kennelKy,
+    (int) $kennelKy,
+    (int) $kennelKy,
+    (string) $inputSearchValueModified));
+  #$app['monolog']->addDebug("Point B");
+
+  #Perform the untiltered count
+  $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array(
+    (int) $kennelKy,
+    (int) $kennelKy,
+    (int) $kennelKy,
+    (int) $kennelKy,
+    (int) $kennelKy,
+    (int) $kennelKy,
+  )))['THE_COUNT'];
+  #$app['monolog']->addDebug("Point C");
+
+  #Perform the filtered count
+  $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
+    (int) $kennelKy,
+    (string) $inputSearchValueModified)))['THE_COUNT'];
+  #$app['monolog']->addDebug("Point D");
+  #-------------- End: Query the database   --------------------------------
+
+  #$app['monolog']->addDebug("Point theUnfilteredCount $theUnfilteredCount");
+  #$app['monolog']->addDebug("Point theFilteredCount $theFilteredCount");
+
+  #Establish the output
+  $output = array(
+    "sEcho" => "foo",
+    "iTotalRecords" => $theUnfilteredCount,
+    "iTotalDisplayRecords" => $theFilteredCount,
+    "aaData" => $theResults
+  );
+
+  #Set the return value
+  $returnValue = $app->json($output,200);
+
+  #Return the return value
+  return $returnValue;
+}
+
 
 
 }

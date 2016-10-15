@@ -11,5 +11,7 @@ define("DB_READ_ONLY_PASSWORD","yourpassword");
 
 /* Define this if you want google analytics on this instance */
 define("GOOGLE_ANALYTICS_ID","");
+define("JUMBO_PERCENTAGES_MINIMUM_HASH_COUNT",10);
+define("JUMBO_COUNTS_MINIMUM_HASH_COUNT",5);
 
 define("DEFAULT_USER_PASSWORD","yourlongpasswordstring");

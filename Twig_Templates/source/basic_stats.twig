@@ -4,25 +4,33 @@
 
       <div class="row marketing">
         <div class="col-lg-4">
-          <h3>Standard Statistics</h3>
-          <a href="/{{kennel_abbreviation}}/listhashers2">List of All Hashers (People and dogs)</a><br>
-          <a href="/{{kennel_abbreviation}}/listhashes">List of All Hashes (Events)</a><br>
-          <a href="/{{kennel_abbreviation}}/hashingCounts">Hashing Counts</a><br>
-          <a href="/{{kennel_abbreviation}}/haringCounts">Overall Haring Counts (includes hyper hashes)</a><br>
-          <a href="/{{kennel_abbreviation}}/nonHyperharingCounts">Proper Haring Counts (excludes hyper hashes)</a><br>
+          <div class="list-group">
+            <a href="#1" class="list-group-item active">Standard Statistics</a>
+            <a class="list-group-item" href="/{{kennel_abbreviation}}/jumboCountsTable">Jumbo Counts List</a>
+            <a class="list-group-item" href="/{{kennel_abbreviation}}/jumboPercentagesTable">Jumbo Percentages List</a>
+            <a class="list-group-item" href="/{{kennel_abbreviation}}/listhashers2">List of All Hashers (People and dogs)</a>
+            <a class="list-group-item" href="/{{kennel_abbreviation}}/listhashes">List of All Hashes (Events)</a>
+            <a class="list-group-item" href="/{{kennel_abbreviation}}/hashingCounts">Hashing Counts</a>
+            <a class="list-group-item" href="/{{kennel_abbreviation}}/haringCounts">Overall Haring Counts (includes hyper hashes)</a>
+            <a class="list-group-item" href="/{{kennel_abbreviation}}/nonHyperharingCounts">Proper Haring Counts (excludes hyper hashes)</a>
+          </div>
         </div>
 
         <div class="col-lg-4">
-          <h3>Standard Statistics</h3>
-          First Event: <a href="/{{kennel_abbreviation}}/hashes/{{first_hash.HASH_KY}}">Hash # {{first_hash.KENNEL_EVENT_NUMBER}} on {{first_hash.EVENT_DATE |date("Y/m/d", false)}}</a><br>
-          Latest Event: <a href="/{{kennel_abbreviation}}/hashes/{{latest_hash.HASH_KY}}">Hash # {{latest_hash.KENNEL_EVENT_NUMBER}} on {{latest_hash.EVENT_DATE |date("Y/m/d", false)}}</a><br>
+          <div class="list-group">
+            <a href="#2" class="list-group-item active">Kennel Details</a>
+            <a class="list-group-item" href="/{{kennel_abbreviation}}/hashes/{{first_hash.HASH_KY}}">First Hash: # {{first_hash.KENNEL_EVENT_NUMBER}} on {{first_hash.EVENT_DATE |date("Y/m/d", false)}}</a>
+            <a class="list-group-item" href="/{{kennel_abbreviation}}/hashes/{{latest_hash.HASH_KY}}">Latest Hash: # {{latest_hash.KENNEL_EVENT_NUMBER}} on {{latest_hash.EVENT_DATE |date("Y/m/d", false)}}</a>
+          </div>
         </div>
 
         <div class="col-lg-4">
-          <h3>Year by year summaries</h3>
-          {% for item in theYearValues %}
-            <a href='/{{kennel_abbreviation}}/statistics/getYearInReview/{{item.YEAR}}' >{{item.YEAR}} ({{item.THE_COUNT}} events)</a><br>
-          {% endfor %}
+          <div class="list-group">
+            <a href="#3" class="list-group-item active">Year by year summaries</a>
+              {% for item in theYearValues %}
+                <a class="list-group-item" href='/{{kennel_abbreviation}}/statistics/getYearInReview/{{item.YEAR}}' >{{item.YEAR}} ({{item.THE_COUNT}} events)</a>
+              {% endfor %}
+          </div>
         </div>
 
 

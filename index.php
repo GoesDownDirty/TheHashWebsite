@@ -237,6 +237,11 @@ $app->get('/{kennel_abbreviation}/listhashers',                                 
 $app->get('/{kennel_abbreviation}/listhashers2',                                       'HASH\Controller\HashController::listHashersPreActionJson');
 $app->post('/{kennel_abbreviation}/listhashers2',                                       'HASH\Controller\HashController::getHasherListJson');
 
+$app->get('/{kennel_abbreviation}/listhashes2',                                         'HASH\Controller\HashEventController::listHashesPreActionJson');
+$app->post('/{kennel_abbreviation}/listhashes2',                                        'HASH\Controller\HashEventController::listHashesPostActionJson');
+
+
+
 $app->get('/{kennel_abbreviation}/listhashers/byhash/{hash_id}',                        'HASH\Controller\HashController::listHashersByHashAction');
 $app->get('/{kennel_abbreviation}/listhares/byhash/{hash_id}',                          'HASH\Controller\HashController::listHaresByHashAction');
 $app->get('/{kennel_abbreviation}/listhashes',                                          'HASH\Controller\HashController::listHashesAction');

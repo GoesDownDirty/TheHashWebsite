@@ -398,12 +398,13 @@ class AdminController
 
     #Define the sql that performs the filtering
     $sql = "SELECT
-      AUDIT_KY,
       USERNAME,
       AUDIT_TIME,
       ACTION_TYPE,
       ACTION_DESCRIPTION,
-      IP_ADDR
+      IP_ADDR,
+      AUDIT_KY,
+      DATE_FORMAT(AUDIT_TIME,'%m/%d/%y %h:%i:%s %p') AS AUDIT_TIME_FORMATTED
       FROM AUDIT
       WHERE
         (

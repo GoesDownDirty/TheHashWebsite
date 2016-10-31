@@ -25,7 +25,11 @@ $(document).ready(function() {
     },
     "columns": [
       { "data": "USERNAME" },
-      { "data": "AUDIT_TIME" },
+      { "data": "AUDIT_TIME",
+        "render": function (nTd, sData, oData, iRow, iCol) {
+          return (oData.AUDIT_TIME_FORMATTED);
+        }
+      },
       { "data": "ACTION_TYPE" },
       { "data": "ACTION_DESCRIPTION" },
       { "data": "IP_ADDR" }

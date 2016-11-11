@@ -274,7 +274,9 @@ $app->get('/{kennel_abbreviation}/hashattendance/byhare/grandtotal/distincthashe
 $app->get('/{kennel_abbreviation}/getHasherCountsByHare/{hare_id}',                     'HASH\Controller\HashController::hasherCountsByHareAction');
 $app->get('/{kennel_abbreviation}/percentages/percentageofharingsthatwerehypers',       'HASH\Controller\HashController::percentageHaringsHypersVsNonHypers');
 #$app->get('/getHasherCountsByHound/{hasher_id}',                     'HASH\Controller\HashController::hasherCountsByHoundAction');
-$app->get('/{kennel_abbreviation}/getHasherAnalversaries/{hasher_id}',                     'HASH\Controller\HashController::getHasherAnalversariesAction');
+$app->get('/{kennel_abbreviation}/getHasherAnalversaries/{hasher_id}',                  'HASH\Controller\HashController::getHasherAnalversariesAction');
+$app->get('/{kennel_abbreviation}/getProjectedHasherAnalversaries/{hasher_id}',         'HASH\Controller\HashController::getProjectedHasherAnalversariesAction');
+
 
 # Hash event modification
 $app->get('/admin/modifyhash/form/{hash_id}',                     'HASH\Controller\HashEventController::adminModifyHashAction');

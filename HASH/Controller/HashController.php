@@ -2007,7 +2007,178 @@ public function getHasherAnalversariesAction(Request $request, Application $app,
 }
 
 
+public function getProjectedHasherAnalversariesAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  # Declare the SQL used to retrieve this information
+  $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
+
+  # Make a database call to obtain the hasher information
+  $hasher = $app['db']->fetchAssoc($sql_for_hasher_lookup, array((int) $hasher_id));
+
+  #Define the sql that performs the filtering
+  $sql = "SELECT
+      HASHER_NAME,
+      HASH_COUNT,
+      LATEST_HASH.EVENT_DATE AS LATEST_EVENT_DATE,
+      HASHER_ABBREVIATION,
+      LAST_NAME,
+      FIRST_NAME,
+      EMAIL,
+      HOME_KENNEL,
+      HOME_KENNEL_KY,
+      DECEASED,
+      FIRST_HASH_KEY,
+  	  FIRST_HASH.KENNEL_EVENT_NUMBER AS FIRST_KENNEL_EVENT_NUMBER,
+      FIRST_HASH.EVENT_DATE AS FIRST_EVENT_DATE,
+      LATEST_HASH_KEY,
+      LATEST_HASH.KENNEL_EVENT_NUMBER AS LATEST_KENNEL_EVENT_NUMBER,
+      HASHER_KY,
+      (DATEDIFF(CURDATE(),FIRST_HASH.EVENT_DATE)) AS DAYS_SINCE_FIRST_HASH,
+      ((DATEDIFF(CURDATE(),FIRST_HASH.EVENT_DATE)) / HASH_COUNT) AS DAYS_BETWEEN_HASHES
+  FROM
+  	(
+  	SELECT
+  		HASHERS.*,
+  		HASHERS.HASHER_KY AS OUTER_HASHER_KY,
+  		(
+  			SELECT COUNT(*)
+  			FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+  			WHERE HASHINGS.HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?
+          AND HASHES.EVENT_DATE >= (CURDATE() - INTERVAL ? DAY)) AS HASH_COUNT,
+  		(
+  			SELECT HASHES.HASH_KY
+  			FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+  			WHERE HASHINGS.HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?
+          AND HASHES.EVENT_DATE >= (CURDATE() - INTERVAL ? DAY)
+              ORDER BY HASHES.EVENT_DATE ASC LIMIT 1) AS FIRST_HASH_KEY,
+  		(
+  			SELECT HASHES.HASH_KY
+  			FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+  			WHERE HASHINGS.HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?
+          AND HASHES.EVENT_DATE >= (CURDATE() - INTERVAL ? DAY)
+              ORDER BY HASHES.EVENT_DATE DESC LIMIT 1) AS LATEST_HASH_KEY
+  	FROM
+  		HASHERS
+  )
+  MAIN_TABLE
+  JOIN HASHES LATEST_HASH ON LATEST_HASH.HASH_KY = LATEST_HASH_KEY
+  JOIN HASHES FIRST_HASH ON FIRST_HASH.HASH_KY = FIRST_HASH_KEY
+  WHERE HASHER_KY = ? ";
+
+  # Make a database call to obtain the hasher information
+  $numberOfDaysInDateRange = 360000;
+  $hasherStatsObject = $app['db']->fetchAssoc($sql, array(
+    (int) $kennelKy,
+    (int) $numberOfDaysInDateRange,
+    (int) $kennelKy,
+    (int) $numberOfDaysInDateRange,
+    (int) $kennelKy,
+    (int) $numberOfDaysInDateRange,
+    (int) $hasher_id));
+  $hasherStatsHashCount = $hasherStatsObject['HASH_COUNT'];
+  $hasherStatsDaysSinceFirstHash = $hasherStatsObject['DAYS_SINCE_FIRST_HASH'];
+  $hasherStatsDaysPerHash = $hasherStatsObject['DAYS_BETWEEN_HASHES'];
+
+  $numberOfDaysInRecentDateRange = 365;
+  $hasherRecentStatsObject = $app['db']->fetchAssoc($sql, array(
+    (int) $kennelKy,
+    (int) $numberOfDaysInRecentDateRange,
+    (int) $kennelKy,
+    (int) $numberOfDaysInRecentDateRange,
+    (int) $kennelKy,
+    (int) $numberOfDaysInRecentDateRange,
+    (int) $hasher_id));
+  if(empty($hasherRecentStatsObject)){
+    $recentEventCount = 0;
+    $recentDaysPerHash =  "Infinity";
+  }else{
+    $recentEventCount = $hasherRecentStatsObject['HASH_COUNT'];
+    $recentDaysPerHash =  $hasherRecentStatsObject['DAYS_BETWEEN_HASHES'];
+  }
+
+
+
+
+
+  #Project out the next bunch of hash analversaries
+
+  # Add a count into their list of hashes
+  $destinationArray = array();
+
+  #Loop through 500 events
+  for ($x = 1; $x <= 750; $x++) {
+    $incrementedHashCount = $hasherStatsHashCount + $x;
+    if(
+      ($incrementedHashCount % 25 == 0) ||
+      ($incrementedHashCount % 69 == 0) ||
+      ($incrementedHashCount % 666 == 0) ||
+      (($incrementedHashCount - 69) % 100 == 0)
+      ){
+
+        $daysToAdd = round($hasherStatsDaysPerHash * $x);
+        $nowDate = date("Y/m/d");
+        #$app['monolog']->addDebug("XX:nowDate $nowDate");
+        #$incrementedDate = strtotime($nowDate."+ 2 days");
+
+        $incrementedDateOverall = date('Y-m-d',strtotime($nowDate) + (24*3600*$daysToAdd));
+
+        if(empty($hasherRecentStatsObject)){
+          $daysToAddRecent = "infinity";
+          $incrementedDateRecent = null;
+        }else{
+          $daysToAddRecent = round($recentDaysPerHash * $x);
+          $incrementedDateRecent = date('Y-m-d',strtotime($nowDate) + (24*3600*$daysToAddRecent));
+        }
+
+        #$app['monolog']->addDebug("XD:incrementedHashCount $incrementedHashCount");
+        #$app['monolog']->addDebug("XE:daysToAdd $daysToAdd");
+        #$app['monolog']->addDebug("XF:date $date");
+
+        $obj = [
+          'incrementedHashCount' => $incrementedHashCount,
+          'incrementedDateOverall' => $incrementedDateOverall,
+          'daysAddedOverall' => $daysToAdd,
+          'incrementedDateRecent' => $incrementedDateRecent,
+          'daysAddedRecent' => $daysToAddRecent
+        ];
+
+
+      array_push($destinationArray,$obj);
+    }
+  }
+
+  # Establish and set the return value
+  $hasherName = $hasher['HASHER_NAME'];
+  $pageTitle = "Projected Hashing Analversaries";
+  $returnValue = $app['twig']->render('projected_hasher_analversary_list.twig',array(
+    'theList' => $destinationArray,
+    'pageTitle' => $pageTitle,
+    'pageSubTitle' => $hasherName,
+    'tableCaption' => 'The projected analversaries are based on how many hashes this hasher has done, and how frequently this hasher has hashed them. It applies their days between hashes average and projects out when they might hit certain analversaries.',
+    'kennel_abbreviation' => $kennel_abbreviation,
+    'participant_column_header' => 'Hasher',
+    'number_column_header' => 'Number of non-hyper harings',
+    'percentage_column_header' => 'Percentage of non-hypers hared',
+    'overall_boolean' => 'FALSE',
+    'firstHashKey' => $hasherStatsObject['FIRST_HASH_KEY'],
+    'firstKennelEventNumber' => $hasherStatsObject['FIRST_KENNEL_EVENT_NUMBER'],
+    'firstEventDate' => $hasherStatsObject['FIRST_EVENT_DATE'],
+    'overallRunRate' => $hasherStatsDaysPerHash,
+    'recentDateRangeInDays' => $numberOfDaysInRecentDateRange,
+    'recentRunRate' => $recentDaysPerHash,
+    'overallHashCount' => $hasherStatsHashCount,
+    'recentHashCount' => $recentEventCount
+  ));
+
+  #Return the return value
+  return $returnValue;
+
+
+
+}
 
 
 

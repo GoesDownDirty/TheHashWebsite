@@ -339,6 +339,7 @@ $app->post('/admin/listhashes2',                                   'HASH\Control
 $app->get('/admin/listhashers2',                                    'HASH\Controller\AdminController::listHashersPreActionJson');
 $app->post('/admin/listhashers2',                                   'HASH\Controller\AdminController::getHashersListJson');
 
+$app->get('/admin/hasherDetailsKennelSelection/{hasher_id}',        'HASH\Controller\AdminController::hasherDetailsKennelSelection');
 
 $app->get('/admin/d3test','HASH\Controller\AdminController::d3testAction');
 

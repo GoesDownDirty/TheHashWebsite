@@ -45,7 +45,7 @@ function displayMessage(messageValue){
 
          $.each(data, function(key,row) {
            $('#hare-list').append('<dt>'+ row.HASHER_NAME + '</dt>');
-           var linkOne = "<a href=/hashers/" +row.HASHER_KY+ ">Details</a>";
+           var linkOne = "<a href=/admin/hasherDetailsKennelSelection/" +row.HASHER_KY+ ">Details</a>";
            var linkTwo = '<a href="javascript:deleteHare('+row.HASHER_KY+ ',' + {{hash_key}} +');">Delete Hare</a>';
            var linkThree = '<a href="javascript:addHasher('+row.HASHER_KY+ ',' + {{hash_key}} +');">Add Hasher</a>';
            $('#hare-list').append('<dd>' + linkOne + ' | ' + linkTwo + ' | ' + linkThree + '</dd>');
@@ -81,7 +81,7 @@ function displayMessage(messageValue){
 
         $.each(data, function(key,row) {
           $('#hasher-list').append('<dt>'+ row.HASHER_NAME + '</dt>');
-          var linkOne = "<a href=/hashers/" +row.HASHER_KY+ ">Details</a>";
+          var linkOne = "<a href=/admin/hasherDetailsKennelSelection/" +row.HASHER_KY+ ">Details</a>";
           var linkTwo = '<a href="javascript:deleteHasher('+row.HASHER_KY+ ',' + {{hash_key}} +');">Delete Hasher</a>';
           var linkThree = '<a href="javascript:addHare('+row.HASHER_KY+ ',' + {{hash_key}} +');">Add Hare</a>';
           $('#hasher-list').append('<dd>' + linkOne + ' | ' + linkTwo + ' | ' + linkThree + '</dd>');

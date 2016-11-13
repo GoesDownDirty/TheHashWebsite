@@ -813,4 +813,40 @@ class AdminController
     return $returnValue;
   }
 
+
+
+
+  public function hasherDetailsKennelSelection(Request $request, Application $app, int $hasher_id){
+
+
+    #Obtain the kennels that are being tracked in this website instance
+    $listOfKennelsSQL = "SELECT * FROM KENNELS WHERE IN_RECORD_KEEPING = 1";
+    $kennelValues = $app['db']->fetchAll($listOfKennelsSQL);
+
+    # Declare the SQL used to retrieve this information
+    $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
+
+    # Make a database call to obtain the hasher information
+    $hasher = $app['db']->fetchAssoc($sql_for_hasher_lookup, array((int) $hasher_id));
+
+    # Derive the hasher name
+    $hasherName = $hasher['HASHER_NAME'];
+
+    # Establish and set the return value
+    $returnValue = $app['twig']->render('hasher_details_select_kennel.twig',array(
+      'pageTitle' => 'Hasher Details: Select Kennel',
+      'kennelValues' => $kennelValues,
+      'hasherId' => $hasher_id,
+      'hasherName' => $hasherName
+    ));
+
+    #Return the return value
+    return $returnValue;
+
+  }
+
+
+
+
+
 }

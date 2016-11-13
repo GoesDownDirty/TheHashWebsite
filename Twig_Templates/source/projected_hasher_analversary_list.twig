@@ -15,39 +15,75 @@
   });
 </script>
 
+<h1>{{pageTitle}}</h1>
+<h3>{{pageSubTitle}}</h3>
 
-  <h1>{{pageTitle}}</h1>
-  <h3>{{pageSubTitle}}</h3>
+
   <div class="table-responsive">
-    <b>First Hash:</b> <a href="/{{kennel_abbreviation}}/hashes/{{firstHashKey}}">{{kennel_abbreviation}} #{{firstKennelEventNumber}} on {{firstEventDate|date("Y/m/d", false)}} </a> <br>
-    <b>Overall number of hashes:</b> {{overallHashCount}} <br>
-    <b>Overall run rate (days between hashes, for all time):</b> {{overallRunRate}} days between hashes<br><br>
 
-    <b>Recent number of hashes (last {{recentDateRangeInDays}} days):</b> {{recentHashCount}} <br>
-    <b>Recent run rate (days between hashes, last {{recentDateRangeInDays}} days):</b> {{recentRunRate}} days between hashes<br>
-  <table class="table table-condensed table-hover" id="the_main_table">
-    <caption>{{tableCaption}}</caption>
-    <thead>
-      <tr>
-        <td>Analversary Number</td>
-        <th>Predicted Date (Overall rate)</th>
-        <th>Predicted Date (Recent rate)</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for item in theList %}
-        <tr>
-          <td>{{item.incrementedHashCount}}</td>
-          <td nowrap="nowrap">{{item.incrementedDateOverall|date("Y/m/d", false)}}</td>
-          <td nowrap="nowrap">
-            {% if item.incrementedDateRecent is null %}
-              Not Anytime Soon!
-            {% else %}
-              {{item.incrementedDateRecent|date("Y/m/d", false)}}
-            {% endif %}
-          </td>
-        </tr>
-      {% endfor %}
-  </table>
-  </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            Overall Activity
+          </div>
+          <div class="panel-body">
+            <table id="table" class="table table-hover">
+              <tbody>
+                <tr data-index="0"><td class="key" style="">First Hash</td><td style=""><a href="/{{kennel_abbreviation}}/hashes/{{firstHashKey}}">{{kennel_abbreviation}} #{{firstKennelEventNumber}} on {{firstEventDate|date("Y/m/d", false)}} </a></td></tr>
+                <tr data-index="1"><td class="key" style="">Overall number of runs</td><td style="">{{overallHashCount}}</td></tr>
+                <tr data-index="2"><td class="key" style="">Overall run rate</td><td style="">{{overallRunRate}} days between hashes</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-6">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            Recent Activity (last {{recentDateRangeInDays}} days)
+          </div>
+          <div class="panel-body">
+            <table id="table" class="table table-hover">
+              <tbody>
+                <tr data-index="0"><td class="key" style="">Recent number of runs</td><td style="">{{recentHashCount}}</td></tr>
+                <tr data-index="1"><td class="key" style="">Recent run rate</td><td style="">{{recentRunRate}} days between hashes</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+        <table class="table table-condensed table-hover" id="the_main_table">
+          <caption>{{tableCaption}}</caption>
+          <thead>
+            <tr>
+              <td>Analversary Number</td>
+              <th>Predicted Date (Overall rate)</th>
+              <th>Predicted Date (Recent rate)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in theList %}
+              <tr>
+                <td>{{item.incrementedHashCount}}</td>
+                <td>{{item.incrementedDateOverall|date("Y/m/d", false)}}</td>
+                <td>
+                  {% if item.incrementedDateRecent is null %}
+                    Not Anytime Soon!
+                  {% else %}
+                    {{item.incrementedDateRecent|date("Y/m/d", false)}}
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+    </div>
+
 {% endblock %}

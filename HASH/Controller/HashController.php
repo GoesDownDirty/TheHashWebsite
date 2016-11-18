@@ -591,6 +591,73 @@ class HashController
 
   }
 
+  public function viewHasherChartsAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
+
+    # Declare the SQL used to retrieve this information
+    $sql = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
+
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+    # Make a database call to obtain the hasher information
+    $hasher = $app['db']->fetchAssoc($sql, array((int) $hasher_id));
+
+    # Obtain the number of hashings
+    $sqlHashCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+    WHERE HASHER_KY = ? AND KENNEL_KY = ?";
+    $hashCountValue = $app['db']->fetchAssoc($sqlHashCount, array((int) $hasher_id, (int) $kennelKy));
+
+    # Obtain the number of harings
+    $sqlHareCount = "SELECT COUNT(*) AS THE_COUNT FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+    WHERE HARINGS_HASHER_KY = ? AND HASHES.KENNEL_KY = ?";
+    $hareCountValue = $app['db']->fetchAssoc($sqlHareCount, array((int) $hasher_id, (int) $kennelKy));
+
+    #Obtain the hashes by year
+    $sqlHashesByYear = "SELECT YEAR(EVENT_DATE) AS THE_VALUE, COUNT(*) AS THE_COUNT
+     FROM
+    	HASHINGS
+        JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+      WHERE
+    	HASHINGS.HASHER_KY = ? AND
+        HASHES.KENNEL_KY = ?
+    GROUP BY YEAR(EVENT_DATE)
+    ORDER BY YEAR(EVENT_DATE)";
+    $hashesByYearList = $app['db']->fetchAll($sqlHashesByYear, array((int) $hasher_id,(int) $kennelKy));
+
+    #Obtain the harings by year
+    $sqlHaringsByYear = "SELECT
+    	  YEAR(EVENT_DATE) AS THE_VALUE,
+        SUM(CASE WHEN HASHES.IS_HYPER IN (0)  THEN 1 ELSE 0 END) NON_HYPER_COUNT,
+    	  SUM(CASE WHEN HASHES.IS_HYPER IN (1)  THEN 1 ELSE 0 END) HYPER_COUNT,
+        COUNT(*) AS TOTAL_HARING_COUNT
+    FROM
+        HARINGS
+    	  JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+    WHERE
+        HARINGS.HARINGS_HASHER_KY = ? AND
+        HASHES.KENNEL_KY = ?
+    GROUP BY YEAR(EVENT_DATE)
+    ORDER BY YEAR(EVENT_DATE)";
+    $haringsByYearList = $app['db']->fetchAll($sqlHaringsByYear, array((int) $hasher_id,(int) $kennelKy));
+
+    # Establish and set the return value
+    $returnValue = $app['twig']->render('hasher_chart_details.twig',array(
+      'pageTitle' => 'Hasher Charts and Details',
+      'firstHeader' => 'Basic Details',
+      'secondHeader' => 'Statistics',
+      'hasherValue' => $hasher,
+      'hashCount' => $hashCountValue['THE_COUNT'],
+      'hareCount' => $hareCountValue['THE_COUNT'],
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'hashes_by_year_list' => $hashesByYearList,
+      'harings_by_year_list' => $haringsByYearList
+    ));
+
+    # Return the return value
+    return $returnValue;
+
+  }
+
 
   public function viewHashAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
 

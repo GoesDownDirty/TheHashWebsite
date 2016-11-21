@@ -1179,4 +1179,86 @@ class ObscureStatisticsController{
     }
 
 
+
+    public function trendingHashersAction(Request $request, Application $app, string $kennel_abbreviation, int $day_count){
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      #Establish the row limit
+      $rowLimit = 15;
+
+      # Obtain the average event attendance per year
+      $sqlTrendingHashers = "SELECT
+        	HASHERS.HASHER_NAME AS THE_VALUE,
+        	COUNT(*) AS THE_COUNT
+        FROM
+        	HASHERS
+        	JOIN HASHINGS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY
+        	JOIN HASHES on HASHINGS.HASH_KY = HASHES.HASH_KY
+        WHERE HASHES.KENNEL_KY = ?
+        AND EVENT_DATE >= (CURRENT_DATE - INTERVAL ? DAY)
+        GROUP BY HASHERS.HASHER_NAME
+        ORDER BY THE_COUNT DESC
+        LIMIT $rowLimit";
+      $trendingHashersList = $app['db']->fetchAll($sqlTrendingHashers, array((int) $kennelKy, (int) $day_count));
+
+      # Establish and set the return value
+      $returnValue = $app['twig']->render('trending_hashers_charts.twig',array(
+        'pageTitle' => 'Trending Hashers',
+        'firstHeader' => 'FIRST HEADER',
+        'secondHeader' => 'SECOND HEADER',
+        'kennel_abbreviation' => $kennel_abbreviation,
+        'trending_hashers_list' => $trendingHashersList,
+        'day_count' => $day_count,
+        'row_limit' => $rowLimit
+      ));
+
+      # Return the return value
+      return $returnValue;
+
+    }
+
+    public function trendingTrueHaresAction(Request $request, Application $app, string $kennel_abbreviation, int $day_count){
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      #Establish the row limit
+      $rowLimit = 15;
+
+      # Obtain the average event attendance per year
+      $sqlTrendingTrueHares = "SELECT
+      	HASHERS.HASHER_NAME AS THE_VALUE,
+      	COUNT(*) AS THE_COUNT
+      FROM
+      	HASHERS
+      	JOIN HARINGS ON HASHERS.HASHER_KY = HARINGS.HARINGS_HASHER_KY
+      	JOIN HASHES on HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+      WHERE HASHES.KENNEL_KY = ?
+        AND HASHES.IS_HYPER = 0
+        AND EVENT_DATE >= (CURRENT_DATE - INTERVAL ? DAY)
+      GROUP BY HASHERS.HASHER_NAME
+      ORDER BY THE_COUNT DESC
+      LIMIT $rowLimit";
+      $trendingTrueHaresList = $app['db']->fetchAll($sqlTrendingTrueHares, array((int) $kennelKy, (int) $day_count));
+
+      # Establish and set the return value
+      $returnValue = $app['twig']->render('trending_true_hares_charts.twig',array(
+        'pageTitle' => 'Trending True Hares',
+        'firstHeader' => 'FIRST HEADER',
+        'secondHeader' => 'SECOND HEADER',
+        'kennel_abbreviation' => $kennel_abbreviation,
+        'trending_true_hares_list' => $trendingTrueHaresList,
+        'day_count' => $day_count,
+        'row_limit' => $rowLimit
+      ));
+
+      # Return the return value
+      return $returnValue;
+
+    }
+
+
+
 }

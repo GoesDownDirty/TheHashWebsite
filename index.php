@@ -105,6 +105,7 @@ $app['controllers']
   ->assert("hare_id", "\d+")
   ->assert("year_value", "\d+")
   ->assert("kennel_id","\d+")
+  ->assert("day_count","\d+")
   ->assert("analversary_number","\d+")
   ->assert("kennel_abbreviation","^(sch4|SCH4|SCH4BASH|sch4bash|LVH3|lvh3|SWOT|swot)$")
   ;
@@ -255,6 +256,9 @@ $app->get('/{kennel_abbreviation}/hashes/{hash_id}',                            
 $app->get('/{kennel_abbreviation}/hasherAnalversariesForEvent/{hash_id}',               'HASH\Controller\HashController::hasherAnalversariesForEventAction');
 
 $app->get('/{kennel_abbreviation}/backSlidersForEvent/{hash_id}',                       'HASH\Controller\HashController::backSlidersForEventAction');
+
+$app->get('/{kennel_abbreviation}/trendingHashers/{day_count}',                         'HASH\Controller\ObscureStatisticsController::trendingHashersAction');
+$app->get('/{kennel_abbreviation}/trendingTrueHares/{day_count}',                       'HASH\Controller\ObscureStatisticsController::trendingTrueHaresAction');
 
 
 $app->get('/{kennel_abbreviation}/hareAnalversariesForEvent/{hash_id}',                 'HASH\Controller\HashController::hareAnalversariesForEventAction');

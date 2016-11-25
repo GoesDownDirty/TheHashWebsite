@@ -183,20 +183,6 @@ class HashController
   #Define the action
   public function listHashersPreActionJson(Request $request, Application $app, string $kennel_abbreviation){
 
-    #Define the SQL to execute
-    /*
-    $sql = "SELECT
-      HASHER_KY AS THE_KEY,
-      HASHER_NAME AS NAME,
-      FIRST_NAME,
-      LAST_NAME,
-      EMAIL,
-      HASHER_ABBREVIATION FROM HASHERS";
-      */
-
-    #Execute the SQL statement; create an array of rows
-    #$hasherList = $app['db']->fetchAll($sql);
-
     # Establish and set the return value
     $returnValue = $app['twig']->render('hasher_list_json.twig',array(
       'pageTitle' => 'The List of Hashers (Experimental Page)',

@@ -106,7 +106,10 @@ $app['controllers']
   ->assert("year_value", "\d+")
   ->assert("kennel_id","\d+")
   ->assert("day_count","\d+")
+  ->assert("min_hash_count","\d+")
+  ->assert("max_percentage","\d+")
   ->assert("analversary_number","\d+")
+  ->assert("row_limit","\d+")
   ->assert("kennel_abbreviation","^(sch4|SCH4|SCH4BASH|sch4bash|LVH3|lvh3|SWOT|swot)$")
   ;
 #-------------------------------------------------------------------------------
@@ -259,6 +262,12 @@ $app->get('/{kennel_abbreviation}/backSlidersForEvent/{hash_id}',               
 
 $app->get('/{kennel_abbreviation}/trendingHashers/{day_count}',                         'HASH\Controller\ObscureStatisticsController::trendingHashersAction');
 $app->get('/{kennel_abbreviation}/trendingTrueHares/{day_count}',                       'HASH\Controller\ObscureStatisticsController::trendingTrueHaresAction');
+$app->get('/{kennel_abbreviation}/unTrendingTrueHares/{day_count}/{min_hash_count}/{max_percentage}/{row_limit}',                       'HASH\Controller\ObscureStatisticsController::unTrendingTrueHaresAction');
+
+#Ajax version of untrending hares graphs
+$app->get('/{kennel_abbreviation}/unTrendingTrueHaresJsonPre/{day_count}/{min_hash_count}/{max_percentage}/{row_limit}',                       'HASH\Controller\ObscureStatisticsController::unTrendingTrueHaresJsonPreAction');
+$app->get('/{kennel_abbreviation}/unTrendingTrueHaresJsonPost/{day_count}/{min_hash_count}/{max_percentage}/{row_limit}',                       'HASH\Controller\ObscureStatisticsController::unTrendingTrueHaresJsonPostAction');
+
 
 
 $app->get('/{kennel_abbreviation}/hareAnalversariesForEvent/{hash_id}',                 'HASH\Controller\HashController::hareAnalversariesForEventAction');

@@ -27,7 +27,7 @@
         {
           "data": "NAME",
           "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-            $(nTd).html("<a href='/{{kennel_abbreviation}}/hashers/"+oData.THE_KEY+"'>"+oData.NAME+"</a>");
+            $(nTd).html("<a href='/{{kennel_abbreviation}}/hashers/"+oData.THE_KEY+"?name="+oData.NAME+"'>"+oData.NAME+"</a>");
           }
 
        },

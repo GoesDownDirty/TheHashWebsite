@@ -136,11 +136,11 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
       getVirginHash({{hasherValue.HASHER_KY}});
       getMostRecentHash({{hasherValue.HASHER_KY}});
       //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/year","#hasherHashesByYear-list","Year","Count");
-      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/quarter","#hasherHashesByQuarter-list","Quarter","Count");
-      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/month","#hasherHashesByMonth-list","Month","Count");
-      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/dayname","#hasherHashesByDay-list","Day Name","Count");
+      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/quarter","#hasherHashesByQuarter-list","Quarter","Count");
+      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/month","#hasherHashesByMonth-list","Month","Count");
+      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/dayname","#hasherHashesByDay-list","Day Name","Count");
       getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/city","#hasherHashesByCity-list","City","Count");
-      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/state","#hasherHashesByState-list","State","Count");
+      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/state","#hasherHashesByState-list","State","Count");
 
 
       //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/all/harings/by/year","#hasherHaringsByYear-list","Year","Count");
@@ -179,7 +179,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
       <div class="row">
 
-        <div class="col-sm-5" style="background-color:pink;">
+        <div class="col-sm-5" style="background-color:lime;">
           <h3>Basic Details</h3>
           <dl class="dl-horizontal">
               {% autoescape %}
@@ -197,7 +197,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
           </dl>
         </div>
 
-        <div class="col-sm-3" style="background-color:yellow;">
+        <div class="col-sm-3" style="background-color:silver;">
           <h3>Their hashings</h3>
           <dl class="dl-horizontal">
             <a href='/{{kennel_abbreviation}}/listhashes/byhasher/{{hasherValue.HASHER_KY}}'>Their hashings</a><br>
@@ -210,7 +210,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
           </dl>
         </div>
 
-        <div class="col-sm-4" style="background-color:pink;">
+        <div class="col-sm-4" style="background-color:lime;">
           <h3>Their harings</h3>
           <dl class="dl-horizontal">
             <a href='/{{kennel_abbreviation}}/listhashes/byhare/{{hasherValue.HASHER_KY}}'>Their harings</a><br>
@@ -225,6 +225,53 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
       </div>
 
+      <div class="row">
+
+        <div class="col-sm-6" style="background-color:yellow">
+          <h3>Their first hashing</h3>
+          <dl class="dl-horizontal">
+            <dt>Hash Number</dt>
+            <dd>
+              <div data-role="content" id="virgin_hash_hash_number"></div>
+            </dd>
+            <dt>Hash Date</dt>
+            <dd>
+              <div data-role="content" id="virgin_hash_event_date"></div>
+            </dd>
+            <dt>Hash Location</dt>
+            <dd>
+              <div data-role="content" id="virgin_hash_location"></div>
+            </dd>
+            <dt>Time Elapsed</dt>
+            <dd>
+                <div data-role="content" id="virgin_hashing_elapsed_time"></div>
+            </dd>
+          </dl>
+        </div>
+
+
+        <div class="col-sm-6" style="background-color:silver">
+          <h3>Their latest hashing</h3>
+          <dl class="dl-horizontal">
+            <dt>Hash Number</dt>
+            <dd>
+              <div data-role="content" id="latest_hash_hash_number"></div>
+            </dd>
+            <dt>Hash Date</dt>
+            <dd>
+              <div data-role="content" id="latest_hash_event_date"></div>
+            </dd>
+            <dt>Hash Location</dt>
+            <dd>
+              <div data-role="content" id="latest_hash_location"></div>
+            </dd>
+            <dt>Time Elapsed</dt>
+            <dd>
+              <div data-role="content" id="latest_hashing_elapsed_time"></div>
+            </dd>
+          </dl>
+        </div>
+      </div>
 
       <div class="row">
         <div class="col-sm-6">
@@ -333,54 +380,199 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
 
 
+
       <div class="row">
+        <div class="col-sm-6">
+          <canvas id="myChart3" width="50" height="50"></canvas>
+          <script>
+          var ctx = document.getElementById("myChart3");
+          var myChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: [
+                    {% for individualValue in hashes_by_month_name_list %}
+                      "{{individualValue.MONTH_NAME[0:3]}}",
+                    {% endfor %}
+                  ],
+                  datasets: [{
+                      label: '# of Hashes',
+                      data: [
+                        {% for individualValue in hashes_by_month_name_list %}
+                          {{individualValue.THE_COUNT}},
+                        {% endfor %}
 
-        <div class="col-sm-6" style="background-color:yellow">
-          <h3>Their first hashing</h3>
-          <dl class="dl-horizontal">
-            <dt>Hash Number</dt>
-            <dd>
-              <div data-role="content" id="virgin_hash_hash_number"></div>
-            </dd>
-            <dt>Hash Date</dt>
-            <dd>
-              <div data-role="content" id="virgin_hash_event_date"></div>
-            </dd>
-            <dt>Hash Location</dt>
-            <dd>
-              <div data-role="content" id="virgin_hash_location"></div>
-            </dd>
-            <dt>Time Elapsed</dt>
-            <dd>
-                <div data-role="content" id="virgin_hashing_elapsed_time"></div>
-            </dd>
-          </dl>
+                      ],
+                      fillColor:'rgba(75, 192, 192, 0.2)',
+                      backgroundColor:'rgba(132, 234, 183,.2)',
+                      borderColor:'rgba(132, 234, 183,1)',
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  },
+                  title: {
+                    display: true,
+                    text: 'Hashes By Month'
+                  }
+              }
+          });
+          </script>
+
+        </div>
+
+        <div class="col-sm-6">
+
+          <canvas id="myChart4" width="50" height="50"></canvas>
+          <script>
+          var ctx = document.getElementById("myChart4");
+          var myChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: [
+                    {% for individualValue in hashes_by_quarter_list %}
+                      {{individualValue.THE_VALUE}},
+                    {% endfor %}
+                  ],
+                  datasets: [{
+                      label: '# of Hashes',
+                      data: [
+                        {% for individualValue in hashes_by_quarter_list %}
+                          {{individualValue.THE_COUNT}},
+                        {% endfor %}],
+                        backgroundColor:'rgba(127, 15, 239, 0.2)',
+                        borderColor:'rgba(127, 15, 239, 1)',
+                      borderWidth: 1
+                  }
+                ]
+              },
+              options: {
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  },
+                  title: {
+                    display: true,
+                    text: 'Hashes per Quarter'
+                  }
+              }
+          });
+          </script>
+
         </div>
 
 
-        <div class="col-sm-6" style="background-color:silver">
-          <h3>Their latest hashing</h3>
-          <dl class="dl-horizontal">
-            <dt>Hash Number</dt>
-            <dd>
-              <div data-role="content" id="latest_hash_hash_number"></div>
-            </dd>
-            <dt>Hash Date</dt>
-            <dd>
-              <div data-role="content" id="latest_hash_event_date"></div>
-            </dd>
-            <dt>Hash Location</dt>
-            <dd>
-              <div data-role="content" id="latest_hash_location"></div>
-            </dd>
-            <dt>Time Elapsed</dt>
-            <dd>
-              <div data-role="content" id="latest_hashing_elapsed_time"></div>
-            </dd>
-          </dl>
-        </div>
       </div>
 
+
+      <div class="row">
+
+        <div class="col-sm-6">
+          <canvas id="myChart5" width="50" height="50"></canvas>
+          <script>
+          var ctx = document.getElementById("myChart5");
+          var myChart = new Chart(ctx, {
+              type: 'polarArea',
+              data: {
+                  labels: [
+                    {% for individualValue in hashes_by_state_list %}
+                      "{{individualValue.THE_VALUE}}",
+                    {% endfor %}
+                  ],
+                  datasets: [{
+                      label: '# of Hashes',
+                      data: [
+                        {% for individualValue in hashes_by_state_list %}
+                          {{individualValue.THE_COUNT}},
+                        {% endfor %}
+
+                      ],
+                      fillColor:'rgba(75, 192, 192, 0.2)',
+                      backgroundColor:[
+                        'rgba(132, 234, 183,.2)',
+                        'rgba(239, 127, 15, 0.2)',
+                        'rgba(239, 15, 15, 0.2)',
+                        'rgba(201, 200, 253, 0.2)'
+                      ],
+                      borderColor:[
+                        'rgba(132, 234, 183,1)',
+                        'rgba(239, 127, 15, 1)',
+                        'rgba(239, 15, 15, 1)',
+                        'rgba(201, 200, 253, 1)'
+                      ],
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  },
+                  title: {
+                    display: true,
+                    text: 'Hashes By State'
+                  }
+              }
+          });
+          </script>
+
+        </div>
+
+        <div class="col-sm-6">
+          <canvas id="myChart6" width="50" height="50"></canvas>
+          <script>
+          var ctx = document.getElementById("myChart6");
+          var myChart = new Chart(ctx, {
+              type: 'radar',
+              data: {
+                  labels: [
+                    {% for individualValue in hashes_by_day_name_list %}
+                      "{{individualValue.THE_VALUE}}",
+                    {% endfor %}
+                  ],
+                  datasets: [{
+                      label: '# of Hashes',
+                      data: [
+                        {% for individualValue in hashes_by_day_name_list %}
+                          {{individualValue.THE_COUNT}},
+                        {% endfor %}
+
+                      ],
+                      fillColor:'rgba(75, 192, 192, 0.2)',
+                      backgroundColor:'rgba(239, 127, 15, 0.2)',
+                      borderColor:'rgba(239, 127, 15, 1)',
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  },
+                  title: {
+                    display: true,
+                    text: 'Hashes By Day Name'
+                  }
+              }
+          });
+          </script>
+
+        </div>
+      </div>
 
       <div class="row">
 
@@ -393,34 +585,41 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
         </div>
       -->
 
+      <!--
         <div class="col-sm-2" style="background-color:#E00585">
           <dl class="dl-horizontal">
             <h4>Hashes by quarter</h4>
             <div data-role="content" id="hasherHashesByQuarter-list"></div>
           </dl>
         </div>
+      -->
 
+        <!--
         <div class="col-sm-2" style="background-color:pink">
           <dl class="dl-horizontal">
             <h4>Hashes by month</h4>
             <div data-role="content" id="hasherHashesByMonth-list"></div>
           </dl>
         </div>
+      -->
 
-        <div class="col-sm-2" style="background-color:orange">
+      <!--
+        <div class="col-sm-6" style="background-color:orange">
           <dl class="dl-horizontal">
             <h4>Hashes by state</h4>
             <div data-role="content" id="hasherHashesByState-list"></div>
           </dl>
         </div>
+      -->
 
-
+<!--
         <div class="col-sm-2" style="background-color:yellow">
           <dl class="dl-horizontal">
             <h4>Hashes by day</h4>
             <div data-role="content" id="hasherHashesByDay-list"></div>
           </dl>
         </div>
+      -->
 
         <div class="col-sm-4" style="background-color:yellow">
           <dl class="dl-horizontal">

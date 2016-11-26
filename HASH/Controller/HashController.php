@@ -598,6 +598,18 @@ class HashController
     WHERE HARINGS_HASHER_KY = ? AND HASHES.KENNEL_KY = ?";
     $hareCountValue = $app['db']->fetchAssoc($sqlHareCount, array((int) $hasher_id, (int) $kennelKy));
 
+    # Obtain the hashes by month (name)
+    $theHashesByMonthNameList = $app['db']->fetchAll(HASHER_HASH_COUNTS_BY_MONTH_NAME, array((int) $hasher_id, (int) $kennelKy));
+
+    # Obtain the hashes by quarter
+    $theHashesByQuarterList = $app['db']->fetchAll(HASHER_HASH_COUNTS_BY_QUARTER, array((int) $hasher_id, (int) $kennelKy));
+
+    # Obtain the hashes by quarter
+    $theHashesByStateList = $app['db']->fetchAll(HASHER_HASH_COUNTS_BY_STATE, array((int) $hasher_id, (int) $kennelKy));
+
+    # Obtain the hashes by day name
+    $theHashesByDayNameList = $app['db']->fetchAll(HASHER_HASH_COUNTS_BY_DAYNAME, array((int) $hasher_id, (int) $kennelKy));
+
     #Obtain the hashes by year
     $sqlHashesByYear = "SELECT YEAR(EVENT_DATE) AS THE_VALUE, COUNT(*) AS THE_COUNT
      FROM
@@ -636,7 +648,11 @@ class HashController
       'hareCount' => $hareCountValue['THE_COUNT'],
       'kennel_abbreviation' => $kennel_abbreviation,
       'hashes_by_year_list' => $hashesByYearList,
-      'harings_by_year_list' => $haringsByYearList
+      'harings_by_year_list' => $haringsByYearList,
+      'hashes_by_month_name_list' => $theHashesByMonthNameList,
+      'hashes_by_quarter_list' => $theHashesByQuarterList,
+      'hashes_by_state_list' => $theHashesByStateList,
+      'hashes_by_day_name_list' => $theHashesByDayNameList
     ));
 
     # Return the return value

@@ -144,26 +144,26 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
 
       //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/all/harings/by/year","#hasherHaringsByYear-list","Year","Count");
-      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/all/harings/by/quarter","#hasherHaringsByQuarter-list","Quarter","Count");
-      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/all/harings/by/month","#hasherHaringsByMonth-list","Month","Count");
-      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/all/harings/by/dayname","#hasherHaringsByDay-list","Day Name","Count");
-      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/all/harings/by/city","#hasherHaringsByCity-list","City","Count");
-      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/all/harings/by/state","#hasherHaringsByState-list","State","Count");
+      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/all/harings/by/quarter","#hasherHaringsByQuarter-list","Quarter","Count");
+      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/all/harings/by/month","#hasherHaringsByMonth-list","Month","Count");
+      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/all/harings/by/dayname","#hasherHaringsByDay-list","Day Name","Count");
+      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/all/harings/by/city","#hasherHaringsByCity-list","City","Count");
+      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/all/harings/by/state","#hasherHaringsByState-list","State","Count");
 
 
 
 
 
       //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/nonhyper/harings/by/year","#hasherNonHyperHaringsByYear-list","Year","Count");
-      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/nonhyper/harings/by/quarter","#hasherNonHyperHaringsByQuarter-list","Quarter","Count");
-      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/nonhyper/harings/by/month","#hasherNonHyperHaringsByMonth-list","Month","Count");
-      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/nonhyper/harings/by/state","#hasherNonHyperHaringsByState-list","State","Count");
-      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/nonhyper/harings/by/city","#hasherNonHyperHaringsByCity-list","City","Count");
+      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/nonhyper/harings/by/quarter","#hasherNonHyperHaringsByQuarter-list","Quarter","Count");
+      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/nonhyper/harings/by/month","#hasherNonHyperHaringsByMonth-list","Month","Count");
+      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/nonhyper/harings/by/state","#hasherNonHyperHaringsByState-list","State","Count");
+      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/nonhyper/harings/by/city","#hasherNonHyperHaringsByCity-list","City","Count");
 
 
-      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/coharecount/byhare/nonhypers","#cohareCountByHareNonHypers-list","Hasher","Count");
-      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/coharecount/byhare/onlyhypers","#cohareCountByHareOnlyHypers-list","Hasher","Count");
-      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/coharecount/byhare/allhashes","#cohareCountByHareAllHashes-list","Hasher","Count");
+      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/coharecount/byhare/nonhypers","#cohareCountByHareNonHypers-list","Hasher","Count");
+      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/coharecount/byhare/onlyhypers","#cohareCountByHareOnlyHypers-list","Hasher","Count");
+      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/coharecount/byhare/allhashes","#cohareCountByHareAllHashes-list","Hasher","Count");
 
 
     });
@@ -175,7 +175,8 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
     <div class="container">
       <h1>{{pageTitle}}</h1>
-      <h4>Viewing Hound Details | <i><a href='/{{kennel_abbreviation}}/hares/{{hasherValue.HASHER_KY}}?name={{hasherValue.HASHER_NAME|url_encode}}'>View Hare Details</a></i></h4>
+      <h4><i><a href='/{{kennel_abbreviation}}/hashers/{{hasherValue.HASHER_KY}}?name={{hasherValue.HASHER_NAME|url_encode}}'>View Hound Details</a></i> | View Hare Details</h4>
+
 
 
       <div class="row">
@@ -190,28 +191,31 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
                 <dt>First Name</dt><dd> {{hasherValue.FIRST_NAME}}</dd>
                 <dt>Email</dt><dd> {{hasherValue.EMAIL}} </dd>
                 <dt>Deceased</dt><dd> {{hasherValue.DECEASED}}</dd>
+                {% if hasherValue.DECEASED > 0 %}
+                Greater than 0
+                {% endif %}
                 <dt>Hashing Count</dt><dd> {{hashCount}}</dd>
-                <dt>Haring Count</dt><dd> {{hareCount}}</dd>
-                <dt>Favorite Hare</dt><dd>Tender</dd>
-                <dt>Favorite Hasher</dt><dd>Tender</dd>
+                <dt>Total Haring Count</dt><dd> {{hareCount}}</dd>
+                <dt>True Haring Count</dt><dd>XXX</dd>
+                <dt>Hyper Haring Count</dt><dd>XXX</dd>
               {% endautoescape %}
           </dl>
         </div>
 
+
+
         <div class="col-sm-7" style="background-color:silver;">
-          <h3>Their hashings</h3>
+          <h3>Their harings</h3>
           <dl class="dl-horizontal">
-            <a href='/{{kennel_abbreviation}}/listhashes/byhasher/{{hasherValue.HASHER_KY}}'>Their hashings</a><br>
-            <a href='/{{kennel_abbreviation}}/getHasherAnalversaries/{{hasherValue.HASHER_KY}}'>Their hashing analversaries</a><br>
-            <a href='/{{kennel_abbreviation}}/getProjectedHasherAnalversaries/{{hasherValue.HASHER_KY}}'>Their *predicted* hashing analversaries</a><br>
-            Hounds who have hashed with them (Not written yet)<br>
-            {#
-            <a href='/{{kennel_abbreviation}}/getHasherCountsByHound/{{hasherValue.HASHER_KY}}'>Hounds who have hashed with them (Not written yet)</a><br>
-            #}
+            <a href='/{{kennel_abbreviation}}/listhashes/byhare/{{hasherValue.HASHER_KY}}'>Their harings</a><br>
+            <a href='/{{kennel_abbreviation}}/coharelist/byhare/allhashes/{{hasherValue.HASHER_KY}}'>Their Cohares</a><br>
+            <a href='/{{kennel_abbreviation}}/coharelist/byhare/nonhypers/{{hasherValue.HASHER_KY}}'>Their Cohares (non-hypers)</a><br>
+            <a href='/{{kennel_abbreviation}}/coharecount/byhare/allhashes/{{hasherValue.HASHER_KY}}'>Their Cohare Count</a><br>
+            <a href='/{{kennel_abbreviation}}/coharecount/byhare/nonhypers/{{hasherValue.HASHER_KY}}'>Their Cohare Count (non-hypers)</a><br>
+            All of their haring analversaries (Not written yet)<br>
+            <a href='/{{kennel_abbreviation}}/getHasherCountsByHare/{{hasherValue.HASHER_KY}}'>Hounds who have hashed their trails</a><br>
           </dl>
         </div>
-
-
 
       </div>
 
@@ -564,16 +568,118 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
         </div>
       </div>
 
+
+
       <div class="row">
+
+        <!--
+        <div class="col-sm-2" style="background-color:#35A1A5">
+          <dl class="dl-horizontal">
+            <h4>Harings by year</h4>
+            <div data-role="content" id="hasherHaringsByYear-list"></div>
+          </dl>
+        </div>
+      -->
+
+        <div class="col-sm-2" style="background-color:#E00585">
+          <dl class="dl-horizontal">
+            <h4>Harings by quarter</h4>
+            <div data-role="content" id="hasherHaringsByQuarter-list"></div>
+          </dl>
+        </div>
+
+        <div class="col-sm-2" style="background-color:pink">
+          <dl class="dl-horizontal">
+            <h4>Harings by month</h4>
+            <div data-role="content" id="hasherHaringsByMonth-list"></div>
+          </dl>
+        </div>
+
+        <div class="col-sm-2" style="background-color:orange">
+          <dl class="dl-horizontal">
+            <h4>Harings by state</h4>
+            <div data-role="content" id="hasherHaringsByState-list"></div>
+          </dl>
+        </div>
+
+
+        <div class="col-sm-2" style="background-color:yellow">
+          <dl class="dl-horizontal">
+            <h4>Harings by day</h4>
+            <div data-role="content" id="hasherHaringsByDay-list"></div>
+          </dl>
+        </div>
 
         <div class="col-sm-4" style="background-color:yellow">
           <dl class="dl-horizontal">
-            <h4>Hashes by city</h4>
-            <div data-role="content" id="hasherHashesByCity-list"></div>
+            <h4>Harings by city</h4>
+            <div data-role="content" id="hasherHaringsByCity-list"></div>
+          </dl>
+        </div>
+
+
+
+      </div>
+
+
+      <div class="row">
+
+        <!--
+        <div class="col-sm-3" style="background-color:#35A1A5">
+          <dl class="dl-horizontal">
+            <h4>(Non-Hyper) Harings by year</h4>
+            <div data-role="content" id="hasherNonHyperHaringsByYear-list"></div>
+          </dl>
+        </div>
+      -->
+
+        <div class="col-sm-3" style="background-color:pink">
+          <dl class="dl-horizontal">
+            <h4>(Non-Hyper) Harings by month</h4>
+            <div data-role="content" id="hasherNonHyperHaringsByMonth-list"></div>
+          </dl>
+        </div>
+
+        <div class="col-sm-3" style="background-color:orange">
+          <dl class="dl-horizontal">
+            <h4>(Non-Hyper) Harings by state</h4>
+            <div data-role="content" id="hasherNonHyperHaringsByState-list"></div>
+          </dl>
+        </div>
+
+        <div class="col-sm-6" style="background-color:yellow">
+          <dl class="dl-horizontal">
+            <h4>(Non-Hyper) Harings by city</h4>
+            <div data-role="content" id="hasherNonHyperHaringsByCity-list"></div>
+          </dl>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4" style="background-color:purple">
+          <dl class="dl-horizontal">
+            <h4>Favorite Non-Hyper CoHares</h4>
+            <div data-role="content" id="cohareCountByHareNonHypers-list"></div>
+          </dl>
+        </div>
+
+        <div class="col-sm-4" style="background-color:teal">
+          <dl class="dl-horizontal">
+            <h4>Favorite Only-Hyper CoHares</h4>
+            <div data-role="content" id="cohareCountByHareOnlyHypers-list"></div>
+          </dl>
+        </div>
+
+        <div class="col-sm-4" style="background-color:gold">
+          <dl class="dl-horizontal">
+            <h4>Favorite CoHares</h4>
+            <div data-role="content" id="cohareCountByHareAllHashes-list"></div>
           </dl>
         </div>
 
       </div>
+
+
 
     </div>
 

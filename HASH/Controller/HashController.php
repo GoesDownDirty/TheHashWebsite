@@ -185,8 +185,8 @@ class HashController
 
     # Establish and set the return value
     $returnValue = $app['twig']->render('hasher_list_json.twig',array(
-      'pageTitle' => 'The List of Hashers (Experimental Page)',
-      'pageSubTitle' => 'The List of *ALL* Hashers',
+      'pageTitle' => 'The List of Hashers',
+      'pageSubTitle' => '',
       #'theList' => $hasherList,
       'kennel_abbreviation' => $kennel_abbreviation,
       'pageCaption' => "",

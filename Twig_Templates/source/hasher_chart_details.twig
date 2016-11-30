@@ -308,59 +308,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
         </div>
 
-        <div class="col-sm-6">
-
-          <canvas id="myChart2" width="50" height="50"></canvas>
-          <script>
-          var ctx = document.getElementById("myChart2");
-          var myChart = new Chart(ctx, {
-              type: 'bar',
-              data: {
-                  labels: [
-                    {% for individualValue in harings_by_year_list %}
-                      {{individualValue.THE_VALUE}},
-                    {% endfor %}
-                  ],
-                  datasets: [{
-                      label: '# of Non Hyper Harings',
-                      data: [
-                        {% for individualValue in harings_by_year_list %}
-                          {{individualValue.NON_HYPER_COUNT}},
-                        {% endfor %}],
-                        backgroundColor:'rgba(54, 162, 235, 0.2)',
-                        borderColor:'rgba(54, 162, 235, 1)',
-                      borderWidth: 1
-                  },
-                  {
-                      label: '# of Total Harings',
-                      data: [
-                        {% for individualValue in harings_by_year_list %}
-                          {{individualValue.TOTAL_HARING_COUNT}},
-                        {% endfor %}],
-                        backgroundColor:'rgba(255, 99, 132, 0.2)',
-                        borderColor:'rgba(255, 99, 132, 1)',
-
-                      borderWidth: 1
-                  }
-                ]
-              },
-              options: {
-                  scales: {
-                      yAxes: [{
-                          ticks: {
-                              beginAtZero:true
-                          }
-                      }]
-                  },
-                  title: {
-                    display: true,
-                    text: 'Harings Per Year'
-                  }
-              }
-          });
-          </script>
-
-        </div>
+        
 
 
 

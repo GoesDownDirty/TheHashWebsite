@@ -192,10 +192,10 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
                 {% if hasherValue.DECEASED == "0000000001" %}
                   <dt>Deceased</dt><dd> Sadly, yes.</dd>
                 {% endif %}
-                <dt>Hashing Count</dt><dd> {{hashCount}}</dd>
-                <dt>Total Haring Count</dt><dd> {{hareCount}}</dd>
-                <dt>True Haring Count</dt><dd>XXX</dd>
-                <dt>Hyper Haring Count</dt><dd>XXX</dd>
+
+                <dt>Total Haring Count</dt><dd> {{overallHareCount}}</dd>
+                <dt>True Haring Count</dt><dd>{{trueHareCount}}</dd>
+                <dt>Hyper Haring Count</dt><dd>{{hyperHareCount}}</dd>
               {% endautoescape %}
           </dl>
         </div>
@@ -217,6 +217,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
       </div>
 
+      <!--
       <div class="row">
 
         <div class="col-sm-6" style="background-color:yellow">
@@ -264,56 +265,14 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
           </dl>
         </div>
       </div>
+    -->
 
       <div class="row">
-        <div class="col-sm-6">
 
-          <canvas id="myChart" width="50" height="50"></canvas>
-          <script>
-          var ctx = document.getElementById("myChart");
-          var myChart = new Chart(ctx, {
-              type: 'bar',
-              data: {
-                  labels: [
-                    {% for individualValue in hashes_by_year_list %}
-                      {{individualValue.THE_VALUE}},
-                    {% endfor %}
-                  ],
-                  datasets: [{
-                      label: '# of Hashes',
-                      data: [
-                        {% for individualValue in hashes_by_year_list %}
-                          {{individualValue.THE_COUNT}},
-                        {% endfor %}
-
-                      ],
-                      fillColor:'rgba(75, 192, 192, 0.2)',
-                      backgroundColor:'rgba(54, 162, 235, 0.2)',
-                      borderColor:'rgba(54, 162, 235, 1)',
-                      borderWidth: 1
-                  }]
-              },
-              options: {
-                  scales: {
-                      yAxes: [{
-                          ticks: {
-                              beginAtZero:true
-                          }
-                      }]
-                  },
-                  title: {
-                    display: true,
-                    text: 'Hashes Per Year'
-                  }
-              }
-          });
-          </script>
-
-        </div>
 
         <div class="col-sm-6">
 
-          <canvas id="myChart2" width="50" height="50"></canvas>
+          <canvas id="myChart2" width="25" height="25"></canvas>
           <script>
           var ctx = document.getElementById("myChart2");
           var myChart = new Chart(ctx, {
@@ -325,7 +284,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
                     {% endfor %}
                   ],
                   datasets: [{
-                      label: '# of Non Hyper Harings',
+                      label: '# of True Harings',
                       data: [
                         {% for individualValue in harings_by_year_list %}
                           {{individualValue.NON_HYPER_COUNT}},
@@ -374,228 +333,25 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
 
       <div class="row">
-        <div class="col-sm-6">
-          <canvas id="myChart3" width="50" height="50"></canvas>
-          <script>
-          var ctx = document.getElementById("myChart3");
-          var myChart = new Chart(ctx, {
-              type: 'bar',
-              data: {
-                  labels: [
-                    {% for individualValue in hashes_by_month_name_list %}
-                      "{{individualValue.MONTH_NAME[0:3]}}",
-                    {% endfor %}
-                  ],
-                  datasets: [{
-                      label: '# of Hashes',
-                      data: [
-                        {% for individualValue in hashes_by_month_name_list %}
-                          {{individualValue.THE_COUNT}},
-                        {% endfor %}
 
-                      ],
-                      fillColor:'rgba(75, 192, 192, 0.2)',
-                      backgroundColor:'rgba(132, 234, 183,.2)',
-                      borderColor:'rgba(132, 234, 183,1)',
-                      borderWidth: 1
-                  }]
-              },
-              options: {
-                  scales: {
-                      yAxes: [{
-                          ticks: {
-                              beginAtZero:true
-                          }
-                      }]
-                  },
-                  title: {
-                    display: true,
-                    text: 'Hashes By Month'
-                  }
-              }
-          });
-          </script>
-
-        </div>
-
-        <div class="col-sm-6">
-
-          <canvas id="myChart4" width="50" height="50"></canvas>
-          <script>
-          var ctx = document.getElementById("myChart4");
-          var myChart = new Chart(ctx, {
-              type: 'bar',
-              data: {
-                  labels: [
-                    {% for individualValue in hashes_by_quarter_list %}
-                      {{individualValue.THE_VALUE}},
-                    {% endfor %}
-                  ],
-                  datasets: [{
-                      label: '# of Hashes',
-                      data: [
-                        {% for individualValue in hashes_by_quarter_list %}
-                          {{individualValue.THE_COUNT}},
-                        {% endfor %}],
-                        backgroundColor:'rgba(127, 15, 239, 0.2)',
-                        borderColor:'rgba(127, 15, 239, 1)',
-                      borderWidth: 1
-                  }
-                ]
-              },
-              options: {
-                  scales: {
-                      yAxes: [{
-                          ticks: {
-                              beginAtZero:true
-                          }
-                      }]
-                  },
-                  title: {
-                    display: true,
-                    text: 'Hashes per Quarter'
-                  }
-              }
-          });
-          </script>
-
-        </div>
-
-
-      </div>
-
-
-      <div class="row">
-
-        <div class="col-sm-6">
-          <canvas id="myChart5" width="50" height="50"></canvas>
-          <script>
-          var ctx = document.getElementById("myChart5");
-          var myChart = new Chart(ctx, {
-              type: 'polarArea',
-              data: {
-                  labels: [
-                    {% for individualValue in hashes_by_state_list %}
-                      "{{individualValue.THE_VALUE}}",
-                    {% endfor %}
-                  ],
-                  datasets: [{
-                      label: '# of Hashes',
-                      data: [
-                        {% for individualValue in hashes_by_state_list %}
-                          {{individualValue.THE_COUNT}},
-                        {% endfor %}
-
-                      ],
-                      fillColor:'rgba(75, 192, 192, 0.2)',
-                      backgroundColor:[
-                        'rgba(132, 234, 183,.2)',
-                        'rgba(239, 127, 15, 0.2)',
-                        'rgba(239, 15, 15, 0.2)',
-                        'rgba(201, 200, 253, 0.2)'
-                      ],
-                      borderColor:[
-                        'rgba(132, 234, 183,1)',
-                        'rgba(239, 127, 15, 1)',
-                        'rgba(239, 15, 15, 1)',
-                        'rgba(201, 200, 253, 1)'
-                      ],
-                      borderWidth: 1
-                  }]
-              },
-              options: {
-                  scales: {
-                      yAxes: [{
-                          ticks: {
-                              beginAtZero:true
-                          }
-                      }]
-                  },
-                  title: {
-                    display: true,
-                    text: 'Hashes By State'
-                  }
-              }
-          });
-          </script>
-
-        </div>
-
-        <div class="col-sm-6">
-          <canvas id="myChart6" width="50" height="50"></canvas>
-          <script>
-          var ctx = document.getElementById("myChart6");
-          var myChart = new Chart(ctx, {
-              type: 'radar',
-              data: {
-                  labels: [
-                    {% for individualValue in hashes_by_day_name_list %}
-                      "{{individualValue.THE_VALUE}}",
-                    {% endfor %}
-                  ],
-                  datasets: [{
-                      label: '# of Hashes',
-                      data: [
-                        {% for individualValue in hashes_by_day_name_list %}
-                          {{individualValue.THE_COUNT}},
-                        {% endfor %}
-
-                      ],
-                      fillColor:'rgba(75, 192, 192, 0.2)',
-                      backgroundColor:'rgba(239, 127, 15, 0.2)',
-                      borderColor:'rgba(239, 127, 15, 1)',
-                      borderWidth: 1
-                  }]
-              },
-              options: {
-                  scales: {
-                      yAxes: [{
-                          ticks: {
-                              beginAtZero:true
-                          }
-                      }]
-                  },
-                  title: {
-                    display: true,
-                    text: 'Hashes By Day Name'
-                  }
-              }
-          });
-          </script>
-
-        </div>
-      </div>
-
-
-
-      <div class="row">
-
-        <!--
-        <div class="col-sm-2" style="background-color:#35A1A5">
-          <dl class="dl-horizontal">
-            <h4>Harings by year</h4>
-            <div data-role="content" id="hasherHaringsByYear-list"></div>
-          </dl>
-        </div>
-      -->
 
         <div class="col-sm-2" style="background-color:#E00585">
           <dl class="dl-horizontal">
-            <h4>Harings by quarter</h4>
+            <h4>Overall Harings by quarter</h4>
             <div data-role="content" id="hasherHaringsByQuarter-list"></div>
           </dl>
         </div>
 
         <div class="col-sm-2" style="background-color:pink">
           <dl class="dl-horizontal">
-            <h4>Harings by month</h4>
+            <h4>Overall Harings by month</h4>
             <div data-role="content" id="hasherHaringsByMonth-list"></div>
           </dl>
         </div>
 
         <div class="col-sm-2" style="background-color:orange">
           <dl class="dl-horizontal">
-            <h4>Harings by state</h4>
+            <h4>Overall Harings by state</h4>
             <div data-role="content" id="hasherHaringsByState-list"></div>
           </dl>
         </div>
@@ -603,14 +359,14 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
         <div class="col-sm-2" style="background-color:yellow">
           <dl class="dl-horizontal">
-            <h4>Harings by day</h4>
+            <h4>Overall Harings by day</h4>
             <div data-role="content" id="hasherHaringsByDay-list"></div>
           </dl>
         </div>
 
         <div class="col-sm-4" style="background-color:yellow">
           <dl class="dl-horizontal">
-            <h4>Harings by city</h4>
+            <h4>Overall Harings by city</h4>
             <div data-role="content" id="hasherHaringsByCity-list"></div>
           </dl>
         </div>
@@ -622,32 +378,24 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
       <div class="row">
 
-        <!--
-        <div class="col-sm-3" style="background-color:#35A1A5">
-          <dl class="dl-horizontal">
-            <h4>(Non-Hyper) Harings by year</h4>
-            <div data-role="content" id="hasherNonHyperHaringsByYear-list"></div>
-          </dl>
-        </div>
-      -->
 
         <div class="col-sm-3" style="background-color:pink">
           <dl class="dl-horizontal">
-            <h4>(Non-Hyper) Harings by month</h4>
+            <h4>True Harings by month</h4>
             <div data-role="content" id="hasherNonHyperHaringsByMonth-list"></div>
           </dl>
         </div>
 
         <div class="col-sm-3" style="background-color:orange">
           <dl class="dl-horizontal">
-            <h4>(Non-Hyper) Harings by state</h4>
+            <h4>True Harings by state</h4>
             <div data-role="content" id="hasherNonHyperHaringsByState-list"></div>
           </dl>
         </div>
 
         <div class="col-sm-6" style="background-color:yellow">
           <dl class="dl-horizontal">
-            <h4>(Non-Hyper) Harings by city</h4>
+            <h4>True Harings by city</h4>
             <div data-role="content" id="hasherNonHyperHaringsByCity-list"></div>
           </dl>
         </div>
@@ -656,21 +404,21 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
       <div class="row">
         <div class="col-sm-4" style="background-color:purple">
           <dl class="dl-horizontal">
-            <h4>Favorite Non-Hyper CoHares</h4>
+            <h4>Favorite True CoHares</h4>
             <div data-role="content" id="cohareCountByHareNonHypers-list"></div>
           </dl>
         </div>
 
         <div class="col-sm-4" style="background-color:teal">
           <dl class="dl-horizontal">
-            <h4>Favorite Only-Hyper CoHares</h4>
+            <h4>Favorite Hyper CoHares</h4>
             <div data-role="content" id="cohareCountByHareOnlyHypers-list"></div>
           </dl>
         </div>
 
         <div class="col-sm-4" style="background-color:gold">
           <dl class="dl-horizontal">
-            <h4>Favorite CoHares</h4>
+            <h4>Favorite Overall CoHares</h4>
             <div data-role="content" id="cohareCountByHareAllHashes-list"></div>
           </dl>
         </div>

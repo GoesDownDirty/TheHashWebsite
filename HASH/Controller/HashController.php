@@ -338,18 +338,12 @@ class HashController
     #Define the sql that performs the filtering
     $sql = "SELECT
       HASHER_NAME AS NAME,
-      FIRST_NAME,
-      LAST_NAME,
-      EMAIL,
       HASHER_ABBREVIATION,
       HASHER_KY AS THE_KEY
       FROM HASHERS
       WHERE
         (
           HASHER_NAME LIKE ? OR
-          FIRST_NAME LIKE ? OR
-          LAST_NAME LIKE ? OR
-          EMAIL LIKE ? OR
           HASHER_ABBREVIATION LIKE ?)
       ORDER BY $inputOrderColumnIncremented $inputOrderDirectionExtracted
       LIMIT $inputStart,$inputLength";
@@ -360,9 +354,6 @@ class HashController
       FROM HASHERS
       WHERE
           HASHER_NAME LIKE ? OR
-          FIRST_NAME LIKE ? OR
-          LAST_NAME LIKE ? OR
-          EMAIL LIKE ? OR
           HASHER_ABBREVIATION LIKE ?";
 
     #Define the sql that gets the overall counts
@@ -374,9 +365,6 @@ class HashController
     #Perform the filtered search
     $theResults = $app['db']->fetchAll($sql,array(
       (string) $inputSearchValueModified,
-      (string) $inputSearchValueModified,
-      (string) $inputSearchValueModified,
-      (string) $inputSearchValueModified,
       (string) $inputSearchValueModified));
 
     #Perform the untiltered count
@@ -384,9 +372,6 @@ class HashController
 
     #Perform the filtered count
     $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
-      (string) $inputSearchValueModified,
-      (string) $inputSearchValueModified,
-      (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified)))['THE_COUNT'];
     #-------------- End: Query the database   --------------------------------

@@ -79,29 +79,7 @@
           }
 
        },
-       {
-         "data": "FIRST_NAME",
-         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-           $(nTd).html(maskName(oData.FIRST_NAME));
-         }
 
-      },
-
-      {
-        "data": "LAST_NAME",
-        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-          $(nTd).html(maskName(oData.LAST_NAME));
-        }
-
-     },
-
-     {
-       "data": "LAST_NAME",
-       "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-         $(nTd).html(maskEmail(oData.EMAIL));
-       }
-
-    },
         //{ "data": "FIRST_NAME" },
         //{ "data": "LAST_NAME" },
         //{ "data": "EMAIL" },
@@ -121,9 +99,6 @@
       <thead>
         <tr>
           <th>Hasher Name</th>
-          <td>First Name</td>
-          <td>Last Name</td>
-          <td>Email</td>
           <td>Abbreviation</td>
         </tr>
       </thead>

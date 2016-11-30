@@ -31,9 +31,6 @@
       <thead>
         <tr>
           <th>Hasher Name</th>
-          <td>First Name</td>
-          <td>Last Name</td>
-          <td>Email</td>
           <td>Abbreviation</td>
         </tr>
       </thead>
@@ -41,9 +38,6 @@
         {% for item in theList %}
           <tr>
             <td><a href='/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}'>{{item.NAME}}</a></td>
-            <td>{{item.FIRST_NAME}}</td>
-            <td>{{item.LAST_NAME}}</td>
-            <td>{{item.EMAIL|replace({'@': '_at_', '.': "_dot_",'a':'*', 'e':'*'})}}</td>
             <td>{{item.HASHER_ABBREVIATION}}</td>
           </tr>
         {% endfor %}

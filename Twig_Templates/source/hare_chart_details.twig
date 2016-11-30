@@ -187,12 +187,10 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
               {% autoescape %}
                 <dt>Hasher Name</dt><dd> {{hasherValue.HASHER_NAME}}</dd>
                 <dt>Hasher Abbreviation</dt><dd> {{hasherValue.HASHER_ABBREVIATION}} </dd>
-                <dt>Last Name</dt><dd> {{hasherValue.LAST_NAME}} </dd>
-                <dt>First Name</dt><dd> {{hasherValue.FIRST_NAME}}</dd>
-                <dt>Email</dt><dd> {{hasherValue.EMAIL}} </dd>
-                <dt>Deceased</dt><dd> {{hasherValue.DECEASED}}</dd>
-                {% if hasherValue.DECEASED > 0 %}
-                Greater than 0
+                <dt>Last Name</dt><dd> {{hasherValue.LAST_NAME|first}}{% for i in 2..hasherValue.LAST_NAME|length%}{{'*'}}{% endfor %} </dd>
+                <dt>First Name</dt><dd> {{hasherValue.FIRST_NAME|first}}{% for i in 2..hasherValue.FIRST_NAME|length%}{{'*'}}{% endfor %}</dd>
+                {% if hasherValue.DECEASED == "0000000001" %}
+                  <dt>Deceased</dt><dd> Sadly, yes.</dd>
                 {% endif %}
                 <dt>Hashing Count</dt><dd> {{hashCount}}</dd>
                 <dt>Total Haring Count</dt><dd> {{hareCount}}</dd>

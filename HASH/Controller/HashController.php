@@ -2792,7 +2792,7 @@ public function jumboPercentagesTablePostActionJson(Request $request, Applicatio
   return $returnValue;
 }
 
-public function viewHareChartsAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
+private function getStandardHareChartsAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
   # Declare the SQL used to retrieve this information
   $sql = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
@@ -2808,11 +2808,11 @@ public function viewHareChartsAction(Request $request, Application $app, int $ha
   WHERE HARINGS_HASHER_KY = ? AND HASHES.KENNEL_KY = ? AND HASHES.IS_HYPER IN (?,?)";
   $overallHareCountValue = $app['db']->fetchAssoc($sqlHareCount, array((int) $hasher_id, (int) $kennelKy,  (int) 0, (int) 1));
 
-  # Obtain the number of true harings
-  $hyperHareCountValue = $app['db']->fetchAssoc($sqlHareCount, array((int) $hasher_id, (int) $kennelKy, (int) 0, (int) 0));
+  # Obtain the number of hyper harings
+  $hyperHareCountValue = $app['db']->fetchAssoc($sqlHareCount, array((int) $hasher_id, (int) $kennelKy, (int) 1, (int) 1));
 
   # Obtain the number of true harings
-  $trueHareCountValue = $app['db']->fetchAssoc($sqlHareCount, array((int) $hasher_id, (int) $kennelKy, (int) 1, (int) 1));
+  $trueHareCountValue = $app['db']->fetchAssoc($sqlHareCount, array((int) $hasher_id, (int) $kennelKy, (int) 0, (int) 0));
 
 
   #Obtain the harings by year
@@ -2831,19 +2831,180 @@ public function viewHareChartsAction(Request $request, Application $app, int $ha
   ORDER BY YEAR(EVENT_DATE)";
   $haringsByYearList = $app['db']->fetchAll($sqlHaringsByYear, array((int) $hasher_id,(int) $kennelKy));
 
+  # Obtain the hashes by month (name)
+  $sqlHaringsByMonth = "SELECT
+      THE_VALUE,
+        NON_HYPER_COUNT ,
+        HYPER_COUNT,
+        TOTAL_HARING_COUNT,
+      CASE THE_VALUE
+        WHEN '1' THEN 'January'
+        WHEN '2' THEN 'February'
+        WHEN '3' THEN 'March'
+        WHEN '4' THEN 'April'
+        WHEN '5' THEN 'May'
+        WHEN '6' THEN 'June'
+        WHEN '7' THEN 'July'
+        WHEN '8' THEN 'August'
+        WHEN '9' THEN 'September'
+        WHEN '10' THEN 'October'
+        WHEN '11' THEN 'November'
+        WHEN '12' THEN 'December'
+        END AS MONTH_NAME
+    FROM (
+      SELECT
+          MONTH(EVENT_DATE) AS THE_VALUE,
+          SUM(CASE WHEN HASHES.IS_HYPER IN (0)  THEN 1 ELSE 0 END) NON_HYPER_COUNT,
+          SUM(CASE WHEN HASHES.IS_HYPER IN (1)  THEN 1 ELSE 0 END) HYPER_COUNT,
+          COUNT(*) AS TOTAL_HARING_COUNT
+        FROM
+          HARINGS
+          JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+        WHERE
+          HARINGS.HARINGS_HASHER_KY = ? AND
+          HASHES.KENNEL_KY = ?
+        GROUP BY MONTH(EVENT_DATE)
+        ORDER BY MONTH(EVENT_DATE)
+    ) TEMPTABLE";
+  $theHaringsByMonthNameList = $app['db']->fetchAll($sqlHaringsByMonth, array((int) $hasher_id, (int) $kennelKy));
+
+  # Obtain the hashes by quarter
+      $sqlHaringsByQuarter = "SELECT
+        QUARTER(EVENT_DATE) AS THE_VALUE,
+        SUM(CASE WHEN HASHES.IS_HYPER IN (0)  THEN 1 ELSE 0 END) NON_HYPER_COUNT,
+        SUM(CASE WHEN HASHES.IS_HYPER IN (1)  THEN 1 ELSE 0 END) HYPER_COUNT,
+        COUNT(*) AS TOTAL_HARING_COUNT
+      FROM
+        HARINGS
+        JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+      WHERE
+        HARINGS.HARINGS_HASHER_KY = ? AND
+        HASHES.KENNEL_KY = ?
+      GROUP BY QUARTER(EVENT_DATE)
+      ORDER BY QUARTER(EVENT_DATE)
+  ";
+  $theHaringsByQuarterList = $app['db']->fetchAll($sqlHaringsByQuarter, array((int) $hasher_id, (int) $kennelKy));
+
+  # Obtain the hashes by state
+  $sqlHaringsByState = "SELECT
+      HASHES.EVENT_STATE,
+      SUM(CASE WHEN HASHES.IS_HYPER IN (0)  THEN 1 ELSE 0 END) NON_HYPER_COUNT,
+      SUM(CASE WHEN HASHES.IS_HYPER IN (1)  THEN 1 ELSE 0 END) HYPER_COUNT,
+      COUNT(*) AS TOTAL_HARING_COUNT
+    FROM
+      HARINGS
+      JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+    WHERE
+      HARINGS.HARINGS_HASHER_KY = ? AND
+      HASHES.KENNEL_KY = ?
+    GROUP BY HASHES.EVENT_STATE
+    ORDER BY HASHES.EVENT_STATE
+  ";
+  $theHaringsByStateList = $app['db']->fetchAll($sqlHaringsByState, array((int) $hasher_id, (int) $kennelKy));
+
+
+  # Obtain the hashes by day name
+  $sqlHaringsByDayName = "SELECT
+      THE_VALUE,
+        NON_HYPER_COUNT,
+        HYPER_COUNT,
+        TOTAL_HARING_COUNT,
+      CASE THE_VALUE
+        WHEN 'Sunday' THEN '0'
+        WHEN 'Monday' THEN '1'
+        WHEN 'Tuesday' THEN '2'
+        WHEN 'Wednesday' THEN '3'
+        WHEN 'Thursday' THEN '4'
+        WHEN 'Friday' THEN '5'
+        WHEN 'Saturday' THEN '6'
+      END AS DAYNUMBER
+    FROM
+    (
+      SELECT
+        DAYNAME(EVENT_DATE) AS THE_VALUE,
+        SUM(CASE WHEN HASHES.IS_HYPER IN (0)  THEN 1 ELSE 0 END) NON_HYPER_COUNT,
+        SUM(CASE WHEN HASHES.IS_HYPER IN (1)  THEN 1 ELSE 0 END) HYPER_COUNT,
+        COUNT(*) AS TOTAL_HARING_COUNT
+      FROM
+        HARINGS
+        JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+      WHERE
+        HARINGS.HARINGS_HASHER_KY = ? AND
+        HASHES.KENNEL_KY = ?
+      GROUP BY DAYNAME(EVENT_DATE)
+      ORDER BY DAYNAME(EVENT_DATE)
+    )TEMP
+    ORDER BY DAYNUMBER ASC";
+  $theHaringsByDayNameList = $app['db']->fetchAll($sqlHaringsByDayName, array((int) $hasher_id, (int) $kennelKy));
+
   # Establish and set the return value
-  $returnValue = $app['twig']->render('hare_chart_details.twig',array(
-    'pageTitle' => 'Hare Charts and Details',
-    'firstHeader' => 'Basic Details',
-    'secondHeader' => 'Statistics',
+  $returnValue = array(
     'hasherValue' => $hasher,
     'overallHareCount' => $overallHareCountValue['THE_COUNT'],
     'trueHareCount' => $trueHareCountValue['THE_COUNT'],
     'hyperHareCount' =>$hyperHareCountValue['THE_COUNT'],
     'kennel_abbreviation' => $kennel_abbreviation,
     'harings_by_year_list' => $haringsByYearList,
+    'harings_by_month_list' => $theHaringsByMonthNameList,
+    'harings_by_quarter_list' => $theHaringsByQuarterList,
+    'harings_by_state_list' => $theHaringsByStateList,
+    'harings_by_dayname_list' => $theHaringsByDayNameList
+  );
 
-  ));
+  # Return the return value
+  return $returnValue;
+
+}
+
+
+public function viewOverallHareChartsAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
+
+  $commonValues = $this->getStandardHareChartsAction($request, $app, $hasher_id, $kennel_abbreviation);
+  $customValues = array(
+    'pageTitle' => 'Overall Hare Charts and Details',
+    'firstHeader' => 'Basic Details',
+    'secondHeader' => 'Statistics'
+  );
+  $finalArray = array_merge($commonValues,$customValues);
+  $returnValue = $app['twig']->render('hare_chart_overall_details.twig',$finalArray);
+
+
+
+  # Return the return value
+  return $returnValue;
+
+}
+
+
+
+public function viewTrueHareChartsAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
+
+  $commonValues = $this->getStandardHareChartsAction($request, $app, $hasher_id, $kennel_abbreviation);
+  $customValues = array(
+    'pageTitle' => 'True Hare Charts and Details',
+    'firstHeader' => 'Basic Details',
+    'secondHeader' => 'Statistics'
+  );
+  $finalArray = array_merge($commonValues,$customValues);
+  $returnValue = $app['twig']->render('hare_chart_true_details.twig',$finalArray);
+
+  # Return the return value
+  return $returnValue;
+
+}
+
+
+public function viewHyperHareChartsAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
+
+
+  $commonValues = $this->getStandardHareChartsAction($request, $app, $hasher_id, $kennel_abbreviation);
+  $customValues = array(
+    'pageTitle' => 'Hyper Hare Charts and Details',
+    'firstHeader' => 'Basic Details',
+    'secondHeader' => 'Statistics'
+  );
+  $finalArray = array_merge($commonValues,$customValues);
+  $returnValue = $app['twig']->render('hare_chart_hyper_details.twig',$finalArray);
 
   # Return the return value
   return $returnValue;

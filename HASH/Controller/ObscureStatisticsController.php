@@ -547,6 +547,26 @@ class ObscureStatisticsController{
 
     }
 
+    public function getHasherHyperHaringsByCity(Request $request, Application $app, string $kennel_abbreviation){
+
+      #Obtain the post values
+      $theHasherKey = $request->request->get('hasher_id');
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      #Define the sql statement to execute
+      $theSql = HASHER_HYPER_HARING_COUNTS_BY_CITY;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
 
 
     public function getCohareCountByHareNonHypers(Request $request, Application $app, string $kennel_abbreviation){

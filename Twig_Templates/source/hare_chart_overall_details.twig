@@ -135,37 +135,9 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
    $(document).ready(function() {
       getVirginHash({{hasherValue.HASHER_KY}});
       getMostRecentHash({{hasherValue.HASHER_KY}});
-      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/year","#hasherHashesByYear-list","Year","Count");
-      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/quarter","#hasherHashesByQuarter-list","Quarter","Count");
-      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/month","#hasherHashesByMonth-list","Month","Count");
-      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/dayname","#hasherHashesByDay-list","Day Name","Count");
       getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/city","#hasherHashesByCity-list","City","Count");
-      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/state","#hasherHashesByState-list","State","Count");
-
-
-      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/all/harings/by/year","#hasherHaringsByYear-list","Year","Count");
-      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/all/harings/by/quarter","#hasherHaringsByQuarter-list","Quarter","Count");
-      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/all/harings/by/month","#hasherHaringsByMonth-list","Month","Count");
-      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/all/harings/by/dayname","#hasherHaringsByDay-list","Day Name","Count");
       getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/all/harings/by/city","#hasherHaringsByCity-list","City","Count");
-      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/all/harings/by/state","#hasherHaringsByState-list","State","Count");
-
-
-
-
-
-      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/nonhyper/harings/by/year","#hasherNonHyperHaringsByYear-list","Year","Count");
-      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/nonhyper/harings/by/quarter","#hasherNonHyperHaringsByQuarter-list","Quarter","Count");
-      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/nonhyper/harings/by/month","#hasherNonHyperHaringsByMonth-list","Month","Count");
-      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/nonhyper/harings/by/state","#hasherNonHyperHaringsByState-list","State","Count");
-      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/nonhyper/harings/by/city","#hasherNonHyperHaringsByCity-list","City","Count");
-
-
-      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/coharecount/byhare/nonhypers","#cohareCountByHareNonHypers-list","Hasher","Count");
-      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/coharecount/byhare/onlyhypers","#cohareCountByHareOnlyHypers-list","Hasher","Count");
       getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/coharecount/byhare/allhashes","#cohareCountByHareAllHashes-list","Hasher","Count");
-
-
     });
 
    </script>
@@ -175,7 +147,13 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
     <div class="container">
       <h1>{{pageTitle}}</h1>
-      <h4><i><a href='/{{kennel_abbreviation}}/hashers/{{hasherValue.HASHER_KY}}?name={{hasherValue.HASHER_NAME|url_encode}}'>View Hound Details</a></i> | View Hare Details</h4>
+      <h5>
+        <i><a href='/{{kennel_abbreviation}}/hashers/{{hasherValue.HASHER_KY}}?name={{hasherValue.HASHER_NAME|url_encode}}'>View Hound Details</a></i> |
+        Overall Hare Details |
+        <i><a href='/{{kennel_abbreviation}}/hares/true/{{hasherValue.HASHER_KY}}?name={{hasherValue.HASHER_NAME|url_encode}}'>True Hare Details</a></i> |
+        <i><a href='/{{kennel_abbreviation}}/hares/hyper/{{hasherValue.HASHER_KY}}?name={{hasherValue.HASHER_NAME|url_encode}}'>Hyper Hare Details</a></i>
+
+      </h5>
 
 
 
@@ -207,9 +185,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
           <dl class="dl-horizontal">
             <a href='/{{kennel_abbreviation}}/listhashes/byhare/{{hasherValue.HASHER_KY}}'>Their harings</a><br>
             <a href='/{{kennel_abbreviation}}/coharelist/byhare/allhashes/{{hasherValue.HASHER_KY}}'>Their Cohares</a><br>
-            <a href='/{{kennel_abbreviation}}/coharelist/byhare/nonhypers/{{hasherValue.HASHER_KY}}'>Their Cohares (non-hypers)</a><br>
             <a href='/{{kennel_abbreviation}}/coharecount/byhare/allhashes/{{hasherValue.HASHER_KY}}'>Their Cohare Count</a><br>
-            <a href='/{{kennel_abbreviation}}/coharecount/byhare/nonhypers/{{hasherValue.HASHER_KY}}'>Their Cohare Count (non-hypers)</a><br>
             All of their haring analversaries (Not written yet)<br>
             <a href='/{{kennel_abbreviation}}/getHasherCountsByHare/{{hasherValue.HASHER_KY}}'>Hounds who have hashed their trails</a><br>
           </dl>
@@ -217,61 +193,10 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
       </div>
 
-      <!--
-      <div class="row">
 
-        <div class="col-sm-6" style="background-color:yellow">
-          <h3>Their first hashing</h3>
-          <dl class="dl-horizontal">
-            <dt>Hash Number</dt>
-            <dd>
-              <div data-role="content" id="virgin_hash_hash_number"></div>
-            </dd>
-            <dt>Hash Date</dt>
-            <dd>
-              <div data-role="content" id="virgin_hash_event_date"></div>
-            </dd>
-            <dt>Hash Location</dt>
-            <dd>
-              <div data-role="content" id="virgin_hash_location"></div>
-            </dd>
-            <dt>Time Elapsed</dt>
-            <dd>
-                <div data-role="content" id="virgin_hashing_elapsed_time"></div>
-            </dd>
-          </dl>
-        </div>
-
-
-        <div class="col-sm-6" style="background-color:silver">
-          <h3>Their latest hashing</h3>
-          <dl class="dl-horizontal">
-            <dt>Hash Number</dt>
-            <dd>
-              <div data-role="content" id="latest_hash_hash_number"></div>
-            </dd>
-            <dt>Hash Date</dt>
-            <dd>
-              <div data-role="content" id="latest_hash_event_date"></div>
-            </dd>
-            <dt>Hash Location</dt>
-            <dd>
-              <div data-role="content" id="latest_hash_location"></div>
-            </dd>
-            <dt>Time Elapsed</dt>
-            <dd>
-              <div data-role="content" id="latest_hashing_elapsed_time"></div>
-            </dd>
-          </dl>
-        </div>
-      </div>
-    -->
 
       <div class="row">
-
-
         <div class="col-sm-6">
-
           <canvas id="myChart2" width="25" height="25"></canvas>
           <script>
           var ctx = document.getElementById("myChart2");
@@ -321,102 +246,240 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
               }
           });
           </script>
-
         </div>
 
 
+        <div class="col-sm-6">
 
+          <canvas id="myChart3" width="25" height="25"></canvas>
+          <script>
+          var ctx = document.getElementById("myChart3");
+          var myChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: [
+                    {% for individualValue in harings_by_month_list %}
+                      "{{individualValue.MONTH_NAME[0:3]}}",
+                    {% endfor %}
+                  ],
+                  datasets: [{
+                      label: '# of True Harings',
+                      data: [
+                        {% for individualValue in harings_by_month_list %}
+                          {{individualValue.NON_HYPER_COUNT}},
+                        {% endfor %}],
+                        backgroundColor:'rgba(127, 15, 239, 0.2)',
+                        borderColor:'rgba(127, 15, 239, 1)',
+                      borderWidth: 1
+                  },
+                  {
+                      label: '# of Total Harings',
+                      data: [
+                        {% for individualValue in harings_by_month_list %}
+                          {{individualValue.TOTAL_HARING_COUNT}},
+                        {% endfor %}],
+                        backgroundColor:'rgba(75, 192, 192, 0.2)',
+                        borderColor:'rgba(75, 192, 192, 1)',
 
+                      borderWidth: 1
+                  }
+                ]
+              },
+              options: {
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  },
+                  title: {
+                    display: true,
+                    text: 'Harings Per Month'
+                  }
+              }
+          });
+          </script>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-6">
+
+          <canvas id="myChart4" width="25" height="25"></canvas>
+          <script>
+          var ctx = document.getElementById("myChart4");
+          var myChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: [
+                    {% for individualValue in harings_by_quarter_list %}
+                      "{{individualValue.THE_VALUE}}",
+                    {% endfor %}
+                  ],
+                  datasets: [{
+                      label: '# of True Harings',
+                      data: [
+                        {% for individualValue in harings_by_quarter_list %}
+                          {{individualValue.NON_HYPER_COUNT}},
+                        {% endfor %}],
+                        backgroundColor:'rgba(127, 15, 239, 0.2)',
+                        borderColor:'rgba(127, 15, 239, 1)',
+                      borderWidth: 1
+                  },
+                  {
+                      label: '# of Total Harings',
+                      data: [
+                        {% for individualValue in harings_by_quarter_list %}
+                          {{individualValue.TOTAL_HARING_COUNT}},
+                        {% endfor %}],
+                        backgroundColor:'rgba(75, 192, 192, 0.2)',
+                        borderColor:'rgba(75, 192, 192, 1)',
+
+                      borderWidth: 1
+                  }
+                ]
+              },
+              options: {
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  },
+                  title: {
+                    display: true,
+                    text: 'Harings Per Quarter'
+                  }
+              }
+          });
+          </script>
+        </div>
+
+        <div class="col-sm-6">
+
+          <canvas id="myChart5" width="25" height="25"></canvas>
+          <script>
+          var ctx = document.getElementById("myChart5");
+          var myChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: [
+                    {% for individualValue in harings_by_state_list %}
+                      "{{individualValue.EVENT_STATE}}",
+                    {% endfor %}
+                  ],
+                  datasets: [{
+                      label: '# of True Harings',
+                      data: [
+                        {% for individualValue in harings_by_state_list %}
+                          {{individualValue.NON_HYPER_COUNT}},
+                        {% endfor %}],
+                        backgroundColor:'rgba(127, 15, 239, 0.2)',
+                        borderColor:'rgba(127, 15, 239, 1)',
+                      borderWidth: 1
+                  },
+                  {
+                      label: '# of Total Harings',
+                      data: [
+                        {% for individualValue in harings_by_state_list %}
+                          {{individualValue.TOTAL_HARING_COUNT}},
+                        {% endfor %}],
+                        backgroundColor:'rgba(132, 234, 183,.2)',
+                        borderColor:'rgba(132, 234, 183,1)',
+
+                      borderWidth: 1
+                  }
+                ]
+              },
+              options: {
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  },
+                  title: {
+                    display: true,
+                    text: 'Harings Per State'
+                  }
+              }
+          });
+          </script>
+        </div>
       </div>
 
 
+      <div class="row">
+        <div class="col-sm-6">
 
+          <canvas id="myChart6" width="25" height="25"></canvas>
+          <script>
+          var ctx = document.getElementById("myChart6");
+          var myChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: [
+                    {% for individualValue in harings_by_dayname_list %}
+                      "{{individualValue.THE_VALUE}}",
+                    {% endfor %}
+                  ],
+                  datasets: [{
+                      label: '# of True Harings',
+                      data: [
+                        {% for individualValue in harings_by_dayname_list %}
+                          {{individualValue.NON_HYPER_COUNT}},
+                        {% endfor %}],
+                        backgroundColor:'rgba(127, 15, 239, 0.2)',
+                        borderColor:'rgba(127, 15, 239, 1)',
+                      borderWidth: 1
+                  },
+                  {
+                      label: '# of Total Harings',
+                      data: [
+                        {% for individualValue in harings_by_dayname_list %}
+                          {{individualValue.TOTAL_HARING_COUNT}},
+                        {% endfor %}],
+                        backgroundColor:'rgba(132, 234, 183,.2)',
+                        borderColor:'rgba(132, 234, 183,1)',
+
+                      borderWidth: 1
+                  }
+                ]
+              },
+              options: {
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  },
+                  title: {
+                    display: true,
+                    text: 'Harings Per Day of the Week'
+                  }
+              }
+          });
+          </script>
+        </div>
+
+        <div class="col-sm-6">
+        </div>
+      </div>
 
       <div class="row">
 
-
-        <div class="col-sm-2" style="background-color:#E00585">
-          <dl class="dl-horizontal">
-            <h4>Overall Harings by quarter</h4>
-            <div data-role="content" id="hasherHaringsByQuarter-list"></div>
-          </dl>
-        </div>
-
-        <div class="col-sm-2" style="background-color:pink">
-          <dl class="dl-horizontal">
-            <h4>Overall Harings by month</h4>
-            <div data-role="content" id="hasherHaringsByMonth-list"></div>
-          </dl>
-        </div>
-
-        <div class="col-sm-2" style="background-color:orange">
-          <dl class="dl-horizontal">
-            <h4>Overall Harings by state</h4>
-            <div data-role="content" id="hasherHaringsByState-list"></div>
-          </dl>
-        </div>
-
-
-        <div class="col-sm-2" style="background-color:yellow">
-          <dl class="dl-horizontal">
-            <h4>Overall Harings by day</h4>
-            <div data-role="content" id="hasherHaringsByDay-list"></div>
-          </dl>
-        </div>
-
-        <div class="col-sm-4" style="background-color:yellow">
+        <div class="col-sm-6" style="background-color:yellow">
           <dl class="dl-horizontal">
             <h4>Overall Harings by city</h4>
             <div data-role="content" id="hasherHaringsByCity-list"></div>
           </dl>
         </div>
 
-
-
-      </div>
-
-
-      <div class="row">
-
-
-        <div class="col-sm-3" style="background-color:pink">
-          <dl class="dl-horizontal">
-            <h4>True Harings by month</h4>
-            <div data-role="content" id="hasherNonHyperHaringsByMonth-list"></div>
-          </dl>
-        </div>
-
-        <div class="col-sm-3" style="background-color:orange">
-          <dl class="dl-horizontal">
-            <h4>True Harings by state</h4>
-            <div data-role="content" id="hasherNonHyperHaringsByState-list"></div>
-          </dl>
-        </div>
-
-        <div class="col-sm-6" style="background-color:yellow">
-          <dl class="dl-horizontal">
-            <h4>True Harings by city</h4>
-            <div data-role="content" id="hasherNonHyperHaringsByCity-list"></div>
-          </dl>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-sm-4" style="background-color:purple">
-          <dl class="dl-horizontal">
-            <h4>Favorite True CoHares</h4>
-            <div data-role="content" id="cohareCountByHareNonHypers-list"></div>
-          </dl>
-        </div>
-
-        <div class="col-sm-4" style="background-color:teal">
-          <dl class="dl-horizontal">
-            <h4>Favorite Hyper CoHares</h4>
-            <div data-role="content" id="cohareCountByHareOnlyHypers-list"></div>
-          </dl>
-        </div>
-
-        <div class="col-sm-4" style="background-color:gold">
+        <div class="col-sm-6" style="background-color:gold">
           <dl class="dl-horizontal">
             <h4>Favorite Overall CoHares</h4>
             <div data-role="content" id="cohareCountByHareAllHashes-list"></div>

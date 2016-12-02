@@ -253,7 +253,10 @@ $app->get('/{kennel_abbreviation}/listhashes/byhasher/{hasher_id}',             
 $app->get('/{kennel_abbreviation}/listhashes/byhare/{hasher_id}',                       'HASH\Controller\HashController::listHashesByHareAction');
 #$app->get('/{kennel_abbreviation}/hashers/{hasher_id}',                                 'HASH\Controller\HashController::viewHasherAction');
 $app->get('/{kennel_abbreviation}/hashers/{hasher_id}',                                 'HASH\Controller\HashController::viewHasherChartsAction');
-$app->get('/{kennel_abbreviation}/hares/{hasher_id}',                                   'HASH\Controller\HashController::viewHareChartsAction');
+
+$app->get('/{kennel_abbreviation}/hares/overall/{hasher_id}',     'HASH\Controller\HashController::viewOverallHareChartsAction');
+$app->get('/{kennel_abbreviation}/hares/true/{hasher_id}',        'HASH\Controller\HashController::viewTrueHareChartsAction');
+$app->get('/{kennel_abbreviation}/hares/hyper/{hasher_id}',       'HASH\Controller\HashController::viewHyperHareChartsAction');
 
 
 $app->get('/{kennel_abbreviation}/attendanceStatistics',                                'HASH\Controller\ObscureStatisticsController::viewAttendanceChartsAction');
@@ -396,6 +399,9 @@ $app->post('/{kennel_abbreviation}/statistics/hasher/nonhyper/harings/by/month',
 $app->post('/{kennel_abbreviation}/statistics/hasher/nonhyper/harings/by/dayname',                   'HASH\Controller\ObscureStatisticsController::getHasherNonHyperHaringsByDayName');
 $app->post('/{kennel_abbreviation}/statistics/hasher/nonhyper/harings/by/state',                     'HASH\Controller\ObscureStatisticsController::getHasherNonHyperHaringsByState');
 $app->post('/{kennel_abbreviation}/statistics/hasher/nonhyper/harings/by/city',                      'HASH\Controller\ObscureStatisticsController::getHasherNonHyperHaringsByCity');
+
+# Mappings for hasher (hyper only) haring by year/month/state
+$app->post('/{kennel_abbreviation}/statistics/hasher/hyper/harings/by/city',                      'HASH\Controller\ObscureStatisticsController::getHasherHyperHaringsByCity');
 
 # Per person stats (more of them)
 $app->post('/{kennel_abbreviation}/coharecount/byhare/nonhypers','HASH\Controller\ObscureStatisticsController::getCohareCountByHareNonHypers');

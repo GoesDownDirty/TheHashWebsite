@@ -3,6 +3,7 @@
 {% block content %}
 
     <script src="/node_modules/chart.js/dist/Chart.bundle.min.js"></script>
+    <script type = "text/javascript" src = "/node_modules/wordcloud/src/wordcloud2.js"></script>
     <script type = "text/javascript" language = "javascript">
 
     //Function to get hares for the event
@@ -135,7 +136,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
    $(document).ready(function() {
       getVirginHash({{hasherValue.HASHER_KY}});
       getMostRecentHash({{hasherValue.HASHER_KY}});
-      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/city","#hasherHashesByCity-list","City","Count");
+      //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/city","#hasherHashesByCity-list","City","Count");
       getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/all/harings/by/city","#hasherHaringsByCity-list","City","Count");
       getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/coharecount/byhare/allhashes","#cohareCountByHareAllHashes-list","Hasher","Count");
     });
@@ -471,15 +472,20 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
       </div>
 
       <div class="row">
+        <a href="#citylist" class="btn btn-info" data-toggle="collapse">Show Harings By City List</a>
+        <a href="#coharelist" class="btn btn-info" data-toggle="collapse">Show Favorite CoHare List</a>
+      </div>
 
-        <div class="col-sm-6" style="background-color:yellow">
+      <div class="row">
+
+        <div class="col-sm-6 collapse" style="background-color:yellow" id="citylist">
           <dl class="dl-horizontal">
             <h4>Overall Harings by city</h4>
             <div data-role="content" id="hasherHaringsByCity-list"></div>
           </dl>
         </div>
 
-        <div class="col-sm-6" style="background-color:gold">
+        <div class="col-sm-6 collapse" style="background-color:gold" id="coharelist">
           <dl class="dl-horizontal">
             <h4>Favorite Overall CoHares</h4>
             <div data-role="content" id="cohareCountByHareAllHashes-list"></div>
@@ -487,6 +493,75 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
         </div>
 
       </div>
+
+
+      <div class="row">
+        <div id = "div_one" class="col-sm-6">
+          <h4>Overall Harings By City</h4>
+          <canvas id="my_canvas" class="wordcloud"></canvas>
+        </div>
+        <div id = "div_two" class="col-sm-6">
+          <h4>Favorite Overall CoHares</h4>
+          <canvas id="my_canvas2" class="wordcloud"></canvas>
+        </div>
+      </div>
+
+      <script type = "text/javascript" language = "javascript">
+          var canvas = document.getElementById("my_canvas");
+          var parent = document.getElementById("div_one");
+          canvas.width = parent.offsetWidth;
+          canvas.height = parent.offsetHeight;
+
+          var canvas2 = document.getElementById("my_canvas2");
+          var parent2 = document.getElementById("div_two");
+          canvas2.width = parent.offsetWidth;
+          canvas2.height = parent.offsetHeight;
+      </script>
+
+      <script>
+
+
+
+            var options = {
+              list: [
+                {% for item in city_haring_count_list %}
+                    [
+                    "{% autoescape 'js' %}{{item.THE_VALUE}}{% endautoescape %}"
+                    ,
+                    "{{item.THE_COUNT}}"],
+                {% endfor %}
+              ],
+              drawMask: false,
+              shape: "diamond",
+              gridSize: 1,
+              weightFactor: {{85/city_harings_max_value}}
+            };
+
+            WordCloud(document.getElementById('my_canvas'), options );
+      </script>
+
+      <script>
+            var options2 = {
+              list: [
+                {% for item in cohare_count_list %}
+                    [
+                      "{% autoescape false %}{{item.THE_VALUE[:18]}}{% endautoescape %}"
+                    ,"{{item.THE_COUNT}}"],
+                {% endfor %}
+              ],
+              drawMask: false,
+              shape: "diamond",
+              gridSize: 1,
+              weightFactor: {{85/cohare_count_max}},
+              drawOutOfBound: true
+            };
+
+            WordCloud(document.getElementById('my_canvas2'), options2 );
+      </script>
+
+      <div class="row"><br><br><br><br>
+      </div>
+
 
 
 

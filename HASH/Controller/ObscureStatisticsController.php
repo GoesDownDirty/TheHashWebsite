@@ -1459,4 +1459,35 @@ class ObscureStatisticsController{
 
 
 
+
+    #Landing screen for year in review
+    public function wordcloudTestAction(Request $request, Application $app, string $kennel_abbreviation){
+
+      #Establish the page title
+      $pageTitle = "Top Hashers of 2016";
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      #Define the SQL to execute
+      $hasherCountSQL = HASHER_COUNTS_BY_YEAR;
+
+      #Obtain the hare list
+      $hasherCountList = $app['db']->fetchAll($hasherCountSQL,array((int) 2016, (int) $kennelKy));
+
+      #Establish the return value
+      $returnValue = $app['twig']->render('wordcloudtest.twig', array (
+        'pageTitle' => $pageTitle,
+        'yearValue' => $year_value,
+        'kennel_abbreviation' => $kennel_abbreviation,
+        'theList' => $hasherCountList
+      ));
+
+      #Return the return value
+      return $returnValue;
+
+    }
+
+
+
 }

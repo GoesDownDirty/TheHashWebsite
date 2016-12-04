@@ -416,6 +416,10 @@ $app->get('/{kennel_abbreviation}/analversary/stats',   'HASH\Controller\HashCon
 $app->get('/{kennel_abbreviation}/cautionary/stats',    'HASH\Controller\HashController::cautionaryStatsAction');
 $app->get('/{kennel_abbreviation}/miscellaneous/stats', 'HASH\Controller\HashController::miscellaneousStatsAction');
 
+#Wordcloud test
+$app->get('/{kennel_abbreviation}/wordcloudtest', 'HASH\Controller\ObscureStatisticsController::wordcloudTestAction');
+
+
 #URLs for fastest/slowest to reach analversaries
 #$app->get('/{kennel_abbreviation}/{analversary_number}/quickest/to/reach/bydays', 'HASH\Controller\ObscureStatisticsController::quickestToReachAnalversaryByDaysPreAction');
 #$app->get('/{kennel_abbreviation}/{analversary_number}/slowest/to/reach/bydays',  'HASH\Controller\ObscureStatisticsController::slowestToReachAnalversaryByDaysPreAction');

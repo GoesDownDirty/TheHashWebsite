@@ -623,6 +623,15 @@ class HashController
     ORDER BY YEAR(EVENT_DATE)";
     $haringsByYearList = $app['db']->fetchAll($sqlHaringsByYear, array((int) $hasher_id,(int) $kennelKy));
 
+    #Query the database
+    $cityHashingsCountList = $app['db']->fetchAll(HASHER_HASH_COUNTS_BY_CITY, array((int) $hasher_id, (int) $kennelKy));
+
+    #Obtain largest entry from the list
+    $cityHashingsCountMax = 1;
+    if(isset($cityHashingsCountList[0]['THE_COUNT'])){
+      $cityHashingsCountMax = $cityHashingsCountList[0]['THE_COUNT'];
+    }
+
     # Establish and set the return value
     $returnValue = $app['twig']->render('hasher_chart_details.twig',array(
       'pageTitle' => 'Hasher Charts and Details',
@@ -637,7 +646,9 @@ class HashController
       'hashes_by_month_name_list' => $theHashesByMonthNameList,
       'hashes_by_quarter_list' => $theHashesByQuarterList,
       'hashes_by_state_list' => $theHashesByStateList,
-      'hashes_by_day_name_list' => $theHashesByDayNameList
+      'hashes_by_day_name_list' => $theHashesByDayNameList,
+      'city_hashings_count_list' => $cityHashingsCountList,
+      'city_hashings_max_value' => $cityHashingsCountMax
     ));
 
     # Return the return value
@@ -2960,10 +2971,41 @@ private function getStandardHareChartsAction(Request $request, Application $app,
 public function viewOverallHareChartsAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
   $commonValues = $this->getStandardHareChartsAction($request, $app, $hasher_id, $kennel_abbreviation);
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  #Obtain the list of favorite cities to hare in
+  $cityHaringCountList = $app['db']->fetchAll(HASHER_ALL_HARING_COUNTS_BY_CITY, array((int) $hasher_id, (int) $kennelKy));
+
+  #Obtain largest entry from the list
+  $cityHaringsCountMax = 1;
+  if(isset($cityHaringCountList[0]['THE_COUNT'])){
+    $cityHaringsCountMax = $cityHaringCountList[0]['THE_COUNT'];
+  }
+
+  #Obtain the favorite cohare list
+  $cohareCountList = $app['db']->fetchAll(COHARE_COUNT_BY_HARE, array(
+    (int) $kennelKy,
+    (int) $hasher_id,
+    (int) $hasher_id,
+    0,
+    1,));
+
+  #Obtain the largest entry from the list
+  $cohareCountMax = 1;
+  if(isset($cohareCountList[0]['THE_COUNT'])){
+    $cohareCountMax = $cohareCountList[0]['THE_COUNT'];
+  }
+
   $customValues = array(
     'pageTitle' => 'Overall Hare Charts and Details',
     'firstHeader' => 'Basic Details',
-    'secondHeader' => 'Statistics'
+    'secondHeader' => 'Statistics',
+    'city_haring_count_list' => $cityHaringCountList,
+    'city_harings_max_value' => $cityHaringsCountMax,
+    'cohare_count_list' =>$cohareCountList,
+    'cohare_count_max' => $cohareCountMax
   );
   $finalArray = array_merge($commonValues,$customValues);
   $returnValue = $app['twig']->render('hare_chart_overall_details.twig',$finalArray);
@@ -2980,10 +3022,41 @@ public function viewOverallHareChartsAction(Request $request, Application $app, 
 public function viewTrueHareChartsAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
   $commonValues = $this->getStandardHareChartsAction($request, $app, $hasher_id, $kennel_abbreviation);
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  #Obtain the list of favorite cities to hare in
+  $cityHaringCountList = $app['db']->fetchAll(HASHER_NONHYPER_HARING_COUNTS_BY_CITY, array((int) $hasher_id, (int) $kennelKy));
+
+  #Obtain largest entry from the list
+  $cityHaringsCountMax = 1;
+  if(isset($cityHaringCountList[0]['THE_COUNT'])){
+    $cityHaringsCountMax = $cityHaringCountList[0]['THE_COUNT'];
+  }
+
+  #Obtain the favorite cohare list
+  $cohareCountList = $app['db']->fetchAll(COHARE_COUNT_BY_HARE, array(
+    (int) $kennelKy,
+    (int) $hasher_id,
+    (int) $hasher_id,
+    0,
+    0,));
+
+  #Obtain the largest entry from the list
+  $cohareCountMax = 1;
+  if(isset($cohareCountList[0]['THE_COUNT'])){
+    $cohareCountMax = $cohareCountList[0]['THE_COUNT'];
+  }
+
   $customValues = array(
     'pageTitle' => 'True Hare Charts and Details',
     'firstHeader' => 'Basic Details',
-    'secondHeader' => 'Statistics'
+    'secondHeader' => 'Statistics',
+    'city_haring_count_list' => $cityHaringCountList,
+    'city_harings_max_value' => $cityHaringsCountMax,
+    'cohare_count_list' =>$cohareCountList,
+    'cohare_count_max' => $cohareCountMax
   );
   $finalArray = array_merge($commonValues,$customValues);
   $returnValue = $app['twig']->render('hare_chart_true_details.twig',$finalArray);
@@ -2998,10 +3071,41 @@ public function viewHyperHareChartsAction(Request $request, Application $app, in
 
 
   $commonValues = $this->getStandardHareChartsAction($request, $app, $hasher_id, $kennel_abbreviation);
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  #Obtain the list of favorite cities to hare in
+  $cityHaringCountList = $app['db']->fetchAll(HASHER_HYPER_HARING_COUNTS_BY_CITY, array((int) $hasher_id, (int) $kennelKy));
+
+  #Obtain largest entry from the list
+  $cityHaringsCountMax = 1;
+  if(isset($cityHaringCountList[0]['THE_COUNT'])){
+    $cityHaringsCountMax = $cityHaringCountList[0]['THE_COUNT'];
+  }
+
+  #Obtain the favorite cohare list
+  $cohareCountList = $app['db']->fetchAll(COHARE_COUNT_BY_HARE, array(
+    (int) $kennelKy,
+    (int) $hasher_id,
+    (int) $hasher_id,
+    1,
+    1,));
+
+  #Obtain the largest entry from the list
+  $cohareCountMax = 1;
+  if(isset($cohareCountList[0]['THE_COUNT'])){
+    $cohareCountMax = $cohareCountList[0]['THE_COUNT'];
+  }
+
   $customValues = array(
     'pageTitle' => 'Hyper Hare Charts and Details',
     'firstHeader' => 'Basic Details',
-    'secondHeader' => 'Statistics'
+    'secondHeader' => 'Statistics',
+    'city_haring_count_list' => $cityHaringCountList,
+    'city_harings_max_value' => $cityHaringsCountMax,
+    'cohare_count_list' =>$cohareCountList,
+    'cohare_count_max' => $cohareCountMax
   );
   $finalArray = array_merge($commonValues,$customValues);
   $returnValue = $app['twig']->render('hare_chart_hyper_details.twig',$finalArray);

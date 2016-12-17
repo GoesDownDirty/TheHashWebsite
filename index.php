@@ -283,7 +283,8 @@ $app->get('/{kennel_abbreviation}/haringPercentageAllHashes',                   
 $app->get('/{kennel_abbreviation}/haringPercentageNonHypers',                           'HASH\Controller\HashController::haringPercentageNonHypersAction');
 $app->get('/{kennel_abbreviation}/hashingCounts',                                       'HASH\Controller\HashController::hashingCountsAction');
 $app->get('/{kennel_abbreviation}/haringCounts',                                        'HASH\Controller\HashController::haringCountsAction');
-$app->get('/{kennel_abbreviation}/nonHyperharingCounts',                                'HASH\Controller\HashController::nonHyperHaringCountsAction');
+$app->get('/{kennel_abbreviation}/nonHyperharingCounts',                                'HASH\Controller\HashController::trueHaringCountsAction');
+$app->get('/{kennel_abbreviation}/hyperharingCounts',                                   'HASH\Controller\HashController::hyperHaringCountsAction');
 $app->get('/{kennel_abbreviation}/coharelist/byhare/allhashes/{hasher_id}',             'HASH\Controller\HashController::coharelistByHareAllHashesAction');
 $app->get('/{kennel_abbreviation}/coharelist/byhare/nonhypers/{hasher_id}',             'HASH\Controller\HashController::coharelistByHareNonHypersAction');
 $app->get('/{kennel_abbreviation}/coharecount/byhare/allhashes/{hasher_id}',            'HASH\Controller\HashController::cohareCountByHareAllHashesAction');

@@ -1079,7 +1079,7 @@ public function haringCountsAction(Request $request, Application $app, string $k
 
 }
 
-public function nonHyperHaringCountsAction(Request $request, Application $app, string $kennel_abbreviation){
+public function trueHaringCountsAction(Request $request, Application $app, string $kennel_abbreviation){
 
   # Declare the SQL used to retrieve this information
   $sql = NON_HYPER_HARING_COUNTS;
@@ -1092,10 +1092,36 @@ public function nonHyperHaringCountsAction(Request $request, Application $app, s
 
   # Establish and set the return value
   $returnValue = $app['twig']->render('name_number_list.twig',array(
-    'pageTitle' => 'Non Hyper-Hash Haring Counts',
+    'pageTitle' => 'True Haring Counts',
     'columnOneName' => 'Hare Name',
     'columnTwoName' => 'Hash Count',
-    'tableCaption' => 'Hares, and the number of (non hyper-hash) hashes they have hared. More is better. These numbers will never truely be accurate until Hot Tub Slut gets me the list of all hyper hashes.',
+    'tableCaption' => 'Hares, and the number of (non hyper-hash) hashes they have hared. More is better.',
+    'theList' => $hasherList,
+    'kennel_abbreviation' => $kennel_abbreviation
+  ));
+
+  #Return the return value
+  return $returnValue;
+
+}
+
+public function hyperHaringCountsAction(Request $request, Application $app, string $kennel_abbreviation){
+
+  # Declare the SQL used to retrieve this information
+  $sql = HYPER_HARING_COUNTS;
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  #Execute the SQL statement; create an array of rows
+  $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy));
+
+  # Establish and set the return value
+  $returnValue = $app['twig']->render('name_number_list.twig',array(
+    'pageTitle' => 'Hyper Haring Counts',
+    'columnOneName' => 'Hare Name',
+    'columnTwoName' => 'Hash Count',
+    'tableCaption' => 'Hares, and the number of (hyper-hash) hashes they have hared. More is better.',
     'theList' => $hasherList,
     'kennel_abbreviation' => $kennel_abbreviation
   ));

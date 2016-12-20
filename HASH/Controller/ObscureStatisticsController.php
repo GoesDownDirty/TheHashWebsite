@@ -1488,6 +1488,97 @@ class ObscureStatisticsController{
 
     }
 
+    #Landing screen for year in review
+    public function hasherNameAnalysisAction(Request $request, Application $app, string $kennel_abbreviation){
+
+      #Establish the page title
+      $pageTitle = "Hasher Nickname Substring Frequency Analsis";
+      $pageSubTitle = "sub title";
+      $pageTableCaption = "page table caption";
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      #Define the SQL to execute
+      $SQL = "SELECT HASHER_NAME, HASHER_KY
+        FROM HASHERS
+        WHERE
+          HASHER_NAME NOT LIKE '%NHN%'";
+
+      #Obtain the hare list
+      $hasherNameList = $app['db']->fetchAll($SQL,array((int) $kennelKy));
+      $tokenizerString = " -\'&,!?().";
+
+      #Create an array that will be used to store the sub strings
+      $theArrayOfSubstrings = array();
+
+      #Iterate through the hasher name list
+      foreach($hasherNameList as $hasherName){
+        $tempName = $hasherName['HASHER_NAME'];
+        $tempKey = $hasherName['HASHER_KY'];
+        #$app['monolog']->addDebug("Item = $temp");
+        $token = strtok($tempName, $tokenizerString);
+        while($token !== false){
+
+          #Log the substring
+          $lowerToken = strtolower($token);
+
+          #Create a hasher name and hasher key pair
+          $tempNameKey = array('NAME'=> $tempName, 'KEY' => $tempKey);
+
+          #Check if substring exists in the substring array
+          if(array_key_exists($lowerToken,$theArrayOfSubstrings)){
+
+            #Grab the entry corresponding to this key (substring)
+            $tempEntry = $theArrayOfSubstrings[$lowerToken];
+
+            #Push the entry onto the array
+            array_push($tempEntry, $tempNameKey);
+
+            #Replace the old value with the new value
+            $theArrayOfSubstrings[$lowerToken] = $tempEntry;
+
+          }else{
+            $theArrayOfSubstrings[$lowerToken] = array($tempNameKey);
+          }
+
+
+          #Grab the next substring
+          $token = strtok($tokenizerString);
+        }
+      }
+
+      #ksort($theArrayOfSubstrings);
+      uasort($theArrayOfSubstrings, function ($a, $b){
+        $a = count($a);
+        $b = count($b);
+        return ($a == $b) ? 0 : (($a < $b) ? 1 : -1);
+      });
+
+
+      #foreach($theArrayOfSubstrings as $key => $value){
+      #  $app['monolog']->addDebug("key:$key");
+      #  foreach($value as $individualEntry){
+      #    $app['monolog']->addDebug("   entry:$individualEntry");
+      #  }
+      #}
+
+      #Establish the return value
+      $returnValue = $app['twig']->render('hasher_name_substring_analysis.twig', array (
+        'pageTitle' => $pageTitle,
+        'kennel_abbreviation' => $kennel_abbreviation,
+        #'theList' => $hasherNameList,
+        'subStringArray' => $theArrayOfSubstrings,
+        'pageSubTitle' => "The individual words in the hashernames, from most common to least common",
+        'tableCaption1' => "Hashername sub-word",
+        'tableCaption2' => "All names containing the sub-word"
+      ));
+
+      #Return the return value
+      return $returnValue;
+
+    }
+
 
 
 }

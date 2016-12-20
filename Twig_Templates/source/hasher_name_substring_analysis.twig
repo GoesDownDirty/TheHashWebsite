@@ -1,0 +1,41 @@
+{% extends "fullwidth.twig" %}
+
+{% block content %}
+
+<script type = "text/javascript" language = "javascript">
+
+  //Call these functions upon page load
+  $(document).ready(function() {
+    //Convert the main table into a data table
+    $('#the_main_table').DataTable({
+      "paging":   false,
+      "aaSorting": []
+    });
+
+  });
+</script>
+
+
+  <h1>{{pageTitle}}</h1>
+  <h3>{{pageSubTitle}}</h3>
+  <div class="table-responsive">
+  <table class="table table-condensed table-hover" id="the_main_table">
+    <caption><b>{{tableCaption1}}:</b> {{tableCaption2}}</caption>
+    <thead>
+      <tr>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for key,value in subStringArray %}
+          <tr>
+          <td><b>{{key}}:</b>
+            {% for subValue in value%}
+              <a href="/{{kennel_abbreviation}}/hashers/{{subValue.KEY}}?name={{subValue.NAME}}&src=hasherNameSubstringAnalysis">{{subValue.NAME}}</a>  |
+            {% endfor %}
+          </td>
+        </tr>
+      {% endfor %}
+  </table>
+  </div>
+{% endblock %}

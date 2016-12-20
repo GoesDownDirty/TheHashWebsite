@@ -305,6 +305,10 @@ $app->get('/{kennel_abbreviation}/getProjectedHasherAnalversaries/{hasher_id}', 
 $app->get('/admin/modifyhash/form/{hash_id}',                     'HASH\Controller\HashEventController::adminModifyHashAction');
 $app->post('/admin/modifyhash/form/{hash_id}',                    'HASH\Controller\HashEventController::adminModifyHashAction');
 
+# Hash name (substring) analysis
+$app->get('/{kennel_abbreviation}/hasherNameAnalysis',            'HASH\Controller\ObscureStatisticsController::hasherNameAnalysisAction');
+
+
 # Hash event creation
 $app->get('/admin/newhash/form',                                  'HASH\Controller\HashEventController::adminCreateHashAction');
 $app->post('/admin/newhash/form',                                 'HASH\Controller\HashEventController::adminCreateHashAction');

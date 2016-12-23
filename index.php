@@ -307,6 +307,7 @@ $app->post('/admin/modifyhash/form/{hash_id}',                    'HASH\Controll
 
 # Hash name (substring) analysis
 $app->get('/{kennel_abbreviation}/hasherNameAnalysis',            'HASH\Controller\ObscureStatisticsController::hasherNameAnalysisAction');
+$app->get('/{kennel_abbreviation}/hasherNameAnalysis2',            'HASH\Controller\ObscureStatisticsController::hasherNameAnalysisAction2');
 
 
 # Hash event creation

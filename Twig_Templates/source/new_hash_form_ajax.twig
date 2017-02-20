@@ -126,7 +126,7 @@ $(function(){
   <div class="form-group">
     <label for"eventDate" class="col-sm-2 control-label">Event Date</label>
     <div class="col-sm-4">
-      <input type="date" class="form-control" id="eventDate" name="eventDate">
+      <input type="text" class="form-control" id="eventDate" name="eventDate">
       <script>
         $("#eventDate").datepicker({
           showOn: "focus",
@@ -136,7 +136,7 @@ $(function(){
     </div>
     <label for"eventTime" class="col-sm-2 control-label">Event Time</label>
     <div class="col-sm-4">
-      <input type="time" class="form-control" id="eventTime" name="eventTime">
+      <input type="text" class="form-control" id="eventTime" name="eventTime">
       <script>
         $('#eventTime').timepicker({
           timeFormat:'HH:mm:ss',
@@ -181,19 +181,16 @@ $(function(){
 
     <div class="form-group">
       <label for"locality" class="col-sm-2 control-label">City</label>
-      <div class="col-sm-2">
+      <div class="col-sm-4">
         <input type="text" class="form-control" id="locality" name="locality" disabled="true">
       </div>
 
       <label for"administrative_area_level_1" class="col-sm-2 control-label">State</label>
-      <div class="col-sm-2">
+      <div class="col-sm-4">
         <input type="text" class="form-control" id="administrative_area_level_1" name="administrative_area_level_1" disabled="true">
       </div>
 
-      <label for"postal_code" class="col-sm-2 control-label">Postal Code</label>
-      <div class="col-sm-2">
-        <input type="text" class="form-control" id="postal_code" name="postal_code" disabled="true">
-      </div>
+
     </div>
 
     <div class="form-group">
@@ -202,10 +199,12 @@ $(function(){
         <input type="text" class="form-control" id="administrative_area_level_2" name="administrative_area_level_2" disabled="true">
       </div>
 
-      <label for"sublocality" class="col-sm-2 control-label">Sublocality</label>
-      <div class= "col-sm-4">
-        <input type="text" class="form-control" id="sublocality" name="sublocality" disabled="true">
+      <label for"postal_code" class="col-sm-2 control-label">Postal Code</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="postal_code" name="postal_code" disabled="true">
       </div>
+
+
     </div>
 
     <div class="form-group">
@@ -234,8 +233,13 @@ $(function(){
 
     <div class="form-group">
       <label for"formatted_address" class="col-sm-2 control-label">Formatted Address</label>
-      <div class="col-sm-10">
+      <div class="col-sm-4">
         <input type="text" class="form-control" id="formatted_address" name="formatted_address" disabled="true">
+      </div>
+
+      <label for"place_id" class="col-sm-2 control-label">Place ID</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="place_id" name="place_id" disabled="true">
       </div>
     </div>
   </div>
@@ -259,7 +263,7 @@ $(function(){
     locality: 'long_name',
     administrative_area_level_1: 'short_name',
     administrative_area_level_2: 'short_name',
-    sublocality: 'short_name',
+    //sublocality: 'short_name',
     country: 'long_name',
     postal_code: 'short_name',
     neighborhood: 'short_name'
@@ -283,9 +287,12 @@ $(function(){
     var lat = place.geometry.location.lat();
     var lng = place.geometry.location.lng();
     var formattedAddress = place.formatted_address;
+    var placeid = place.place_id;
+
     document.getElementById("lat").value=lat;
     document.getElementById("lng").value=lng;
     document.getElementById("formatted_address").value=formattedAddress;
+    document.getElementById("place_id").value=placeid;
     for (var component in componentForm) {
       document.getElementById(component).value = '';
       //document.getElementById(component).disabled = false;
@@ -321,7 +328,7 @@ $(function(){
     }
   }
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDxx2Alzk2teKEg66gp59dqgSLUkFk7DLQ&libraries=places&callback=initAutocomplete"
+<script src="https://maps.googleapis.com/maps/api/js?key={{geocode_api_value}}&libraries=places&callback=initAutocomplete"
     async defer></script>
 
 

@@ -262,7 +262,8 @@ class HashEventController
     $returnValue = $app['twig']->render('new_hash_form_ajax.twig', array(
       'pageTitle' => 'Create an Event!',
       'pageHeader' => 'Page Header',
-      'kennelList' => $kennelDropdown
+      'kennelList' => $kennelDropdown,
+      'geocode_api_value' => GOOGLE_GEOCODE_API_ID
     ));
 
     #Return the return value

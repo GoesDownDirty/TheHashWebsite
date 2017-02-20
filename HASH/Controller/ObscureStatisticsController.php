@@ -1490,6 +1490,98 @@ class ObscureStatisticsController{
     }
 
     #Landing screen for year in review
+    public function googleGeoCodeTestAction(Request $request, Application $app, string $kennel_abbreviation){
+
+      #Establish the page title
+      $pageTitle = "Google Geocode Test";
+      $zip = "";
+      $streetNumber = "";
+      $route = "";
+      $neighborhood = "";
+      $city = "";
+      $county = "";
+      $state = "";
+      $country = "";
+      $lat = "";
+      $lng = "";
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      $address = "Paul Brown Stadium Cincinnati OH 45226";
+      $address2 = str_replace(" ", "+", $address);
+
+
+      $json = file_get_contents("http://maps.google.com/maps/api/geocode/json?address=$address2&sensor=false");
+      $json_decoded = json_decode($json);
+      $json_pretty =  json_encode($json_decoded, JSON_PRETTY_PRINT);
+      $lat = $json_decoded->{'results'}[0]->{'geometry'}->{'location'}->{'lat'};
+      $lng = $json_decoded->{'results'}[0]->{'geometry'}->{'location'}->{'lng'};
+
+      $addressComponents = $json_decoded->{'results'}[0]->{'address_components'};
+      foreach($addressComponents as $index=>$component){
+        $type = $component->types[0];
+
+        if($city=="" && ($type=="sublocality_level_1" || $type=="locality")){
+          $city = trim($component->short_name);
+        }
+
+        if($state == "" && $type=="administrative_area_level_1"){
+          $state = trim($component->short_name);
+        }
+
+        if($country == "" && $type=="country"){
+          $country = trim($component->short_name);
+        }
+
+        if($county == "" && ($type=="administrative_area_level_2")){
+          $county = trim($component->short_name);
+        }
+
+        if($neighborhood =="" && $type=="neighborhood"){
+          $neighborhood = trim($component->short_name);
+        }
+
+        if($route =="" && $type=="route"){
+          $route = trim($component->short_name);
+        }
+
+        if($streetNumber =="" && $type=="street_number"){
+          $streetNumber = trim($component->short_name);
+        }
+
+        if($zip =="" && $type=="postal_code"){
+          $zip = trim($component->short_name);
+        }
+
+      }
+
+      #Establish the return value
+      $returnValue = $app['twig']->render('googlegeocodetest.twig', array (
+        'pageTitle' => $pageTitle,
+        'kennel_abbreviation' => $kennel_abbreviation,
+        'Address' => "$address2",
+        'Zip' => $zip,
+        'StreetNumber' => $streetNumber,
+        'Route' => $route,
+        'Neighborhood' => $neighborhood,
+        'City' => $city,
+        'County' => $county,
+        'State' => $state,
+        'Country' => $country,
+        'Lat' => $lat,
+        'Long' => $lng,
+        'json_original' => $json,
+        'address_components' => $addressComponents
+      ));
+
+      #Return the return value
+      return $returnValue;
+
+    }
+
+
+    #Landing screen for year in review
     public function hasherNameAnalysisAction(Request $request, Application $app, string $kennel_abbreviation){
 
       #Establish the page title

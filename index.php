@@ -314,6 +314,10 @@ $app->get('/{kennel_abbreviation}/hasherNameAnalysis2',            'HASH\Control
 $app->get('/admin/newhash/form',                                  'HASH\Controller\HashEventController::adminCreateHashAction');
 $app->post('/admin/newhash/form',                                 'HASH\Controller\HashEventController::adminCreateHashAction');
 
+# Hash event creation (ajaxified)
+$app->get('/admin/newhash/ajaxform', 'HASH\Controller\HashEventController::adminCreateHashAjaxPreAction');
+$app->post('/admin/newhash/ajaxform', 'HASH\Controller\HashEventController::adminCreateHashAjaxPostAction');
+
 # Hash person modification
 $app->get('/admin/modifyhasher/form/{hasher_id}',                 'HASH\Controller\HashPersonController::modifyHashPersonAction');
 $app->post('/admin/modifyhasher/form/{hasher_id}',                'HASH\Controller\HashPersonController::modifyHashPersonAction');
@@ -425,6 +429,8 @@ $app->get('/{kennel_abbreviation}/miscellaneous/stats', 'HASH\Controller\HashCon
 #Wordcloud test
 $app->get('/{kennel_abbreviation}/wordcloudtest', 'HASH\Controller\ObscureStatisticsController::wordcloudTestAction');
 
+#Google geocode call test
+$app->get('/{kennel_abbreviation}/googlegeocodetest', 'HASH\Controller\ObscureStatisticsController::googleGeoCodeTestAction');
 
 #URLs for fastest/slowest to reach analversaries
 #$app->get('/{kennel_abbreviation}/{analversary_number}/quickest/to/reach/bydays', 'HASH\Controller\ObscureStatisticsController::quickestToReachAnalversaryByDaysPreAction');

@@ -242,6 +242,34 @@ class HashEventController
 
   }
 
+  #Define action
+  public function adminCreateHashAjaxPreAction(Request $request, Application $app){
+
+    #Obtain list of kennels
+    $kennelsSQL = "SELECT KENNEL_KY, KENNEL_ABBREVIATION  FROM KENNELS WHERE IN_RECORD_KEEPING = 1";
+
+    #Execute the SQL statement; create an array of rows
+    $kennelList = $app['db']->fetchAll($kennelsSQL);
+
+    #Convert kennel list to the appropriate format for a dropdown menu
+    $kennelDropdown = array();
+    foreach ($kennelList as $kennelValue){
+      $tempKennelAbbreviation = $kennelValue['KENNEL_ABBREVIATION'];
+      $tempKennelKey = $kennelValue['KENNEL_KY'];
+      $kennelDropdown[$tempKennelAbbreviation] = $tempKennelKey;
+    }
+
+    $returnValue = $app['twig']->render('new_hash_form_ajax.twig', array(
+      'pageTitle' => 'Create an Event!',
+      'pageHeader' => 'Page Header',
+      'kennelList' => $kennelDropdown
+    ));
+
+    #Return the return value
+    return $returnValue;
+
+  }
+
   #Define the action
   public function adminCreateHashAction(Request $request, Application $app){
 
@@ -290,17 +318,6 @@ class HashEventController
     ))
 
       ->add('Special_Event_Description')
-      ->add('Virgin_Count', ChoiceType::class, array('choices'  => array(
-        '0'=>'0000000000',
-        '1'=>'0000000001',
-        '2'=>'0000000002',
-        '3'=>'0000000003',
-        '4'=>'0000000004',
-        '5'=>'0000000005',
-        '6'=>'0000000006',
-        '7'=>'0000000007',
-        '8'=>'0000000008',
-        '9'=>'0000000009')))
       ->add('Is_Hyper', ChoiceType::class, array('choices'  => array(
         'No' => '0000000000',
         'Yes' => '0000000001',
@@ -331,7 +348,7 @@ class HashEventController
           $tempEventCity = $data['Event_City'];
           $tempEventState = $data['Event_State'];
           $tempSpecialEventDescription = $data['Special_Event_Description'];
-          $tempVirginCount = $data['Virgin_Count'];
+          $tempVirginCount = 0;
           $tempIsHyper = $data['Is_Hyper'];
 
 

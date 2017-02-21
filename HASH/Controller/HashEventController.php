@@ -271,6 +271,71 @@ class HashEventController
 
   }
 
+    public function adminCreateHashAjaxPostAction(Request $request, Application $app){
+
+      #Establish the return message
+      $returnMessage = "This has not been set yet...";
+
+
+      //$app['monolog']->addDebug("Entering the adminCreateHashAjaxPostAction function------------------------");
+
+
+      $theKennel = $request->request->get('kennelName');
+      $theHashEventNumber = $request->request->get('hashEventNumber');
+      $theHashEventDescription = $request->request->get('hashEventDescription');
+      $theHyperIndicator= $request->request->get('hyperIndicator');
+      $theEventDate= $request->request->get('eventDate');
+      $theEventTime= $request->request->get('eventTime');
+      $theLocationDescription= $request->request->get('locationDescription');
+      $theAutocomplete= $request->request->get('autocomplete');
+      $theStreet_number= $request->request->get('street_number');
+      $theRoute= $request->request->get('route');
+      $theLocality= $request->request->get('locality');
+      $theAdministrative_area_level_1= $request->request->get('administrative_area_level_1');
+      $theAdministrative_area_level_2= $request->request->get('administrative_area_level_2');
+      $thePostal_code= $request->request->get('postal_code');
+      $theNeighborhood= $request->request->get('neighborhood');
+      $theCountry= $request->request->get('country');
+      $theLat= $request->request->get('lat');
+      $theLng= $request->request->get('lng');
+      $theFormatted_address= $request->request->get('formatted_address');
+      $thePlace_id= $request->request->get('place_id');
+
+      /*
+      $app['monolog']->addDebug("theKennel: $theKennel");
+      $app['monolog']->addDebug("theHashEventNumber: $theHashEventNumber");
+      $app['monolog']->addDebug("theHashEventDescription: $theHashEventDescription");
+      $app['monolog']->addDebug("theHyperIndicator : $theHyperIndicator");
+      $app['monolog']->addDebug("theEventDate : $theEventDate");
+      $app['monolog']->addDebug("theEventTime : $theEventTime");
+      $app['monolog']->addDebug("theLocationDescription : $theLocationDescription");
+      $app['monolog']->addDebug("theAutocomplete : $theAutocomplete");
+      $app['monolog']->addDebug("theStreet_number : $theStreet_number");
+      $app['monolog']->addDebug("theRoute : $theRoute");
+      $app['monolog']->addDebug("theLocality : $theLocality");
+      $app['monolog']->addDebug("theAdministrative_area_level_1 : $theAdministrative_area_level_1");
+      $app['monolog']->addDebug("theAdministrative_area_level_2 : $theAdministrative_area_level_2");
+      $app['monolog']->addDebug("thePostal_code : $thePostal_code");
+      $app['monolog']->addDebug("theNeighborhood : $theNeighborhood");
+      $app['monolog']->addDebug("theCountry : $theCountry");
+      $app['monolog']->addDebug("theLat : $theLat");
+      $app['monolog']->addDebug("theLng : $theLng");
+      $app['monolog']->addDebug("theFormatted_address : $theFormatted_address");
+      $app['monolog']->addDebug("thePlace_id : $thePlace_id");
+      */
+
+
+      // Have it create the green flashy thing ?
+      //$app['session']->getFlashBag()->add('success', $returnMessage);
+
+
+      //$app['monolog']->addDebug("Exiting (almost) the adminCreateHashAjaxPostAction function------------------------");
+
+      #Set the return value
+      $returnValue =  $app->json($returnMessage, 200);
+      return $returnValue;
+    }
+
   #Define the action
   public function adminCreateHashAction(Request $request, Application $app){
 

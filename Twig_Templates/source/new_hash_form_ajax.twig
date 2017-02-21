@@ -9,8 +9,58 @@
 <script type = "text/javascript" src = "/node_modules/jquery-validation/dist/jquery.validate.min.js"></script>
 <script>
 
+
+function convertFormToJson(theForm){
+  // Establish the return value
+  var returnValue = {};
+
+  jQuery.each(theForm, function(){
+    returnValue[this.name] = this.value || '';
+  });
+
+  // Return the return value
+  return returnValue;
+
+}
+
 function formSubmitAction(){
-  alert("number one");
+
+  // Get the form
+  var theForm = $('#the_form');
+
+  // Find the disabled fields
+  var theDisabledFields = theForm.find(':input:disabled').removeAttr('disabled');
+
+  // Serialize the form
+  var theFormSerialized = theForm.serializeArray();
+
+  // Convert form fields into json object
+  var jsonifiedForm = convertFormToJson(theFormSerialized);
+
+  // Re-disable the form fields
+  theDisabledFields.attr('disabled','disabled');
+
+
+  $.ajax({
+      url : "/admin/newhash/ajaxform",
+      type: "POST",
+      data : jsonifiedForm,
+      dataType : 'json',
+      success: function(data, textStatus, jqXHR){
+        alert("success, except nothing happened :)");
+        //alert(jqXHR);
+        //alert(textStatus);
+      },
+      error: function (jqXHR, textStatus, errorThrown)
+      {
+           alert("failure, except nothing happened :)");
+           alert(jqXHR);
+           alert(textStatus);
+           alert(errorThrown);
+      }
+  });
+
+
   return false;
 }
 

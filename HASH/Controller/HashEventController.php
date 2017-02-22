@@ -276,53 +276,163 @@ class HashEventController
       #Establish the return message
       $returnMessage = "This has not been set yet...";
 
+      #Obtain list of kennels
+      $kennelsSQL = "SELECT KENNEL_KY, KENNEL_ABBREVIATION  FROM KENNELS WHERE IN_RECORD_KEEPING = 1";
+
+      #Execute the SQL statement; create an array of rows
+      $kennelList = $app['db']->fetchAll($kennelsSQL);
 
       //$app['monolog']->addDebug("Entering the adminCreateHashAjaxPostAction function------------------------");
 
 
-      $theKennel = $request->request->get('kennelName');
-      $theHashEventNumber = $request->request->get('hashEventNumber');
-      $theHashEventDescription = $request->request->get('hashEventDescription');
-      $theHyperIndicator= $request->request->get('hyperIndicator');
-      $theEventDate= $request->request->get('eventDate');
-      $theEventTime= $request->request->get('eventTime');
-      $theLocationDescription= $request->request->get('locationDescription');
-      $theAutocomplete= $request->request->get('autocomplete');
-      $theStreet_number= $request->request->get('street_number');
-      $theRoute= $request->request->get('route');
-      $theLocality= $request->request->get('locality');
-      $theAdministrative_area_level_1= $request->request->get('administrative_area_level_1');
-      $theAdministrative_area_level_2= $request->request->get('administrative_area_level_2');
-      $thePostal_code= $request->request->get('postal_code');
-      $theNeighborhood= $request->request->get('neighborhood');
-      $theCountry= $request->request->get('country');
-      $theLat= $request->request->get('lat');
-      $theLng= $request->request->get('lng');
-      $theFormatted_address= $request->request->get('formatted_address');
-      $thePlace_id= $request->request->get('place_id');
+      $theKennel = trim(strip_tags($request->request->get('kennelName')));
+      $theHashEventNumber = trim(strip_tags($request->request->get('hashEventNumber')));
+      $theHashEventDescription = trim(strip_tags($request->request->get('hashEventDescription')));
+      $theHyperIndicator= trim(strip_tags($request->request->get('hyperIndicator')));
+      $theEventDate= trim(strip_tags($request->request->get('eventDate')));
+      $theEventTime= trim(strip_tags($request->request->get('eventTime')));
+      $theEventDateAndTime = $theEventDate." ".$theEventTime;
+      $theLocationDescription= trim(strip_tags($request->request->get('locationDescription')));
+      //$theAutocomplete= trim(strip_tags($request->request->get('autocomplete')));
+      $theStreet_number= trim(strip_tags($request->request->get('street_number')));
+      $theRoute= trim(strip_tags($request->request->get('route')));
+      $theLocality= trim(strip_tags($request->request->get('locality')));
+      $theAdministrative_area_level_1= trim(strip_tags($request->request->get('administrative_area_level_1')));
+      $theAdministrative_area_level_2= trim(strip_tags($request->request->get('administrative_area_level_2')));
+      $thePostal_code= trim(strip_tags($request->request->get('postal_code')));
+      $theNeighborhood= trim(strip_tags($request->request->get('neighborhood')));
+      $theCountry= trim(strip_tags($request->request->get('country')));
+      $theLat= trim(strip_tags($request->request->get('lat')));
+      $theLng= trim(strip_tags($request->request->get('lng')));
+      $theFormatted_address= trim(strip_tags($request->request->get('formatted_address')));
+      $thePlace_id= trim(strip_tags($request->request->get('place_id')));
 
-      /*
-      $app['monolog']->addDebug("theKennel: $theKennel");
-      $app['monolog']->addDebug("theHashEventNumber: $theHashEventNumber");
-      $app['monolog']->addDebug("theHashEventDescription: $theHashEventDescription");
-      $app['monolog']->addDebug("theHyperIndicator : $theHyperIndicator");
-      $app['monolog']->addDebug("theEventDate : $theEventDate");
-      $app['monolog']->addDebug("theEventTime : $theEventTime");
-      $app['monolog']->addDebug("theLocationDescription : $theLocationDescription");
-      $app['monolog']->addDebug("theAutocomplete : $theAutocomplete");
-      $app['monolog']->addDebug("theStreet_number : $theStreet_number");
-      $app['monolog']->addDebug("theRoute : $theRoute");
-      $app['monolog']->addDebug("theLocality : $theLocality");
-      $app['monolog']->addDebug("theAdministrative_area_level_1 : $theAdministrative_area_level_1");
-      $app['monolog']->addDebug("theAdministrative_area_level_2 : $theAdministrative_area_level_2");
-      $app['monolog']->addDebug("thePostal_code : $thePostal_code");
-      $app['monolog']->addDebug("theNeighborhood : $theNeighborhood");
-      $app['monolog']->addDebug("theCountry : $theCountry");
-      $app['monolog']->addDebug("theLat : $theLat");
-      $app['monolog']->addDebug("theLng : $theLng");
-      $app['monolog']->addDebug("theFormatted_address : $theFormatted_address");
-      $app['monolog']->addDebug("thePlace_id : $thePlace_id");
-      */
+      // Establish a "passed validation" variable
+      $passedValidation = TRUE;
+
+      // Ensure the following are numbers
+      // $theKennel
+      // $theLat
+      // $theLng
+      // $thePostal_code
+      if(!is_numeric($theKennel)){
+        $passedValidation = FALSE;
+        //$app['monolog']->addDebug("--- theKennel failed validation: $theKennel");
+      }
+
+      if(!(is_numeric($theLat)||empty($theLat))){
+        $passedValidation = FALSE;
+        //$app['monolog']->addDebug("--- theLat failed validation: $theLat");
+      }
+
+      if(!(is_numeric($theLng)||empty($theLng))){
+        $passedValidation = FALSE;
+        //$app['monolog']->addDebug("--- theLng failed validation: $theLng");
+      }
+
+      if(!(is_numeric($thePostal_code)||empty($thePostal_code))){
+        $passedValidation = FALSE;
+        //$app['monolog']->addDebug("--- thePostal_code failed validation: $thePostal_code");
+      }
+
+      // Ensure the following is a date
+      // $theEventDate
+      if (!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$theEventDate)){
+        $passedValidation = FALSE;
+        //$app['monolog']->addDebug("--- the date failed validation $theEventDate");
+      }
+
+
+      // Ensure the following is a time
+      // $theEventTime
+      if (!preg_match("/^([01]\d|2[0-3]):([0-5][0-9]):([0-5][0-9])$/",$theEventTime)){
+        $passedValidation = FALSE;
+        //$app['monolog']->addDebug("--- the time failed validation $theEventTime");
+
+      }
+
+      //$app['monolog']->addDebug("--- the theEventDateAndTime: $theEventDateAndTime");
+
+
+      // Ensure the date + time = a mysql timestamp
+
+      // Ensure the following is true/false yes/no 0/1
+      // $theHyperIndicator
+      //$app['monolog']->addDebug("Reached 12");
+
+      if($passedValidation){
+        //$app['monolog']->addDebug("--- pass validation: yes : $passedValidation");
+        //$app['monolog']->addDebug("Reached 13");
+        $sql = "
+          INSERT INTO HASHES (
+            KENNEL_KY,
+            KENNEL_EVENT_NUMBER,
+            EVENT_DATE,
+            EVENT_LOCATION,
+            EVENT_CITY,
+            EVENT_STATE,
+            SPECIAL_EVENT_DESCRIPTION,
+            IS_HYPER,
+            STREET_NUMBER,
+            ROUTE,
+            COUNTY,
+            POSTAL_CODE,
+            NEIGHBORHOOD,
+            COUNTRY,
+            FORMATTED_ADDRESS,
+            PLACE_ID,
+            LAT,
+            LNG
+          ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+
+
+        //$app['monolog']->addDebug("Reached 14");
+        $app['dbs']['mysql_write']->executeUpdate($sql,array(
+          $theKennel,
+          $theHashEventNumber,
+          $theEventDateAndTime,
+          $theLocationDescription,
+          $theLocality,
+          $theAdministrative_area_level_1,
+          $theHashEventDescription,
+          $theHyperIndicator,
+          $theStreet_number,
+          $theRoute,
+          $theAdministrative_area_level_2,
+          $thePostal_code,
+          $theNeighborhood,
+          $theCountry,
+          $theFormatted_address,
+          $thePlace_id,
+          $theLat,
+          $theLng
+        ));
+
+        //$app['monolog']->addDebug("Reached 15");
+
+
+        #Audit this activity
+        /*
+        $actionType = "Event Creation";
+        $tempKennelAbbreviation2 = "Unknown";
+        foreach ($kennelList as $kennelValue){
+          if($kennelValue['KENNEL_KY'] == $theKennel){
+            $tempKennelAbbreviation2 = $kennelValue['KENNEL_ABBREVIATION'];
+          }
+        }
+        $actionDescription = "Created event ($tempKennelAbbreviation2 # $tempKennelEventNumber)";
+        AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+        */
+
+        // Establish the return value message
+        $returnMessage = "Success! Great, it worked";
+
+      }else{
+        //$app['monolog']->addDebug("--- pass validation: no : $passedValidation");
+      }
+
+
 
 
       // Have it create the green flashy thing ?
@@ -330,6 +440,9 @@ class HashEventController
 
 
       //$app['monolog']->addDebug("Exiting (almost) the adminCreateHashAjaxPostAction function------------------------");
+
+
+      //$returnMessage = "You failed on so many levels";
 
       #Set the return value
       $returnValue =  $app->json($returnMessage, 200);

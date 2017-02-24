@@ -10,6 +10,9 @@
 <script type = "text/javascript" src = "/vendor/ifightcrime/bootstrap-growl/jquery.bootstrap-growl.min.js"></script>
 <script>
 
+function resetTheForm(){
+  $('#the_form')[0].reset();
+}
 
 function displayMessage(messageValue){
 
@@ -18,6 +21,7 @@ function displayMessage(messageValue){
   var messageType = "";
   if(indexLocation >= 0){
     messageType = "success";
+    resetTheForm();
   }else {
     messageType = "danger";
   }
@@ -27,7 +31,7 @@ function displayMessage(messageValue){
     type: messageType, // (null, 'info', 'error', 'success')
     offset: {from: 'top', amount: 20}, // 'top', or 'bottom'
     align: 'center', // ('left', 'right', or 'center')
-    width: 'auto', // (integer, or 'auto')
+    width: 400, // (integer, or 'auto')
     delay: 4000,
     allow_dismiss: true,
     stackup_spacing: 10 // spacing between consecutively stacked growls.
@@ -72,15 +76,15 @@ function formSubmitAction(){
       data : jsonifiedForm,
       dataType : 'json',
       success: function(data, textStatus, jqXHR){
-        alert("success, except nothing happened :)");
+        //alert("success");
         displayMessage(data);
         //alert(jqXHR);
         //alert(textStatus);
       },
       error: function (jqXHR, textStatus, errorThrown)
       {
-           alert("failure, except nothing happened :)");
-           displayMessage(data);
+           //alert("failure, except nothing happened :)");
+           displayMessage("Unknown system error");
            //alert(jqXHR);
            //alert(textStatus);
            //alert(errorThrown);

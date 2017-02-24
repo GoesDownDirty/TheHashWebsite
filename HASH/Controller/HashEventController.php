@@ -282,9 +282,6 @@ class HashEventController
       #Execute the SQL statement; create an array of rows
       $kennelList = $app['db']->fetchAll($kennelsSQL);
 
-      //$app['monolog']->addDebug("Entering the adminCreateHashAjaxPostAction function------------------------");
-
-
       $theKennel = trim(strip_tags($request->request->get('kennelName')));
       $theHashEventNumber = trim(strip_tags($request->request->get('hashEventNumber')));
       $theHashEventDescription = trim(strip_tags($request->request->get('hashEventDescription')));
@@ -293,7 +290,6 @@ class HashEventController
       $theEventTime= trim(strip_tags($request->request->get('eventTime')));
       $theEventDateAndTime = $theEventDate." ".$theEventTime;
       $theLocationDescription= trim(strip_tags($request->request->get('locationDescription')));
-      //$theAutocomplete= trim(strip_tags($request->request->get('autocomplete')));
       $theStreet_number= trim(strip_tags($request->request->get('street_number')));
       $theRoute= trim(strip_tags($request->request->get('route')));
       $theLocality= trim(strip_tags($request->request->get('locality')));
@@ -310,35 +306,46 @@ class HashEventController
       // Establish a "passed validation" variable
       $passedValidation = TRUE;
 
-      // Ensure the following are numbers
-      // $theKennel
-      // $theLat
-      // $theLng
-      // $thePostal_code
+      // Establish the return message value as empty (at first)
+      $returnMessage = "";
+
       if(!is_numeric($theKennel)){
         $passedValidation = FALSE;
         //$app['monolog']->addDebug("--- theKennel failed validation: $theKennel");
+        $returnMessage .= " |Failed validation on the kennel";
       }
 
       if(!(is_numeric($theLat)||empty($theLat))){
         $passedValidation = FALSE;
+        $returnMessage .= " |Failed validation on the lat";
         //$app['monolog']->addDebug("--- theLat failed validation: $theLat");
       }
 
       if(!(is_numeric($theLng)||empty($theLng))){
         $passedValidation = FALSE;
+        $returnMessage .= " |Failed validation on the lng";
         //$app['monolog']->addDebug("--- theLng failed validation: $theLng");
       }
 
       if(!(is_numeric($thePostal_code)||empty($thePostal_code))){
         $passedValidation = FALSE;
+        $returnMessage .= " |Failed validation on the postal code";
         //$app['monolog']->addDebug("--- thePostal_code failed validation: $thePostal_code");
+      }
+
+      if(!is_numeric($theLat)){
+        $theLat = NULL;
+      }
+
+      if(!is_numeric($theLng)){
+        $theLng = NULL;
       }
 
       // Ensure the following is a date
       // $theEventDate
       if (!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$theEventDate)){
         $passedValidation = FALSE;
+        $returnMessage .= " |Failed validation on the event date";
         //$app['monolog']->addDebug("--- the date failed validation $theEventDate");
       }
 
@@ -347,22 +354,14 @@ class HashEventController
       // $theEventTime
       if (!preg_match("/^([01]\d|2[0-3]):([0-5][0-9]):([0-5][0-9])$/",$theEventTime)){
         $passedValidation = FALSE;
+        $returnMessage .= " |Failed validation on the event time";
         //$app['monolog']->addDebug("--- the time failed validation $theEventTime");
 
       }
 
-      //$app['monolog']->addDebug("--- the theEventDateAndTime: $theEventDateAndTime");
-
-
-      // Ensure the date + time = a mysql timestamp
-
-      // Ensure the following is true/false yes/no 0/1
-      // $theHyperIndicator
-      //$app['monolog']->addDebug("Reached 12");
 
       if($passedValidation){
-        //$app['monolog']->addDebug("--- pass validation: yes : $passedValidation");
-        //$app['monolog']->addDebug("Reached 13");
+
         $sql = "
           INSERT INTO HASHES (
             KENNEL_KY,
@@ -387,62 +386,47 @@ class HashEventController
 
 
 
-        //$app['monolog']->addDebug("Reached 14");
-        $app['dbs']['mysql_write']->executeUpdate($sql,array(
-          $theKennel,
-          $theHashEventNumber,
-          $theEventDateAndTime,
-          $theLocationDescription,
-          $theLocality,
-          $theAdministrative_area_level_1,
-          $theHashEventDescription,
-          $theHyperIndicator,
-          $theStreet_number,
-          $theRoute,
-          $theAdministrative_area_level_2,
-          $thePostal_code,
-          $theNeighborhood,
-          $theCountry,
-          $theFormatted_address,
-          $thePlace_id,
-          $theLat,
-          $theLng
-        ));
 
-        //$app['monolog']->addDebug("Reached 15");
+
+          $app['dbs']['mysql_write']->executeUpdate($sql,array(
+            $theKennel,
+            $theHashEventNumber,
+            $theEventDateAndTime,
+            $theLocationDescription,
+            $theLocality,
+            $theAdministrative_area_level_1,
+            $theHashEventDescription,
+            $theHyperIndicator,
+            $theStreet_number,
+            $theRoute,
+            $theAdministrative_area_level_2,
+            $thePostal_code,
+            $theNeighborhood,
+            $theCountry,
+            $theFormatted_address,
+            $thePlace_id,
+            $theLat,
+            $theLng
+          ));
+
 
 
         #Audit this activity
-        /*
-        $actionType = "Event Creation";
+        $actionType = "Event Creation (Ajax)";
         $tempKennelAbbreviation2 = "Unknown";
         foreach ($kennelList as $kennelValue){
           if($kennelValue['KENNEL_KY'] == $theKennel){
             $tempKennelAbbreviation2 = $kennelValue['KENNEL_ABBREVIATION'];
           }
         }
-        $actionDescription = "Created event ($tempKennelAbbreviation2 # $tempKennelEventNumber)";
+        $actionDescription = "Created event ($tempKennelAbbreviation2 # $theHashEventNumber)";
         AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
-        */
+
 
         // Establish the return value message
         $returnMessage = "Success! Great, it worked";
 
-      }else{
-        //$app['monolog']->addDebug("--- pass validation: no : $passedValidation");
       }
-
-
-
-
-      // Have it create the green flashy thing ?
-      //$app['session']->getFlashBag()->add('success', $returnMessage);
-
-
-      //$app['monolog']->addDebug("Exiting (almost) the adminCreateHashAjaxPostAction function------------------------");
-
-
-      //$returnMessage = "You failed on so many levels";
 
       #Set the return value
       $returnValue =  $app->json($returnMessage, 200);

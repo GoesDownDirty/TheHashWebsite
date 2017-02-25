@@ -318,6 +318,11 @@ $app->post('/admin/newhash/form',                                 'HASH\Controll
 $app->get('/admin/newhash/ajaxform', 'HASH\Controller\HashEventController::adminCreateHashAjaxPreAction');
 $app->post('/admin/newhash/ajaxform', 'HASH\Controller\HashEventController::adminCreateHashAjaxPostAction');
 
+# Hash event modification (ajaxified)
+$app->get('/admin/edithash/ajaxform/{hash_id}', 'HASH\Controller\HashEventController::adminModifyHashAjaxPreAction');
+$app->post('/admin/edithash/ajaxform/{hash_id}', 'HASH\Controller\HashEventController::adminModifyHashAjaxPostAction');
+
+
 # Hash person modification
 $app->get('/admin/modifyhasher/form/{hasher_id}',                 'HASH\Controller\HashPersonController::modifyHashPersonAction');
 $app->post('/admin/modifyhasher/form/{hasher_id}',                'HASH\Controller\HashPersonController::modifyHashPersonAction');

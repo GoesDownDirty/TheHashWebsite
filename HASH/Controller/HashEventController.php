@@ -433,6 +433,220 @@ class HashEventController
       return $returnValue;
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+    #Define action
+    public function adminModifyHashAjaxPreAction(Request $request, Application $app, int $hash_id){
+
+      #Obtain list of kennels
+      $kennelsSQL = "SELECT KENNEL_KY, KENNEL_ABBREVIATION  FROM KENNELS WHERE IN_RECORD_KEEPING = 1";
+
+      #Execute the SQL statement; create an array of rows
+      $kennelList = $app['db']->fetchAll($kennelsSQL);
+
+      # Declare the SQL used to retrieve this information
+      $sql = "SELECT * ,date_format(event_date, '%Y-%m-%d' ) AS EVENT_DATE_DATE, date_format(event_date, '%k:%i:%S') AS EVENT_DATE_TIME FROM HASHES JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
+
+      # Make a database call to obtain the hasher information
+      $hashValue = $app['db']->fetchAssoc($sql, array((int) $hash_id));
+
+      #Convert kennel list to the appropriate format for a dropdown menu
+      $kennelDropdown = array();
+      foreach ($kennelList as $kennelValue){
+        $tempKennelAbbreviation = $kennelValue['KENNEL_ABBREVIATION'];
+        $tempKennelKey = $kennelValue['KENNEL_KY'];
+        $kennelDropdown[$tempKennelAbbreviation] = $tempKennelKey;
+      }
+
+      $returnValue = $app['twig']->render('edit_hash_form_ajax.twig', array(
+        'pageTitle' => 'Modify an Event!',
+        'pageHeader' => 'Page Header',
+        'kennelList' => $kennelDropdown,
+        'geocode_api_value' => GOOGLE_GEOCODE_API_ID,
+        'hashValue' => $hashValue,
+        'hashKey' => $hash_id
+      ));
+
+      #Return the return value
+      return $returnValue;
+
+    }
+
+
+    public function adminModifyHashAjaxPostAction(Request $request, Application $app, int $hash_id){
+
+      #Establish the return message
+      $returnMessage = "This has not been set yet...";
+
+      #Obtain list of kennels
+      $kennelsSQL = "SELECT KENNEL_KY, KENNEL_ABBREVIATION  FROM KENNELS WHERE IN_RECORD_KEEPING = 1";
+
+      #Execute the SQL statement; create an array of rows
+      $kennelList = $app['db']->fetchAll($kennelsSQL);
+
+      $theKennel = trim(strip_tags($request->request->get('kennelName')));
+      //$theHashEventNumber = trim(strip_tags($request->request->get('hashEventNumber')));
+      $theHashEventDescription = trim(strip_tags($request->request->get('hashEventDescription')));
+      $theHyperIndicator= trim(strip_tags($request->request->get('hyperIndicator')));
+      $theEventDate= trim(strip_tags($request->request->get('eventDate')));
+      $theEventTime= trim(strip_tags($request->request->get('eventTime')));
+      $theEventDateAndTime = $theEventDate." ".$theEventTime;
+      $theLocationDescription= trim(strip_tags($request->request->get('locationDescription')));
+      $theStreet_number= trim(strip_tags($request->request->get('street_number')));
+      $theRoute= trim(strip_tags($request->request->get('route')));
+      $theLocality= trim(strip_tags($request->request->get('locality')));
+      $theAdministrative_area_level_1= trim(strip_tags($request->request->get('administrative_area_level_1')));
+      $theAdministrative_area_level_2= trim(strip_tags($request->request->get('administrative_area_level_2')));
+      $thePostal_code= trim(strip_tags($request->request->get('postal_code')));
+      $theNeighborhood= trim(strip_tags($request->request->get('neighborhood')));
+      $theCountry= trim(strip_tags($request->request->get('country')));
+      $theLat= trim(strip_tags($request->request->get('lat')));
+      $theLng= trim(strip_tags($request->request->get('lng')));
+      $theFormatted_address= trim(strip_tags($request->request->get('formatted_address')));
+      $thePlace_id= trim(strip_tags($request->request->get('place_id')));
+      //$app['monolog']->addDebug("--- thePlace_id: $thePlace_id");
+
+      // Establish a "passed validation" variable
+      $passedValidation = TRUE;
+
+      // Establish the return message value as empty (at first)
+      $returnMessage = "";
+
+      if(!is_numeric($theKennel)){
+        $passedValidation = FALSE;
+        //$app['monolog']->addDebug("--- theKennel failed validation: $theKennel");
+        $returnMessage .= " |Failed validation on the kennel";
+      }
+
+      if(!(is_numeric($theLat)||empty($theLat))){
+        $passedValidation = FALSE;
+        $returnMessage .= " |Failed validation on the lat";
+        //$app['monolog']->addDebug("--- theLat failed validation: $theLat");
+      }
+
+      if(!(is_numeric($theLng)||empty($theLng))){
+        $passedValidation = FALSE;
+        $returnMessage .= " |Failed validation on the lng";
+        //$app['monolog']->addDebug("--- theLng failed validation: $theLng");
+      }
+
+      if(!(is_numeric($thePostal_code)||empty($thePostal_code))){
+        $passedValidation = FALSE;
+        $returnMessage .= " |Failed validation on the postal code";
+        //$app['monolog']->addDebug("--- thePostal_code failed validation: $thePostal_code");
+      }
+
+      if(!is_numeric($theLat)){
+        $theLat = NULL;
+      }
+
+      if(!is_numeric($theLng)){
+        $theLng = NULL;
+      }
+
+      // Ensure the following is a date
+      // $theEventDate
+      if (!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$theEventDate)){
+        $passedValidation = FALSE;
+        $returnMessage .= " |Failed validation on the event date";
+        //$app['monolog']->addDebug("--- the date failed validation $theEventDate");
+      }
+
+
+      // Ensure the following is a time
+      // $theEventTime
+      if (!preg_match("/^([01]\d|2[0-3]):([0-5][0-9]):([0-5][0-9])$/",$theEventTime)){
+        $passedValidation = FALSE;
+        $returnMessage .= " |Failed validation on the event time";
+        //$app['monolog']->addDebug("--- the time failed validation $theEventTime");
+
+      }
+
+
+      if($passedValidation){
+
+        $sql = "
+          UPDATE HASHES
+            SET
+              KENNEL_KY = ?,
+              EVENT_DATE = ?,
+              EVENT_LOCATION = ?,
+              EVENT_CITY = ?,
+              EVENT_STATE = ?,
+              SPECIAL_EVENT_DESCRIPTION = ?,
+              IS_HYPER = ?,
+              STREET_NUMBER = ?,
+              ROUTE = ?,
+              COUNTY = ?,
+              POSTAL_CODE = ?,
+              NEIGHBORHOOD = ?,
+              COUNTRY = ?,
+              FORMATTED_ADDRESS = ?,
+              PLACE_ID = ?,
+              LAT = ?,
+              LNG = ?
+           WHERE HASH_KY = ?";
+
+          $app['dbs']['mysql_write']->executeUpdate($sql,array(
+            $theKennel,
+            $theEventDateAndTime,
+            $theLocationDescription,
+            $theLocality,
+            $theAdministrative_area_level_1,
+            $theHashEventDescription,
+            $theHyperIndicator,
+            $theStreet_number,
+            $theRoute,
+            $theAdministrative_area_level_2,
+            $thePostal_code,
+            $theNeighborhood,
+            $theCountry,
+            $theFormatted_address,
+            $thePlace_id,
+            $theLat,
+            $theLng,
+            $hash_id
+          ));
+
+          # Declare the SQL used to retrieve this information
+          $sqlOriginal = "SELECT * FROM HASHES JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
+
+          # Make a database call to obtain the hasher information
+          $hashValue = $app['db']->fetchAssoc($sqlOriginal, array((int) $hash_id));
+
+        #Audit this activity
+        $tempEventNumber = $hashValue['KENNEL_EVENT_NUMBER'];
+        $actionType = "Event Modification (Ajax)";
+        $tempKennelAbbreviation2 = "Unknown";
+        foreach ($kennelList as $kennelValue){
+          if($kennelValue['KENNEL_KY'] == $theKennel){
+            $tempKennelAbbreviation2 = $kennelValue['KENNEL_ABBREVIATION'];
+          }
+        }
+        $actionDescription = "Modified event ($tempKennelAbbreviation2 # $tempEventNumber)";
+        AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+
+
+        // Establish the return value message
+        $returnMessage = "Success! Great, it worked";
+
+      }
+
+      #Set the return value
+      $returnValue =  $app->json($returnMessage, 200);
+      return $returnValue;
+    }
+
   #Define the action
   public function adminCreateHashAction(Request $request, Application $app){
 

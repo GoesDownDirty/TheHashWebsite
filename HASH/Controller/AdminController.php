@@ -602,7 +602,8 @@ class AdminController
         HASH_KY,
         EVENT_DATE,
         EVENT_LOCATION,
-        IS_HYPER
+        IS_HYPER,
+        PLACE_ID
       FROM HASHES JOIN KENNELS on HASHES.KENNEL_KY = KENNELS.KENNEL_KY
       WHERE
         (

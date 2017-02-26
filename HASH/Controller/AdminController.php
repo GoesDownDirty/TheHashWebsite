@@ -519,12 +519,31 @@ class AdminController
   #Define the action
   public function listHashesPreActionJson(Request $request, Application $app){
 
+
+
+    #Define the sql that gets the overall counts
+    $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHES";
+
+    #Perform the untiltered count
+    $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
+
+    #Define the sql that gets the overall counts
+    $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHES WHERE PLACE_ID is null";
+
+    #Perform the untiltered count
+    $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array()))['THE_COUNT'];
+
+
+
+
     # Establish and set the return value
     $returnValue = $app['twig']->render('admin_hash_list_json.twig',array(
       'pageTitle' => 'The List of Hashes (Experimental Page)',
       'pageSubTitle' => 'The List of *ALL* Hashes',
       'pageCaption' => "",
-      'tableCaption' => ""
+      'tableCaption' => "",
+      'totalHashes' => $theUnfilteredCount,
+      'totalHashesToUpdate' => $theFilteredCount
     ));
 
     #Return the return value

@@ -1308,6 +1308,7 @@ class HashEventController
         EVENT_DATE AS EVENT_DATE,
         EVENT_CITY AS EVENT_CITY,
         EVENT_STATE AS EVENT_STATE,
+        FORMATTED_ADDRESS,
         HASH_KY AS HASY_KY,
         KENNEL_KY AS KENNEL_KY,
         DATE_FORMAT(event_date,'%m/%d/%Y %h:%i %p') AS EVENT_DATE_FORMATTED

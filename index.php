@@ -453,6 +453,8 @@ $app->get('/{kennel_abbreviation}/{analversary_number}/quickest/to/reach/date', 
 $app->get('/{kennel_abbreviation}/longest/career','HASH\Controller\ObscureStatisticsController::longestCareerAction');
 $app->get('/{kennel_abbreviation}/highest/averageDaysBetweenHashes','HASH\Controller\ObscureStatisticsController::highestAverageDaysBetweenHashesAction');
 $app->get('/{kennel_abbreviation}/lowest/averageDaysBetweenHashes','HASH\Controller\ObscureStatisticsController::lowestAverageDaysBetweenHashesAction');
+$app->get('/{kennel_abbreviation}/everyones/latest/hashes','HASH\Controller\ObscureStatisticsController::everyonesLatestHashesAction');
+$app->get('/{kennel_abbreviation}/everyones/first/hashes','HASH\Controller\ObscureStatisticsController::everyonesFirstHashesAction');
 
 
 $app->get('/{kennel_abbreviation}/highest/allharings/averageDaysBetweenHarings','HASH\Controller\ObscureStatisticsController::highestAverageDaysBetweenAllHaringsAction');

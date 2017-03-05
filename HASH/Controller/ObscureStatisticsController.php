@@ -868,7 +868,7 @@ class ObscureStatisticsController{
 
     }
 
-    public function everyonesFirstHashesAction(Request $request, Application $app, string $kennel_abbreviation){
+    public function everyonesFirstHashesAction(Request $request, Application $app, string $kennel_abbreviation, int $min_hash_count){
 
       #Obtain the kennel key
       $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
@@ -878,22 +878,19 @@ class ObscureStatisticsController{
       $theSql = str_replace("XORDERCOLUMNX","FIRST_HASH_DATE",LONGEST_HASHING_CAREER_IN_DAYS);
       $theSql = str_replace("XUPORDOWNX","DESC",$theSql);
 
-      #Define the minimum hashing count
-      $minHashingCount = 0;
-
       #Query the database
       $theResults = $app['db']->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $kennelKy,
-        (int)$minHashingCount
+        (int)$min_hash_count
       ));
 
       #Define the page sub title
       $pageSubTitle = "Everyone's first hash, sorted by date";
 
       #Define the table caption
-      $tableCaption = "Minimum hashing count: $minHashingCount";
+      $tableCaption = "Minimum hashing count: $min_hash_count";
 
       #Add the results into the twig template
       $returnValue = $app['twig']->render('career_length_by_day.twig',array(
@@ -1295,6 +1292,48 @@ class ObscureStatisticsController{
       return $returnValue;
 
     }
+
+
+    public function viewFirstTimersChartsAction(Request $request, Application $app, string $kennel_abbreviation, int $min_hash_count){
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      # Obtain the average event attendance per year
+      $sqlNewComersByYear = NEWCOMERS_BY_YEAR;
+      $newComersByYear = $app['db']->fetchAll($sqlNewComersByYear, array((int) $kennelKy,(int) $kennelKy, $min_hash_count));
+
+      # Obtain the average event attendance per (year/month)
+      $sqlNewComersByYearQuarter = NEWCOMERS_BY_YEAR_QUARTER;
+      $newComersByYearQuarter = $app['db']->fetchAll($sqlNewComersByYearQuarter, array((int) $kennelKy, (int) $kennelKy, $min_hash_count));
+
+      # Obtain the average event attendance per (year/quarter)
+      $sqlNewComersByYearMonth = NEWCOMERS_BY_YEAR_MONTH;
+      $newComersByYearMonth = $app['db']->fetchAll($sqlNewComersByYearMonth, array((int) $kennelKy, (int) $kennelKy, $min_hash_count));
+
+
+      # Obtain the average event attendance per (year/month)
+      $sqlNewComersByMonth = NEWCOMERS_BY_MONTH;
+      $newComersByMonth = $app['db']->fetchAll($sqlNewComersByMonth, array((int) $kennelKy,(int) $kennelKy, $min_hash_count));
+
+      # Establish and set the return value
+      $returnValue = $app['twig']->render('newcomers_charts.twig',array(
+        'pageTitle' => 'First Timers / New Comers Statistics',
+        'firstHeader' => 'FIRST HEADER',
+        'secondHeader' => 'SECOND HEADER',
+        'kennel_abbreviation' => $kennel_abbreviation,
+        'New_Comers_By_Year_List' => $newComersByYear,
+        'New_Comers_By_YearMonth_List' => $newComersByYearMonth,
+        'New_Comers_By_YearQuarter_List' => $newComersByYearQuarter,
+        'New_Comers_By_Month_List' => $newComersByMonth,
+        'Min_Hash_Count' => $min_hash_count
+      ));
+
+      # Return the return value
+      return $returnValue;
+
+    }
+
 
 
 

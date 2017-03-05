@@ -261,6 +261,9 @@ $app->get('/{kennel_abbreviation}/hares/hyper/{hasher_id}',       'HASH\Controll
 
 $app->get('/{kennel_abbreviation}/attendanceStatistics',                                'HASH\Controller\ObscureStatisticsController::viewAttendanceChartsAction');
 
+#First timers / newcomers statistics
+$app->get('/{kennel_abbreviation}/firstTimersStatistics/{min_hash_count}',              'HASH\Controller\ObscureStatisticsController::viewFirstTimersChartsAction');
+
 $app->get('/{kennel_abbreviation}/hashes/{hash_id}',                                    'HASH\Controller\HashController::viewHashAction');
 $app->get('/{kennel_abbreviation}/hasherAnalversariesForEvent/{hash_id}',               'HASH\Controller\HashController::hasherAnalversariesForEventAction');
 
@@ -454,7 +457,7 @@ $app->get('/{kennel_abbreviation}/longest/career','HASH\Controller\ObscureStatis
 $app->get('/{kennel_abbreviation}/highest/averageDaysBetweenHashes','HASH\Controller\ObscureStatisticsController::highestAverageDaysBetweenHashesAction');
 $app->get('/{kennel_abbreviation}/lowest/averageDaysBetweenHashes','HASH\Controller\ObscureStatisticsController::lowestAverageDaysBetweenHashesAction');
 $app->get('/{kennel_abbreviation}/everyones/latest/hashes','HASH\Controller\ObscureStatisticsController::everyonesLatestHashesAction');
-$app->get('/{kennel_abbreviation}/everyones/first/hashes','HASH\Controller\ObscureStatisticsController::everyonesFirstHashesAction');
+$app->get('/{kennel_abbreviation}/everyones/first/hashes/{min_hash_count}','HASH\Controller\ObscureStatisticsController::everyonesFirstHashesAction');
 
 
 $app->get('/{kennel_abbreviation}/highest/allharings/averageDaysBetweenHarings','HASH\Controller\ObscureStatisticsController::highestAverageDaysBetweenAllHaringsAction');

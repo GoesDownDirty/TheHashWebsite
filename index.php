@@ -106,6 +106,7 @@ $app['controllers']
   ->assert("year_value", "\d+")
   ->assert("kennel_id","\d+")
   ->assert("day_count","\d+")
+  ->assert("month_count","\d+")
   ->assert("min_hash_count","\d+")
   ->assert("max_percentage","\d+")
   ->assert("analversary_number","\d+")
@@ -261,8 +262,9 @@ $app->get('/{kennel_abbreviation}/hares/hyper/{hasher_id}',       'HASH\Controll
 
 $app->get('/{kennel_abbreviation}/attendanceStatistics',                                'HASH\Controller\ObscureStatisticsController::viewAttendanceChartsAction');
 
-#First timers / newcomers statistics
+#First timers / last timers 
 $app->get('/{kennel_abbreviation}/firstTimersStatistics/{min_hash_count}',              'HASH\Controller\ObscureStatisticsController::viewFirstTimersChartsAction');
+$app->get('/{kennel_abbreviation}/lastTimersStatistics/{min_hash_count}/{month_count}', 'HASH\Controller\ObscureStatisticsController::viewLastTimersChartsAction');
 
 $app->get('/{kennel_abbreviation}/hashes/{hash_id}',                                    'HASH\Controller\HashController::viewHashAction');
 $app->get('/{kennel_abbreviation}/hasherAnalversariesForEvent/{hash_id}',               'HASH\Controller\HashController::hasherAnalversariesForEventAction');
@@ -456,7 +458,7 @@ $app->get('/{kennel_abbreviation}/{analversary_number}/quickest/to/reach/date', 
 $app->get('/{kennel_abbreviation}/longest/career','HASH\Controller\ObscureStatisticsController::longestCareerAction');
 $app->get('/{kennel_abbreviation}/highest/averageDaysBetweenHashes','HASH\Controller\ObscureStatisticsController::highestAverageDaysBetweenHashesAction');
 $app->get('/{kennel_abbreviation}/lowest/averageDaysBetweenHashes','HASH\Controller\ObscureStatisticsController::lowestAverageDaysBetweenHashesAction');
-$app->get('/{kennel_abbreviation}/everyones/latest/hashes','HASH\Controller\ObscureStatisticsController::everyonesLatestHashesAction');
+$app->get('/{kennel_abbreviation}/everyones/latest/hashes/{min_hash_count}','HASH\Controller\ObscureStatisticsController::everyonesLatestHashesAction');
 $app->get('/{kennel_abbreviation}/everyones/first/hashes/{min_hash_count}','HASH\Controller\ObscureStatisticsController::everyonesFirstHashesAction');
 
 

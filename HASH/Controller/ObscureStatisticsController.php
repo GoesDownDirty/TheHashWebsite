@@ -820,7 +820,7 @@ class ObscureStatisticsController{
 
 
 
-    public function everyonesLatestHashesAction(Request $request, Application $app, string $kennel_abbreviation){
+    public function everyonesLatestHashesAction(Request $request, Application $app, string $kennel_abbreviation, int $min_hash_count){
 
       #Obtain the kennel key
       $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
@@ -830,22 +830,19 @@ class ObscureStatisticsController{
       $theSql = str_replace("XORDERCOLUMNX","LATEST_HASH_DATE",LONGEST_HASHING_CAREER_IN_DAYS);
       $theSql = str_replace("XUPORDOWNX","DESC",$theSql);
 
-      #Define the minimum hashing count
-      $minHashingCount = 0;
-
       #Query the database
       $theResults = $app['db']->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $kennelKy,
-        (int)$minHashingCount
+        (int) $min_hash_count
       ));
 
       #Define the page sub title
       $pageSubTitle = "Everyone's latest hash, sorted by date";
 
       #Define the table caption
-      $tableCaption = "Minimum hashing count: $minHashingCount";
+      $tableCaption = "Minimum hashing count: $min_hash_count";
 
       #Add the results into the twig template
       $returnValue = $app['twig']->render('career_length_by_day.twig',array(
@@ -1327,6 +1324,47 @@ class ObscureStatisticsController{
         'New_Comers_By_YearQuarter_List' => $newComersByYearQuarter,
         'New_Comers_By_Month_List' => $newComersByMonth,
         'Min_Hash_Count' => $min_hash_count
+      ));
+
+      # Return the return value
+      return $returnValue;
+
+    }
+
+    public function viewLastTimersChartsAction(Request $request, Application $app, string $kennel_abbreviation, int $min_hash_count, int $month_count){
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      # Obtain the average event attendance per year
+      $sqlLastComersByYear = DEPARTERS_BY_YEAR;
+      $lastComersByYear = $app['db']->fetchAll($sqlLastComersByYear, array((int) $kennelKy,(int) $kennelKy, $min_hash_count, $month_count));
+
+      # Obtain the average event attendance per (year/month)
+      $sqlLastComersByYearQuarter = DEPARTERS_BY_YEAR_QUARTER;
+      $lastComersByYearQuarter = $app['db']->fetchAll($sqlLastComersByYearQuarter, array((int) $kennelKy, (int) $kennelKy, $min_hash_count, $month_count));
+
+      # Obtain the average event attendance per (year/quarter)
+      $sqlLastComersByYearMonth = DEPARTERS_BY_YEAR_MONTH;
+      $lastComersByYearMonth = $app['db']->fetchAll($sqlLastComersByYearMonth, array((int) $kennelKy, (int) $kennelKy, $min_hash_count, $month_count));
+
+
+      # Obtain the average event attendance per (year/month)
+      $sqlLastComersByMonth = DEPARTERS_BY_MONTH;
+      $lastComersByMonth = $app['db']->fetchAll($sqlLastComersByMonth, array((int) $kennelKy,(int) $kennelKy, $min_hash_count, $month_count));
+
+      # Establish and set the return value
+      $returnValue = $app['twig']->render('lastcomers_charts.twig',array(
+        'pageTitle' => 'Last Comers Statistics',
+        'firstHeader' => 'FIRST HEADER',
+        'secondHeader' => 'SECOND HEADER',
+        'kennel_abbreviation' => $kennel_abbreviation,
+        'Last_Comers_By_Year_List' => $lastComersByYear,
+        'Last_Comers_By_YearMonth_List' => $lastComersByYearMonth,
+        'Last_Comers_By_YearQuarter_List' => $lastComersByYearQuarter,
+        'Last_Comers_By_Month_List' => $lastComersByMonth,
+        'Min_Hash_Count' => $min_hash_count,
+        'Month_Count' => $month_count
       ));
 
       # Return the return value

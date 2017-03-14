@@ -671,7 +671,8 @@ class HashController
       'firstHeader' => 'Basic Details',
       'secondHeader' => 'Statistics',
       'hashValue' => $theHashValue,
-      'kennel_abbreviation' => $kennel_abbreviation
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'geocode_api_value' => GOOGLE_GEOCODE_API_ID
     ));
 
     # Return the return value

@@ -3,48 +3,107 @@
 {% block content %}
     <h1>{{pageTitle}}</h1>
 
-    <div class="col-sm-6">
-      <div class="list-group">
-        <a href="#" class="list-group-item active">
-          More Info
-        </a>
-        <a class="list-group-item" href='/{{kennel_abbreviation}}/hasherAnalversariesForEvent/{{hashValue.HASH_KY}}'>Hound Analversaries For This Event</a>
-        <a class="list-group-item" href='/{{kennel_abbreviation}}/hareAnalversariesForEvent/{{hashValue.HASH_KY}}'>Hare Analversaries For This Event</a>
-        <a class="list-group-item" href='/{{kennel_abbreviation}}/backSlidersForEvent/{{hashValue.HASH_KY}}'>Back Sliders For This Event</a>
-        <a class="list-group-item" href='/{{kennel_abbreviation}}/listhashers/byhash/{{hashValue.HASH_KY}}'>Hounds at this event</a>
-        <a class="list-group-item" href='/{{kennel_abbreviation}}/listhares/byhash/{{hashValue.HASH_KY}}'>Hares at this event</a>
+
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="list-group">
+          <a href="#" class="list-group-item active">
+            More Info
+          </a>
+          <a class="list-group-item" href='/{{kennel_abbreviation}}/hasherAnalversariesForEvent/{{hashValue.HASH_KY}}'>Hound Analversaries For This Event</a>
+          <a class="list-group-item" href='/{{kennel_abbreviation}}/hareAnalversariesForEvent/{{hashValue.HASH_KY}}'>Hare Analversaries For This Event</a>
+          <a class="list-group-item" href='/{{kennel_abbreviation}}/backSlidersForEvent/{{hashValue.HASH_KY}}'>Back Sliders For This Event</a>
+          <a class="list-group-item" href='/{{kennel_abbreviation}}/listhashers/byhash/{{hashValue.HASH_KY}}'>Hounds at this event</a>
+          <a class="list-group-item" href='/{{kennel_abbreviation}}/listhares/byhash/{{hashValue.HASH_KY}}'>Hares at this event</a>
+        </div>
+      </div>
+
+
+      <div class="col-sm-6">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            Basic Info
+          </div>
+          <div class="panel-body">
+            <table id="table" class="table table-hover">
+                <tbody>
+                  <tr data-index="0"><td class="key" style="">Event Number</td><td style="">{{hashValue.KENNEL_EVENT_NUMBER}}</td></tr>
+                  <tr data-index="1"><td class="key" style="">Date</td><td style="">{{hashValue.EVENT_DATE}}</td></tr>
+                  <tr data-index="2"><td class="key" style="">Description</td><td style="">{{hashValue.SPECIAL_EVENT_DESCRIPTION}}</td></tr>
+                  <tr data-index="3">
+                    <td class="key" style="">Hyper Hash ?</td>
+                    <td style="">
+                      {% if hashValue.IS_HYPER == "0000000000" %}
+                        No
+                      {% else %}
+                        Yes
+                      {% endif %}
+                  </td>
+
+                  </tr>
+                </tbody>
+              </table>
+          </div>
+        </div>
       </div>
     </div>
 
-
-    <div class="col-sm-6">
-      <div class="panel panel-primary">
-        <div class="panel-heading">
-          Basic Info
-        </div>
-        <div class="panel-body">
-          <table id="table" class="table table-hover">
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            Location Data
+          </div>
+          <div class="panel-body">
+            <table id="table" class="table table-hover">
               <tbody>
-                <tr data-index="0"><td class="key" style="">Event Number</td><td style="">{{hashValue.KENNEL_EVENT_NUMBER}}</td></tr>
-                <tr data-index="1"><td class="key" style="">Date</td><td style="">{{hashValue.EVENT_DATE}}</td></tr>
-                <tr data-index="2"><td class="key" style="">Location</td><td style="">{{hashValue.EVENT_LOCATION}}</td></tr>
-                <tr data-index="3"><td class="key" style="">City</td><td style="">{{hashValue.EVENT_CITY}}</td></tr>
-                <tr data-index="4"><td class="key" style="">State</td><td style="">{{hashValue.EVENT_STATE}}</td></tr>
-                <tr data-index="5"><td class="key" style="">Description</td><td style="">{{hashValue.SPECIAL_EVENT_DESCRIPTION}}</td></tr>
-                <tr data-index="6">
-                  <td class="key" style="">Hyper Hash ?</td>
-                  <td style="">
-                    {% if hashValue.IS_HYPER == "0000000000" %}
-                      No
-                    {% else %}
-                      Yes
-                    {% endif %}
-                </td>
-                </tr>
+                <tr data-index="0"><td class="key" style="">Location</td><td style="">{{hashValue.EVENT_LOCATION}}</td></tr>
+                <tr data-index="1"><td class="key" style="">Formatted Address</td><td style="">{{hashValue.FORMATTED_ADDRESS}}</td></tr>
+                <tr data-index="2"><td class="key" style="">Street Number </td><td style="">{{hashValue.STREET_NUMBER}}</td></tr>
+                <tr data-index="3"><td class="key" style="">Route </td><td style="">{{hashValue.ROUTE}}</td></tr>
+                <tr data-index="4"><td class="key" style="">City </td><td style="">{{hashValue.EVENT_CITY}}</td></tr>
+                <tr data-index="5"><td class="key" style="">State </td><td style="">{{hashValue.EVENT_STATE}}</td></tr>
+                <tr data-index="6"><td class="key" style="">Postal Code </td><td style="">{{hashValue.POSTAL_CODE}}</td></tr>
+                <tr data-index="7"><td class="key" style="">Neighborhood  </td><td style="">{{hashValue.NEIGHBORHOOD}}</td></tr>
+                <tr data-index="8"><td class="key" style="">County </td><td style="">{{hashValue.COUNTY}}</td></tr>
+                <tr data-index="9"><td class="key" style="">Country </td><td style="">{{hashValue.COUNTRY}}</td></tr>
+                <tr data-index="10"><td class="key" style="">Lat </td><td style="">{{hashValue.LAT}}</td></tr>
+                <tr data-index="11"><td class="key" style="">Long </td><td style="">{{hashValue.LNG}}</td></tr>
+                <tr data-index="12"><td class="key" style="">Place ID </td><td style="">{{hashValue.PLACE_ID}}</td></tr>
               </tbody>
             </table>
+          </div>
         </div>
       </div>
+
+{#
+      <div class="col-sm-6">
+        <style>
+        #map{
+          height: 100%;
+        }
+        </style>
+        <div id="map"></div>
+        <script>
+          function initMap(){
+            var myLatLng = {lat: {{hashValue.LAT}}, lng:{{hashValue.LNG}}};
+
+            var map = new google.maps.Map(document.getElementById('map'),{
+              zoom:12,
+              center:myLatLng
+            });
+
+            var marker = new google.maps.Marker({
+              position: myLatLng,
+              map: map,
+              title: 'Hello Computer'
+            });
+          }
+        </script>
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key={{geocode_api_value}}&callback=initMap">
+        </script>
+      </div>
+#}
     </div>
 
 

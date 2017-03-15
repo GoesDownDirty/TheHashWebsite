@@ -573,6 +573,20 @@ class HashController
     # Make a database call to obtain the hasher information
     $hasher = $app['db']->fetchAssoc($sql, array((int) $hasher_id));
 
+    # Obtain their hashes
+    $sqlTheHashes = "SELECT HASHES.* FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+    WHERE HASHER_KY = ? AND KENNEL_KY = ? and LAT is not null and LNG is not null";
+    $theHashes = $app['db']->fetchAll($sqlTheHashes, array((int) $hasher_id, (int) $kennelKy));
+
+    #Obtain the average lat
+    $sqlTheAverageLatLong = "SELECT AVG(LAT) AS THE_LAT, AVG(LNG) AS THE_LNG FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+    WHERE HASHER_KY = ? AND KENNEL_KY = ? and LAT is not null and LNG is not null";
+    $theAverageLatLong = $app['db']->fetchAssoc($sqlTheAverageLatLong, array((int) $hasher_id, (int) $kennelKy));
+    $avgLat = $theAverageLatLong['THE_LAT'];
+    $avgLng = $theAverageLatLong['THE_LNG'];
+
+    #Obtain the average longitude
+
     # Obtain the number of hashings
     $sqlHashCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
     WHERE HASHER_KY = ? AND KENNEL_KY = ?";
@@ -648,7 +662,11 @@ class HashController
       'hashes_by_state_list' => $theHashesByStateList,
       'hashes_by_day_name_list' => $theHashesByDayNameList,
       'city_hashings_count_list' => $cityHashingsCountList,
-      'city_hashings_max_value' => $cityHashingsCountMax
+      'city_hashings_max_value' => $cityHashingsCountMax,
+      'the_hashes' => $theHashes,
+      'geocode_api_value' => GOOGLE_GEOCODE_API_ID,
+      'avg_lat' => $avgLat,
+      'avg_lng' => $avgLng
     ));
 
     # Return the return value

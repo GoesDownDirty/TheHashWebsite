@@ -664,7 +664,7 @@ class HashController
       'city_hashings_count_list' => $cityHashingsCountList,
       'city_hashings_max_value' => $cityHashingsCountMax,
       'the_hashes' => $theHashes,
-      'geocode_api_value' => GOOGLE_GEOCODE_API_ID,
+      'geocode_api_value' => GOOGLE_MAPS_JAVASCRIPT_API_KEY,
       'avg_lat' => $avgLat,
       'avg_lng' => $avgLng
     ));
@@ -690,7 +690,7 @@ class HashController
       'secondHeader' => 'Statistics',
       'hashValue' => $theHashValue,
       'kennel_abbreviation' => $kennel_abbreviation,
-      'geocode_api_value' => GOOGLE_GEOCODE_API_ID
+      'geocode_api_value' => GOOGLE_MAPS_JAVASCRIPT_API_KEY
     ));
 
     # Return the return value

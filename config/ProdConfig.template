@@ -15,4 +15,6 @@ define("JUMBO_PERCENTAGES_MINIMUM_HASH_COUNT",10);
 define("JUMBO_COUNTS_MINIMUM_HASH_COUNT",5);
 
 define("DEFAULT_USER_PASSWORD","yourlongpasswordstring");
-define("GOOGLE_GEOCODE_API_ID","your_google_geocode_api_id");
+
+define("GOOGLE_PLACES_API_WEB_SERVICE_KEY","");
+define("GOOGLE_MAPS_JAVASCRIPT_API_KEY","");

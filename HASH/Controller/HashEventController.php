@@ -263,7 +263,7 @@ class HashEventController
       'pageTitle' => 'Create an Event!',
       'pageHeader' => 'Page Header',
       'kennelList' => $kennelDropdown,
-      'geocode_api_value' => GOOGLE_GEOCODE_API_ID
+      'geocode_api_value' => GOOGLE_PLACES_API_WEB_SERVICE_KEY
     ));
 
     #Return the return value
@@ -472,7 +472,7 @@ class HashEventController
         'pageTitle' => 'Modify an Event!',
         'pageHeader' => 'Page Header',
         'kennelList' => $kennelDropdown,
-        'geocode_api_value' => GOOGLE_GEOCODE_API_ID,
+        'geocode_api_value' => GOOGLE_PLACES_API_WEB_SERVICE_KEY,
         'hashValue' => $hashValue,
         'hashKey' => $hash_id
       ));

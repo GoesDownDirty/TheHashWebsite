@@ -245,6 +245,8 @@ $app->post('/{kennel_abbreviation}/listhashers2',                               
 $app->get('/{kennel_abbreviation}/listhashes2',                                         'HASH\Controller\HashEventController::listHashesPreActionJson');
 $app->post('/{kennel_abbreviation}/listhashes2',                                        'HASH\Controller\HashEventController::listHashesPostActionJson');
 
+$app->get('/{kennel_abbreviation}/eventsHeatMap',                                        'HASH\Controller\ObscureStatisticsController::kennelEventsHeatMap');
+
 
 
 $app->get('/{kennel_abbreviation}/listhashers/byhash/{hash_id}',                        'HASH\Controller\HashController::listHashersByHashAction');
@@ -262,7 +264,7 @@ $app->get('/{kennel_abbreviation}/hares/hyper/{hasher_id}',       'HASH\Controll
 
 $app->get('/{kennel_abbreviation}/attendanceStatistics',                                'HASH\Controller\ObscureStatisticsController::viewAttendanceChartsAction');
 
-#First timers / last timers 
+#First timers / last timers
 $app->get('/{kennel_abbreviation}/firstTimersStatistics/{min_hash_count}',              'HASH\Controller\ObscureStatisticsController::viewFirstTimersChartsAction');
 $app->get('/{kennel_abbreviation}/lastTimersStatistics/{min_hash_count}/{month_count}', 'HASH\Controller\ObscureStatisticsController::viewLastTimersChartsAction');
 

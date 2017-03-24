@@ -559,6 +559,48 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
             WordCloud(document.getElementById('my_canvas2'), options2 );
       </script>
 
+
+      <div class="row"><br><br><br><br>
+      </div>
+            <div class="row">
+              <div id="map" class="col-sm-12"></div>
+                <style>
+                #map{
+                  height: 100%;
+                }
+                </style>
+              </div>
+            </div>
+
+            <script>
+              var map;
+              function initMap(){
+                map = new google.maps.Map(document.getElementById('map'),{
+                  zoom: 10,
+                  center: new google.maps.LatLng( {{avg_lat}}, {{avg_lng}} )
+                  //mapTypeId: 'terrain'
+                });
+
+                //var latLng = new google.maps.LatLng(2.8, -187.3);
+                //var marker = new google.maps.Marker({
+              //    position: latLng,
+                //  map: map
+                //});
+
+              {% for hashEventValue in the_hashes %}
+                var marker = new google.maps.Marker({
+                  //position: new google.maps.LatLng(7,-188);,
+                  position: {lat: {{hashEventValue.LAT}}, lng:{{hashEventValue.LNG}}},
+                  map: map
+                });
+              {% endfor %}
+
+              }
+            </script>
+            <script async defer src="https://maps.googleapis.com/maps/api/js?key={{geocode_api_value}}&callback=initMap">
+            </script>
+
+
       <div class="row"><br><br><br><br>
       </div>
 

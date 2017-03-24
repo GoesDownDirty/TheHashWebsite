@@ -3043,6 +3043,18 @@ public function viewOverallHareChartsAction(Request $request, Application $app, 
     $cohareCountMax = $cohareCountList[0]['THE_COUNT'];
   }
 
+  # Obtain their hashes
+  $sqlTheHashes = "SELECT HASHES.* FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+  WHERE HARINGS.HARINGS_HASHER_KY = ? AND KENNEL_KY = ? and LAT is not null and LNG is not null";
+  $theHashes = $app['db']->fetchAll($sqlTheHashes, array((int) $hasher_id, (int) $kennelKy));
+
+  #Obtain the average lat
+  $sqlTheAverageLatLong = "SELECT AVG(LAT) AS THE_LAT, AVG(LNG) AS THE_LNG FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+  WHERE HARINGS.HARINGS_HASHER_KY = ? AND KENNEL_KY = ? and LAT is not null and LNG is not null";
+  $theAverageLatLong = $app['db']->fetchAssoc($sqlTheAverageLatLong, array((int) $hasher_id, (int) $kennelKy));
+  $avgLat = $theAverageLatLong['THE_LAT'];
+  $avgLng = $theAverageLatLong['THE_LNG'];
+
   $customValues = array(
     'pageTitle' => 'Overall Hare Charts and Details',
     'firstHeader' => 'Basic Details',
@@ -3050,7 +3062,11 @@ public function viewOverallHareChartsAction(Request $request, Application $app, 
     'city_haring_count_list' => $cityHaringCountList,
     'city_harings_max_value' => $cityHaringsCountMax,
     'cohare_count_list' =>$cohareCountList,
-    'cohare_count_max' => $cohareCountMax
+    'cohare_count_max' => $cohareCountMax,
+    'the_hashes' => $theHashes,
+    'geocode_api_value' => GOOGLE_MAPS_JAVASCRIPT_API_KEY,
+    'avg_lat' => $avgLat,
+    'avg_lng' => $avgLng
   );
   $finalArray = array_merge($commonValues,$customValues);
   $returnValue = $app['twig']->render('hare_chart_overall_details.twig',$finalArray);
@@ -3094,6 +3110,18 @@ public function viewTrueHareChartsAction(Request $request, Application $app, int
     $cohareCountMax = $cohareCountList[0]['THE_COUNT'];
   }
 
+  # Obtain their hashes
+  $sqlTheHashes = "SELECT HASHES.* FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+  WHERE HARINGS.HARINGS_HASHER_KY = ? AND KENNEL_KY = ? and HASHES.IS_HYPER = 0 and LAT is not null and LNG is not null";
+  $theHashes = $app['db']->fetchAll($sqlTheHashes, array((int) $hasher_id, (int) $kennelKy));
+
+  #Obtain the average lat
+  $sqlTheAverageLatLong = "SELECT AVG(LAT) AS THE_LAT, AVG(LNG) AS THE_LNG FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+  WHERE HARINGS.HARINGS_HASHER_KY = ? AND KENNEL_KY = ? and HASHES.IS_HYPER = 0 and LAT is not null and LNG is not null";
+  $theAverageLatLong = $app['db']->fetchAssoc($sqlTheAverageLatLong, array((int) $hasher_id, (int) $kennelKy));
+  $avgLat = $theAverageLatLong['THE_LAT'];
+  $avgLng = $theAverageLatLong['THE_LNG'];
+
   $customValues = array(
     'pageTitle' => 'True Hare Charts and Details',
     'firstHeader' => 'Basic Details',
@@ -3101,7 +3129,11 @@ public function viewTrueHareChartsAction(Request $request, Application $app, int
     'city_haring_count_list' => $cityHaringCountList,
     'city_harings_max_value' => $cityHaringsCountMax,
     'cohare_count_list' =>$cohareCountList,
-    'cohare_count_max' => $cohareCountMax
+    'cohare_count_max' => $cohareCountMax,
+    'the_hashes' => $theHashes,
+    'geocode_api_value' => GOOGLE_MAPS_JAVASCRIPT_API_KEY,
+    'avg_lat' => $avgLat,
+    'avg_lng' => $avgLng
   );
   $finalArray = array_merge($commonValues,$customValues);
   $returnValue = $app['twig']->render('hare_chart_true_details.twig',$finalArray);
@@ -3143,6 +3175,19 @@ public function viewHyperHareChartsAction(Request $request, Application $app, in
     $cohareCountMax = $cohareCountList[0]['THE_COUNT'];
   }
 
+  # Obtain their hashes
+  $sqlTheHashes = "SELECT HASHES.* FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+  WHERE HARINGS.HARINGS_HASHER_KY = ? AND KENNEL_KY = ? and HASHES.IS_HYPER = 1 and LAT is not null and LNG is not null";
+  $theHashes = $app['db']->fetchAll($sqlTheHashes, array((int) $hasher_id, (int) $kennelKy));
+
+  #Obtain the average lat
+  $sqlTheAverageLatLong = "SELECT AVG(LAT) AS THE_LAT, AVG(LNG) AS THE_LNG FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+  WHERE HARINGS.HARINGS_HASHER_KY = ? AND KENNEL_KY = ? and HASHES.IS_HYPER = 1 and LAT is not null and LNG is not null";
+  $theAverageLatLong = $app['db']->fetchAssoc($sqlTheAverageLatLong, array((int) $hasher_id, (int) $kennelKy));
+  $avgLat = $theAverageLatLong['THE_LAT'];
+  $avgLng = $theAverageLatLong['THE_LNG'];
+
+
   $customValues = array(
     'pageTitle' => 'Hyper Hare Charts and Details',
     'firstHeader' => 'Basic Details',
@@ -3150,7 +3195,11 @@ public function viewHyperHareChartsAction(Request $request, Application $app, in
     'city_haring_count_list' => $cityHaringCountList,
     'city_harings_max_value' => $cityHaringsCountMax,
     'cohare_count_list' =>$cohareCountList,
-    'cohare_count_max' => $cohareCountMax
+    'cohare_count_max' => $cohareCountMax,
+    'the_hashes' => $theHashes,
+    'geocode_api_value' => GOOGLE_MAPS_JAVASCRIPT_API_KEY,
+    'avg_lat' => $avgLat,
+    'avg_lng' => $avgLng
   );
   $finalArray = array_merge($commonValues,$customValues);
   $returnValue = $app['twig']->render('hare_chart_hyper_details.twig',$finalArray);

@@ -23,15 +23,17 @@
   <caption>{{tableCaption}}</caption>
   <thead>
     <tr>
-      <th>Hasher Name</th>
+      <th>Row Number</th>
+      <td>Hasher Name</td>
       <td>Analversary Hash</td>
     </tr>
   </thead>
   <tbody>
     {% for item in theList %}
       <tr>
+        <td>{{loop.index}}</td>
         <td><a href='/{{kennel_abbreviation}}/hashers/{{item.HASHER_KY}}'>{{item.HASHER_NAME}}</a></td>
-        <td><a href='/{{kennel_abbreviation}}/hashes/{{item.ANALVERSARY_HASH_KY}}'>{{item.ANALVERSARY_DATE|date("m/d/Y")}}</a></td>
+        <td><a href='/{{kennel_abbreviation}}/hashes/{{item.ANALVERSARY_HASH_KY}}'>{{item.ANALVERSARY_DATE|date("Y/m/d")}}</a></td>
       </tr>
     {% endfor %}
 </table>

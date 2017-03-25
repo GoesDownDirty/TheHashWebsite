@@ -246,6 +246,7 @@ $app->get('/{kennel_abbreviation}/listhashes2',                                 
 $app->post('/{kennel_abbreviation}/listhashes2',                                        'HASH\Controller\HashEventController::listHashesPostActionJson');
 
 $app->get('/{kennel_abbreviation}/eventsHeatMap',                                        'HASH\Controller\ObscureStatisticsController::kennelEventsHeatMap');
+$app->get('/{kennel_abbreviation}/eventsClusterMap',                                        'HASH\Controller\ObscureStatisticsController::kennelEventsClusterMap');
 
 
 

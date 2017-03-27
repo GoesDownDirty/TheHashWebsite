@@ -99,6 +99,7 @@ if (!$schema->tablesExist('users')) {
 #-------------------------------------------------------------------------------
 
 #Set your global assertions and stuff ------------------------------------------
+$kennelAssertion = "^(".VALID_KENNEL_ABBREVIATIONS.")$";
 $app['controllers']
   ->assert("hash_id", "\d+")
   ->assert("hasher_id", "\d+")
@@ -111,7 +112,7 @@ $app['controllers']
   ->assert("max_percentage","\d+")
   ->assert("analversary_number","\d+")
   ->assert("row_limit","\d+")
-  ->assert("kennel_abbreviation","^(sch4|SCH4|SCH4BASH|sch4bash|LVH3|lvh3|SWOT|swot)$")
+  ->assert("kennel_abbreviation",$kennelAssertion)
   ;
 #-------------------------------------------------------------------------------
 
@@ -247,6 +248,7 @@ $app->post('/{kennel_abbreviation}/listhashes2',                                
 
 $app->get('/{kennel_abbreviation}/eventsHeatMap',                                        'HASH\Controller\ObscureStatisticsController::kennelEventsHeatMap');
 $app->get('/{kennel_abbreviation}/eventsClusterMap',                                        'HASH\Controller\ObscureStatisticsController::kennelEventsClusterMap');
+$app->get('/{kennel_abbreviation}/eventsMarkerMap',                                        'HASH\Controller\ObscureStatisticsController::kennelEventsMarkerMap');
 
 
 

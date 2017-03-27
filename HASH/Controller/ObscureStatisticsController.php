@@ -101,6 +101,40 @@ class ObscureStatisticsController{
 
   }
 
+  public function kennelEventsMarkerMap(Request $request, Application $app, string $kennel_abbreviation){
+
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+    # Obtain the hashes
+    $sqlTheHashes = "SELECT HASHES.* FROM HASHES
+    WHERE KENNEL_KY = ? and LAT is not null and LNG is not null";
+    $theHashes = $app['db']->fetchAll($sqlTheHashes, array((int) $kennelKy));
+
+    #Obtain the average lat
+    $sqlTheAverageLatLong = "SELECT AVG(LAT) AS THE_LAT, AVG(LNG) AS THE_LNG FROM HASHES
+    WHERE KENNEL_KY = ? and LAT is not null and LNG is not null";
+    $theAverageLatLong = $app['db']->fetchAssoc($sqlTheAverageLatLong, array((int) $kennelKy));
+    $avgLat = $theAverageLatLong['THE_LAT'];
+    $avgLng = $theAverageLatLong['THE_LNG'];
+
+    # Establish and set the return value
+    $returnValue = $app['twig']->render('generic_marker_map_page.twig',array(
+      'pageTitle' => 'The Kennel Marker Map',
+      'pageSubTitle' => 'Location of all the hashes',
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'the_hashes' => $theHashes,
+      'geocode_api_value' => GOOGLE_MAPS_JAVASCRIPT_API_KEY,
+      'avg_lat' => $avgLat,
+      'avg_lng' => $avgLng
+    ));
+
+    # Return the return value
+    return $returnValue;
+
+
+  }
+
     #Landing screen for year in review
     public function getYearInReviewAction(Request $request, Application $app, int $year_value, string $kennel_abbreviation){
 

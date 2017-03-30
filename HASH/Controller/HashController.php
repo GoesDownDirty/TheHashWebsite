@@ -750,6 +750,57 @@ class HashController
     return $returnValue;
   }
 
+  public function hasherCountsForEventAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
+
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+    # Declare the SQL used to retrieve this information
+    $sql = "SELECT
+        hashers.HASHER_NAME AS HASHER_NAME,
+        (COUNT(*)) AS THE_COUNT,
+        MAX(HASHINGS.HASH_KY) AS MAX_HASH_KY
+    FROM
+        ((hashers
+        JOIN hashings ON ((hashers.HASHER_KY = hashings.HASHER_KY)))
+        JOIN hashes ON ((hashings.HASH_KY = hashes.HASH_KY)))
+    WHERE
+        (hashers.DECEASED = 0) AND
+        HASHES.HASH_KY <= ? AND
+        HASHES.KENNEL_KY = ?
+    GROUP BY hashers.HASHER_NAME
+    HAVING (
+          (THE_COUNT % 1) = 0
+      )
+        AND MAX_HASH_KY = ?
+    ORDER BY THE_COUNT DESC";
+
+    # Make a database call to obtain the hasher information
+    $analversaryList = $app['db']->fetchAll($sql, array((int) $hash_id,(int) $kennelKy, (int) $hash_id));
+
+    # Declare the SQL used to retrieve this information
+    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+
+    # Make a database call to obtain the hasher information
+    $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
+
+    # Establish and set the return value
+    $hashNumber = $theHashValue['KENNEL_EVENT_NUMBER'];
+    $hashLocation = $theHashValue['EVENT_LOCATION'];
+    $pageSubtitle = "Hasher Counts at the $hashNumber ($hashLocation) Hash";
+
+    # Establish the return value
+    $returnValue = $app['twig']->render('analversary_list.twig',array(
+      'pageTitle' => 'Hasher Counts',
+      'pageSubTitle' => $pageSubtitle,
+      'theList' => $analversaryList,
+      'kennel_abbreviation' => $kennel_abbreviation
+    ));
+
+    # Return the return value
+    return $returnValue;
+  }
+
 
 
     public function backSlidersForEventAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){

@@ -273,6 +273,10 @@ $app->get('/{kennel_abbreviation}/lastTimersStatistics/{min_hash_count}/{month_c
 
 $app->get('/{kennel_abbreviation}/hashes/{hash_id}',                                    'HASH\Controller\HashController::viewHashAction');
 $app->get('/{kennel_abbreviation}/hasherAnalversariesForEvent/{hash_id}',               'HASH\Controller\HashController::hasherAnalversariesForEventAction');
+$app->get('/{kennel_abbreviation}/hasherCountsForEvent/{hash_id}',               'HASH\Controller\HashController::hasherCountsForEventAction');
+
+
+
 
 $app->get('/{kennel_abbreviation}/backSlidersForEvent/{hash_id}',                       'HASH\Controller\HashController::backSlidersForEventAction');
 

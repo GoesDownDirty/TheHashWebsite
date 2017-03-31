@@ -278,6 +278,10 @@ $app->get('/{kennel_abbreviation}/hasherCountsForEvent/{hash_id}',              
 $app->get('/{kennel_abbreviation}/hasherCountsForEventCounty/{hash_id}',               'HASH\Controller\HashController::hasherCountsForEventCountyAction');
 $app->get('/{kennel_abbreviation}/hasherCountsForEventPostalCode/{hash_id}',               'HASH\Controller\HashController::hasherCountsForEventPostalCodeAction');
 
+$app->get('/{kennel_abbreviation}/hasherCountsForEventState/{hash_id}',            'HASH\Controller\HashController::hasherCountsForEventStateAction');
+$app->get('/{kennel_abbreviation}/hasherCountsForEventCity/{hash_id}',             'HASH\Controller\HashController::hasherCountsForEventCityAction');
+$app->get('/{kennel_abbreviation}/hasherCountsForEventNeighborhood/{hash_id}',     'HASH\Controller\HashController::hasherCountsForEventNeighborhoodAction');
+
 
 
 

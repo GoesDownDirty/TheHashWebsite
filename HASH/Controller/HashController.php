@@ -691,6 +691,38 @@ class HashController
     # Make a database call to obtain the hasher information
     $theHashValue = $app['db']->fetchAssoc($sql, array((int) $hash_id));
 
+    $state = $theHashValue['EVENT_STATE'];
+    $county =$theHashValue['COUNTY'];
+    $city = $theHashValue['EVENT_CITY'];
+    $neighborhood = $theHashValue['NEIGHBORHOOD'];
+    $postalCode = $theHashValue['POSTAL_CODE'];
+
+    $showState = true;
+    $showCounty = true;
+    $showCity = true;
+    $showNeighborhood = true;
+    $showPostalCode = true;
+
+    if(strlen($state)==0){
+      $showState = false;
+    }
+
+    if(strlen($county)==0){
+      $showCounty = false;
+    }
+
+    if(strlen($city)==0){
+      $showCity = false;
+    }
+
+    if(strlen($neighborhood)==0){
+      $showNeighborhood = false;
+    }
+
+    if(strlen($postalCode)==0){
+      $showPostalCode = false;
+    }
+
     # Establish and set the return value
     $returnValue = $app['twig']->render('hash_details.twig',array(
       'pageTitle' => 'Hash Details',
@@ -698,7 +730,12 @@ class HashController
       'secondHeader' => 'Statistics',
       'hashValue' => $theHashValue,
       'kennel_abbreviation' => $kennel_abbreviation,
-      'geocode_api_value' => GOOGLE_MAPS_JAVASCRIPT_API_KEY
+      'geocode_api_value' => GOOGLE_MAPS_JAVASCRIPT_API_KEY,
+      'showStateCountList' => $showState,
+      'showCountyCountList' => $showCounty,
+      'showCityCountList' => $showCity,
+      'showNeighborhoodCountList' => $showNeighborhood,
+      'showPostalCodeCountList' => $showPostalCode
     ));
 
     # Return the return value
@@ -823,6 +860,9 @@ class HashController
 
     # Obtain information for this particular hash
     $theHashEventCounty = $theHashValue['COUNTY'];
+    if(strlen($theHashEventCounty)==0){
+      $theHashEventCounty = "UNKNOWN";
+    }
 
     # Declare the SQL used to retrieve this information
     $sql = "SELECT
@@ -885,6 +925,9 @@ class HashController
 
     # Obtain information for this particular hash
     $theHashEventPostalCode = $theHashValue['POSTAL_CODE'];
+    if(strlen($theHashEventPostalCode)==0){
+      $theHashEventPostalCode = "UNKNOWN";
+    }
 
     # Declare the SQL used to retrieve this information
     $sql = "SELECT
@@ -935,6 +978,198 @@ class HashController
   }
 
 
+  public function hasherCountsForEventStateAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
+
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+    # Declare the SQL used to retrieve this information
+    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+
+    # Make a database call to obtain the hasher information
+    $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
+
+    # Obtain information for this particular hash
+    $theHashEventState = $theHashValue['EVENT_STATE'];
+    if(strlen($theHashEventState)==0){
+      $theHashEventState = "UNKNOWN";
+    }
+
+    # Declare the SQL used to retrieve this information
+    $sql = "SELECT
+        hashers.HASHER_NAME AS HASHER_NAME,
+        (COUNT(*)) AS THE_COUNT,
+        MAX(HASHINGS.HASH_KY) AS MAX_HASH_KY
+    FROM
+        ((hashers
+        JOIN hashings ON ((hashers.HASHER_KY = hashings.HASHER_KY)))
+        JOIN hashes ON ((hashings.HASH_KY = hashes.HASH_KY)))
+    WHERE
+        (hashers.DECEASED = 0) AND
+        HASHES.HASH_KY <= ? AND
+        HASHES.KENNEL_KY = ? AND
+        HASHES.EVENT_STATE = ?
+    GROUP BY hashers.HASHER_NAME
+    HAVING (
+          (THE_COUNT % 1) = 0
+      )
+        AND MAX_HASH_KY = ?
+    ORDER BY THE_COUNT DESC";
+
+    # Make a database call to obtain the hasher information
+    $analversaryList = $app['db']->fetchAll($sql, array((int) $hash_id,(int) $kennelKy, (string) $theHashEventState, (int) $hash_id));
+
+    # Declare the SQL used to retrieve this information
+    #$sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+
+    # Make a database call to obtain the hasher information
+    #$theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
+
+    # Establish and set the return value
+    $hashNumber = $theHashValue['KENNEL_EVENT_NUMBER'];
+    $hashLocation = $theHashValue['EVENT_LOCATION'];
+    $pageTitle = "Hasher Counts for $theHashEventState state";
+    $pageSubtitle = "Hasher Counts in $theHashEventState state at the $hashNumber ($hashLocation) Hash";
+
+    # Establish the return value
+    $returnValue = $app['twig']->render('analversary_list.twig',array(
+      'pageTitle' => $pageTitle,
+      'pageSubTitle' => $pageSubtitle,
+      'theList' => $analversaryList,
+      'kennel_abbreviation' => $kennel_abbreviation
+    ));
+
+    # Return the return value
+    return $returnValue;
+  }
+
+
+  public function hasherCountsForEventNeighborhoodAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
+
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+    # Declare the SQL used to retrieve this information
+    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+
+    # Make a database call to obtain the hasher information
+    $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
+
+    # Obtain information for this particular hash
+    $theHashEventNeighborhood = $theHashValue['NEIGHBORHOOD'];
+    if(strlen($theHashEventNeighborhood)==0){
+      $theHashEventNeighborhood = "UNKNOWN";
+    }
+
+    # Declare the SQL used to retrieve this information
+    $sql = "SELECT
+        hashers.HASHER_NAME AS HASHER_NAME,
+        (COUNT(*)) AS THE_COUNT,
+        MAX(HASHINGS.HASH_KY) AS MAX_HASH_KY
+    FROM
+        ((hashers
+        JOIN hashings ON ((hashers.HASHER_KY = hashings.HASHER_KY)))
+        JOIN hashes ON ((hashings.HASH_KY = hashes.HASH_KY)))
+    WHERE
+        (hashers.DECEASED = 0) AND
+        HASHES.HASH_KY <= ? AND
+        HASHES.KENNEL_KY = ? AND
+        HASHES.NEIGHBORHOOD = ?
+    GROUP BY hashers.HASHER_NAME
+    HAVING (
+          (THE_COUNT % 1) = 0
+      )
+        AND MAX_HASH_KY = ?
+    ORDER BY THE_COUNT DESC";
+
+    # Make a database call to obtain the hasher information
+    $analversaryList = $app['db']->fetchAll($sql, array((int) $hash_id,(int) $kennelKy, (string) $theHashEventNeighborhood, (int) $hash_id));
+
+    # Declare the SQL used to retrieve this information
+    #$sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+
+    # Make a database call to obtain the hasher information
+    #$theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
+
+    # Establish and set the return value
+    $hashNumber = $theHashValue['KENNEL_EVENT_NUMBER'];
+    $hashLocation = $theHashValue['EVENT_LOCATION'];
+    $pageTitle = "Hasher Counts for $theHashEventNeighborhood neighborhood";
+    $pageSubtitle = "Hasher Counts in $theHashEventNeighborhood neighborhood at the $hashNumber ($hashLocation) Hash";
+
+    # Establish the return value
+    $returnValue = $app['twig']->render('analversary_list.twig',array(
+      'pageTitle' => $pageTitle,
+      'pageSubTitle' => $pageSubtitle,
+      'theList' => $analversaryList,
+      'kennel_abbreviation' => $kennel_abbreviation
+    ));
+
+    # Return the return value
+    return $returnValue;
+  }
+
+  public function hasherCountsForEventCityAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
+
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+    # Declare the SQL used to retrieve this information
+    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+
+    # Make a database call to obtain the hasher information
+    $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
+
+    # Obtain information for this particular hash
+    $theHashEventCity = $theHashValue['EVENT_CITY'];
+
+    # Declare the SQL used to retrieve this information
+    $sql = "SELECT
+        hashers.HASHER_NAME AS HASHER_NAME,
+        (COUNT(*)) AS THE_COUNT,
+        MAX(HASHINGS.HASH_KY) AS MAX_HASH_KY
+    FROM
+        ((hashers
+        JOIN hashings ON ((hashers.HASHER_KY = hashings.HASHER_KY)))
+        JOIN hashes ON ((hashings.HASH_KY = hashes.HASH_KY)))
+    WHERE
+        (hashers.DECEASED = 0) AND
+        HASHES.HASH_KY <= ? AND
+        HASHES.KENNEL_KY = ? AND
+        HASHES.EVENT_CITY = ?
+    GROUP BY hashers.HASHER_NAME
+    HAVING (
+          (THE_COUNT % 1) = 0
+      )
+        AND MAX_HASH_KY = ?
+    ORDER BY THE_COUNT DESC";
+
+    # Make a database call to obtain the hasher information
+    $analversaryList = $app['db']->fetchAll($sql, array((int) $hash_id,(int) $kennelKy, (string) $theHashEventCity, (int) $hash_id));
+
+    # Declare the SQL used to retrieve this information
+    #$sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+
+    # Make a database call to obtain the hasher information
+    #$theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
+
+    # Establish and set the return value
+    $hashNumber = $theHashValue['KENNEL_EVENT_NUMBER'];
+    $hashLocation = $theHashValue['EVENT_LOCATION'];
+    $pageTitle = "Hasher Counts for $theHashEventCity city";
+    $pageSubtitle = "Hasher Counts in $theHashEventCity city at the $hashNumber ($hashLocation) Hash";
+
+    # Establish the return value
+    $returnValue = $app['twig']->render('analversary_list.twig',array(
+      'pageTitle' => $pageTitle,
+      'pageSubTitle' => $pageSubtitle,
+      'theList' => $analversaryList,
+      'kennel_abbreviation' => $kennel_abbreviation
+    ));
+
+    # Return the return value
+    return $returnValue;
+  }
 
 
     public function backSlidersForEventAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){

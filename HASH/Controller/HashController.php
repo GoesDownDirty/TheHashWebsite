@@ -606,6 +606,12 @@ class HashController
     # Obtain the hashes by quarter
     $theHashesByStateList = $app['db']->fetchAll(HASHER_HASH_COUNTS_BY_STATE, array((int) $hasher_id, (int) $kennelKy));
 
+    # Obtain the hashes by county
+    $theHashesByCountyList = $app['db']->fetchAll(HASHER_HASH_COUNTS_BY_COUNTY, array((int) $hasher_id, (int) $kennelKy));
+
+    # Obtain the hashes by postal code
+    $theHashesByPostalCodeList = $app['db']->fetchAll(HASHER_HASH_COUNTS_BY_POSTAL_CODE, array((int) $hasher_id, (int) $kennelKy));
+
     # Obtain the hashes by day name
     $theHashesByDayNameList = $app['db']->fetchAll(HASHER_HASH_COUNTS_BY_DAYNAME, array((int) $hasher_id, (int) $kennelKy));
 
@@ -660,6 +666,8 @@ class HashController
       'hashes_by_month_name_list' => $theHashesByMonthNameList,
       'hashes_by_quarter_list' => $theHashesByQuarterList,
       'hashes_by_state_list' => $theHashesByStateList,
+      'hashes_by_county_list' => $theHashesByCountyList,
+      'hashes_by_postal_code_list' => $theHashesByPostalCodeList,
       'hashes_by_day_name_list' => $theHashesByDayNameList,
       'city_hashings_count_list' => $cityHashingsCountList,
       'city_hashings_max_value' => $cityHashingsCountMax,

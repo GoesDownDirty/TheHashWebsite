@@ -415,6 +415,93 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
       </div>
 
+      <div class="row">
+        <div class="col-sm-6">
+          <canvas id="myChart55" width="50" height="50"></canvas>
+          <script>
+          var ctx = document.getElementById("myChart55");
+          var myChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: [
+                    {% for individualValue in hashes_by_county_list %}
+                      "{{individualValue.THE_VALUE}}",
+                    {% endfor %}
+                  ],
+                  datasets: [{
+                      label: '# of Hashes',
+                      data: [
+                        {% for individualValue in hashes_by_county_list %}
+                          {{individualValue.THE_COUNT}},
+                        {% endfor %}
+
+                      ],
+                      backgroundColor:'rgba(127, 15, 239, 0.2)',
+                      borderColor:'rgba(127, 15, 239, 1)',
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  },
+                  title: {
+                    display: true,
+                    text: 'Hashes By County'
+                  }
+              }
+          });
+          </script>
+        </div>
+
+        <div class="col-sm-6">
+          <canvas id="myChart56" width="50" height="50"></canvas>
+          <script>
+          var ctx = document.getElementById("myChart56");
+          var myChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: [
+                    {% for individualValue in hashes_by_postal_code_list %}
+                      "{{individualValue.THE_VALUE}}",
+                    {% endfor %}
+                  ],
+                  datasets: [{
+                      label: '# of Hashes',
+                      data: [
+                        {% for individualValue in hashes_by_postal_code_list %}
+                          {{individualValue.THE_COUNT}},
+                        {% endfor %}
+
+                      ],
+                      //fillColor:'rgba(75, 192, 192, 0.2)',
+                      backgroundColor:'rgba(132, 234, 183,.2)',
+                      borderColor:'rgba(132, 234, 183,1)',
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  },
+                  title: {
+                    display: true,
+                    text: 'Hashes By Postal Code'
+                  }
+              }
+          });
+          </script>
+        </div>
+      </div>
+
 
       <div class="row">
 

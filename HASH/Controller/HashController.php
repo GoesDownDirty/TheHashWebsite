@@ -181,6 +181,84 @@ class HashController
   }
 
   #Define the action
+  public function listStreakersByDateByHashAction(Request $request, Application $app, string $kennel_abbreviation, int $hash_id){
+
+    #Execute the SQL statement; create an array of rows
+    $theList = $app['db']->fetchAll(EVENTS_LAST_MISSED_FOR_EACH_HASHER,array((int) $hash_id));
+
+    # Declare the SQL used to retrieve this information
+    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+
+    # Make a database call to obtain the hasher information
+    $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
+
+    # Add a days difference field
+    /*
+    foreach($theList as &$theListEntry){
+      //$theHashEventLocation = $theHashValue['EVENT_LOCATION'];
+      $lastMissedDate = new DateTime($theListEntry['LAST_MISSED_DATE']);
+      $thisHashDate = new DateTime($theHashValue['EVENT_DATE']);
+      $app['monolog']->addDebug("lastMissedDate: $lastMissedDate");
+      $app['monolog']->addDebug("thisHashDate: $thisHashDate");
+      $tempDaysDiff = $lastMissedDate->diff($thisHashDate);
+
+      $tempDaysDiffFormated = $tempDaysDiff->days;
+      $app['monolog']->addDebug("tempDaysDiffFormated: $tempDaysDiffFormated");
+      $theListEntry['DAYS_DIFF'] = "hello";
+    }
+    */
+
+
+
+    # Establish and set the return value
+    $returnValue = $app['twig']->render('streaker_list_date_version.twig',array(
+      'pageTitle' => 'The Streakers!',
+      'pageSubTitle' => '...Last Hash Missed',
+      'theList' => $theList,
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'theHashValue' => $theHashValue,
+      'pageCaption' => "",
+      'tableCaption' => ""
+    ));
+
+    #Return the return value
+    return $returnValue;
+
+  }
+
+
+
+  public function listStreakersByCountsByHashAction(Request $request, Application $app, string $kennel_abbreviation, int $hash_id){
+
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+    #Execute the SQL statement; create an array of rows
+    $theList = $app['db']->fetchAll(EVENTS_MISSED_COUNT_FOR_EACH_HASHER,array((int) $hash_id,(int) $kennelKy,(int) $hash_id));
+
+    # Declare the SQL used to retrieve this information
+    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+
+    # Make a database call to obtain the hasher information
+    $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
+
+    # Establish and set the return value
+    $returnValue = $app['twig']->render('streaker_list_count_version.twig',array(
+      'pageTitle' => 'The Streakers!',
+      'pageSubTitle' => '...Last Hash Missed',
+      'theList' => $theList,
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'theHashValue' => $theHashValue,
+      'pageCaption' => "",
+      'tableCaption' => ""
+    ));
+
+    #Return the return value
+    return $returnValue;
+
+  }
+
+  #Define the action
   public function listHashersPreActionJson(Request $request, Application $app, string $kennel_abbreviation){
 
     # Establish and set the return value
@@ -466,6 +544,36 @@ class HashController
     $pageSubtitle = "The hashes $hasherName has done";
     $returnValue = $app['twig']->render('hash_list.twig',array(
       'pageTitle' => 'The List of Hashes',
+      'pageSubTitle' => $pageSubtitle,
+      'theList' => $hashList,
+      'tableCaption' => '',
+      'kennel_abbreviation' => $kennel_abbreviation
+    ));
+
+    #Return the return value
+    return $returnValue;
+
+  }
+
+  public function attendanceRecordForHasherAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
+
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+    #Execute the SQL statement; create an array of rows
+    $hashList = $app['db']->fetchAll(HASHER_ATTENDANCE_RECORD_LIST,array((int)$kennelKy,(int) $hasher_id, (int)$kennelKy));
+
+    # Declare the SQL used to retrieve this information
+    $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
+
+    # Make a database call to obtain the hasher information
+    $hasher = $app['db']->fetchAssoc($sql_for_hasher_lookup, array((int) $hasher_id));
+
+    # Establish and set the return value
+    $hasherName = $hasher['HASHER_NAME'];
+    $pageSubtitle = "The hashes attended by  $hasherName";
+    $returnValue = $app['twig']->render('hasher_attendance_list.twig',array(
+      'pageTitle' => 'Attendance Record',
       'pageSubTitle' => $pageSubtitle,
       'theList' => $hashList,
       'tableCaption' => '',

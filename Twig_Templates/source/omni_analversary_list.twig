@@ -5,128 +5,185 @@
 {% block content %}
     <h2>{{pageSubTitle}}</h2>
 
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-sm-12" style="background-color:#FFC300;">
       <h2>Hounds!</h2>
-      <dl class="dl-horizontal">
-        <h3> Hound Analversaries (Overall)</h3>
-        {% for item in theHoundListOverall %}
-            <dt>{{item.HASHER_NAME}}</dt>
-            <dd>{{item.THE_COUNT}}</dd>
-        {% endfor %}
-      </dl>
+    </div>
+  </div>
+
+      <div class="row">
+        <div class="col-sm-4" style="background-color:#F08080;">
+          <dl class="dl-horizontal">
+            <h3> Hound Analversaries (Overall)</h3>
+            {% for item in theHoundListOverall %}
+                <dt>{{item.HASHER_NAME}}</dt>
+                <dd>{{item.THE_COUNT}}</dd>
+            {% endfor %}
+          </dl>
+        </div>
+
+        <div class="col-sm-4" style="background-color:#FFA07A;">
+          <dl class="dl-horizontal">
+            <h3> Hound Analversaries (State: {{theState}})</h3>
+              {% for item in theHoundListState %}
+                <dt>{{item.HASHER_NAME}}</dt>
+                <dd>{{item.THE_COUNT}}</dd>
+              {% endfor %}
+          </dl>
+        </div>
+
+        <div class="col-sm-4" style="background-color:#F08080;">
+          <dl class="dl-horizontal">
+            <h3> Hound Analversaries (City: {{theCity}})</h3>
+            {% for item in theHoundListCity %}
+                <dt>{{item.HASHER_NAME}}</dt>
+                <dd>{{item.THE_COUNT}}</dd>
+            {% endfor %}
+          </dl>
+        </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-4" style="background-color:#FFA07A;">
+        <dl class="dl-horizontal">
+          <h3> Hound Analversaries (Neighborhood: {{theNeighborhood}})</h3>
+          {% for item in theHoundListNeighborhood %}
+              <dt>{{item.HASHER_NAME}}</dt>
+              <dd>{{item.THE_COUNT}}</dd>
+          {% endfor %}
+        </dl>
+      </div>
+
+      <div class="col-sm-4" style="background-color:#F08080;">
+        <dl class="dl-horizontal">
+          <h3> Hound Analversaries (County: {{theCounty}})</h3>
+          {% for item in theHoundListCounty %}
+              <dt>{{item.HASHER_NAME}}</dt>
+              <dd>{{item.THE_COUNT}}</dd>
+          {% endfor %}
+        </dl>
+      </div>
+
+      <div class="col-sm-4" style="background-color:#FFA07A;">
+            <dl class="dl-horizontal">
+              <h3> Hound Analversaries (Zip Code: {{theZip}})</h3>
+              {% for item in theHoundListZip %}
+                  <dt>{{item.HASHER_NAME}}</dt>
+                  <dd>{{item.THE_COUNT}}</dd>
+              {% endfor %}
+            </dl>
+      </div>
+    </div>
 
 
-      <dl class="dl-horizontal">
-        <h3> Hound Analversaries (State: {{theState}})</h3>
-        {% for item in theHoundListState %}
-            <dt>{{item.HASHER_NAME}}</dt>
-            <dd>{{item.THE_COUNT}}</dd>
-        {% endfor %}
-      </dl>
 
 
-      <dl class="dl-horizontal">
-        <h3> Hound Analversaries (City: {{theCity}})</h3>
-        {% for item in theHoundListCity %}
-            <dt>{{item.HASHER_NAME}}</dt>
-            <dd>{{item.THE_COUNT}}</dd>
-        {% endfor %}
-      </dl>
-
-      <dl class="dl-horizontal">
-        <h3> Hound Analversaries (Neighborhood: {{theNeighborhood}})</h3>
-        {% for item in theHoundListNeighborhood %}
-            <dt>{{item.HASHER_NAME}}</dt>
-            <dd>{{item.THE_COUNT}}</dd>
-        {% endfor %}
-      </dl>
-
-      <dl class="dl-horizontal">
-        <h3> Hound Analversaries (County: {{theCounty}})</h3>
-        {% for item in theHoundListCounty %}
-            <dt>{{item.HASHER_NAME}}</dt>
-            <dd>{{item.THE_COUNT}}</dd>
-        {% endfor %}
-      </dl>
-
-      <dl class="dl-horizontal">
-        <h3> Hound Analversaries (Zip Code: {{theZip}})</h3>
-        {% for item in theHoundListZip %}
-            <dt>{{item.HASHER_NAME}}</dt>
-            <dd>{{item.THE_COUNT}}</dd>
-        {% endfor %}
-      </dl>
+    <div class="row">
+      <div class="col-sm-4" style="background-color:#F08080;">
+        <dl class="dl-horizontal">
+          <h3> Hound Analversaries (Road: {{theRoad}})</h3>
+          {% for item in theHoundListRoad %}
+              <dt>{{item.HASHER_NAME}}</dt>
+              <dd>{{item.THE_COUNT}}</dd>
+          {% endfor %}
+        </dl>
+      </div>
+    </div>
 
 
-      <dl class="dl-horizontal">
-        <h3> Hound Analversaries (Road: {{theRoad}})</h3>
-        {% for item in theHoundListRoad %}
-            <dt>{{item.HASHER_NAME}}</dt>
-            <dd>{{item.THE_COUNT}}</dd>
-        {% endfor %}
-      </dl>
-
-      ---------------------------------------------------------
-      ---------------------------------------------------------
-      <h2>Hares!</h2>
-
-      <dl class="dl-horizontal">
-        <h3> Hare Analversaries (Overall)</h3>
-        {% for item in theHareListOverall %}
-            <dt>{{item.HASHER_NAME}}</dt>
-            <dd>{{item.THE_COUNT}}</dd>
-        {% endfor %}
-      </dl>
+    <div class="row">
+      <div class="col-sm-12" style="background-color:#FFC300;">
+        <h2>Hares!</h2>
+      </div>
+    </div>
 
 
-      <dl class="dl-horizontal">
-        <h3> Hare Analversaries (State: {{theState}})</h3>
-        {% for item in theHareListState %}
-            <dt>{{item.HASHER_NAME}}</dt>
-            <dd>{{item.THE_COUNT}}</dd>
-        {% endfor %}
-      </dl>
+    <div class="row">
+        <div class="col-sm-4" style="background-color:#D5F5E3;">
+          <dl class="dl-horizontal">
+            <h3> Hare Analversaries (Overall)</h3>
+            {% for item in theHareListOverall %}
+                <dt>{{item.HASHER_NAME}}</dt>
+                <dd>{{item.THE_COUNT}}</dd>
+            {% endfor %}
+          </dl>
+        </div>
+
+        <div class="col-sm-4" style="background-color:#A3E4D7;">
+          <dl class="dl-horizontal">
+            <h3> Hare Analversaries (State: {{theState}})</h3>
+            {% for item in theHareListState %}
+                <dt>{{item.HASHER_NAME}}</dt>
+                <dd>{{item.THE_COUNT}}</dd>
+            {% endfor %}
+          </dl>
+        </div>
+
+        <div class="col-sm-4" style="background-color:#D5F5E3;">
+          <dl class="dl-horizontal">
+            <h3> Hare Analversaries (City: {{theCity}})</h3>
+            {% for item in theHareListCity %}
+                <dt>{{item.HASHER_NAME}}</dt>
+                <dd>{{item.THE_COUNT}}</dd>
+            {% endfor %}
+          </dl>
+        </div>
+    </div>
 
 
-      <dl class="dl-horizontal">
-        <h3> Hare Analversaries (City: {{theCity}})</h3>
-        {% for item in theHareListCity %}
-            <dt>{{item.HASHER_NAME}}</dt>
-            <dd>{{item.THE_COUNT}}</dd>
-        {% endfor %}
-      </dl>
-
-      <dl class="dl-horizontal">
-        <h3> Hare Analversaries (Neighborhood: {{theNeighborhood}})</h3>
-        {% for item in theHareListNeighborhood %}
-            <dt>{{item.HASHER_NAME}}</dt>
-            <dd>{{item.THE_COUNT}}</dd>
-        {% endfor %}
-      </dl>
-
-      <dl class="dl-horizontal">
-        <h3> Hare Analversaries (County: {{theCounty}})</h3>
-        {% for item in theHareListCounty %}
-            <dt>{{item.HASHER_NAME}}</dt>
-            <dd>{{item.THE_COUNT}}</dd>
-        {% endfor %}
-      </dl>
-
-      <dl class="dl-horizontal">
-        <h3> Hare Analversaries (Zip Code: {{theZip}})</h3>
-        {% for item in theHareListZip %}
-            <dt>{{item.HASHER_NAME}}</dt>
-            <dd>{{item.THE_COUNT}}</dd>
-        {% endfor %}
-      </dl>
 
 
-      <dl class="dl-horizontal">
-        <h3> Hare Analversaries (Road: {{theRoad}})</h3>
-        {% for item in theHareListRoad %}
-            <dt>{{item.HASHER_NAME}}</dt>
-            <dd>{{item.THE_COUNT}}</dd>
-        {% endfor %}
-      </dl>
+
+    <div class="row">
+        <div class="col-sm-4" style="background-color:#A3E4D7;">
+          <dl class="dl-horizontal">
+            <h3> Hare Analversaries (Neighborhood: {{theNeighborhood}})</h3>
+            {% for item in theHareListNeighborhood %}
+                <dt>{{item.HASHER_NAME}}</dt>
+                <dd>{{item.THE_COUNT}}</dd>
+            {% endfor %}
+          </dl>
+        </div>
+
+
+        <div class="col-sm-4" style="background-color:#D5F5E3;">
+          <dl class="dl-horizontal">
+            <h3> Hare Analversaries (County: {{theCounty}})</h3>
+            {% for item in theHareListCounty %}
+                <dt>{{item.HASHER_NAME}}</dt>
+                <dd>{{item.THE_COUNT}}</dd>
+            {% endfor %}
+          </dl>
+        </div>
+
+          <div class="col-sm-4" style="background-color:#A3E4D7;">
+            <dl class="dl-horizontal">
+              <h3> Hare Analversaries (Zip Code: {{theZip}})</h3>
+              {% for item in theHareListZip %}
+                  <dt>{{item.HASHER_NAME}}</dt>
+                  <dd>{{item.THE_COUNT}}</dd>
+              {% endfor %}
+            </dl>
+          </div>
+      </div>
+
+
+      <div class="row">
+          <div class="col-sm-4" style="background-color:#D5F5E3;">
+            <dl class="dl-horizontal">
+              <h3> Hare Analversaries (Road: {{theRoad}})</h3>
+              {% for item in theHareListRoad %}
+                  <dt>{{item.HASHER_NAME}}</dt>
+                  <dd>{{item.THE_COUNT}}</dd>
+              {% endfor %}
+            </dl>
+          </div>
+      </div>
+
+    </div>
 
 
 

@@ -921,6 +921,217 @@ class HashController
     return $returnValue;
   }
 
+
+
+
+
+  public function omniAnalversariesForEventAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
+
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+    # Declare the SQL used to retrieve this information
+    $sql = "SELECT
+        hashers.HASHER_NAME AS HASHER_NAME,
+        (COUNT(*)) AS THE_COUNT,
+        MAX(HASHINGS.HASH_KY) AS MAX_HASH_KY
+    FROM
+        ((hashers
+        JOIN hashings ON ((hashers.HASHER_KY = hashings.HASHER_KY)))
+        JOIN hashes ON ((hashings.HASH_KY = hashes.HASH_KY)))
+    WHERE
+        (hashers.DECEASED = 0) AND
+        HASHES.HASH_KY <= ? AND
+        HASHES.KENNEL_KY = ?
+    GROUP BY hashers.HASHER_NAME
+    HAVING ((((THE_COUNT % 5) = 0)
+        OR ((THE_COUNT % 69) = 0)
+        OR ((THE_COUNT % 666) = 0)
+        OR (((THE_COUNT - 69) % 100) = 0)))
+        AND MAX_HASH_KY = ?
+    ORDER BY THE_COUNT DESC";
+
+    # Declare the SQL used to retrieve this information
+    $sqlForHareAnalversaries = "SELECT
+        hashers.HASHER_NAME AS HASHER_NAME,
+        (COUNT(*)) AS THE_COUNT,
+        MAX(HARINGS.HARINGS_HASH_KY) AS MAX_HASH_KY
+    FROM
+        ((hashers
+        JOIN harings ON ((hashers.HASHER_KY = harings.HARINGS_HASHER_KY)))
+        JOIN hashes ON ((harings.HARINGS_HASH_KY = hashes.HASH_KY)))
+    WHERE
+        (hashers.DECEASED = 0) AND
+        HASHES.HASH_KY <= ? AND
+        HASHES.KENNEL_KY = ?
+    GROUP BY hashers.HASHER_NAME
+    HAVING ((((THE_COUNT % 5) = 0)
+        OR ((THE_COUNT % 69) = 0)
+        OR ((THE_COUNT % 666) = 0)
+        OR (((THE_COUNT - 69) % 100) = 0)))
+        AND MAX_HASH_KY = ?
+    ORDER BY THE_COUNT DESC";
+
+    # Make a database call to obtain the hasher information
+    $analversaryListHounds = $app['db']->fetchAll($sql, array((int) $hash_id,(int) $kennelKy, (int) $hash_id));
+    $analversaryListHares = $app['db']->fetchAll($sqlForHareAnalversaries, array((int) $hash_id,(int) $kennelKy, (int) $hash_id));
+
+    # Declare the SQL used to retrieve this information
+    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+
+    # Make a database call to obtain the hasher information
+    $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
+
+    # Obtain information for this particular hash
+    $theHashEventState = $theHashValue['EVENT_STATE'];
+    if(strlen($theHashEventState)==0){
+      $theHashEventState = "UNKNOWN";
+    }
+
+    $theHashEventCity = $theHashValue['EVENT_CITY'];
+    if(strlen($theHashEventCity)==0){
+      $theHashEventCity = "UNKNOWN";
+    }
+
+    $theHashEventNeighborhood = $theHashValue['NEIGHBORHOOD'];
+    if(strlen($theHashEventNeighborhood)==0){
+      $theHashEventNeighborhood = "UNKNOWN";
+    }
+
+    $theHashEventCounty = $theHashValue['COUNTY'];
+    if(strlen($theHashEventCounty)==0){
+      $theHashEventCounty = "UNKNOWN";
+    }
+
+    $theHashEventZip = $theHashValue['POSTAL_CODE'];
+    if(strlen($theHashEventZip)==0){
+      $theHashEventZip = "UNKNOWN";
+    }
+
+    $theHashEventRoute = $theHashValue['ROUTE'];
+    if(strlen($theHashEventRoute)==0){
+      $theHashEventRoute = "UNKNOWN";
+    }
+
+    # Declare the SQL used to retrieve this information
+    $sqlHoundAnalversaryTemplate = "SELECT
+        hashers.HASHER_NAME AS HASHER_NAME,
+        (COUNT(*)) AS THE_COUNT,
+        MAX(HASHINGS.HASH_KY) AS MAX_HASH_KY
+    FROM
+        ((hashers
+        JOIN hashings ON ((hashers.HASHER_KY = hashings.HASHER_KY)))
+        JOIN hashes ON ((hashings.HASH_KY = hashes.HASH_KY)))
+    WHERE
+        (hashers.DECEASED = 0) AND
+        HASHES.HASH_KY <= ? AND
+        HASHES.KENNEL_KY = ? AND
+        HASHES.XXX = ?
+    GROUP BY hashers.HASHER_NAME
+    HAVING ((((THE_COUNT % 5) = 0)
+        OR ((THE_COUNT % 69) = 0)
+        OR ((THE_COUNT % 666) = 0)
+        OR (((THE_COUNT - 69) % 100) = 0)))
+        AND MAX_HASH_KY = ?
+    ORDER BY THE_COUNT DESC";
+
+    # Declare the SQL used to retrieve this information
+    $sqlHareAnalversaryTemplate = "SELECT
+        hashers.HASHER_NAME AS HASHER_NAME,
+        (COUNT(*)) AS THE_COUNT,
+        MAX(HARINGS.HARINGS_HASH_KY) AS MAX_HASH_KY
+    FROM
+        ((hashers
+        JOIN harings ON ((hashers.HASHER_KY = harings.HARINGS_HASHER_KY)))
+        JOIN hashes ON ((harings.HARINGS_HASH_KY = hashes.HASH_KY)))
+    WHERE
+        (hashers.DECEASED = 0) AND
+        HASHES.HASH_KY <= ? AND
+        HASHES.KENNEL_KY = ? AND
+        HASHES.XXX = ?
+    GROUP BY hashers.HASHER_NAME
+    HAVING ((((THE_COUNT % 5) = 0)
+        OR ((THE_COUNT % 69) = 0)
+        OR ((THE_COUNT % 666) = 0)
+        OR (((THE_COUNT - 69) % 100) = 0)))
+        AND MAX_HASH_KY = ?
+    ORDER BY THE_COUNT DESC";
+
+    # Derive the various SQL statements
+    $theSqlHoundState = str_replace("XXX","EVENT_STATE",$sqlHoundAnalversaryTemplate);
+    $theSqlHoundCity = str_replace("XXX","EVENT_CITY",$sqlHoundAnalversaryTemplate);
+    $theSqlHoundNeighborhood = str_replace("XXX","NEIGHBORHOOD",$sqlHoundAnalversaryTemplate);
+    $theSqlHoundCounty = str_replace("XXX","COUNTY",$sqlHoundAnalversaryTemplate);
+    $theSqlHoundZip = str_replace("XXX","POSTAL_CODE",$sqlHoundAnalversaryTemplate);
+    $theSqlHoundRoad = str_replace("XXX","ROUTE",$sqlHoundAnalversaryTemplate);
+
+    $theSqlHareState = str_replace("XXX","EVENT_STATE",$sqlHareAnalversaryTemplate);
+    $theSqlHareCity = str_replace("XXX","EVENT_CITY",$sqlHareAnalversaryTemplate);
+    $theSqlHareNeighborhood = str_replace("XXX","NEIGHBORHOOD",$sqlHareAnalversaryTemplate);
+    $theSqlHareCounty = str_replace("XXX","COUNTY",$sqlHareAnalversaryTemplate);
+    $theSqlHareZip = str_replace("XXX","POSTAL_CODE",$sqlHareAnalversaryTemplate);
+    $theSqlHareRoad = str_replace("XXX","ROUTE",$sqlHareAnalversaryTemplate);
+
+    # Query the datbase a bunch of times
+    $theHoundStateList = $app['db']->fetchAll($theSqlHoundState, array((int) $hash_id,(int) $kennelKy, (string) $theHashEventState ,(int) $hash_id));
+    $theHoundCityList = $app['db']->fetchAll($theSqlHoundCity, array((int) $hash_id,(int) $kennelKy, (string) $theHashEventCity ,(int) $hash_id));
+    $theHoundNeighborhoodList = $app['db']->fetchAll($theSqlHoundNeighborhood, array((int) $hash_id,(int) $kennelKy, (string) $theHashEventNeighborhood ,(int) $hash_id));
+    $theHoundCountyList = $app['db']->fetchAll($theSqlHoundCounty, array((int) $hash_id,(int) $kennelKy,(string) $theHashEventCounty , (int) $hash_id));
+    $theHoundZipList = $app['db']->fetchAll($theSqlHoundZip, array((int) $hash_id,(int) $kennelKy, (string) $theHashEventZip ,(int) $hash_id));
+    $theHoundRoadList = $app['db']->fetchAll($theSqlHoundRoad, array((int) $hash_id,(int) $kennelKy,(string) $theHashEventRoute , (int) $hash_id));
+
+    $theHareStateList = $app['db']->fetchAll($theSqlHareState, array((int) $hash_id,(int) $kennelKy, (string) $theHashEventState ,(int) $hash_id));
+    $theHareCityList = $app['db']->fetchAll($theSqlHareCity, array((int) $hash_id,(int) $kennelKy, (string) $theHashEventCity ,(int) $hash_id));
+    $theHareNeighborhoodList = $app['db']->fetchAll($theSqlHareNeighborhood, array((int) $hash_id,(int) $kennelKy, (string) $theHashEventNeighborhood ,(int) $hash_id));
+    $theHareCountyList = $app['db']->fetchAll($theSqlHareCounty, array((int) $hash_id,(int) $kennelKy,(string) $theHashEventCounty , (int) $hash_id));
+    $theHareZipList = $app['db']->fetchAll($theSqlHareZip, array((int) $hash_id,(int) $kennelKy, (string) $theHashEventZip ,(int) $hash_id));
+    $theHareRoadList = $app['db']->fetchAll($theSqlHareRoad, array((int) $hash_id,(int) $kennelKy,(string) $theHashEventRoute , (int) $hash_id));
+
+    # Establish and set the return value
+    $hashNumber = $theHashValue['KENNEL_EVENT_NUMBER'];
+    $hashLocation = $theHashValue['EVENT_LOCATION'];
+    $pageSubtitle = "All Analversaries at the $hashNumber ($hashLocation) Hash";
+
+    # Establish the return value
+    $returnValue = $app['twig']->render('omni_analversary_list.twig',array(
+      'pageTitle' => 'All Analversaries for this Hash',
+      'pageSubTitle' => $pageSubtitle,
+      'theHoundListOverall' => $analversaryListHounds,
+      'theHoundListState' => $theHoundStateList,
+      'theHoundListCity' => $theHoundCityList,
+      'theHoundListNeighborhood' => $theHoundNeighborhoodList,
+      'theHoundListCounty' => $theHoundCountyList,
+      'theHoundListZip' => $theHoundZipList,
+      'theHoundListRoad' => $theHoundRoadList,
+
+
+
+      'theHareListOverall' => $analversaryListHares,
+      'theHareListState' => $theHareStateList,
+      'theHareListCity' => $theHareCityList,
+      'theHareListNeighborhood' => $theHareNeighborhoodList,
+      'theHareListCounty' => $theHareCountyList,
+      'theHareListZip' => $theHareZipList,
+      'theHareListRoad' => $theHareRoadList,
+
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'theState' => $theHashEventState,
+      'theCity' => $theHashEventCity,
+      'theNeighborhood' => $theHashEventNeighborhood,
+      'theCounty' => $theHashEventCounty,
+      'theZip' => $theHashEventZip,
+      'theRoad' => $theHashEventRoute
+    ));
+
+    # Return the return value
+    return $returnValue;
+  }
+
+
+
+
+
+
   public function hasherCountsForEventAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
 
     #Obtain the kennel key

@@ -977,7 +977,7 @@ class HashController
     $analversaryListHares = $app['db']->fetchAll($sqlForHareAnalversaries, array((int) $hash_id,(int) $kennelKy, (int) $hash_id));
 
     # Declare the SQL used to retrieve this information
-    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+    $sql_for_hash_event = "SELECT *, YEAR(EVENT_DATE) AS THE_YEAR, MONTHNAME(EVENT_DATE) AS THE_MONTH, DAYNAME(EVENT_DATE) AS THE_DAY FROM HASHES WHERE HASH_KY = ?";
 
     # Make a database call to obtain the hasher information
     $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
@@ -986,6 +986,21 @@ class HashController
     $theHashEventState = $theHashValue['EVENT_STATE'];
     if(strlen($theHashEventState)==0){
       $theHashEventState = "UNKNOWN";
+    }
+
+    $theHashYear = $theHashValue['THE_YEAR'];
+    if(strlen($theHashYear)==0){
+      $theHashYear = "UNKNOWN";
+    }
+
+    $theHashMonth = $theHashValue['THE_MONTH'];
+    if(strlen($theHashMonth)==0){
+      $theHashMonth = "UNKNOWN";
+    }
+
+    $theHashDay = $theHashValue['THE_DAY'];
+    if(strlen($theHashDay)==0){
+      $theHashDay = "UNKNOWN";
     }
 
     $theHashEventCity = $theHashValue['EVENT_CITY'];
@@ -1035,6 +1050,27 @@ class HashController
         AND MAX_HASH_KY = ?
     ORDER BY THE_COUNT DESC";
 
+    $sqlHoundAnalversaryTemplateDateBased = "SELECT
+        hashers.HASHER_NAME AS HASHER_NAME,
+        (COUNT(*)) AS THE_COUNT,
+        MAX(HASHINGS.HASH_KY) AS MAX_HASH_KY
+    FROM
+        ((hashers
+        JOIN hashings ON ((hashers.HASHER_KY = hashings.HASHER_KY)))
+        JOIN hashes ON ((hashings.HASH_KY = hashes.HASH_KY)))
+    WHERE
+        (hashers.DECEASED = 0) AND
+        HASHES.HASH_KY <= ? AND
+        HASHES.KENNEL_KY = ? AND
+        XXX(HASHES.EVENT_DATE) = ?
+    GROUP BY hashers.HASHER_NAME
+    HAVING ((((THE_COUNT % 5) = 0)
+        OR ((THE_COUNT % 69) = 0)
+        OR ((THE_COUNT % 666) = 0)
+        OR (((THE_COUNT - 69) % 100) = 0)))
+        AND MAX_HASH_KY = ?
+    ORDER BY THE_COUNT DESC";
+
     # Declare the SQL used to retrieve this information
     $sqlHareAnalversaryTemplate = "SELECT
         hashers.HASHER_NAME AS HASHER_NAME,
@@ -1057,6 +1093,27 @@ class HashController
         AND MAX_HASH_KY = ?
     ORDER BY THE_COUNT DESC";
 
+    $sqlHareAnalversaryTemplateDateBased = "SELECT
+        hashers.HASHER_NAME AS HASHER_NAME,
+        (COUNT(*)) AS THE_COUNT,
+        MAX(HARINGS.HARINGS_HASH_KY) AS MAX_HASH_KY
+    FROM
+        ((hashers
+        JOIN harings ON ((hashers.HASHER_KY = harings.HARINGS_HASHER_KY)))
+        JOIN hashes ON ((harings.HARINGS_HASH_KY = hashes.HASH_KY)))
+    WHERE
+        (hashers.DECEASED = 0) AND
+        HASHES.HASH_KY <= ? AND
+        HASHES.KENNEL_KY = ? AND
+        XXX(HASHES.EVENT_DATE) = ?
+    GROUP BY hashers.HASHER_NAME
+    HAVING ((((THE_COUNT % 5) = 0)
+        OR ((THE_COUNT % 69) = 0)
+        OR ((THE_COUNT % 666) = 0)
+        OR (((THE_COUNT - 69) % 100) = 0)))
+        AND MAX_HASH_KY = ?
+    ORDER BY THE_COUNT DESC";
+
     # Derive the various SQL statements
     $theSqlHoundState = str_replace("XXX","EVENT_STATE",$sqlHoundAnalversaryTemplate);
     $theSqlHoundCity = str_replace("XXX","EVENT_CITY",$sqlHoundAnalversaryTemplate);
@@ -1064,6 +1121,9 @@ class HashController
     $theSqlHoundCounty = str_replace("XXX","COUNTY",$sqlHoundAnalversaryTemplate);
     $theSqlHoundZip = str_replace("XXX","POSTAL_CODE",$sqlHoundAnalversaryTemplate);
     $theSqlHoundRoad = str_replace("XXX","ROUTE",$sqlHoundAnalversaryTemplate);
+    $theSqlHoundYear = str_replace("XXX","YEAR",$sqlHoundAnalversaryTemplateDateBased);
+    $theSqlHoundMonth = str_replace("XXX","MONTHNAME",$sqlHoundAnalversaryTemplateDateBased);
+    $theSqlHoundDayName = str_replace("XXX","DAYNAME",$sqlHoundAnalversaryTemplateDateBased);
 
     $theSqlHareState = str_replace("XXX","EVENT_STATE",$sqlHareAnalversaryTemplate);
     $theSqlHareCity = str_replace("XXX","EVENT_CITY",$sqlHareAnalversaryTemplate);
@@ -1071,6 +1131,9 @@ class HashController
     $theSqlHareCounty = str_replace("XXX","COUNTY",$sqlHareAnalversaryTemplate);
     $theSqlHareZip = str_replace("XXX","POSTAL_CODE",$sqlHareAnalversaryTemplate);
     $theSqlHareRoad = str_replace("XXX","ROUTE",$sqlHareAnalversaryTemplate);
+    $theSqlHareYear = str_replace("XXX","YEAR",$sqlHareAnalversaryTemplateDateBased);
+    $theSqlHareMonth = str_replace("XXX","MONTHNAME",$sqlHareAnalversaryTemplateDateBased);
+    $theSqlHareDayName = str_replace("XXX","DAYNAME",$sqlHareAnalversaryTemplateDateBased);
 
     # Query the datbase a bunch of times
     $theHoundStateList = $app['db']->fetchAll($theSqlHoundState, array((int) $hash_id,(int) $kennelKy, (string) $theHashEventState ,(int) $hash_id));
@@ -1079,6 +1142,9 @@ class HashController
     $theHoundCountyList = $app['db']->fetchAll($theSqlHoundCounty, array((int) $hash_id,(int) $kennelKy,(string) $theHashEventCounty , (int) $hash_id));
     $theHoundZipList = $app['db']->fetchAll($theSqlHoundZip, array((int) $hash_id,(int) $kennelKy, (string) $theHashEventZip ,(int) $hash_id));
     $theHoundRoadList = $app['db']->fetchAll($theSqlHoundRoad, array((int) $hash_id,(int) $kennelKy,(string) $theHashEventRoute , (int) $hash_id));
+    $theHoundYearList = $app['db']->fetchAll($theSqlHoundYear, array((int) $hash_id,(int) $kennelKy,(string) $theHashYear , (int) $hash_id));
+    $theHoundMonthList = $app['db']->fetchAll($theSqlHoundMonth, array((int) $hash_id,(int) $kennelKy,(string) $theHashMonth , (int) $hash_id));
+    $theHoundDayNameList = $app['db']->fetchAll($theSqlHoundDayName, array((int) $hash_id,(int) $kennelKy,(string) $theHashDay , (int) $hash_id));
 
     $theHareStateList = $app['db']->fetchAll($theSqlHareState, array((int) $hash_id,(int) $kennelKy, (string) $theHashEventState ,(int) $hash_id));
     $theHareCityList = $app['db']->fetchAll($theSqlHareCity, array((int) $hash_id,(int) $kennelKy, (string) $theHashEventCity ,(int) $hash_id));
@@ -1086,6 +1152,9 @@ class HashController
     $theHareCountyList = $app['db']->fetchAll($theSqlHareCounty, array((int) $hash_id,(int) $kennelKy,(string) $theHashEventCounty , (int) $hash_id));
     $theHareZipList = $app['db']->fetchAll($theSqlHareZip, array((int) $hash_id,(int) $kennelKy, (string) $theHashEventZip ,(int) $hash_id));
     $theHareRoadList = $app['db']->fetchAll($theSqlHareRoad, array((int) $hash_id,(int) $kennelKy,(string) $theHashEventRoute , (int) $hash_id));
+    $theHareYearList = $app['db']->fetchAll($theSqlHareYear, array((int) $hash_id,(int) $kennelKy,(string) $theHashYear , (int) $hash_id));
+    $theHareMonthList = $app['db']->fetchAll($theSqlHareMonth, array((int) $hash_id,(int) $kennelKy,(string) $theHashMonth , (int) $hash_id));
+    $theHareDayNameList = $app['db']->fetchAll($theSqlHareDayName, array((int) $hash_id,(int) $kennelKy,(string) $theHashDay , (int) $hash_id));
 
     # Establish and set the return value
     $hashNumber = $theHashValue['KENNEL_EVENT_NUMBER'];
@@ -1103,8 +1172,9 @@ class HashController
       'theHoundListCounty' => $theHoundCountyList,
       'theHoundListZip' => $theHoundZipList,
       'theHoundListRoad' => $theHoundRoadList,
-
-
+      'theHoundListYear' => $theHoundYearList,
+      'theHoundListMonth' => $theHoundMonthList,
+      'theHoundListDay' => $theHoundDayNameList,
 
       'theHareListOverall' => $analversaryListHares,
       'theHareListState' => $theHareStateList,
@@ -1113,6 +1183,9 @@ class HashController
       'theHareListCounty' => $theHareCountyList,
       'theHareListZip' => $theHareZipList,
       'theHareListRoad' => $theHareRoadList,
+      'theHareListYear' => $theHareYearList,
+      'theHareListMonth' => $theHareMonthList,
+      'theHareListDay' => $theHareDayNameList,
 
       'kennel_abbreviation' => $kennel_abbreviation,
       'theState' => $theHashEventState,
@@ -1120,7 +1193,10 @@ class HashController
       'theNeighborhood' => $theHashEventNeighborhood,
       'theCounty' => $theHashEventCounty,
       'theZip' => $theHashEventZip,
-      'theRoad' => $theHashEventRoute
+      'theRoad' => $theHashEventRoute,
+      'theYear' => $theHashYear,
+      'theMonth' => $theHashMonth,
+      'theDay' => $theHashDay
     ));
 
     # Return the return value

@@ -91,6 +91,38 @@
           {% endfor %}
         </dl>
       </div>
+
+      <div class="col-sm-4" style="background-color:#FFA07A;">
+        <dl class="dl-horizontal">
+          <h3> Hound Analversaries (Year: {{theYear}})</h3>
+          {% for item in theHoundListYear %}
+              <dt>{{item.HASHER_NAME}}</dt>
+              <dd>{{item.THE_COUNT}}</dd>
+          {% endfor %}
+        </dl>
+      </div>
+
+      <div class="col-sm-4" style="background-color:#F08080;">
+        <dl class="dl-horizontal">
+          <h3> Hound Analversaries (Month: {{theMonth}})</h3>
+          {% for item in theHoundListMonth %}
+              <dt>{{item.HASHER_NAME}}</dt>
+              <dd>{{item.THE_COUNT}}</dd>
+          {% endfor %}
+        </dl>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-4" style="background-color:#FFA07A;">
+        <dl class="dl-horizontal">
+          <h3> Hound Analversaries (Day: {{theDay}})</h3>
+          {% for item in theHoundListDay %}
+              <dt>{{item.HASHER_NAME}}</dt>
+              <dd>{{item.THE_COUNT}}</dd>
+          {% endfor %}
+        </dl>
+      </div>
     </div>
 
 
@@ -176,6 +208,38 @@
             <dl class="dl-horizontal">
               <h3> Hare Analversaries (Road: {{theRoad}})</h3>
               {% for item in theHareListRoad %}
+                  <dt>{{item.HASHER_NAME}}</dt>
+                  <dd>{{item.THE_COUNT}}</dd>
+              {% endfor %}
+            </dl>
+          </div>
+
+          <div class="col-sm-4" style="background-color:#A3E4D7;">
+            <dl class="dl-horizontal">
+              <h3> Hare Analversaries (Year: {{theYear}})</h3>
+              {% for item in theHareListYear %}
+                  <dt>{{item.HASHER_NAME}}</dt>
+                  <dd>{{item.THE_COUNT}}</dd>
+              {% endfor %}
+            </dl>
+          </div>
+
+          <div class="col-sm-4" style="background-color:#D5F5E3;">
+            <dl class="dl-horizontal">
+              <h3> Hare Analversaries (Month: {{theMonth}})</h3>
+              {% for item in theHareListMonth %}
+                  <dt>{{item.HASHER_NAME}}</dt>
+                  <dd>{{item.THE_COUNT}}</dd>
+              {% endfor %}
+            </dl>
+          </div>
+      </div>
+
+      <div class="row">
+          <div class="col-sm-4" style="background-color:#A3E4D7;">
+            <dl class="dl-horizontal">
+              <h3> Hare Analversaries (Day: {{theDay}})</h3>
+              {% for item in theHareListDay %}
                   <dt>{{item.HASHER_NAME}}</dt>
                   <dd>{{item.THE_COUNT}}</dd>
               {% endfor %}

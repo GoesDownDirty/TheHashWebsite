@@ -103,6 +103,7 @@ $kennelAssertion = "^(".VALID_KENNEL_ABBREVIATIONS.")$";
 $app['controllers']
   ->assert("hash_id", "\d+")
   ->assert("hasher_id", "\d+")
+  ->assert("hasher_id2", "\d+")
   ->assert("hare_id", "\d+")
   ->assert("year_value", "\d+")
   ->assert("kennel_id","\d+")
@@ -496,6 +497,11 @@ $app->get('/{kennel_abbreviation}/lowest/attendedHashes','HASH\Controller\HashCo
 $app->get('/{kennel_abbreviation}/hashers/of/the/years','HASH\Controller\HashController::hashersOfTheYearsAction');
 $app->get('/{kennel_abbreviation}/hares/overall/of/the/years','HASH\Controller\HashController::overallHaresOfTheYearsAction');
 $app->get('/{kennel_abbreviation}/hares/nonhyper/of/the/years','HASH\Controller\HashController::nonHyperHaresOfTheYearsAction');
+
+#Establish the mortal kombat head to head matchup functionality
+$app->get('/{kennel_abbreviation}/hashers/twoHasherComparison',            'HASH\Controller\HashController::twoPersonComparisonPreAction');
+$app->get('/{kennel_abbreviation}/hashers/comparison/{hasher_id}/{hasher_id2}/',     'HASH\Controller\HashController::twoPersonComparisonAction');
+$app->post('/{kennel_abbreviation}/hashers/retrieve',                         'HASH\Controller\HashPersonController::retrieveHasherAction');
 
 # Set the before/after actions
 $app->before(function (Request $request, Application $app) {

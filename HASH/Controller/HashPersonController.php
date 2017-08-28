@@ -215,4 +215,41 @@ class HashPersonController
 
   }
 
+
+    public function retrieveHasherAction (Request $request, Application $app){
+
+      #Establish the return message
+      $returnMessage = "This has not been set yet...";
+
+      #Obtain the post values
+      $hasherKey = $request->request->get('hasher_key');
+
+
+      #Validate the post values; ensure that they are both numbers
+      if(ctype_digit($hasherKey)){
+
+        #Determine the hasher identity
+        $hasherIdentitySql = "SELECT * FROM HASHERS WHERE HASHERS.HASHER_KY = ? ;";
+
+        # Make a database call to obtain the hasher information
+        $hasherValue = $app['db']->fetchAssoc($hasherIdentitySql, array((int) $hasherKey));
+
+        #Obtain the hasher name from the object
+        $tempHasherName = $hasherValue['HASHER_NAME'];
+
+        #Establish the return value
+        $returnMessage = $tempHasherName;
+
+
+      } else{
+        $returnMessage = "Something is wrong with the input.$hasherKey";
+      }
+
+      #Set the return value
+      $returnValue =  $app->json($returnMessage, 200);
+      return $returnValue;
+    }
+
+
+
 }

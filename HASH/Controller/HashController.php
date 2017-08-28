@@ -4046,6 +4046,7 @@ public function twoPersonComparisonPreAction(Request $request, Application $app,
     'playerTwoDefault' => 'Selection Required',
     'pageSubTitle' => 'Select Your Contestants',
     'pageHeader' => 'Why is this so complicated ?',
+    'instructions' => 'You need to select two hashers to compare. Start typing in the search box to find your favorite hasher. When their name shows up, click the "select player one" link next to their name. Repeat the process of typing in the search box and then click the "select player two" link. Then, when both hashers have been selected, click on the the giant "submit" button. Enjoy!',
     'kennel_abbreviation' => $kennel_abbreviation
   ));
 

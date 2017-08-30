@@ -4272,7 +4272,7 @@ public function twoPersonComparisonAction(Request $request, Application $app, st
 
 
   #Establish the return value
-  $returnValue = $app['twig']->render('hasher_comparison_results.twig', array (
+  $returnValue = $app['twig']->render('hasher_comparison_fluid_results.twig', array (
     'pageTitle' => $pageTitle,
     'pageSubTitle' => $pageSubtitle,
     'pageHeader' => 'Why is this so complicated ?',

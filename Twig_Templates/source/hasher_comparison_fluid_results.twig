@@ -11,9 +11,9 @@
     {% set tying = "#fcf3cf" %}
 
     <div class="row">
-      <div class="col-xs-12 col-md-4" style="background-color:#d3d3d3;"></div>
-      <div class="col-xs-6 col-md-4" style="background-color:#d3d3d3;">{{hasherName1}}</div>
-      <div class="col-xs-6 col-md-4" style="background-color:#d3d3d3;">{{hasherName2}}</div>
+      <div class="col-xs-12 col-md-4 hidden-xs" style="background-color:#d3d3d3;"></div>
+      <div class="col-xs-6 col-md-4 hidden-xs" style="background-color:#d3d3d3;">{{hasherName1}}</div>
+      <div class="col-xs-6 col-md-4 hidden-xs" style="background-color:#d3d3d3;">{{hasherName2}}</div>
     </div>
 
     {% for item in tempList %}
@@ -21,17 +21,27 @@
       {% if item.verdict == 'hasher1'%}
         {% set t1bgcolor = winning %}
         {% set t2bgcolor = losing %}
+        {% set winnerText = hasherName1 %}
       {% elseif  item.verdict == 'hasher2' %}
         {% set t1bgcolor = losing %}
         {% set t2bgcolor = winning %}
+        {% set winnerText = hasherName2 %}
       {% else %}
         {% set t1bgcolor = tying %}
         {% set t2bgcolor = tying %}
+        {% set winnerText = "No one " %}
       {% endif %}
 
       <div class="row">
-        <div class="col-xs-12 col-md-4" style="background-color:#d3d3d3;">{{item.statName}}</div>
-        <div class="col-xs-6 col-md-4" style="background-color:{{t1bgcolor}};">
+        <div class="col-xs-12 col-md-4" style="background-color:#d3d3d3;">
+          {{item.statName}}
+        </div>
+
+        <div class="col-xs-8 visible-xs" style="background-color:{{t1bgcolor}};">
+          {{hasherName1}}
+        </div>
+
+        <div class="col-xs-4 col-md-4" style="background-color:{{t1bgcolor}};">
           {% if item.dataType == "float" %}
             {{(item.val1 * 100) | number_format(0,'.',',')}} %
           {% elseif item.dataType == "int" %}
@@ -44,7 +54,11 @@
             {% endif %}
           {% endif %}
         </div>
-        <div class="col-xs-6 col-md-4" style="background-color:{{t2bgcolor}};">
+
+        <div class="col-xs-8 visible-xs" style="background-color:{{t2bgcolor}};">
+          {{hasherName2}}
+        </div>
+        <div class="col-xs-4 col-md-4" style="background-color:{{t2bgcolor}};">
           {% if item.dataType == "float" %}
             {{(item.val2 * 100) | number_format(0,'.',',')}} %
           {% elseif item.dataType == "int" %}
@@ -57,6 +71,20 @@
             {% endif %}
           {% endif %}
          </div>
+
+         <div class="col-xs-8 visible-xs " style="background-color:{{winning}};">
+            {{winnerText}}
+         </div>
+
+         <div class="col-xs-4 visible-xs" style="background-color:{{winning}};">
+            wins!
+         </div>
+
+         <div class="col-xs-12 visible-xs">
+            </br>
+         </div>
+
+
       </div>
 
     {% endfor %}

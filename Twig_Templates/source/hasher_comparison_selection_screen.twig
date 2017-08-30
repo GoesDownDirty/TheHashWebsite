@@ -115,7 +115,7 @@ $(document).ready(function() {
       {
         "data": "THE_KEY",
         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-          $(nTd).html("<a href='javascript:selectPlayerOne("+oData.THE_KEY+")'>Select Player One </a>|<a href='javascript:selectPlayerTwo("+oData.THE_KEY+")'>Select Player Two </a>| " + oData.NAME + " | " + oData.HASHER_ABBREVIATION);
+          $(nTd).html("<a href='javascript:selectPlayerOne("+oData.THE_KEY+")'> + Player One </a>|<a href='javascript:selectPlayerTwo("+oData.THE_KEY+")'> + Player Two </a>| " + oData.NAME + " | " + oData.HASHER_ABBREVIATION);
         }
      }
     ]

@@ -409,6 +409,9 @@ $app->get('/admin/hasherDetailsKennelSelection/{hasher_id}',        'HASH\Contro
 
 $app->get('/admin/d3test','HASH\Controller\AdminController::d3testAction');
 
+#The per event budget screen
+$app->get('/admin/eventBudget/{hash_id}','HASH\Controller\AdminController::eventBudgetPreAction');
+
 # Functions for the "by year" statistics
 $app->get('/{kennel_abbreviation}/statistics/getYearInReview/{year_value}',               'HASH\Controller\ObscureStatisticsController::getYearInReviewAction');
 $app->post('/{kennel_abbreviation}/statistics/getHasherCountsByYear',                     'HASH\Controller\ObscureStatisticsController::getHasherCountsByYear');

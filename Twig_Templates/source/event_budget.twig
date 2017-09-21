@@ -1,0 +1,416 @@
+{% extends "admin_base.twig" %}
+
+{% block template %}
+
+<script>
+
+  function formatAmount(input){
+    var returnValue = (new Intl.NumberFormat('en-US', {style: 'currency',currency: 'USD'}).format(input));
+    return returnValue;
+  }
+
+  function formatDecimalNumber(input){
+    var returnValue = parseFloat(Math.round(input * 100) / 100).toFixed(2);
+    return returnValue;
+  }
+
+  function grabValue(divName){
+    var returnValue = +$(divName).text();
+    return returnValue;
+  }
+
+  function setValue(divName, newValue){
+    document.getElementById(divName).innerHTML = newValue;
+  }
+
+  function grabFormValue(idName){
+    var returnValue = +document.getElementById(idName).value;
+    return returnValue;
+  }
+
+  function setFormValue(idName, newValue){
+    document.getElementById(idName).value = newValue;
+  }
+
+
+  function updateAssets(){
+
+    //Update the hare expenses
+    var hareCost = grabFormValue("overrideHareCost")
+    var hareCount = grabValue("#actualHareCount");
+    var calculatedHareCostTotal = hareCost * hareCount;
+    setValue("actualHareCostTotal",formatAmount(calculatedHareCostTotal));
+
+    //Update the hound expenses
+    var houndCost = grabFormValue("overrideHoundCost")
+    var houndCount = grabValue("#actualHoundCount");
+    var calculatedHoundCostTotal = houndCost * houndCount;
+    setValue("actualHoundCostTotal",formatAmount(calculatedHoundCostTotal));
+
+    //Update the virgin expenses
+    var virginCost = grabFormValue("overrideVirginCost")
+    var virginCount = grabValue("#actualVirginCount");
+    var calculatedVirginCostTotal = virginCost * virginCount;
+    setValue("actualVirginCostTotal",formatAmount(calculatedVirginCostTotal));
+
+    //Set the expected and (default) actual cash collected
+    var expectedAssets = calculatedHareCostTotal + calculatedHoundCostTotal + calculatedVirginCostTotal
+    setValue("expectedAssets",formatAmount(expectedAssets));
+    setValue("actualCashCollected",formatAmount(expectedAssets));
+    // Set the over ride cash collected form value
+    setFormValue("overrideCashCollected", expectedAssets);
+
+  }
+
+
+  function updateCashCollected(formDivName, balSheetDivName){
+
+    //Grab the value from the form field
+    var x = document.getElementById(formDivName).value;
+
+    // Set the value into the "balance sheet" area
+    document.getElementById(balSheetDivName).innerHTML = x;
+
+    //Update only the on-after expenses
+    updateOnAfter();
+
+  }
+
+  function updateExpenses(){
+
+    var hareExpenses = grabFormValue("overrideHareExpenses");
+    var treasuryDeposit = grabFormValue("overrideTreasuryDeposit");
+    var charityDeposit = grabFormValue("overrideCharitableDonation");
+    var totalOfExpenses = hareExpenses + treasuryDeposit + charityDeposit;
+
+
+    //Set some values on the screen
+    setValue("totalExpenses",formatAmount(totalOfExpenses));
+    //TODO: The next line is wrong. It should be assets - expenses
+    //TODO: Do a page onload to set all the values; don't use twig to do that
+    //TODO: Increment/decrement hounds when virgins is adjusted
+    //TODO: Fix when you update actual cash; no updating on screen
+    //setValue("maximumTotalBillAmount",formatAmount(totalOfExpenses));
+  }
+
+  function updateOnAfter(){
+
+    //Grab the actual cash on hand
+    var actualCash = grabFormValue("overrideCashCollected");
+
+    //Grab the expenses
+    var hareExpenses = grabFormValue("overrideHareExpenses");
+    var treasuryDeposit = grabFormValue("overrideTreasuryDeposit");
+    var charityDeposit = grabFormValue("overrideCharitableDonation");
+    var totalOfExpenses = hareExpenses + treasuryDeposit + charityDeposit;
+
+    //Calculate what is left over
+    var cashLeftOver = actualCash - totalOfExpenses;
+    setValue("maximumTotalBillAmount",formatAmount(cashLeftOver));
+
+    //Obtain the tip.
+    var justTheTip = grabFormValue("overrideTipPercent");
+    var preTipMax = cashLeftOver / (1 + (justTheTip/100));
+    setValue("maximumPreTipAmount",formatAmount(preTipMax));
+    var tipAmount = preTipMax * (justTheTip/100);
+    setValue("calculatedTipAmount",formatAmount(tipAmount));
+
+    //Determine the number of beverages
+    var perBeerCost = grabFormValue("overrideBeveragePrice");
+    var numberOfBeers = preTipMax / perBeerCost;
+    setValue("calculatedNumberOfBeverages",formatDecimalNumber(numberOfBeers));
+
+
+    //maximumPreTipAmount
+    //calculatedTipAmount
+    //calculatedNumberOfBeverages
+
+  }
+
+  function refreshEverything(){
+    updateAssets();
+    updateExpenses();
+    updateOnAfter();
+  }
+
+  function updateValue(formDivName, balSheetDivName){
+    var x = document.getElementById(formDivName).value;
+    document.getElementById(balSheetDivName).innerHTML = x;
+    refreshEverything();
+  }
+
+  function updateVirginCount(formDivName, balSheetDivName){
+
+    //Grab the new virgin count
+    var x = document.getElementById(formDivName).value;
+
+    //Set the new virgin count in the balance sheet area
+    document.getElementById(balSheetDivName).innerHTML = x;
+
+    //Calculate and set the new hound value
+    var newHoundCount = {{houndCount}} - x;
+    setValue("actualHoundCount",newHoundCount);
+
+    //Refresh everything
+    refreshEverything();
+  }
+
+  function initialPageLoadUpdate(){
+    updateValue('overrideHareCost','actualHareCost');
+    updateValue('overrideHoundCost','actualHoundCost');
+    updateValue('overrideVirginCost','actualVirginCost');
+    updateValue('overrideVirginCount','actualVirginCount');
+    updateValue('overrideHareExpenses','actualHareExpense');
+    updateValue('overrideTreasuryDeposit','actualTreasuryDeposit');
+    updateValue('overrideCharitableDonation','actualCharitableDonation');
+  }
+
+
+</script>
+
+
+  <h1>{{pageTitle}}</h1>
+  <h3>{{pageSubTitle}}</h3>
+
+
+
+  <div class="container">
+  <form class="form-horizontal">
+
+      {% set income = "#d4efdf" %}
+      {% set deficit = "#f2d7d5" %}
+      {% set tying = "#fcf3cf" %}
+      {% set bg1 = "d3d3d3" %}
+      {% set bg2 = "d3d3d3" %}
+      {% set headerColor = "white" %}
+      {% set cashColor = "#ffd700" %}
+      {% set barTabColor = "#DFE3EE" %}
+
+
+      <div class="form-group">
+        <label class="control-label col-xs-7 col-md-3" for "number">Payment Per Hare</label>
+        <div class="col-xs-5 col-md-3">
+          <div class="input-group">
+            <i class="input-group-addon glyphicon glyphicon-usd"></i>
+            <input id="overrideHareCost" type="number" class="form-control" style="background-color:{{income}}"
+              min="0.00" max="10000.00"  step="1" value="{{defaultHareCost}}" onchange="updateValue('overrideHareCost','actualHareCost')">
+          </div>
+        </div>
+
+        <label class="control-label col-xs-7 col-md-3" for "number">Payment Per Hound</label>
+        <div class="col-xs-5 col-md-3">
+          <div class="input-group">
+            <i class="input-group-addon glyphicon glyphicon-usd"></i>
+            <input id="overrideHoundCost" type="number" class="form-control" min="0.00" max="10000.00"  step="1" value="{{defaultHoundCost}}"
+              onchange="updateValue('overrideHoundCost','actualHoundCost')" style="background-color:{{income}}">
+          </div>
+        </div>
+
+        <label class="control-label col-xs-7 col-md-3" for "number">Payment Per Virgin</label>
+        <div class="col-xs-5 col-md-3">
+          <div class="input-group">
+            <i class="input-group-addon glyphicon glyphicon-usd"></i>
+            <input  id="overrideVirginCost" type="number" class="form-control" min="0.00" max="10000.00"  step="1" value="{{defaultVirginCost}}"
+              onchange="updateValue('overrideVirginCost','actualVirginCost')" style="background-color:{{income}}">
+          </div>
+        </div>
+
+        <label class="control-label col-xs-7 col-md-3" for "number"># of Virgins</label>
+        <div class="col-xs-5 col-md-3">
+          <div class="input-group">
+            <input type="number" class="form-control" min="0" max="10000" style="background-color:{{income}}"
+              id="overrideVirginCount" step="1" value="{{defaultVirginCount}}" onchange="updateVirginCount('overrideVirginCount','actualVirginCount')">
+          </div>
+        </div>
+
+        <label class="control-label col-xs-7 col-md-3" for "number">Actual Cash Collected</label>
+        <div class="col-xs-5 col-md-3">
+          <div class="input-group">
+            <i class="input-group-addon glyphicon glyphicon-usd"></i>
+            <input type="number" class="form-control" min="0.00" max="10000.00" style="background-color:{{income}}"
+              id="overrideCashCollected" step="1" value="{{defaultCashCollected}}" onchange="updateCashCollected('overrideCashCollected','actualCashCollected')">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-xs-7 col-md-3" for "number">Hare Expenses (Flour & Stuff)</label>
+        <div class="col-xs-5 col-md-3">
+          <div class="input-group">
+            <i class="input-group-addon glyphicon glyphicon-usd"></i>
+            <input type="number" class="form-control" min="0.00" max="10000.00" style="background-color:{{deficit}}"
+              id="overrideHareExpenses" step="1" value="{{defaultHareExpense}}" onchange="updateValue('overrideHareExpenses','actualHareExpense')">
+          </div>
+        </div>
+
+        <label class="control-label col-xs-7 col-md-3" for "number">Treasury Deposit</label>
+        <div class="col-xs-5 col-md-3">
+          <div class="input-group">
+            <i class="input-group-addon glyphicon glyphicon-usd"></i>
+            <input type="number" class="form-control" min="0.00" max="10000.00" style="background-color:{{deficit}}"
+              id="overrideTreasuryDeposit" step="1" value="{{defaultTreasuryDeposit}}" onchange="updateValue('overrideTreasuryDeposit','actualTreasuryDeposit')">
+          </div>
+        </div>
+
+        <label class="control-label col-xs-7 col-md-3" for "number">Charitable Donation</label>
+        <div class="col-xs-5 col-md-3">
+          <div class="input-group">
+            <i class="input-group-addon glyphicon glyphicon-usd"></i>
+            <input id="overrideCharitableDonation" type="number" class="form-control" min="0.00" max="10000.00"  step="1" value="{{defaultCharitableDonation}}"
+              onchange="updateValue('overrideCharitableDonation','actualCharitableDonation')" style="background-color:{{deficit}}">
+          </div>
+        </div>
+</div>
+
+
+
+<div class="form-group">
+  <label class="control-label col-xs-7 col-md-3" for "number">Tip Percent</label>
+  <div class="col-xs-5 col-md-3">
+    <div class="input-group">
+      <input type="number" class="form-control" min="0" max="10000" step="1" value="{{defaultTipPercentage}}" id="overrideTipPercent"
+        onchange="updateOnAfter()" style="background-color:{{barTabColor}}">
+      <i class="input-group-addon">%</i>
+    </div>
+  </div>
+
+  <label class="control-label col-xs-7 col-md-3" for "number">Beverage Price</label>
+  <div class="col-xs-5 col-md-3" >
+    <div class="input-group" >
+      <i class="input-group-addon glyphicon glyphicon-usd"></i>
+      <input type="number" class="form-control" min="0.00" max="10000.00" style="background-color:{{barTabColor}}"
+        id="overrideBeveragePrice" step=".25" value="{{defaultBeveragePrice}}" onchange="updateOnAfter()">
+    </div>
+  </div>
+</div>
+
+
+      <div class="row" style="background-color:{{headerColor}}">
+        <div class="col-xs-12 col-md-12" align="center"><b>Income</b></div>
+      </div>
+
+
+
+      <div class="row" style="background-color:{{income}}" align="center">
+        <div class="col-xs-12 col-md-3" align="center" style="background-color:{{bg2}}">Hare Income</div>
+        <div class="col-md-3 hidden-xs" id="actualHareCost">0</div>
+        <div class="col-md-3 hidden-xs" id="actualHareCount">{{hareCount}}</div>
+        <div class="col-xs-12 col-md-3" id="actualHareCostTotal">0</div>
+      </div>
+
+      <div class="row" style="background-color:{{income}}" align="center">
+        <div class="col-xs-12 col-md-3" align="center" style="background-color:{{bg2}}">Hound Income</div>
+        <div class="hidden-xs col-md-3" id="actualHoundCost">0</div>
+        <div class="hidden-xs col-md-3" id="actualHoundCount">{{houndCount}}</div>
+        <div class="col-xs-12 col-md-3" id="actualHoundCostTotal">0</div>
+      </div>
+
+      <div class="row" style="background-color:{{income}}" align="center">
+        <div class="col-xs-12 col-md-3" align="center" style="background-color:{{bg1}}">Virgin Income</div>
+        <div class="hidden-xs col-md-3" id="actualVirginCost">0</div>
+        <div class="hidden-xs col-md-3" id="actualVirginCount" >0</div>
+        <div class="col-xs-12 col-md-3" id="actualVirginCostTotal">0</div>
+      </div>
+
+
+
+
+
+      <div class="row" style="background-color:{{income}}" align="center">
+        <div class="col-xs-12 col-md-3" align="center" style="background-color:{{bg1}}">Expected Income</div>
+        <div class="hidden-xs col-md-3"></div>
+        <div class="hidden-xs col-md-3" ></div>
+        <div class="col-xs-12 col-md-3" id="expectedAssets"> 0</div>
+      </div>
+
+      <div class="row" style="background-color:{{income}}" align="center">
+        <div class="col-xs-12 col-md-3" align="center" style="background-color:{{bg2}}"><b>Actual Income</b></div>
+        <div class="hidden-xs col-md-3"></div>
+        <div class="hidden-xs col-md-3" ></div>
+        <div class="col-xs-12 col-md-3" id="actualCashCollected"><b>0</b></div>
+      </div>
+
+      <div class="row" style="background-color:{{headerColor}}">
+        <div class="col-xs-12 col-md-12" align="center"><b>Expenses</b></div>
+      </div>
+
+
+      <div class="row" style="background-color:{{deficit}}" align="center">
+        <div class="col-xs-12 col-md-3" align="center" style="background-color:{{bg1}}">Hare Expenses (Flour & Stuff)</div>
+        <div class="hidden-xs col-md-3"></div>
+        <div class="hidden-xs col-md-3" ></div>
+        <div class="col-xs-12 col-md-3" id="actualHareExpense">0</div>
+      </div>
+
+      <div class="row" style="background-color:{{deficit}}" align="center">
+        <div class="col-xs-12 col-md-3" align="center" style="background-color:{{bg2}}">Treasury Deposit</div>
+        <div class="hidden-xs col-md-3"></div>
+        <div class="hidden-xs col-md-3" ></div>
+        <div class="col-xs-12 col-md-3" id="actualTreasuryDeposit" >0</div>
+      </div>
+
+      <div class="row" style="background-color:{{deficit}}" align="center">
+        <div class="col-xs-12 col-md-3" align="center" style="background-color:{{bg1}}">Charitable Contribution</div>
+        <div class="hidden-xs col-md-3"></div>
+        <div class="hidden-xs col-md-3" ></div>
+        <div class="col-xs-12 col-md-3" id="actualCharitableDonation" >0</div>
+      </div>
+
+      <div class="row" style="background-color:{{deficit}}" align="center">
+        <div class="col-xs-12 col-md-3" align="center" style="background-color:{{bg2}}"><b>Total Expenses</b></div>
+        <div class="hidden-xs col-md-3"></div>
+        <div class="hidden-xs col-md-3" ></div>
+        <div class="col-xs-12 col-md-3" id="totalExpenses"><b>0 </b></div>
+      </div>
+
+      <div class="row" style="background-color:{{headerColor}}">
+        <div class="col-xs-12 col-md-12" align="center"><b>Cash For On-After </b></div>
+      </div>
+
+      <div class="row" style="background-color:{{barTabColor}}" align="center">
+        <div class="col-xs-12 col-md-3" align="center" style="background-color:{{bg1}}"><b>Maximum Total Bill Amount</b></div>
+        <div class="hidden-xs col-md-3"></div>
+        <div class="hidden-xs col-md-3" ></div>
+        <div class="col-xs-12 col-md-3" id="maximumTotalBillAmount"><b>0</b></div>
+      </div>
+
+
+
+      <div class="row" style="background-color:{{barTabColor}}" align="center">
+        <div class="col-xs-12 col-md-3" align="center" style="background-color:{{bg2}}">(Maximum) Pre-Tip Amount</div>
+        <div class="hidden-xs col-md-3"></div>
+        <div class="hidden-xs col-md-3" ></div>
+        <div class="col-xs-12 col-md-3" id="maximumPreTipAmount"> 0</div>
+      </div>
+
+      <div class="row" style="background-color:{{barTabColor}}" align="center">
+        <div class="col-xs-12 col-md-3" align="center" style="background-color:{{bg1}}">Tip Amount</div>
+        <div class="hidden-xs col-md-3"></div>
+        <div class="hidden-xs col-md-3" ></div>
+        <div class="col-xs-12 col-md-3" id="calculatedTipAmount">0</div>
+      </div>
+
+      <div class="row" style="background-color:{{barTabColor}}" align="center">
+        <div class="col-xs-12 col-md-3" align="center" style="background-color:{{bg2}}">Number of Beverages</div>
+        <div class="hidden-xs col-md-3"></div>
+        <div class="hidden-xs col-md-3" ></div>
+        <div class="col-xs-12 col-md-3" id="calculatedNumberOfBeverages">0 </div>
+      </div>
+
+
+
+    </form>
+    </div>
+
+<br><br>
+
+
+  </table>
+  </div>
+
+  <script>
+    //When the page loads, refresh everything
+    initialPageLoadUpdate();
+  </script>
+
+{% endblock %}

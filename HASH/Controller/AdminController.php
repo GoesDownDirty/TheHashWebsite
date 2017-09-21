@@ -2,6 +2,8 @@
 
 namespace HASH\Controller;
 
+require_once realpath(__DIR__ . '/../..').'/config/SQL_Queries.php';
+
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
@@ -188,6 +190,52 @@ class AdminController
       'pageSubTitle' => 'D3 Test Subtitle',
       'pageCaption' => 'D3 Test Page Caption',
       'tableCaption' => 'D3 Test Table Caption'
+    ));
+
+    # Return the return value
+    return $returnValue;
+
+  }
+
+  #Define the action
+  public function eventBudgetPreAction(Request $request, Application $app, int $hash_id){
+
+    #Obtain the hash event information
+
+    #Obtain the default cost information
+    $virginCost= 0;
+    $houndCost = 8;
+    $hareCost = 0;
+
+    #Obtain the number of hounds
+    $houndCountSQL = HOUND_COUNT_BY_HASH_KEY;
+    $theHoundCountValue = $app['db']->fetchAssoc($houndCountSQL, array((int) $hash_id));
+    $theHoundCount = $theHoundCountValue['THE_COUNT'];
+
+    #Obtain the number of hares
+    $hareCountSQL = HARE_COUNT_BY_HASH_KEY;
+    $theHareCountValue = $app['db']->fetchAssoc($hareCountSQL, array((int) $hash_id));
+    $theHareCount = $theHareCountValue['THE_COUNT'];
+
+    # Establish and set the return value
+    $returnValue = $app['twig']->render('event_budget.twig',array(
+      'pageTitle' => 'Event Budget',
+      'pageSubTitle' => 'Online Calculator',
+      'pageCaption' => 'Event Budget Test Page Caption',
+      'tableCaption' => 'Event Budget Test Table Caption',
+
+      'defaultBeveragePrice' => 7.00,
+      'defaultHareExpense' => 0,
+      'defaultTreasuryDeposit' => 0,
+      'defaultVirginCount' => 0,
+      'defaultCashCollected' => 0,
+      'defaultHareCost' => $hareCost,
+      'defaultHoundCost' => $houndCost,
+      'defaultVirginCost' => $virginCost,
+      'defaultCharitableDonation' => 0,
+      'defaultTipPercentage' => 20,
+      'houndCount' => $theHoundCount ,
+      'hareCount' => $theHareCount
     ));
 
     # Return the return value

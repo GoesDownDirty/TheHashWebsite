@@ -792,7 +792,7 @@ class HashController
     $sql = "SELECT * FROM HASHES WHERE HASH_KY = ?";
 
     # Obtain the hound count
-    $houndCountSQL = "SELECT COUNT(*) AS THE_COUNT FROM HASHERS JOIN HASHINGS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY WHERE HASHINGS.HASH_KY = ?";
+    $houndCountSQL = HOUND_COUNT_BY_HASH_KEY;
     $theHoundCountValue = $app['db']->fetchAssoc($houndCountSQL, array((int) $hash_id));
     $theHoundCount = $theHoundCountValue['THE_COUNT'];
 
@@ -802,7 +802,7 @@ class HashController
 
     # Obtain the hare count
     # Obtain the hound count
-    $hareCountSQL = "SELECT COUNT(*) AS THE_COUNT FROM HASHERS JOIN HARINGS ON HASHERS.HASHER_KY = HARINGS.HARINGS_HASHER_KY WHERE HARINGS.HARINGS_HASH_KY = ?";
+    $hareCountSQL = HARE_COUNT_BY_HASH_KEY;
     $theHareCountValue = $app['db']->fetchAssoc($hareCountSQL, array((int) $hash_id));
     $theHareCount = $theHareCountValue['THE_COUNT'];
 

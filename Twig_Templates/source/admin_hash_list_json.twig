@@ -27,13 +27,12 @@ $(document).ready(function() {
       {
         "data": "HASH_KY",
         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-          $(nTd).html("<a href='/admin/edithash/ajaxform/"+oData.HASH_KY+"'>Modify Event </a> | <a href='/admin/event/manageparticipation2/"+oData.HASH_KY+"'>Modify Participation</a>");
+          $(nTd).html("<a href='/admin/edithash/ajaxform/"+oData.HASH_KY+"'>Event </a> | <a href='/admin/event/manageparticipation2/"+oData.HASH_KY+"'>Participation</a> | <a href='/admin/eventBudget/"+oData.HASH_KY+"'>Budget</a>");
         }
 
      },
       { "data": "EVENT_DATE" },
-      { "data": "EVENT_LOCATION" },
-      { "data": "PLACE_ID"}
+      { "data": "EVENT_LOCATION" }
     ]
   });
 
@@ -54,7 +53,6 @@ $(document).ready(function() {
       <td>Actions</td>
       <td>Date</td>
       <td>Location</td>
-      <td>Place ID</td>
     </tr>
   </thead>
   <tbody>

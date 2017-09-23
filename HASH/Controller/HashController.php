@@ -43,10 +43,9 @@ class HashController
     #$lastUserName = $app['session']->get('_security.last_username');
     #$app['monolog']->addDebug($lastUserName);
 
-
     # Establish the return value
     $returnValue =  $app['twig']->render('logon_screen.twig', array (
-      'pageTitle' => 'SCH4 Stats Logon',
+      'pageTitle' => 'Stats Logon',
       'pageHeader' => 'Please log on!',
       'error' => $lastError,
       'last_username' => $lastUserName,
@@ -106,8 +105,8 @@ class HashController
     #Establish the page caption
     #$pageCaption = "You are logged in as: $userName and your password is password";
 
-    #Establish the kennel abbreviation. By default, it is sch4
-    $kennelAbbreviation = "SCH4";
+    #Establish the kennel abbreviation. By default, it is pulled from the config file
+    $kennelAbbreviation = DEFAULT_KENNEL_ABBREVIATION;
 
     #Establish the page title
     $pageTitle = "$kennelAbbreviation Stats";

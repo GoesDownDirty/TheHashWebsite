@@ -13,7 +13,7 @@
       <tbody>
         {% for item in theList %}
           <tr>
-            <td>{{item.NAME}}</td>
+            <td><a href="/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}?name={{item.NAME}}&src={{pageTracking}}">{{item.NAME}}</a></td>
             <td>{{item.VALUE}}</td>
           </tr>
         {% endfor %}

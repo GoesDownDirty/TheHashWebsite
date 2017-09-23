@@ -1891,7 +1891,8 @@ public function hashingCountsAction(Request $request, Application $app, string $
     'columnTwoName' => 'Hash Count',
     'tableCaption' => 'Hashers, and the number of hashes they have done. More is better.',
     'theList' => $hasherList,
-    'kennel_abbreviation' => $kennel_abbreviation
+    'kennel_abbreviation' => $kennel_abbreviation,
+    'pageTracking' => 'HashCounts'
   ));
 
   #Return the return value
@@ -1918,7 +1919,8 @@ public function haringCountsAction(Request $request, Application $app, string $k
     'columnTwoName' => 'Haring Count',
     'tableCaption' => 'Hares, and the number of times they have hared. More is better.',
     'theList' => $hasherList,
-    'kennel_abbreviation' => $kennel_abbreviation
+    'kennel_abbreviation' => $kennel_abbreviation,
+    'pageTracking' => 'HoundCounts'
   ));
 
   #Return the return value
@@ -1944,7 +1946,8 @@ public function trueHaringCountsAction(Request $request, Application $app, strin
     'columnTwoName' => 'Hash Count',
     'tableCaption' => 'Hares, and the number of (non hyper-hash) hashes they have hared. More is better.',
     'theList' => $hasherList,
-    'kennel_abbreviation' => $kennel_abbreviation
+    'kennel_abbreviation' => $kennel_abbreviation,
+    'pageTracking' => 'TrueHareCounts'
   ));
 
   #Return the return value
@@ -1970,7 +1973,8 @@ public function hyperHaringCountsAction(Request $request, Application $app, stri
     'columnTwoName' => 'Hash Count',
     'tableCaption' => 'Hares, and the number of (hyper-hash) hashes they have hared. More is better.',
     'theList' => $hasherList,
-    'kennel_abbreviation' => $kennel_abbreviation
+    'kennel_abbreviation' => $kennel_abbreviation,
+    'pageTracking' => 'HyperHareCounts'
   ));
 
   #Return the return value
@@ -2101,6 +2105,7 @@ public function hyperHaringCountsAction(Request $request, Application $app, stri
 
     #Define the SQL to execute
     $sql = "SELECT
+           TEMPTABLE.HARINGS_HASHER_KY AS THE_KEY,
       	   TEMPTABLE.HASHER_NAME AS NAME,
            COUNT(*) AS VALUE
       FROM
@@ -2120,7 +2125,7 @@ public function hyperHaringCountsAction(Request $request, Application $app, stri
       	HARINGS.HARINGS_HASHER_KY = ?
           AND TEMPTABLE.HARINGS_HASHER_KY <> ?
           AND HASHES.IS_HYPER IN (?,?) AND HASHES.KENNEL_KY = ?
-      GROUP BY TEMPTABLE.HASHER_NAME
+      GROUP BY TEMPTABLE.HARINGS_HASHER_KY, TEMPTABLE.HASHER_NAME
       ORDER BY VALUE DESC";
 
     #Execute the SQL statement; create an array of rows
@@ -2141,7 +2146,8 @@ public function hyperHaringCountsAction(Request $request, Application $app, stri
       'columnTwoName' => 'Hare Count',
       'tableCaption' => $captionValue,
       'theList' => $hashList,
-      'kennel_abbreviation' => $kennel_abbreviation
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'pageTracking' => 'CoHareList'
     ));
 
     #Return the return value
@@ -2156,6 +2162,7 @@ public function hyperHaringCountsAction(Request $request, Application $app, stri
 
     #Define the SQL to execute
     $sql = "SELECT
+        TEMPTABLE.HARINGS_HASHER_KY AS THE_KEY,
       	TEMPTABLE.HASHER_NAME AS NAME,
           COUNT(*) AS VALUE
       FROM
@@ -2175,7 +2182,7 @@ public function hyperHaringCountsAction(Request $request, Application $app, stri
       	HARINGS.HARINGS_HASHER_KY = ?
           AND TEMPTABLE.HARINGS_HASHER_KY <> ?
           AND HASHES.IS_HYPER IN (?,?) AND HASHES.KENNEL_KY = ?
-      GROUP BY TEMPTABLE.HASHER_NAME
+      GROUP BY TEMPTABLE.HARINGS_HASHER_KY, TEMPTABLE.HASHER_NAME
       ORDER BY VALUE DESC";
 
     #Execute the SQL statement; create an array of rows
@@ -2196,7 +2203,8 @@ public function hyperHaringCountsAction(Request $request, Application $app, stri
       'columnTwoName' => 'Hare Count',
       'tableCaption' => $captionValue,
       'theList' => $hashList,
-      'kennel_abbreviation' => $kennel_abbreviation
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'pageTracking' => 'CoHareListTrueHarings'
     ));
 
     #Return the return value
@@ -2221,7 +2229,8 @@ public function hyperHaringCountsAction(Request $request, Application $app, stri
       'columnTwoName' => 'Hasher Count',
       'tableCaption' => 'The lowest hash attendance for each hare.',
       'theList' => $hashList,
-      'kennel_abbreviation' => $kennel_abbreviation
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'pageTracking' => 'LowestHashAttendanceByHare'
     ));
 
     #Return the return value
@@ -2248,7 +2257,8 @@ public function hashAttendanceByHareHighestAction(Request $request, Application 
     'columnTwoName' => 'Hasher Count',
     'tableCaption' => 'The highest attended hashes for each hare.',
     'theList' => $hashList,
-    'kennel_abbreviation' => $kennel_abbreviation
+    'kennel_abbreviation' => $kennel_abbreviation,
+    'pageTracking' => 'HighestHashAttendanceByHare'
   ));
 
   #Return the return value
@@ -2275,7 +2285,8 @@ public function hashAttendanceByHareHighestAction(Request $request, Application 
       'columnTwoName' => 'Hasher Count',
       'tableCaption' => 'The average hash attendance for each hare.',
       'theList' => $hashList,
-      'kennel_abbreviation' => $kennel_abbreviation
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'pageTracking' => 'AverageHashAttendanceByHare'
     ));
 
     #Return the return value
@@ -2301,7 +2312,8 @@ public function hashAttendanceByHareHighestAction(Request $request, Application 
       'columnTwoName' => 'Hash Count',
       'tableCaption' => 'If hasher X has done 100 of hare Y\'s events, they contribute 100 to the hash count.',
       'theList' => $hashList,
-      'kennel_abbreviation' => $kennel_abbreviation
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'pageTracking' => 'TotalHashAttendanceByHareNonDistinct'
     ));
 
     #Return the return value
@@ -2326,7 +2338,8 @@ public function hashAttendanceByHareGrandTotalDistinctHashersAction(Request $req
     'columnTwoName' => 'Hash Count',
     'tableCaption' => 'If hasher X has done 100 of hare Y\'s events, they contribute 1 to the hash count.',
     'theList' => $hashList,
-    'kennel_abbreviation' => $kennel_abbreviation
+    'kennel_abbreviation' => $kennel_abbreviation,
+    'pageTracking' => 'TotalHashAttendanceByHareDistinct'
   ));
 
   #Return the return value
@@ -2341,6 +2354,7 @@ public function hasherCountsByHareAction(Request $request, Application $app, int
 
   #Define the SQL to execute
   $sql = "SELECT
+      HASHERS.HASHER_KY AS THE_KEY,
     	HASHERS.HASHER_NAME AS NAME,
         COUNT(*) AS VALUE
     FROM
@@ -2352,7 +2366,7 @@ public function hasherCountsByHareAction(Request $request, Application $app, int
     	HARINGS.HARINGS_HASHER_KY = ?
         AND HASHINGS.HASHER_KY != ?
         AND HASHES.KENNEL_KY = ?
-    GROUP BY HASHERS.HASHER_NAME
+    GROUP BY HASHERS.HASHER_KY, HASHERS.HASHER_NAME
     ORDER BY VALUE DESC";
 
   #Execute the SQL statement; create an array of rows
@@ -2373,7 +2387,8 @@ public function hasherCountsByHareAction(Request $request, Application $app, int
     'columnTwoName' => 'Hash Count',
     'tableCaption' => $captionValue,
     'theList' => $hashList,
-    'kennel_abbreviation' => $kennel_abbreviation
+    'kennel_abbreviation' => $kennel_abbreviation,
+    'pageTracking' => 'HasherCountsByHare'
   ));
 
   #Return the return value

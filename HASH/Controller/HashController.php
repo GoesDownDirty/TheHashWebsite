@@ -870,18 +870,18 @@ class HashController
 
     # Declare the SQL used to retrieve this information
     $sql = "SELECT
-        hashers.HASHER_NAME AS HASHER_NAME,
+        HASHERS.HASHER_NAME AS HASHER_NAME,
         (COUNT(*)) AS THE_COUNT,
         MAX(HASHINGS.HASH_KY) AS MAX_HASH_KY
     FROM
-        ((hashers
-        JOIN hashings ON ((hashers.HASHER_KY = hashings.HASHER_KY)))
-        JOIN hashes ON ((hashings.HASH_KY = hashes.HASH_KY)))
+        ((HASHERS
+        JOIN HASHINGS ON ((HASHERS.HASHER_KY = HASHINGS.HASHER_KY)))
+        JOIN HASHES ON ((HASHINGS.HASH_KY = HASHES.HASH_KY)))
     WHERE
-        (hashers.DECEASED = 0) AND
+        (HASHERS.DECEASED = 0) AND
         HASHES.HASH_KY <= ? AND
         HASHES.KENNEL_KY = ?
-    GROUP BY hashers.HASHER_NAME
+    GROUP BY HASHERS.HASHER_NAME
     HAVING ((((THE_COUNT % 5) = 0)
         OR ((THE_COUNT % 69) = 0)
         OR ((THE_COUNT % 666) = 0)
@@ -926,18 +926,18 @@ class HashController
 
     # Declare the SQL used to retrieve this information
     $sql = "SELECT
-        hashers.HASHER_NAME AS HASHER_NAME,
+        HASHERS.HASHER_NAME AS HASHER_NAME,
         (COUNT(*)) AS THE_COUNT,
         MAX(HASHINGS.HASH_KY) AS MAX_HASH_KY
     FROM
-        ((hashers
-        JOIN hashings ON ((hashers.HASHER_KY = hashings.HASHER_KY)))
-        JOIN hashes ON ((hashings.HASH_KY = hashes.HASH_KY)))
+        ((HASHERS
+        JOIN HASHINGS ON ((HASHERS.HASHER_KY = HASHINGS.HASHER_KY)))
+        JOIN HASHES ON ((HASHINGS.HASH_KY = HASHES.HASH_KY)))
     WHERE
-        (hashers.DECEASED = 0) AND
+        (HASHERS.DECEASED = 0) AND
         HASHES.HASH_KY <= ? AND
         HASHES.KENNEL_KY = ?
-    GROUP BY hashers.HASHER_NAME
+    GROUP BY HASHERS.HASHER_NAME
     HAVING ((((THE_COUNT % 5) = 0)
         OR ((THE_COUNT % 69) = 0)
         OR ((THE_COUNT % 666) = 0)
@@ -947,18 +947,18 @@ class HashController
 
     # Declare the SQL used to retrieve this information
     $sqlForHareAnalversaries = "SELECT
-        hashers.HASHER_NAME AS HASHER_NAME,
+        HASHERS.HASHER_NAME AS HASHER_NAME,
         (COUNT(*)) AS THE_COUNT,
         MAX(HARINGS.HARINGS_HASH_KY) AS MAX_HASH_KY
     FROM
-        ((hashers
-        JOIN harings ON ((hashers.HASHER_KY = harings.HARINGS_HASHER_KY)))
-        JOIN hashes ON ((harings.HARINGS_HASH_KY = hashes.HASH_KY)))
+        ((HASHERS
+        JOIN HARINGS ON ((HASHERS.HASHER_KY = HARINGS.HARINGS_HASHER_KY)))
+        JOIN HASHES ON ((HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY)))
     WHERE
-        (hashers.DECEASED = 0) AND
+        (HASHERS.DECEASED = 0) AND
         HASHES.HASH_KY <= ? AND
         HASHES.KENNEL_KY = ?
-    GROUP BY hashers.HASHER_NAME
+    GROUP BY HASHERS.HASHER_NAME
     HAVING ((((THE_COUNT % 5) = 0)
         OR ((THE_COUNT % 69) = 0)
         OR ((THE_COUNT % 666) = 0)
@@ -1024,19 +1024,19 @@ class HashController
 
     # Declare the SQL used to retrieve this information
     $sqlHoundAnalversaryTemplate = "SELECT
-        hashers.HASHER_NAME AS HASHER_NAME,
+        HASHERS.HASHER_NAME AS HASHER_NAME,
         (COUNT(*)) AS THE_COUNT,
         MAX(HASHINGS.HASH_KY) AS MAX_HASH_KY
     FROM
-        ((hashers
-        JOIN hashings ON ((hashers.HASHER_KY = hashings.HASHER_KY)))
-        JOIN hashes ON ((hashings.HASH_KY = hashes.HASH_KY)))
+        ((HASHERS
+        JOIN HASHINGS ON ((HASHERS.HASHER_KY = HASHINGS.HASHER_KY)))
+        JOIN HASHES ON ((HASHINGS.HASH_KY = HASHES.HASH_KY)))
     WHERE
-        (hashers.DECEASED = 0) AND
+        (HASHERS.DECEASED = 0) AND
         HASHES.HASH_KY <= ? AND
         HASHES.KENNEL_KY = ? AND
         HASHES.XXX = ?
-    GROUP BY hashers.HASHER_NAME
+    GROUP BY HASHERS.HASHER_NAME
     HAVING ((((THE_COUNT % 5) = 0)
         OR ((THE_COUNT % 69) = 0)
         OR ((THE_COUNT % 666) = 0)
@@ -1045,19 +1045,19 @@ class HashController
     ORDER BY THE_COUNT DESC";
 
     $sqlHoundAnalversaryTemplateDateBased = "SELECT
-        hashers.HASHER_NAME AS HASHER_NAME,
+        HASHERS.HASHER_NAME AS HASHER_NAME,
         (COUNT(*)) AS THE_COUNT,
         MAX(HASHINGS.HASH_KY) AS MAX_HASH_KY
     FROM
-        ((hashers
-        JOIN hashings ON ((hashers.HASHER_KY = hashings.HASHER_KY)))
-        JOIN hashes ON ((hashings.HASH_KY = hashes.HASH_KY)))
+        ((HASHERS
+        JOIN HASHINGS ON ((HASHERS.HASHER_KY = HASHINGS.HASHER_KY)))
+        JOIN HASHES ON ((HASHINGS.HASH_KY = HASHES.HASH_KY)))
     WHERE
-        (hashers.DECEASED = 0) AND
+        (HASHERS.DECEASED = 0) AND
         HASHES.HASH_KY <= ? AND
         HASHES.KENNEL_KY = ? AND
         XXX(HASHES.EVENT_DATE) = ?
-    GROUP BY hashers.HASHER_NAME
+    GROUP BY HASHERS.HASHER_NAME
     HAVING ((((THE_COUNT % 5) = 0)
         OR ((THE_COUNT % 69) = 0)
         OR ((THE_COUNT % 666) = 0)
@@ -1067,19 +1067,19 @@ class HashController
 
     # Declare the SQL used to retrieve this information
     $sqlHareAnalversaryTemplate = "SELECT
-        hashers.HASHER_NAME AS HASHER_NAME,
+        HASHERS.HASHER_NAME AS HASHER_NAME,
         (COUNT(*)) AS THE_COUNT,
         MAX(HARINGS.HARINGS_HASH_KY) AS MAX_HASH_KY
     FROM
-        ((hashers
-        JOIN harings ON ((hashers.HASHER_KY = harings.HARINGS_HASHER_KY)))
-        JOIN hashes ON ((harings.HARINGS_HASH_KY = hashes.HASH_KY)))
+        ((HASHERS
+        JOIN HARINGS ON ((HASHERS.HASHER_KY = HARINGS.HARINGS_HASHER_KY)))
+        JOIN HASHES ON ((HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY)))
     WHERE
-        (hashers.DECEASED = 0) AND
+        (HASHERS.DECEASED = 0) AND
         HASHES.HASH_KY <= ? AND
         HASHES.KENNEL_KY = ? AND
         HASHES.XXX = ?
-    GROUP BY hashers.HASHER_NAME
+    GROUP BY HASHERS.HASHER_NAME
     HAVING ((((THE_COUNT % 5) = 0)
         OR ((THE_COUNT % 69) = 0)
         OR ((THE_COUNT % 666) = 0)
@@ -1088,19 +1088,19 @@ class HashController
     ORDER BY THE_COUNT DESC";
 
     $sqlHareAnalversaryTemplateDateBased = "SELECT
-        hashers.HASHER_NAME AS HASHER_NAME,
+        HASHERS.HASHER_NAME AS HASHER_NAME,
         (COUNT(*)) AS THE_COUNT,
         MAX(HARINGS.HARINGS_HASH_KY) AS MAX_HASH_KY
     FROM
-        ((hashers
-        JOIN harings ON ((hashers.HASHER_KY = harings.HARINGS_HASHER_KY)))
-        JOIN hashes ON ((harings.HARINGS_HASH_KY = hashes.HASH_KY)))
+        ((HASHERS
+        JOIN HARINGS ON ((HASHERS.HASHER_KY = HARINGS.HARINGS_HASHER_KY)))
+        JOIN HASHES ON ((HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY)))
     WHERE
-        (hashers.DECEASED = 0) AND
+        (HASHERS.DECEASED = 0) AND
         HASHES.HASH_KY <= ? AND
         HASHES.KENNEL_KY = ? AND
         XXX(HASHES.EVENT_DATE) = ?
-    GROUP BY hashers.HASHER_NAME
+    GROUP BY HASHERS.HASHER_NAME
     HAVING ((((THE_COUNT % 5) = 0)
         OR ((THE_COUNT % 69) = 0)
         OR ((THE_COUNT % 666) = 0)
@@ -1209,18 +1209,18 @@ class HashController
 
     # Declare the SQL used to retrieve this information
     $sql = "SELECT
-        hashers.HASHER_NAME AS HASHER_NAME,
+        HASHERS.HASHER_NAME AS HASHER_NAME,
         (COUNT(*)) AS THE_COUNT,
         MAX(HASHINGS.HASH_KY) AS MAX_HASH_KY
     FROM
-        ((hashers
-        JOIN hashings ON ((hashers.HASHER_KY = hashings.HASHER_KY)))
-        JOIN hashes ON ((hashings.HASH_KY = hashes.HASH_KY)))
+        ((HASHERS
+        JOIN HASHINGS ON ((HASHERS.HASHER_KY = HASHINGS.HASHER_KY)))
+        JOIN HASHES ON ((HASHINGS.HASH_KY = HASHES.HASH_KY)))
     WHERE
-        (hashers.DECEASED = 0) AND
+        (HASHERS.DECEASED = 0) AND
         HASHES.HASH_KY <= ? AND
         HASHES.KENNEL_KY = ?
-    GROUP BY hashers.HASHER_NAME
+    GROUP BY HASHERS.HASHER_NAME
     HAVING (
           (THE_COUNT % 1) = 0
       )
@@ -1273,19 +1273,19 @@ class HashController
 
     # Declare the SQL used to retrieve this information
     $sql = "SELECT
-        hashers.HASHER_NAME AS HASHER_NAME,
+        HASHERS.HASHER_NAME AS HASHER_NAME,
         (COUNT(*)) AS THE_COUNT,
         MAX(HASHINGS.HASH_KY) AS MAX_HASH_KY
     FROM
-        ((hashers
-        JOIN hashings ON ((hashers.HASHER_KY = hashings.HASHER_KY)))
-        JOIN hashes ON ((hashings.HASH_KY = hashes.HASH_KY)))
+        ((HASHERS
+        JOIN HASHINGS ON ((HASHERS.HASHER_KY = HASHINGS.HASHER_KY)))
+        JOIN HASHES ON ((HASHINGS.HASH_KY = HASHES.HASH_KY)))
     WHERE
-        (hashers.DECEASED = 0) AND
+        (HASHERS.DECEASED = 0) AND
         HASHES.HASH_KY <= ? AND
         HASHES.KENNEL_KY = ? AND
         HASHES.COUNTY = ?
-    GROUP BY hashers.HASHER_NAME
+    GROUP BY HASHERS.HASHER_NAME
     HAVING (
           (THE_COUNT % 1) = 0
       )
@@ -1338,19 +1338,19 @@ class HashController
 
     # Declare the SQL used to retrieve this information
     $sql = "SELECT
-        hashers.HASHER_NAME AS HASHER_NAME,
+        HASHERS.HASHER_NAME AS HASHER_NAME,
         (COUNT(*)) AS THE_COUNT,
         MAX(HASHINGS.HASH_KY) AS MAX_HASH_KY
     FROM
-        ((hashers
-        JOIN hashings ON ((hashers.HASHER_KY = hashings.HASHER_KY)))
-        JOIN hashes ON ((hashings.HASH_KY = hashes.HASH_KY)))
+        ((HASHERS
+        JOIN HASHINGS ON ((HASHERS.HASHER_KY = HASHINGS.HASHER_KY)))
+        JOIN HASHES ON ((HASHINGS.HASH_KY = HASHES.HASH_KY)))
     WHERE
-        (hashers.DECEASED = 0) AND
+        (HASHERS.DECEASED = 0) AND
         HASHES.HASH_KY <= ? AND
         HASHES.KENNEL_KY = ? AND
         HASHES.POSTAL_CODE = ?
-    GROUP BY hashers.HASHER_NAME
+    GROUP BY HASHERS.HASHER_NAME
     HAVING (
           (THE_COUNT % 1) = 0
       )
@@ -1404,19 +1404,19 @@ class HashController
 
     # Declare the SQL used to retrieve this information
     $sql = "SELECT
-        hashers.HASHER_NAME AS HASHER_NAME,
+        HASHERS.HASHER_NAME AS HASHER_NAME,
         (COUNT(*)) AS THE_COUNT,
         MAX(HASHINGS.HASH_KY) AS MAX_HASH_KY
     FROM
-        ((hashers
-        JOIN hashings ON ((hashers.HASHER_KY = hashings.HASHER_KY)))
-        JOIN hashes ON ((hashings.HASH_KY = hashes.HASH_KY)))
+        ((HASHERS
+        JOIN HASHINGS ON ((HASHERS.HASHER_KY = HASHINGS.HASHER_KY)))
+        JOIN HASHES ON ((HASHINGS.HASH_KY = HASHES.HASH_KY)))
     WHERE
-        (hashers.DECEASED = 0) AND
+        (HASHERS.DECEASED = 0) AND
         HASHES.HASH_KY <= ? AND
         HASHES.KENNEL_KY = ? AND
         HASHES.EVENT_STATE = ?
-    GROUP BY hashers.HASHER_NAME
+    GROUP BY HASHERS.HASHER_NAME
     HAVING (
           (THE_COUNT % 1) = 0
       )
@@ -1470,19 +1470,19 @@ class HashController
 
     # Declare the SQL used to retrieve this information
     $sql = "SELECT
-        hashers.HASHER_NAME AS HASHER_NAME,
+        HASHERS.HASHER_NAME AS HASHER_NAME,
         (COUNT(*)) AS THE_COUNT,
         MAX(HASHINGS.HASH_KY) AS MAX_HASH_KY
     FROM
-        ((hashers
-        JOIN hashings ON ((hashers.HASHER_KY = hashings.HASHER_KY)))
-        JOIN hashes ON ((hashings.HASH_KY = hashes.HASH_KY)))
+        ((HASHERS
+        JOIN HASHINGS ON ((HASHERS.HASHER_KY = HASHINGS.HASHER_KY)))
+        JOIN HASHES ON ((HASHINGS.HASH_KY = HASHES.HASH_KY)))
     WHERE
-        (hashers.DECEASED = 0) AND
+        (HASHERS.DECEASED = 0) AND
         HASHES.HASH_KY <= ? AND
         HASHES.KENNEL_KY = ? AND
         HASHES.NEIGHBORHOOD = ?
-    GROUP BY hashers.HASHER_NAME
+    GROUP BY HASHERS.HASHER_NAME
     HAVING (
           (THE_COUNT % 1) = 0
       )
@@ -1532,19 +1532,19 @@ class HashController
 
     # Declare the SQL used to retrieve this information
     $sql = "SELECT
-        hashers.HASHER_NAME AS HASHER_NAME,
+        HASHERS.HASHER_NAME AS HASHER_NAME,
         (COUNT(*)) AS THE_COUNT,
         MAX(HASHINGS.HASH_KY) AS MAX_HASH_KY
     FROM
-        ((hashers
-        JOIN hashings ON ((hashers.HASHER_KY = hashings.HASHER_KY)))
-        JOIN hashes ON ((hashings.HASH_KY = hashes.HASH_KY)))
+        ((HASHERS
+        JOIN HASHINGS ON ((HASHERS.HASHER_KY = HASHINGS.HASHER_KY)))
+        JOIN HASHES ON ((HASHINGS.HASH_KY = HASHES.HASH_KY)))
     WHERE
-        (hashers.DECEASED = 0) AND
+        (HASHERS.DECEASED = 0) AND
         HASHES.HASH_KY <= ? AND
         HASHES.KENNEL_KY = ? AND
         HASHES.EVENT_CITY = ?
-    GROUP BY hashers.HASHER_NAME
+    GROUP BY HASHERS.HASHER_NAME
     HAVING (
           (THE_COUNT % 1) = 0
       )
@@ -1691,8 +1691,8 @@ public function pendingHasherAnalversariesAction(Request $request, Application $
   $sqlMostRecentHash = "SELECT KENNEL_EVENT_NUMBER, EVENT_DATE, EVENT_LOCATION, SPECIAL_EVENT_DESCRIPTION
     FROM HASHES
     JOIN (
-        select max(HASHINGS.hash_ky) as HASH_KY
-        from hashings
+        SELECT MAX(HASHINGS.HASH_KY) AS HASH_KY
+        FROM HASHINGS
         JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
         WHERE HASHES.KENNEL_KY = ?
       ) AS TEMPTABLE

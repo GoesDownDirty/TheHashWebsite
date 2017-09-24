@@ -292,7 +292,7 @@ class AdminController
 
           #Check if the current password is valid
           # Declare the SQL used to retrieve this information
-          $sql = "SELECT * FROM USERS WHERE USERNAME = ? AND PASSWORD = ?";
+          $sql = "SELECT * FROM users WHERE USERNAME = ? AND PASSWORD = ?";
 
           # Make a database call to obtain the hasher information
           $retrievedUserValue = $app['db']->fetchAssoc($sql, array((string) $userid, (string) $encodedCurrentPassword));
@@ -330,7 +330,7 @@ class AdminController
 
           if(!$foundValidationError){
             #Define the SQL for the password update
-            $updateSql = "UPDATE USERS SET PASSWORD = ? WHERE USERNAME = ?";
+            $updateSql = "UPDATE users SET PASSWORD = ? WHERE USERNAME = ?";
 
             #Run the update SQL
             $app['dbs']['mysql_write']->executeUpdate($updateSql,array($encodedNewPassword,$userid));

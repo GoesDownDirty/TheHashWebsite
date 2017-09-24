@@ -24,7 +24,7 @@
               data: {
                   labels: [
                     {% for individualEntry in trending_true_hares_list %}
-                      '{{individualEntry.THE_VALUE|raw}}',
+                      '{{individualEntry.THE_VALUE|escape('js')}}',
                     {% endfor %}
                   ],
                   datasets: [{

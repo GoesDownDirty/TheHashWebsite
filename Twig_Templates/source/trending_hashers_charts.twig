@@ -23,7 +23,7 @@
               data: {
                   labels: [
                     {% for individualEntry in trending_hashers_list %}
-                      '{{individualEntry.THE_VALUE|raw}}',
+                      '{{individualEntry.THE_VALUE|escape('js')}}',
                     {% endfor %}
                   ],
                   datasets: [{

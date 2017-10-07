@@ -1799,7 +1799,7 @@ class ObscureStatisticsController{
       $SQL = "SELECT HASHER_NAME, HASHER_KY
         FROM HASHERS
         WHERE
-          HASHER_NAME NOT LIKE '%NHN%'";
+          HASHER_NAME NOT LIKE '%NHN%' AND HASHER_NAME NOT LIKE 'JUST %'";
 
       #Obtain the hare list
       $hasherNameList = $app['db']->fetchAll($SQL,array((int) $kennelKy));
@@ -1913,7 +1913,7 @@ class ObscureStatisticsController{
       $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
       #Define the SQL to execute
-      $SQL = "SELECT HASHER_NAME, HASHER_KY FROM HASHERS WHERE HASHER_NAME NOT LIKE '%NHN%'";
+      $SQL = "SELECT HASHER_NAME, HASHER_KY FROM HASHERS WHERE HASHER_NAME NOT LIKE '%NHN%' AND HASHER_NAME NOT LIKE 'JUST %'";
 
       #Obtain the hare list
       $hasherNameList = $app['db']->fetchAll($SQL,array((int) $kennelKy));

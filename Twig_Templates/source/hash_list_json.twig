@@ -23,24 +23,31 @@
           "url": "/{{kennel_abbreviation}}/listhashes2",
           "type": "POST"
       },
+      "createdRow": function(row,data,dataIndex){
+        if(data.IS_HYPER > 0){
+          $(row).css("color","brown");
+        }
+      },
       "columns": [
         {
           "data": "KENNEL_EVENT_NUMBER",
-          "orderData": [4],
+          "orderData": [5],
           "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
             $(nTd).html("<a href='/{{kennel_abbreviation}}/hashes/"+oData.HASY_KY+"'>"+oData.KENNEL_EVENT_NUMBER+"</a>");
           }
 
        },
-        { "data": "IS_HYPER",
-          "render": function (nTd, sData, oData, iRow, iCol) {
-            if(oData.IS_HYPER > 0){
-              return "Yes";
-            }else{
-              return "No";
-            }
-          }
-        },
+       { "data": "HOUND_COUNT",
+         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+           $(nTd).html("<a href='/{{kennel_abbreviation}}/listhashers/byhash/"+oData.HASY_KY+"'>"+oData.HOUND_COUNT+"</a>");
+         }
+       },
+       { "data": "HARE_COUNT",
+         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+           $(nTd).html("<a href='/{{kennel_abbreviation}}/listhares/byhash/"+oData.HASY_KY+"'>"+oData.HARE_COUNT+"</a>");
+         }
+       },
+
         { "data": "EVENT_LOCATION" ,
           "render": function (nTd, sData, oData, iRow, iCol) {
             var returnValue = "foo";
@@ -72,9 +79,7 @@
             return (oData.EVENT_DATE_FORMATTED);
           }
         },
-        { "data": "EVENT_CITY" },
-        { "data": "EVENT_STATE" },
-        { "data": "FORMATTED_ADDRESS"}
+        { "data": "EVENT_CITY" }
       ]
     });
 
@@ -90,13 +95,12 @@
       <thead>
         <tr>
           <th>Hash Number</th>
-          <td>Hyper</td>
+          <td>Hounds</td>
+          <td>Hares</td>
           <td>Location</td>
           <td>Description</td>
           <td>Date</td>
           <td>City</td>
-          <td>State</td>
-          <td>Formatted Address</td>
         </tr>
       </thead>
       <tbody>

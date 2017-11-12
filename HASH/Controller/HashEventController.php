@@ -1219,8 +1219,8 @@ class HashEventController
 
       # Establish and set the return value
       $returnValue = $app['twig']->render('hash_list_json.twig',array(
-        'pageTitle' => 'The List of Hashes (Experimental Page)',
-        'pageSubTitle' => 'The List of *ALL* Hashes',
+        'pageTitle' => 'The List of Hashes',
+        'pageSubTitle' => '*Brown = Hyper Hash',
         #'theList' => $hasherList,
         'kennel_abbreviation' => $kennel_abbreviation,
         'pageCaption' => "",
@@ -1282,8 +1282,8 @@ class HashEventController
 
       #Obtain the column/order information
       $inputOrderRaw = isset($_POST['order']) ? $_POST['order'] : null;
-      $inputOrderColumnExtracted = "5";
-      $inputOrderColumnIncremented = "5";
+      $inputOrderColumnExtracted = "13";
+      $inputOrderColumnIncremented = "13";
       $inputOrderDirectionExtracted = "desc";
       if(!is_null($inputOrderRaw)){
         #$app['monolog']->addDebug("inside inputOrderRaw not null");
@@ -1301,18 +1301,35 @@ class HashEventController
 
       #Define the sql that performs the filtering
       $sql = "SELECT
-        KENNEL_EVENT_NUMBER AS KENNEL_EVENT_NUMBER,
-        IS_HYPER AS IS_HYPER,
-        EVENT_LOCATION AS EVENT_LOCATION,
-        SPECIAL_EVENT_DESCRIPTION AS SPECIAL_EVENT_DESCRIPTION,
-        EVENT_DATE AS EVENT_DATE,
-        EVENT_CITY AS EVENT_CITY,
-        EVENT_STATE AS EVENT_STATE,
-        FORMATTED_ADDRESS,
-        HASH_KY AS HASY_KY,
-        KENNEL_KY AS KENNEL_KY,
-        DATE_FORMAT(event_date,'%m/%d/%Y %h:%i %p') AS EVENT_DATE_FORMATTED
+          KENNEL_EVENT_NUMBER AS KENNEL_EVENT_NUMBER,
+          HOUNDS_COUNT_TABLE.THE_COUNT AS HOUND_COUNT,
+          HARES_COUNT_TABLE.THE_COUNT AS HARE_COUNT,
+          EVENT_LOCATION AS EVENT_LOCATION,
+          SPECIAL_EVENT_DESCRIPTION AS SPECIAL_EVENT_DESCRIPTION,
+          EVENT_DATE AS EVENT_DATE,
+          EVENT_CITY AS EVENT_CITY,
+          EVENT_STATE AS EVENT_STATE,
+          FORMATTED_ADDRESS,
+          HASH_KY AS HASY_KY,
+          KENNEL_KY AS KENNEL_KY,
+          DATE_FORMAT(event_date,'%Y/%m/%d') AS EVENT_DATE_FORMATTED,
+          DATE_FORMAT(event_date,'%Y/%m/%d %h:%i %p') AS EVENT_DATE_FORMATTED2,
+          IS_HYPER AS IS_HYPER
         FROM HASHES
+        JOIN (
+          SELECT
+            HASHINGS.HASH_KY AS THE_KEY,
+                  COUNT(*) AS THE_COUNT
+              FROM HASHINGS
+              GROUP BY HASHINGS.HASH_KY
+              ) HOUNDS_COUNT_TABLE ON (HOUNDS_COUNT_TABLE.THE_KEY = HASH_KY)
+        JOIN (
+          SELECT
+            HARINGS.HARINGS_HASH_KY AS THE_KEY,
+            COUNT(*) AS THE_COUNT
+          FROM HARINGS
+              GROUP BY HARINGS.HARINGS_HASH_KY
+        ) HARES_COUNT_TABLE ON (HARES_COUNT_TABLE.THE_KEY = HASH_KY)
         WHERE
           KENNEL_KY = $kennelKy AND
           (

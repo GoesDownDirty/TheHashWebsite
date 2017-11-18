@@ -64,8 +64,8 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
 
 #Create users table in database-------------------------------------------------
 $schema = $app['dbs']['mysql_write']->getSchemaManager();
-if (!$schema->tablesExist('users')) {
-    $users = new Table('users');
+if (!$schema->tablesExist('USERS')) {
+    $users = new Table('USERS');
     $users->addColumn('id', 'integer', array('unsigned' => true, 'autoincrement' => true));
     $users->setPrimaryKey(array('id'));
     $users->addColumn('username', 'string', array('length' => 32));
@@ -75,19 +75,19 @@ if (!$schema->tablesExist('users')) {
 
     $schema->createTable($users);
 
-    $app['dbs']['mysql_write']->insert('users', array(
+    $app['dbs']['mysql_write']->insert('USERS', array(
       'username' => 'fabien',
       'password' => DEFAULT_USER_PASSWORD,
       'roles' => 'ROLE_USER'
     ));
 
-    $app['dbs']['mysql_write']->insert('users', array(
+    $app['dbs']['mysql_write']->insert('USERS', array(
       'username' => 'admin',
       'password' => DEFAULT_USER_PASSWORD,
       'roles' => 'ROLE_ADMIN'
     ));
 
-    $app['dbs']['mysql_write']->insert('users', array(
+    $app['dbs']['mysql_write']->insert('USERS', array(
       'username' => 'superadmin',
       'password' => DEFAULT_USER_PASSWORD,
       'roles' => 'ROLE_SUPERADMIN'

@@ -1,4 +1,4 @@
-CREATE TABLE `users` (
+CREATE TABLE `USERS` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(32) CHARACTER SET utf8 NOT NULL,
   `password` varchar(255) CHARACTER SET utf8 NOT NULL,

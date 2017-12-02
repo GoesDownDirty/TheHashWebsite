@@ -1302,8 +1302,8 @@ class HashEventController
       #Define the sql that performs the filtering
       $sql = "SELECT
           KENNEL_EVENT_NUMBER AS KENNEL_EVENT_NUMBER,
-          HOUNDS_COUNT_TABLE.THE_COUNT AS HOUND_COUNT,
-          HARES_COUNT_TABLE.THE_COUNT AS HARE_COUNT,
+          (SELECT COUNT(*) FROM HASHINGS WHERE HASHINGS.HASH_KY = HASHES.HASH_KY) AS HOUND_COUNT,
+          (SELECT COUNT(*) FROM HARINGS WHERE HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY) AS HARE_COUNT,
           EVENT_LOCATION AS EVENT_LOCATION,
           SPECIAL_EVENT_DESCRIPTION AS SPECIAL_EVENT_DESCRIPTION,
           EVENT_DATE AS EVENT_DATE,
@@ -1316,20 +1316,6 @@ class HashEventController
           DATE_FORMAT(event_date,'%Y/%m/%d %h:%i %p') AS EVENT_DATE_FORMATTED2,
           IS_HYPER AS IS_HYPER
         FROM HASHES
-        JOIN (
-          SELECT
-            HASHINGS.HASH_KY AS THE_KEY,
-                  COUNT(*) AS THE_COUNT
-              FROM HASHINGS
-              GROUP BY HASHINGS.HASH_KY
-              ) HOUNDS_COUNT_TABLE ON (HOUNDS_COUNT_TABLE.THE_KEY = HASH_KY)
-        JOIN (
-          SELECT
-            HARINGS.HARINGS_HASH_KY AS THE_KEY,
-            COUNT(*) AS THE_COUNT
-          FROM HARINGS
-              GROUP BY HARINGS.HARINGS_HASH_KY
-        ) HARES_COUNT_TABLE ON (HARES_COUNT_TABLE.THE_KEY = HASH_KY)
         WHERE
           KENNEL_KY = $kennelKy AND
           (
@@ -1340,7 +1326,7 @@ class HashEventController
             EVENT_STATE LIKE ?)
         ORDER BY $inputOrderColumnIncremented $inputOrderDirectionExtracted
         LIMIT $inputStart,$inputLength";
-        #$app['monolog']->addDebug("sql: $sql");
+
 
       #Define the SQL that gets the count for the filtered results
       $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT

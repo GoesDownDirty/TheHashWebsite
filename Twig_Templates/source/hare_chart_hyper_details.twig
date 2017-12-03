@@ -550,10 +550,17 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
                             //});
 
                           {% for hashEventValue in the_hashes %}
+                            var textValue = "{{kennel_abbreviation}} #{{hashEventValue.KENNEL_EVENT_NUMBER}}: {{hashEventValue.SPECIAL_EVENT_DESCRIPTION | raw}} at {{hashEventValue.EVENT_LOCATION | raw}} on {{hashEventValue.EVENT_DATE | date("m/d/Y")}}";
+                            var eventLink = "/{{kennel_abbreviation}}/hashes/{{hashEventValue.HASH_KY}}";
                             var marker = new google.maps.Marker({
                               //position: new google.maps.LatLng(7,-188);,
                               position: {lat: {{hashEventValue.LAT}}, lng:{{hashEventValue.LNG}}},
-                              map: map
+                              map: map,
+                              title: textValue,
+                              url: eventLink
+                            });
+                            google.maps.event.addListener(marker,'click', function(){
+                              window.open(this.url);
                             });
                           {% endfor %}
 

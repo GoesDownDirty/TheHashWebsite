@@ -150,35 +150,7 @@ class HashController
   }
 
 
-  #Define the action
-  public function listHashersAction(Request $request, Application $app, string $kennel_abbreviation){
 
-    #Define the SQL to execute
-    $sql = "SELECT
-      HASHER_KY AS THE_KEY,
-      HASHER_NAME AS NAME,
-      FIRST_NAME,
-      LAST_NAME,
-      EMAIL,
-      HASHER_ABBREVIATION FROM HASHERS";
-
-    #Execute the SQL statement; create an array of rows
-    $hasherList = $app['db']->fetchAll($sql);
-
-    # Establish and set the return value
-    $returnValue = $app['twig']->render('hasher_list.twig',array(
-      'pageTitle' => 'The List of Hashers',
-      'pageSubTitle' => 'The List of *ALL* Hashers',
-      'theList' => $hasherList,
-      'kennel_abbreviation' => $kennel_abbreviation,
-      'pageCaption' => "",
-      'tableCaption' => ""
-    ));
-
-    #Return the return value
-    return $returnValue;
-
-  }
 
   #Define the action
   public function listStreakersByDateByHashAction(Request $request, Application $app, string $kennel_abbreviation, int $hash_id){
@@ -284,7 +256,6 @@ class HashController
       HASHERS.HASHER_NAME AS NAME,
       HASHERS.FIRST_NAME,
       HASHERS.LAST_NAME,
-      HASHERS.EMAIL,
       HASHERS.HASHER_ABBREVIATION
       FROM HASHERS JOIN HASHINGS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY WHERE HASHINGS.HASH_KY = ?";
 
@@ -325,7 +296,6 @@ class HashController
       HASHERS.HASHER_NAME AS NAME ,
       HASHERS.FIRST_NAME,
       HASHERS.LAST_NAME,
-      HASHERS.EMAIL,
       HASHERS.HASHER_ABBREVIATION
       FROM HASHERS JOIN HARINGS ON HASHERS.HASHER_KY = HARINGS.HARINGS_HASHER_KY WHERE HARINGS.HARINGS_HASH_KY = ?";
 
@@ -633,42 +603,6 @@ class HashController
   }
 
 
-  public function viewHasherAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
-
-    # Declare the SQL used to retrieve this information
-    $sql = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
-
-    #Obtain the kennel key
-    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
-
-    # Make a database call to obtain the hasher information
-    $hasher = $app['db']->fetchAssoc($sql, array((int) $hasher_id));
-
-    # Obtain the number of hashings
-    $sqlHashCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
-    WHERE HASHER_KY = ? AND KENNEL_KY = ?";
-    $hashCountValue = $app['db']->fetchAssoc($sqlHashCount, array((int) $hasher_id, (int) $kennelKy));
-
-    # Obtain the number of harings
-    $sqlHareCount = "SELECT COUNT(*) AS THE_COUNT FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
-    WHERE HARINGS_HASHER_KY = ? AND HASHES.KENNEL_KY = ?";
-    $hareCountValue = $app['db']->fetchAssoc($sqlHareCount, array((int) $hasher_id, (int) $kennelKy));
-
-    # Establish and set the return value
-    $returnValue = $app['twig']->render('hasher_details.twig',array(
-      'pageTitle' => 'Hasher Details',
-      'firstHeader' => 'Basic Details',
-      'secondHeader' => 'Statistics',
-      'hasherValue' => $hasher,
-      'hashCount' => $hashCountValue['THE_COUNT'],
-      'hareCount' => $hareCountValue['THE_COUNT'],
-      'kennel_abbreviation' => $kennel_abbreviation
-    ));
-
-    # Return the return value
-    return $returnValue;
-
-  }
 
   public function viewHasherChartsAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
@@ -2978,7 +2912,6 @@ public function getProjectedHasherAnalversariesAction(Request $request, Applicat
       HASHER_ABBREVIATION,
       LAST_NAME,
       FIRST_NAME,
-      EMAIL,
       HOME_KENNEL,
       HOME_KENNEL_KY,
       DECEASED,
@@ -3232,7 +3165,6 @@ public function jumboCountsTablePostActionJson(Request $request, Application $ap
       HASHER_ABBREVIATION,
       LAST_NAME,
       FIRST_NAME,
-      EMAIL,
       HOME_KENNEL,
       HOME_KENNEL_KY,
       DECEASED,
@@ -3519,7 +3451,6 @@ public function jumboPercentagesTablePostActionJson(Request $request, Applicatio
       HASHER_ABBREVIATION,
       LAST_NAME,
       FIRST_NAME,
-      EMAIL,
       HOME_KENNEL,
       HOME_KENNEL_KY,
       DECEASED,

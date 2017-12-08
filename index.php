@@ -239,7 +239,7 @@ $app->get('/superadmin/hello',                                    'HASH\Controll
 $app->get('/admin/hello',                                         'HASH\Controller\AdminController::adminHelloAction');
 $app->get('/user/hello',                                          'HASH\Controller\AdminController::userHelloAction');
 
-$app->get('/{kennel_abbreviation}/listhashers',                                        'HASH\Controller\HashController::listHashersAction');
+#$app->get('/{kennel_abbreviation}/listhashers',                                        'HASH\Controller\HashController::listHashersAction');
 
 $app->get('/{kennel_abbreviation}/listhashers2',                                       'HASH\Controller\HashController::listHashersPreActionJson');
 $app->post('/{kennel_abbreviation}/listhashers2',                                       'HASH\Controller\HashController::getHasherListJson');
@@ -379,7 +379,7 @@ $app->post('/{kennel_abbreviation}/jumboPercentagesTable',                'HASH\
 
 
 # Modify the participation for an event
-$app->get('/admin/event/manageparticipation/{hash_id}',            'HASH\Controller\HashEventController::hashParticipationAction');
+#$app->get('/admin/event/manageparticipation/{hash_id}',            'HASH\Controller\HashEventController::hashParticipationAction');
 
 # Modify the participation for an event
 $app->get('/admin/event/manageparticipation2/{hash_id}',            'HASH\Controller\HashEventController::hashParticipationJsonPreAction');
@@ -396,7 +396,7 @@ $app->post('/admin/event/getHaresForEvent',                        'HASH\Control
 $app->post('/admin/event/getHashersForEvent',                      'HASH\Controller\HashEventController::getHashersForEvent');
 
 $app->get('/admin/listhashes',                                     'HASH\Controller\AdminController::listHashesAction');
-$app->get('/admin/listhashers',                                    'HASH\Controller\AdminController::listHashersAction');
+#$app->get('/admin/listhashers',                                    'HASH\Controller\AdminController::listHashersAction');
 
 $app->get('/admin/listhashes2',                                    'HASH\Controller\AdminController::listHashesPreActionJson');
 $app->post('/admin/listhashes2',                                   'HASH\Controller\AdminController::getHashListJson');

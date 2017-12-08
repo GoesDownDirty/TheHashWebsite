@@ -153,33 +153,9 @@ class AdminController
 
 
 
-  #Define the action
-  public function listHashersAction(Request $request, Application $app){
 
-    #Define the SQL to execute
-    $sql = "SELECT
-      HASHER_KY AS THE_KEY,
-      HASHER_NAME AS NAME,
-      FIRST_NAME,
-      LAST_NAME,
-      EMAIL FROM HASHERS";
 
-    #Execute the SQL statement; create an array of rows
-    $hasherList = $app['db']->fetchAll($sql);
 
-    # Establish and set the return value
-    $returnValue = $app['twig']->render('admin_hasher_list.twig',array(
-      'pageTitle' => 'The List of Hashers',
-      'pageSubTitle' => 'The List of *ALL* Hashers',
-      'theList' => $hasherList,
-      'pageCaption' => "",
-      'tableCaption' => ""
-    ));
-
-    #Return the return value
-    return $returnValue;
-
-  }
 
   #Define the action
   public function d3testAction(Request $request, Application $app){
@@ -737,8 +713,8 @@ class AdminController
 
     # Establish and set the return value
     $returnValue = $app['twig']->render('admin_hasher_list_json.twig',array(
-      'pageTitle' => 'The List of Hashers (Experimental Page)',
-      'pageSubTitle' => 'The List of *ALL* Hashers',
+      'pageTitle' => 'The List of Hashers',
+      'pageSubTitle' => '',
       'pageCaption' => "",
       'tableCaption' => ""
     ));
@@ -815,7 +791,6 @@ class AdminController
         HASHER_KY AS THE_KEY,
         FIRST_NAME,
         LAST_NAME,
-        EMAIL,
         HASHER_ABBREVIATION
       FROM HASHERS
       WHERE
@@ -823,7 +798,6 @@ class AdminController
           HASHER_NAME LIKE ? OR
           FIRST_NAME LIKE ? OR
           LAST_NAME LIKE ? OR
-          EMAIL LIKE ? OR
           HASHER_ABBREVIATION LIKE ?)
       ORDER BY $inputOrderColumnIncremented $inputOrderDirectionExtracted
       LIMIT $inputStart,$inputLength";
@@ -837,7 +811,6 @@ class AdminController
         HASHER_NAME LIKE ? OR
         FIRST_NAME LIKE ? OR
         LAST_NAME LIKE ? OR
-        EMAIL LIKE ? OR
         HASHER_ABBREVIATION LIKE ?)";
 
     #Define the sql that gets the overall counts
@@ -851,7 +824,6 @@ class AdminController
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
-      (string) $inputSearchValueModified,
       (string) $inputSearchValueModified));
 
     #Perform the untiltered count
@@ -859,7 +831,6 @@ class AdminController
 
     #Perform the filtered count
     $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
-      (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,

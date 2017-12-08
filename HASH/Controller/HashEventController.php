@@ -790,54 +790,6 @@ class HashEventController
   }
 
 
-    public function hashParticipationAction(Request $request, Application $app, int $hash_id){
-
-
-      #Define the SQL to execute
-      $hasherListSQL = "SELECT *
-        FROM HASHINGS
-        JOIN HASHERS ON HASHINGS.HASHER_KY = HASHERS.HASHER_KY
-        WHERE HASHINGS.HASH_KY = ? ";
-
-      $hareListSQL = "SELECT *
-        FROM HARINGS
-        JOIN HASHERS ON HARINGS.HARINGS_HASHER_KY = HASHERS.HASHER_KY
-        WHERE HARINGS.HARINGS_HASH_KY = ?";
-
-      $allHashersSQL = "SELECT
-        HASHER_KY, HASHER_NAME, LAST_NAME, FIRST_NAME, EMAIL,HASHER_ABBREVIATION
-        FROM HASHERS
-        ORDER BY HASHER_NAME";
-
-      #Obtain hash event information
-      $hashEventInfoSQL = "SELECT * FROM HASHES JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
-
-      #Execute the SQL statement; create an array of rows
-      $hasherList = $app['db']->fetchAll($hasherListSQL,array((int)$hash_id));
-      $hareList = $app['db']->fetchAll($hareListSQL,array((int)$hash_id));
-      $allHashersList = $app['db']->fetchAll($allHashersSQL);
-      $hashEvent = $app['db']->fetchAssoc($hashEventInfoSQL,array((int)$hash_id));
-
-      $kennelAbbreviation = $hashEvent['KENNEL_ABBREVIATION'];
-      $kennelEventNumber = $hashEvent['KENNEL_EVENT_NUMBER'];
-      $eventDate = $hashEvent['EVENT_DATE'];
-      $pageTitle = "Participation: $kennelAbbreviation # $kennelEventNumber ($eventDate)";
-
-      #Establish the return value
-      $returnValue = $app['twig']->render('event_participation.twig', array (
-        'pageTitle' => $pageTitle,
-        'pageSubTitle' => 'Not Sure',
-        'pageHeader' => 'Why is this so complicated ?',
-        'hasherList' => $hasherList,
-        'hareList' => $hareList,
-        'allHashersList' => $allHashersList,
-        'hash_key'=> $hash_id
-      ));
-
-      #Return the return value
-      return $returnValue;
-
-    }
 
 
     public function hashParticipationJsonPreAction(Request $request, Application $app, int $hash_id){
@@ -909,7 +861,6 @@ class HashEventController
             'HASHER_ABBREVIATION' => $hasherValue['HASHER_ABBREVIATION'],
             'LAST_NAME' => $hasherValue['LAST_NAME'],
             'FIRST_NAME' => $hasherValue['FIRST_NAME'],
-            'EMAIL' => $hasherValue['EMAIL'],
             'HOME_KENNEL' => $hasherValue['HOME_KENNEL'],
             'HOME_KENNEL_KY' => $hasherValue['HOME_KENNEL_KY'],
             'DECEASED' => $hasherValue['DECEASED'],
@@ -991,7 +942,6 @@ class HashEventController
             'HASHER_ABBREVIATION' => $hasherValue['HASHER_ABBREVIATION'],
             'LAST_NAME' => $hasherValue['LAST_NAME'],
             'FIRST_NAME' => $hasherValue['FIRST_NAME'],
-            'EMAIL' => $hasherValue['EMAIL'],
             'HOME_KENNEL' => $hasherValue['HOME_KENNEL'],
             'HOME_KENNEL_KY' => $hasherValue['HOME_KENNEL_KY'],
             'DECEASED' => $hasherValue['DECEASED'],

@@ -34,7 +34,6 @@ class HashPersonController
         'HASHER_ABBREVIATION' => $hasherValue['HASHER_ABBREVIATION'],
         'LAST_NAME' => $hasherValue['LAST_NAME'],
         'FIRST_NAME' => $hasherValue['FIRST_NAME'],
-        'EMAIL' => $hasherValue['EMAIL'],
         'HOME_KENNEL' => $hasherValue['HOME_KENNEL'],
         'HOME_KENNEL_KY' => $hasherValue['HOME_KENNEL_KY'],
         'DECEASED' => $hasherValue['DECEASED'],
@@ -45,7 +44,6 @@ class HashPersonController
       ->add('HASHER_ABBREVIATION')
       ->add('LAST_NAME')
       ->add('FIRST_NAME')
-      ->add('EMAIL')
       ->add('HOME_KENNEL')
       ->add('HOME_KENNEL_KY')
       ->add('DECEASED', ChoiceType::class, array('choices'  => array(
@@ -73,7 +71,6 @@ class HashPersonController
           $tempHasherAbbreviation = $data['HASHER_ABBREVIATION'];
           $tempLastName = $data['LAST_NAME'];
           $tempFirstName = $data['FIRST_NAME'];
-          $tempEmail = $data['EMAIL'];
           $tempHomeKennel = $data['HOME_KENNEL'];
           $tempKennelKy = $data['HOME_KENNEL_KY'];
           $tempDeceased = $data['DECEASED'];
@@ -81,15 +78,13 @@ class HashPersonController
           $sql = "
             UPDATE HASHERS
             SET
-              HASHER_NAME= ?, HASHER_ABBREVIATION= ?, LAST_NAME= ?, FIRST_NAME=?,
-              EMAIL=?, HOME_KENNEL=?, HOME_KENNEL_KY=?, DECEASED=?
+              HASHER_NAME= ?, HASHER_ABBREVIATION= ?, LAST_NAME= ?, FIRST_NAME=?, HOME_KENNEL=?, HOME_KENNEL_KY=?, DECEASED=?
             WHERE HASHER_KY=?";
           $app['dbs']['mysql_write']->executeUpdate($sql,array(
             $tempHasherName,
             $tempHasherAbbreviation,
             $tempLastName,
             $tempFirstName,
-            $tempEmail,
             $tempHomeKennel,
             $tempKennelKy,
             $tempDeceased,
@@ -130,7 +125,6 @@ class HashPersonController
       ->add('HASHER_ABBREVIATION')
       ->add('LAST_NAME')
       ->add('FIRST_NAME')
-      ->add('EMAIL')
       ->add('HOME_KENNEL')
       ->add('DECEASED', ChoiceType::class, array('choices'  => array(
         'No' => '0000000000',
@@ -157,9 +151,7 @@ class HashPersonController
           $tempHasherAbbreviation = $data['HASHER_ABBREVIATION'];
           $tempLastName = $data['LAST_NAME'];
           $tempFirstName = $data['FIRST_NAME'];
-          $tempEmail = $data['EMAIL'];
           $tempHomeKennel = $data['HOME_KENNEL'];
-          #$tempKennelKy = $data['HOME_KENNEL_KY'];
           $tempKennelKy = 0;
           $tempDeceased = $data['DECEASED'];
 
@@ -170,11 +162,10 @@ class HashPersonController
               HASHER_ABBREVIATION,
               LAST_NAME,
               FIRST_NAME,
-              EMAIL,
               HOME_KENNEL,
               HOME_KENNEL_KY,
               DECEASED
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 
           $app['dbs']['mysql_write']->executeUpdate($sql,array(
@@ -182,7 +173,6 @@ class HashPersonController
             $tempHasherAbbreviation,
             $tempLastName,
             $tempFirstName,
-            $tempEmail,
             $tempHomeKennel,
             $tempKennelKy,
             $tempDeceased

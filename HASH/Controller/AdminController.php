@@ -413,6 +413,8 @@ class AdminController
       $inputOrderDirectionExtracted = $inputOrderRaw[0]['dir'];
     }else{
       #$app['monolog']->addDebug("inside inputOrderRaw is null");
+      $inputOrderColumnIncremented =2;
+      $inputOrderDirectionExtracted = "desc";
     }
 
     #-------------- End: Modify the input parameters  --------------------------

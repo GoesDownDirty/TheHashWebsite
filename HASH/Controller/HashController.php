@@ -688,6 +688,9 @@ class HashController
       $cityHashingsCountMax = $cityHashingsCountList[0]['THE_COUNT'];
     }
 
+    #Obtain their largest streak
+    $longestStreakValue = $app['db']->fetchAssoc(THE_LONGEST_STREAKS_FOR_HASHER, array((int) $kennelKy , (int) $hasher_id));
+
     # Establish and set the return value
     $returnValue = $app['twig']->render('hasher_chart_details.twig',array(
       'pageTitle' => 'Hasher Charts and Details',
@@ -710,7 +713,8 @@ class HashController
       'the_hashes' => $theHashes,
       'geocode_api_value' => GOOGLE_MAPS_JAVASCRIPT_API_KEY,
       'avg_lat' => $avgLat,
-      'avg_lng' => $avgLng
+      'avg_lng' => $avgLng,
+      'longest_streak' => $longestStreakValue['MAX_STREAK']
     ));
 
     # Return the return value

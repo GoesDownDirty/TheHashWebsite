@@ -892,7 +892,7 @@ class ObscureStatisticsController{
       #Set the return value
       $returnValue = $app['twig']->render('name_number_basic_list.twig',array(
         'pageTitle' => $pageTitle,
-        'tableCaption' => 'Presented by Goes Down Dirty',
+        'tableCaption' => 'Longest streak per hasher',
 
         'columnOneName' => 'Hasher Name',
         'columnTwoName' => 'Streak Length',

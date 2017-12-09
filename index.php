@@ -329,6 +329,9 @@ $app->get('/{kennel_abbreviation}/getHasherAnalversaries/{hasher_id}',          
 $app->get('/{kennel_abbreviation}/getProjectedHasherAnalversaries/{hasher_id}',         'HASH\Controller\HashController::getProjectedHasherAnalversariesAction');
 
 
+$app->get('/{kennel_abbreviation}/longestStreaks',                                      'HASH\Controller\ObscureStatisticsController::getLongestStreaksAction');
+
+
 # Hash event modification
 $app->get('/admin/modifyhash/form/{hash_id}',                     'HASH\Controller\HashEventController::adminModifyHashAction');
 $app->post('/admin/modifyhash/form/{hash_id}',                    'HASH\Controller\HashEventController::adminModifyHashAction');

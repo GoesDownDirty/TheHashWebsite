@@ -873,6 +873,36 @@ class ObscureStatisticsController{
       return $returnValue;
     }
 
+
+    public function getLongestStreaksAction(Request $request, Application $app, string $kennel_abbreviation){
+
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      #Define the sql statement to execute
+      $theSql = THE_LONGEST_STREAKS;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $kennelKy));
+
+      #Define the page title
+      $pageTitle = "The longest streaks";
+
+      #Set the return value
+      $returnValue = $app['twig']->render('name_number_basic_list.twig',array(
+        'pageTitle' => $pageTitle,
+        'tableCaption' => 'Presented by Goes Down Dirty',
+
+        'columnOneName' => 'Hasher Name',
+        'columnTwoName' => 'Streak Length',
+        'theList' => $theResults,
+        'kennel_abbreviation' => $kennel_abbreviation
+      ));
+
+      return $returnValue;
+    }
+
     public function longestCareerAction(Request $request, Application $app, string $kennel_abbreviation){
 
       #Obtain the kennel key

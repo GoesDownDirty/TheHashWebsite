@@ -1723,6 +1723,29 @@ class ObscureStatisticsController{
     }
 
     #Landing screen for year in review
+    public function aboutContactAction(Request $request, Application $app, string $kennel_abbreviation){
+
+      #Establish the page title
+      $pageTitle = "About this application";
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      #Establish the return value
+      $returnValue = $app['twig']->render('about.twig', array (
+        'pageTitle' => $pageTitle,
+        'yearValue' => $year_value,
+        'kennel_abbreviation' => $kennel_abbreviation,
+        'theList' => $hasherCountList,
+        'adminEmail' => ADMINISTRATOR_EMAIL
+      ));
+
+      #Return the return value
+      return $returnValue;
+
+    }
+
+    #Landing screen for year in review
     public function googleGeoCodeTestAction(Request $request, Application $app, string $kennel_abbreviation){
 
       #Establish the page title

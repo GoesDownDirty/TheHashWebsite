@@ -330,6 +330,7 @@ $app->get('/{kennel_abbreviation}/getProjectedHasherAnalversaries/{hasher_id}', 
 
 
 $app->get('/{kennel_abbreviation}/longestStreaks',                                      'HASH\Controller\ObscureStatisticsController::getLongestStreaksAction');
+$app->get('/{kennel_abbreviation}/aboutContact',                                        'HASH\Controller\ObscureStatisticsController::aboutContactAction');
 
 
 # Hash event modification

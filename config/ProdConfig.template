@@ -25,3 +25,6 @@ define("VALID_KENNEL_ABBREVIATIONS","sch4|SCH4|SCH4BASH|sch4bash|LVH3|lvh3|SWOT|
 
 // Define the default kennel abbreviation (what you go to on the "/" URL)
 define("DEFAULT_KENNEL_ABBREVIATION", "SCH4");
+
+// Establish the contact email for the local administrator
+define("ADMINISTRATOR_EMAIL","foo@gmail.com");

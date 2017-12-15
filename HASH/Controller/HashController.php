@@ -604,6 +604,57 @@ class HashController
 
 
 
+  public function hashedWithAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
+
+    # Declare the SQL used to retrieve this information
+    $sql_for_hasher_lookup = "SELECT HASHER_NAME FROM HASHERS WHERE HASHER_KY = ? ";
+
+    # Make a database call to obtain the hasher information
+    $hasher = $app['db']->fetchAssoc($sql_for_hasher_lookup, array((int) $hasher_id));
+
+    # Establish and set the return value
+    $hasherName = $hasher['HASHER_NAME'];
+
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+    #Define the sql statement to execute
+    $theSql = "
+      SELECT HASHER_NAME NAME, COUNT(*) AS VALUE
+	FROM HASHERS
+	JOIN HASHINGS ON HASHERS.HASHER_KY=HASHINGS.HASHER_KY
+       WHERE HASHINGS.HASH_KY IN (
+      SELECT HASHES.HASH_KY
+	FROM HASHINGS
+	JOIN HASHES ON HASHINGS.HASH_KY=HASHES.HASH_KY
+       WHERE HASHINGS.HASHER_KY=?
+	 AND HASHES.KENNEL_KY=?)
+         AND HASHINGS.HASHER_KY!=?
+       GROUP BY HASHER_NAME
+       ORDER BY VALUE DESC, NAME";
+
+    #Query the database
+    $theResults = $app['db']->fetchAll($theSql, array($hasher_id, (int) $kennelKy, $hasher_id));
+
+    #Define the page title
+    $pageTitle = "Hashers that have hashed with $hasherName";
+
+    #Set the return value
+    $returnValue = $app['twig']->render('name_number_basic_list.twig',array(
+      'pageTitle' => $pageTitle,
+      'tableCaption' => '',
+
+      'columnOneName' => 'Hasher Name',
+      'columnTwoName' => 'Count',
+      'theList' => $theResults,
+      'kennel_abbreviation' => $kennel_abbreviation
+    ));
+
+    return $returnValue;
+  }
+
+
+
   public function viewHasherChartsAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
     # Declare the SQL used to retrieve this information

@@ -265,6 +265,7 @@ $app->get('/{kennel_abbreviation}/listhashes/byhasher/{hasher_id}',             
 $app->get('/{kennel_abbreviation}/listhashes/byhare/{hasher_id}',                       'HASH\Controller\HashController::listHashesByHareAction');
 #$app->get('/{kennel_abbreviation}/hashers/{hasher_id}',                                 'HASH\Controller\HashController::viewHasherAction');
 $app->get('/{kennel_abbreviation}/hashers/{hasher_id}',                                 'HASH\Controller\HashController::viewHasherChartsAction');
+$app->get('/{kennel_abbreviation}/hashedWith/{hasher_id}',                                 'HASH\Controller\HashController::hashedWithAction');
 
 $app->get('/{kennel_abbreviation}/hares/overall/{hasher_id}',     'HASH\Controller\HashController::viewOverallHareChartsAction');
 $app->get('/{kennel_abbreviation}/hares/true/{hasher_id}',        'HASH\Controller\HashController::viewTrueHareChartsAction');

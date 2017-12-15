@@ -2549,7 +2549,7 @@ public function miscellaneousStatsAction(Request $request, Application $app, str
   $mostRecentHashValue = $app['db']->fetchAssoc($mostRecentHashSQL, array((int) $kennelKy));
 
   #Obtain the kennels that are being tracked in this website instance
-  $listOfKennelsSQL = "SELECT * FROM KENNELS WHERE IN_RECORD_KEEPING = 1";
+  $listOfKennelsSQL = "SELECT * FROM KENNELS WHERE IN_RECORD_KEEPING = 1 OR SITE_ADDRESS IS NOT NULL ORDER BY KENNEL_ABBREVIATION";
   $kennelValues = $app['db']->fetchAll($listOfKennelsSQL);
 
   # Establish and set the return value

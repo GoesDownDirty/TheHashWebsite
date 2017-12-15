@@ -10,9 +10,9 @@
             </a>
             {% for kennelValue in kennelValues %}
               {% if kennel_abbreviation == kennelValue.KENNEL_ABBREVIATION %}
-                <a class="list-group-item" href="/{{kennelValue.KENNEL_ABBREVIATION}}"><b>{{kennelValue.KENNEL_ABBREVIATION}} Statistics</b></a>
+                <a class="list-group-item" href="{{kennelValue.SITE_ADDRESS}}/{{kennelValue.KENNEL_ABBREVIATION}}"><b>{{kennelValue.KENNEL_ABBREVIATION}} Statistics</b></a>
               {% else %}
-                <a class="list-group-item" href="/{{kennelValue.KENNEL_ABBREVIATION}}">{{kennelValue.KENNEL_ABBREVIATION}} Statistics</a>
+                <a class="list-group-item" href="{{kennelValue.SITE_ADDRESS}}/{{kennelValue.KENNEL_ABBREVIATION}}">{{kennelValue.KENNEL_ABBREVIATION}} Statistics</a>
               {% endif %}
             {% endfor %}
 

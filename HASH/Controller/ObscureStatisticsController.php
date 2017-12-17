@@ -890,14 +890,15 @@ class ObscureStatisticsController{
       $pageTitle = "The longest streaks";
 
       #Set the return value
-      $returnValue = $app['twig']->render('name_number_basic_list.twig',array(
+      $returnValue = $app['twig']->render('name_number_list.twig',array(
         'pageTitle' => $pageTitle,
         'tableCaption' => 'Longest streak per hasher',
 
         'columnOneName' => 'Hasher Name',
         'columnTwoName' => 'Streak Length',
         'theList' => $theResults,
-        'kennel_abbreviation' => $kennel_abbreviation
+        'kennel_abbreviation' => $kennel_abbreviation,
+        'pageTracking' => 'LongestStreaks'
       ));
 
       return $returnValue;

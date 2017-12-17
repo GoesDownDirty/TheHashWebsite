@@ -804,7 +804,7 @@ class AdminController
     $inputOrderRaw = isset($_POST['order']) ? $_POST['order'] : null;
     $inputOrderColumnExtracted = "2";
     $inputOrderColumnIncremented = "2";
-    $inputOrderDirectionExtracted = "desc";
+    $inputOrderDirectionExtracted = "asc";
     if(!is_null($inputOrderRaw)){
       #$app['monolog']->addDebug("inside inputOrderRaw not null");
       $inputOrderColumnExtracted = $inputOrderRaw[0]['column'];

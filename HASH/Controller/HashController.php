@@ -620,7 +620,7 @@ class HashController
 
     #Define the sql statement to execute
     $theSql = "
-      SELECT HASHER_NAME NAME, COUNT(*) AS VALUE
+      SELECT HASHERS.HASHER_NAME AS NAME, HASHERS.HASHER_KY AS THE_KEY, COUNT(*) AS VALUE
 	FROM HASHERS
 	JOIN HASHINGS ON HASHERS.HASHER_KY=HASHINGS.HASHER_KY
        WHERE HASHINGS.HASH_KY IN (
@@ -640,14 +640,15 @@ class HashController
     $pageTitle = "Hashers that have hashed with $hasherName";
 
     #Set the return value
-    $returnValue = $app['twig']->render('name_number_basic_list.twig',array(
+    $returnValue = $app['twig']->render('name_number_list.twig',array(
       'pageTitle' => $pageTitle,
       'tableCaption' => '',
 
       'columnOneName' => 'Hasher Name',
       'columnTwoName' => 'Count',
       'theList' => $theResults,
-      'kennel_abbreviation' => $kennel_abbreviation
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'pageTracking' => 'HashedWith'
     ));
 
     return $returnValue;

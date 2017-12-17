@@ -620,7 +620,7 @@ class HashController
 
     #Define the sql statement to execute
     $theSql = "
-      SELECT HASHER_NAME NAME, COUNT(*) AS VALUE
+      SELECT HASHERS.HASHER_NAME AS NAME, HASHERS.HASHER_KY AS THE_KEY, COUNT(*) AS VALUE
 	FROM HASHERS
 	JOIN HASHINGS ON HASHERS.HASHER_KY=HASHINGS.HASHER_KY
        WHERE HASHINGS.HASH_KY IN (
@@ -640,14 +640,15 @@ class HashController
     $pageTitle = "Hashers that have hashed with $hasherName";
 
     #Set the return value
-    $returnValue = $app['twig']->render('name_number_basic_list.twig',array(
+    $returnValue = $app['twig']->render('name_number_list.twig',array(
       'pageTitle' => $pageTitle,
       'tableCaption' => '',
 
       'columnOneName' => 'Hasher Name',
       'columnTwoName' => 'Count',
       'theList' => $theResults,
-      'kennel_abbreviation' => $kennel_abbreviation
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'pageTracking' => 'HashedWith'
     ));
 
     return $returnValue;
@@ -2340,6 +2341,9 @@ public function hasherCountsByHareAction(Request $request, Application $app, int
   #Obtain the kennel key
   $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
+  $hypersOnly = isset($_GET['type']) && $_GET['type']=='hyper';
+  $trueOnly = isset($_GET['type']) && $_GET['type']=='true';
+
   #Define the SQL to execute
   $sql = "SELECT
       HASHERS.HASHER_KY AS THE_KEY,
@@ -2353,9 +2357,11 @@ public function hasherCountsByHareAction(Request $request, Application $app, int
     WHERE
     	HARINGS.HARINGS_HASHER_KY = ?
         AND HASHINGS.HASHER_KY != ?
-        AND HASHES.KENNEL_KY = ?
+        AND HASHES.KENNEL_KY = ? " .
+        ($hypersOnly ? "AND HASHES.IS_HYPER = 1 " : "") .
+        ($trueOnly ? "AND HASHES.IS_HYPER = 0 " : "") . "
     GROUP BY HASHERS.HASHER_KY, HASHERS.HASHER_NAME
-    ORDER BY VALUE DESC";
+    ORDER BY VALUE DESC, NAME";
 
   #Execute the SQL statement; create an array of rows
   $hashList = $app['db']->fetchAll($sql,array( (int) $hare_id, (int)$hare_id, (int) $kennelKy));
@@ -2368,7 +2374,9 @@ public function hasherCountsByHareAction(Request $request, Application $app, int
 
   # Establish and set the return value
   $hasherName = $hasher['HASHER_NAME'];
-  $captionValue = "The hashers who've hashed under the hare, $hasherName";
+  $captionValue = "The hashers who've hashed under the " .
+    ($hypersOnly ? "hyper " : "") .
+    ($trueOnly ? "true " : "") . "hare, $hasherName";
   $returnValue = $app['twig']->render('name_number_list.twig',array(
     'pageTitle' => 'Hasher Counts',
     'columnOneName' => 'Hasher Name',

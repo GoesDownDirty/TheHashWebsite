@@ -257,6 +257,23 @@ class ObscureStatisticsController{
 
     }
 
+    public function getKennelsVirginHash(Request $request, Application $app, string $kennel_abbreviation){
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      #Define the sql statement to execute
+      $theSql = SELECT_KENNELS_VIRGIN_HASH;
+
+      #Query the database
+      $theirVirginHash = $app['db']->fetchAssoc($theSql, array((int) $kennelKy));
+
+      #Set the return value
+      $returnValue = $app->json($theirVirginHash,200);
+      return $returnValue;
+
+    }
+
     #Obtain the latest hash of a given hasher
     public function getHashersLatestHash(Request $request, Application $app, string $kennel_abbreviation){
 
@@ -271,6 +288,23 @@ class ObscureStatisticsController{
 
       #Query the database
       $theirLatestHash = $app['db']->fetchAssoc($theSql, array((int) $theHasherKey, (int) $kennelKy));
+
+      #Set the return value
+      $returnValue = $app->json($theirLatestHash,200);
+      return $returnValue;
+
+    }
+
+    public function getKennelsLatestHash(Request $request, Application $app, string $kennel_abbreviation){
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      #Define the sql statement to execute
+      $theSql = SELECT_KENNELS_MOST_RECENT_HASH;
+
+      #Query the database
+      $theirLatestHash = $app['db']->fetchAssoc($theSql, array((int) $kennelKy));
 
       #Set the return value
       $returnValue = $app->json($theirLatestHash,200);
@@ -400,6 +434,57 @@ class ObscureStatisticsController{
 
       #Query the database
       $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+    public function getKennelHashesByCity(Request $request, Application $app, string $kennel_abbreviation){
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      #Define the sql statement to execute
+      $theSql = KENNEL_HASH_COUNTS_BY_CITY;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $kennelKy));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+    public function getKennelHashesByCounty(Request $request, Application $app, string $kennel_abbreviation){
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      #Define the sql statement to execute
+      $theSql = KENNEL_HASH_COUNTS_BY_COUNTY;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $kennelKy));
+
+      #Set the return value
+      $returnValue = $app->json($theResults,200);
+      return $returnValue;
+
+    }
+
+    public function getKennelHashesByPostalcode(Request $request, Application $app, string $kennel_abbreviation){
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      #Define the sql statement to execute
+      $theSql = KENNEL_HASH_COUNTS_BY_POSTAL_CODE;
+
+      #Query the database
+      $theResults = $app['db']->fetchAll($theSql, array((int) $kennelKy));
 
       #Set the return value
       $returnValue = $app->json($theResults,200);
@@ -1953,6 +2038,126 @@ class ObscureStatisticsController{
 
       #return the return value
       return $returnValue;
+    }
+
+    public function viewKennelChartsAction(Request $request, Application $app, string $kennel_abbreviation){
+
+        #Obtain the kennel key
+        $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+        #Obtain the kennel value
+        $kennelValueSql = "SELECT KENNELS.* FROM KENNELS WHERE KENNEL_KY = ?";
+        $kennelValue = $app['db']->fetchAssoc($kennelValueSql, array((int) $kennelKy));
+
+        # Obtain their hashes
+        $sqlTheHashes = "SELECT HASHES.* FROM HASHES
+        WHERE KENNEL_KY = ? and LAT is not null and LNG is not null";
+        $theHashes = $app['db']->fetchAll($sqlTheHashes, array((int) $kennelKy));
+
+        #Obtain the average lat
+        $sqlTheAverageLatLong = "SELECT AVG(LAT) AS THE_LAT, AVG(LNG) AS THE_LNG FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+        WHERE KENNEL_KY = ? and LAT is not null and LNG is not null";
+        $theAverageLatLong = $app['db']->fetchAssoc($sqlTheAverageLatLong, array((int) $kennelKy));
+        $avgLat = $theAverageLatLong['THE_LAT'];
+        $avgLng = $theAverageLatLong['THE_LNG'];
+
+        #Obtain the number of hashes for this kennel
+        $sqlHashCountForKennel = "SELECT COUNT(*) AS THE_COUNT FROM HASHES WHERE KENNEL_KY = ?";
+        $hashCountValueForKennel = $app['db']->fetchAssoc($sqlHashCountForKennel, array((int) $kennelKy));
+        $hashCountForKennel = $hashCountValueForKennel['THE_COUNT'];
+
+        #Obtain the number of distinct hashers
+        $distinctHasherCountValueForKennel = $app['db']->fetchAssoc(KENNEL_NUM_OF_DISTINCT_HASHERS, array((int) $kennelKy));
+        $distinctHasherCountForKennel = $distinctHasherCountValueForKennel['THE_COUNT'];
+
+        #Obtain the number of distinct hashers
+        $distinctOverallHareCountValueForKennel = $app['db']->fetchAssoc(KENNEL_NUM_OF_DISTINCT_OVERALL_HARES, array((int) $kennelKy));
+        $distinctOverallHareCountForKennel = $distinctOverallHareCountValueForKennel['THE_COUNT'];
+
+        #Obtain the number of distinct hashers
+        $distinctTrueHareCountValueForKennel = $app['db']->fetchAssoc(KENNEL_NUM_OF_DISTINCT_TRUE_HARES, array((int) $kennelKy));
+        $distinctTrueHareCountForKennel = $distinctTrueHareCountValueForKennel['THE_COUNT'];
+
+        #Obtain the number of distinct hashers
+        $distinctHyperHareCountValueForKennel = $app['db']->fetchAssoc(KENNEL_NUM_OF_DISTINCT_HYPER_HARES, array((int) $kennelKy));
+        $distinctHyperHareCountForKennel = $distinctHyperHareCountValueForKennel['THE_COUNT'];
+
+
+        # Obtain the number of hashings
+        #$hashCountValue = $app['db']->fetchAssoc(PERSONS_HASHING_COUNT, array((int) $hasher_id, (int) $kennelKy));
+
+        # Obtain the hashes by month (name)
+        $theHashesByMonthNameList = $app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_MONTH_NAME, array((int) $kennelKy));
+
+        # Obtain the hashes by quarter
+        $theHashesByQuarterList = $app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_QUARTER, array((int) $kennelKy));
+
+        # Obtain the hashes by quarter
+        $theHashesByStateList = $app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_STATE, array((int) $kennelKy));
+
+        # Obtain the hashes by county
+        $theHashesByCountyList = $app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_COUNTY, array((int) $kennelKy));
+
+        # Obtain the hashes by postal code
+        $theHashesByPostalCodeList = $app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_POSTAL_CODE, array((int) $kennelKy));
+
+        # Obtain the hashes by day name
+        $theHashesByDayNameList = $app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_DAYNAME, array((int) $kennelKy));
+
+        #Obtain the hashes by year
+        $sqlHashesByYear = "SELECT YEAR(EVENT_DATE) AS THE_VALUE, COUNT(*) AS THE_COUNT
+         FROM
+        	HASHES
+          WHERE
+            HASHES.KENNEL_KY = ?
+        GROUP BY YEAR(EVENT_DATE)
+        ORDER BY YEAR(EVENT_DATE)";
+        $hashesByYearList = $app['db']->fetchAll($sqlHashesByYear, array((int) $kennelKy));
+
+        #Query the database
+        $cityHashingsCountList = $app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_CITY, array((int) $kennelKy));
+
+        #Obtain largest entry from the list
+        $cityHashingsCountMax = 1;
+        if(isset($cityHashingsCountList[0]['THE_COUNT'])){
+          $cityHashingsCountMax = $cityHashingsCountList[0]['THE_COUNT'];
+        }
+
+
+        # Establish and set the return value
+        $returnValue = $app['twig']->render('kennel_chart_details.twig',array(
+          'pageTitle' => 'Kennel Charts and Details',
+          'firstHeader' => 'Basic Details',
+          'secondHeader' => 'Statistics',
+          'kennelName' => $kennelValue['KENNEL_NAME'],
+          #'hasherValue' => $hasher,
+          #'hashCount' => $hashCountValue['THE_COUNT'],
+          #'hareCount' => $hareCountValue['THE_COUNT'],
+          'kennel_abbreviation' => $kennel_abbreviation,
+          'hashes_by_year_list' => $hashesByYearList,
+          #'harings_by_year_list' => $haringsByYearList,
+          'hashes_by_month_name_list' => $theHashesByMonthNameList,
+          'hashes_by_quarter_list' => $theHashesByQuarterList,
+          'hashes_by_state_list' => $theHashesByStateList,
+          'hashes_by_county_list' => $theHashesByCountyList,
+          'hashes_by_postal_code_list' => $theHashesByPostalCodeList,
+          'hashes_by_day_name_list' => $theHashesByDayNameList,
+          'city_hashings_count_list' => $cityHashingsCountList,
+          'city_hashings_max_value' => $cityHashingsCountMax,
+          'the_hashes' => $theHashes,
+          'geocode_api_value' => GOOGLE_MAPS_JAVASCRIPT_API_KEY,
+          'avg_lat' => $avgLat,
+          'avg_lng' => $avgLng,
+          'hash_count' => $hashCountForKennel,
+          'distinct_hasher_count' => $distinctHasherCountForKennel,
+          'distinct_true_hare_count' => $distinctTrueHareCountForKennel,
+          'distinct_hyper_hare_count' => $distinctHyperHareCountForKennel,
+          'distinct_overall_hare_count' =>$distinctOverallHareCountForKennel
+        ));
+
+
+        # Return the return value
+        return $returnValue;
     }
 
     #Landing screen for year in review

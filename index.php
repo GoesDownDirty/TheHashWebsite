@@ -272,6 +272,9 @@ $app->get('/{kennel_abbreviation}/hares/true/{hasher_id}',        'HASH\Controll
 $app->get('/{kennel_abbreviation}/hares/hyper/{hasher_id}',       'HASH\Controller\HashController::viewHyperHareChartsAction');
 
 
+$app->get('/{kennel_abbreviation}/chartsAndDetails',                                 'HASH\Controller\ObscureStatisticsController::viewKennelChartsAction');
+
+
 $app->get('/{kennel_abbreviation}/attendanceStatistics',                                'HASH\Controller\ObscureStatisticsController::viewAttendanceChartsAction');
 
 #First timers / last timers
@@ -427,6 +430,10 @@ $app->post('/{kennel_abbreviation}/statistics/getNonHyperHareCountsByYear',     
 $app->post('/{kennel_abbreviation}/statistics/hasher/firstHash',                           'HASH\Controller\ObscureStatisticsController::getHashersVirginHash');
 $app->post('/{kennel_abbreviation}/statistics/hasher/mostRecentHash',                      'HASH\Controller\ObscureStatisticsController::getHashersLatestHash');
 
+# Mappings for kennel specific statistics
+$app->post('/{kennel_abbreviation}/statistics/kennel/firstHash',                           'HASH\Controller\ObscureStatisticsController::getKennelsVirginHash');
+$app->post('/{kennel_abbreviation}/statistics/kennel/mostRecentHash',                      'HASH\Controller\ObscureStatisticsController::getKennelsLatestHash');
+
 # Mappings for hasher hashes by (year/month/state/etc)
 $app->post('/{kennel_abbreviation}/statistics/hasher/hashes/by/year',                      'HASH\Controller\ObscureStatisticsController::getHasherHashesByYear');
 $app->post('/{kennel_abbreviation}/statistics/hasher/hashes/by/quarter',                   'HASH\Controller\ObscureStatisticsController::getHasherHashesByQuarter');
@@ -434,6 +441,11 @@ $app->post('/{kennel_abbreviation}/statistics/hasher/hashes/by/month',          
 $app->post('/{kennel_abbreviation}/statistics/hasher/hashes/by/dayname',                   'HASH\Controller\ObscureStatisticsController::getHasherHashesByDayName');
 $app->post('/{kennel_abbreviation}/statistics/hasher/hashes/by/state',                     'HASH\Controller\ObscureStatisticsController::getHasherHashesByState');
 $app->post('/{kennel_abbreviation}/statistics/hasher/hashes/by/city',                      'HASH\Controller\ObscureStatisticsController::getHasherHashesByCity');
+
+# Mappings for kennel hashes by (year/month/state/etc)
+$app->post('/{kennel_abbreviation}/statistics/kennel/hashes/by/city',                      'HASH\Controller\ObscureStatisticsController::getKennelHashesByCity');
+$app->post('/{kennel_abbreviation}/statistics/kennel/hashes/by/county',                      'HASH\Controller\ObscureStatisticsController::getKennelHashesByCounty');
+$app->post('/{kennel_abbreviation}/statistics/kennel/hashes/by/postalcode',                      'HASH\Controller\ObscureStatisticsController::getKennelHashesByPostalcode');
 
 # Mappings for hasher harings by (year/month/state/etc)
 $app->post('/{kennel_abbreviation}/statistics/hasher/all/harings/by/year',                      'HASH\Controller\ObscureStatisticsController::getHasherAllHaringsByYear');

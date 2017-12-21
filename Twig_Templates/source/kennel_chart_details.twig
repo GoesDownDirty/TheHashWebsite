@@ -7,10 +7,10 @@
     <script type = "text/javascript" language = "javascript">
 
     //Function to get hares for the event
-    function getVirginHash(hasher_id){
-     var formData = {hasher_id:hasher_id};
+    function getVirginHash(){
+     var formData = null;
      $.ajax({
-         url : "/{{kennel_abbreviation}}/statistics/hasher/firstHash",
+         url : "/{{kennel_abbreviation}}/statistics/kennel/firstHash",
          type: "POST",
          data : formData,
          dataType : 'json',
@@ -48,10 +48,10 @@
    }
 
    //Function to get hares for the event
-   function getMostRecentHash(hasher_id){
-    var formData = {hasher_id:hasher_id};
+   function getMostRecentHash(){
+    var formData = null;
     $.ajax({
-        url : "/{{kennel_abbreviation}}/statistics/hasher/mostRecentHash",
+        url : "/{{kennel_abbreviation}}/statistics/kennel/mostRecentHash",
         type: "POST",
         data : formData,
         dataType : 'json',
@@ -95,8 +95,8 @@
 
 
 //Generic function to retrieve data
-function getListData(hasher_id,url_value,div_value, column_one_header, column_two_header){
- var formData = {hasher_id:hasher_id};
+function getListData(url_value,div_value, column_one_header, column_two_header){
+ var formData = null;
  $.ajax({
      url : url_value,
      type: "POST",
@@ -134,13 +134,18 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
    //Call these functions upon page load
    $(document).ready(function() {
-      getVirginHash({{hasherValue.HASHER_KY}});
-      getMostRecentHash({{hasherValue.HASHER_KY}});
+      getVirginHash();
+      getMostRecentHash();
+      getListData("/{{kennel_abbreviation}}/statistics/kennel/hashes/by/city","#kennelHashesByCity-list","City","Count");
+      getListData("/{{kennel_abbreviation}}/statistics/kennel/hashes/by/county","#kennelHashesByCounty-list","County","Count");
+      getListData("/{{kennel_abbreviation}}/statistics/kennel/hashes/by/postalcode","#kennelHashesByPostalcode-list","Postal Code","Count");
+
+      {#
       //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/year","#hasherHashesByYear-list","Year","Count");
       //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/quarter","#hasherHashesByQuarter-list","Quarter","Count");
       //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/month","#hasherHashesByMonth-list","Month","Count");
       //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/dayname","#hasherHashesByDay-list","Day Name","Count");
-      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/city","#hasherHashesByCity-list","City","Count");
+      //getListData("/{{kennel_abbreviation}}/statistics/kennel/hashes/by/city","#kennelHashesByCity-list","City","Count");
       //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/state","#hasherHashesByState-list","State","Count");
 
 
@@ -165,7 +170,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
       //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/coharecount/byhare/nonhypers","#cohareCountByHareNonHypers-list","Hasher","Count");
       //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/coharecount/byhare/onlyhypers","#cohareCountByHareOnlyHypers-list","Hasher","Count");
       //getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/coharecount/byhare/allhashes","#cohareCountByHareAllHashes-list","Hasher","Count");
-
+      #}
 
     });
 
@@ -176,45 +181,29 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
     <div class="container">
       <h1>{{pageTitle}}</h1>
-      <h5>
-        Hound Details |
-        <i><a href='/{{kennel_abbreviation}}/hares/overall/{{hasherValue.HASHER_KY}}?name={{hasherValue.HASHER_NAME|url_encode}}'>Overall Hare Details</a></i> |
-        <i><a href='/{{kennel_abbreviation}}/hares/true/{{hasherValue.HASHER_KY}}?name={{hasherValue.HASHER_NAME|url_encode}}'>True Hare Details</a></i> |
-        <i><a href='/{{kennel_abbreviation}}/hares/hyper/{{hasherValue.HASHER_KY}}?name={{hasherValue.HASHER_NAME|url_encode}}'>Hyper Hare Details</a></i>
-      </h5>
+
 
 
       <div class="row">
 
-        <div class="col-sm-5" style="background-color:lime;">
+        <div class="col-sm-6" style="background-color:lime;">
           <h3>Basic Details</h3>
           <dl class="dl-horizontal">
               {% autoescape %}
-                <dt>Hasher Name</dt><dd> {{hasherValue.HASHER_NAME}}</dd>
-                <dt>Hasher Abbreviation</dt><dd> {{hasherValue.HASHER_ABBREVIATION}} </dd>
-                <dt>Last Name</dt><dd> {{hasherValue.LAST_NAME|first}}{% for i in 2..hasherValue.LAST_NAME|length%}{{'*'}}{% endfor %} </dd>
-                <dt>First Name</dt><dd> {{hasherValue.FIRST_NAME|first}}{% for i in 2..hasherValue.FIRST_NAME|length%}{{'*'}}{% endfor %}</dd>
-                {% if hasherValue.DECEASED == "0000000001" %}
-                  <dt>Deceased</dt><dd> Sadly, yes.</dd>
-                {% endif %}
-                <dt>Hashing Count</dt><dd> {{hashCount}}</dd>
-                <dt>Haring Count</dt><dd> {{hareCount}}</dd>
-                <dt>Longest Streak</dt><dd>{{longest_streak}}</dd>
+                <dt>Kennel Name</dt><dd> {{kennelName}}</dd>
+                <dt>Kennel Abbreviation</dt><dd> {{kennel_abbreviation}} </dd>
+                <dt>Number of Hashes</dt><dd> {{hash_count}}</dd>
               {% endautoescape %}
           </dl>
         </div>
 
-        <div class="col-sm-7" style="background-color:silver;">
+        <div class="col-sm-6" style="background-color:gold;">
           <h3>Their hashings</h3>
           <dl class="dl-horizontal">
-            <a href='/{{kennel_abbreviation}}/listhashes/byhasher/{{hasherValue.HASHER_KY}}'>Their hashings</a><br>
-            <a href='/{{kennel_abbreviation}}/getHasherAnalversaries/{{hasherValue.HASHER_KY}}'>Their hashing analversaries</a><br>
-            <a href='/{{kennel_abbreviation}}/getProjectedHasherAnalversaries/{{hasherValue.HASHER_KY}}'>Their *predicted* hashing analversaries</a><br>
-            <a href='/{{kennel_abbreviation}}/hashedWith/{{hasherValue.HASHER_KY}}'>Hounds who have hashed with them<br>
-            {#
-            <a href='/{{kennel_abbreviation}}/getHasherCountsByHound/{{hasherValue.HASHER_KY}}'>Hounds who have hashed with them (Not written yet)</a><br>
-            #}
-            <a href='/{{kennel_abbreviation}}/attendanceRecordForHasher/{{hasherValue.HASHER_KY}}'>Attendance Record</a>
+            <dt># of hashers</dt><dd> <a href="/{{kennel_abbreviation}}/hashingCounts">{{distinct_hasher_count}}</a></dd>
+            <dt># of "True" hares</dt><dd> <a href="/{{kennel_abbreviation}}/nonHyperharingCounts">{{distinct_true_hare_count}} </a></dd>
+            <dt># of "Hyper" hares</dt><dd> <a href="/{{kennel_abbreviation}}/hyperharingCounts">{{distinct_hyper_hare_count}}</a></dd>
+            <dt># of "Overall" hares</dt><dd> <a href="/{{kennel_abbreviation}}/haringCounts">{{distinct_overall_hare_count}}</a></dd>
           </dl>
         </div>
 
@@ -225,7 +214,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
       <div class="row">
 
         <div class="col-sm-6" style="background-color:yellow">
-          <h3>Their first hashing</h3>
+          <h3>First</h3>
           <dl class="dl-horizontal">
             <dt>Hash Number</dt>
             <dd>
@@ -248,7 +237,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
 
         <div class="col-sm-6" style="background-color:silver">
-          <h3>Their latest hashing</h3>
+          <h3>Latest hashing</h3>
           <dl class="dl-horizontal">
             <dt>Hash Number</dt>
             <dd>
@@ -271,6 +260,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
       </div>
 
       <div class="row">
+
         <div class="col-sm-6">
 
           <canvas id="myChart" width="50" height="50"></canvas>
@@ -327,6 +317,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
 
       <div class="row">
+
         <div class="col-sm-6">
           <canvas id="myChart3" width="50" height="50"></canvas>
           <script>
@@ -512,7 +503,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
           <script>
           var ctx = document.getElementById("myChart5");
           var myChart = new Chart(ctx, {
-              type: 'polarArea',
+              type: 'pie',
               data: {
                   labels: [
                     {% for individualValue in hashes_by_state_list %}
@@ -566,7 +557,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
           <script>
           var ctx = document.getElementById("myChart6");
           var myChart = new Chart(ctx, {
-              type: 'radar',
+              type: 'pie',
               data: {
                   labels: [
                     {% for individualValue in hashes_by_day_name_list %}
@@ -582,8 +573,25 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
                       ],
                       fillColor:'rgba(75, 192, 192, 0.2)',
-                      backgroundColor:'rgba(239, 127, 15, 0.2)',
-                      borderColor:'rgba(239, 127, 15, 1)',
+
+                      backgroundColor:[
+                        'rgba(132, 234, 183,.2)',
+                        'rgba(239, 127, 15, 0.2)',
+                        'rgba(239, 15, 15, 0.2)',
+                        'rgba(201, 200, 253, 0.2)',
+                        'rgba(250, 200, 253, 0.2)',
+                        'rgba(150, 250, 253, 0.2)',
+                        'rgba(500, 100, 253, 0.2)'
+                      ],
+                      borderColor:[
+                        'rgba(132, 234, 183,1)',
+                        'rgba(239, 127, 15, 1)',
+                        'rgba(239, 15, 15, 1)',
+                        'rgba(201, 200, 253, 1)',
+                        'rgba(250, 200, 253, 1)',
+                        'rgba(150, 250, 253, 1)',
+                        'rgba(500, 100, 253, 1)'
+                      ],
                       borderWidth: 1
                   }]
               },
@@ -604,51 +612,72 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
           </script>
 
         </div>
+
       </div>
 
       <div class="row">
-        <a href="#citylist" class="btn btn-info" data-toggle="collapse">Show Hashings By City List</a>
-      </div>
-
-      <div class="row">
-
-        <div class="col-sm-4 collapse" style="background-color:yellow" id="citylist">
-          <dl class="dl-horizontal">
-            <h4>Hashes by city</h4>
-            <div data-role="content" id="hasherHashesByCity-list"></div>
-          </dl>
+        <div class="col-sm-4">
+          <a href="#citylist" class="btn btn-info" data-toggle="collapse">Show Hashes By City List</a>
+          <div class="collapse" style="background-color:yellow" id="citylist">
+            <dl class="dl-horizontal">
+              <h4>Hashes by city</h4>
+              <div data-role="content" id="kennelHashesByCity-list"></div>
+            </dl>
+          </div>
         </div>
+        <div class="col-sm-4">
+          <a href="#countylist" class="btn btn-info" data-toggle="collapse">Show Hashes By County List</a>
+          <div class="collapse" style="background-color:gold" id="countylist">
+            <dl class="dl-horizontal">
+              <h4>Hashes by county</h4>
+              <div data-role="content" id="kennelHashesByCounty-list"></div>
+            </dl>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <a href="#postalcodelist" class="btn btn-info" data-toggle="collapse">Show Hashes By Postal Code List</a>
+          <div class="collapse" style="background-color:lime" id="postalcodelist">
+            <dl class="dl-horizontal">
+              <h4>Hashes by postal code</h4>
+              <div data-role="content" id="kennelHashesByPostalcode-list"></div>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
 
       </div>
 
       <div class="row">
-        <div id = "div_one" class="col-sm-12">
+        <div id = "surrounding_div" class="col-sm-12" style="width:100%;height:600px">
           <h4>Hashes By City</h4>
           <canvas id="my_canvas" class="wordcloud"></canvas>
         </div>
       </div>
 
+
+
       <script type = "text/javascript" language = "javascript">
           var canvas = document.getElementById("my_canvas");
-          var parent = document.getElementById("div_one");
+          var parent = document.getElementById("surrounding_div");
           canvas.width = parent.offsetWidth;
           canvas.height = parent.offsetHeight;
       </script>
 
       <script>
+
+
             var options = {
               list: [
                 {% for item in city_hashings_count_list %}
-                    [
-                    "{% autoescape 'js' %}{{item.THE_VALUE}}{% endautoescape %}"
-                    ,
-                    "{{item.THE_COUNT}}"],
+                    //var theWeight = convertWordCloudValue("{{item.THE_COUNT}}");
+                    ["{% autoescape 'js' %}{{item.THE_VALUE}}{% endautoescape %}","{{min(80,item.THE_COUNT * 5)}}"],
                 {% endfor %}
               ],
               drawMask: false,
               shape: "diamond",
-              gridSize: 1,
-              weightFactor: {{85/city_hashings_max_value}}
+              gridSize: 5
             };
 
             WordCloud(document.getElementById('my_canvas'), options );
@@ -675,16 +704,15 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
             //mapTypeId: 'terrain'
           });
 
-
         {% for hashEventValue in the_hashes %}
-
           var event_num = "#{{hashEventValue.KENNEL_EVENT_NUMBER | escape('html')}}";
           var event_description = "{{hashEventValue.SPECIAL_EVENT_DESCRIPTION | escape('html')}}";
           var event_location = "{{hashEventValue.EVENT_LOCATION | escape('html')}}";
           var event_date = "{{hashEventValue.EVENT_DATE | date("m/d/Y" ) | escape('html')}}";
 
-          var textValue = "{{kennel_abbreviation}}"+ event_num +":" + event_description + " at " + event_location + " on " + event_date;      
+          var textValue = "{{kennel_abbreviation}}"+ event_num +":" + event_description + " at " + event_location + " on " + event_date;
           var eventLink = "/{{kennel_abbreviation}}/hashes/{{hashEventValue.HASH_KY}}";
+
           var marker = new google.maps.Marker({
             position: {lat: {{hashEventValue.LAT}}, lng:{{hashEventValue.LNG}}},
             map: map,
@@ -695,18 +723,12 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
             window.open(this.url);
           });
         {% endfor %}
-
-
-
-
         }
 
       </script>
 
-
       <script async defer src="https://maps.googleapis.com/maps/api/js?key={{geocode_api_value}}&callback=initMap">
       </script>
-
 
     </div>
 

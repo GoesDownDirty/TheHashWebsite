@@ -456,11 +456,13 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
 
       <div class="row">
-        <div id = "div_one" class="col-sm-6">
+        <div id = "div_one" class="col-sm-12" style="width:100%;height:600px">
           <h4>Overall Harings By City</h4>
           <canvas id="my_canvas" class="wordcloud"></canvas>
         </div>
-        <div id = "div_two" class="col-sm-6">
+      </div>
+      <div class="row">
+        <div id = "div_two" class="col-sm-12" style="width:100%;height:600px">
           <h4>Favorite Overall CoHares</h4>
           <canvas id="my_canvas2" class="wordcloud"></canvas>
         </div>
@@ -488,13 +490,13 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
                     [
                     "{% autoescape 'js' %}{{item.THE_VALUE}}{% endautoescape %}"
                     ,
-                    "{{item.THE_COUNT}}"],
+                    "{{min(80,item.THE_COUNT * 5)}}"],
                 {% endfor %}
               ],
               drawMask: false,
               shape: "diamond",
-              gridSize: 1,
-              weightFactor: {{85/city_harings_max_value}}
+              gridSize: 5,
+              drawOutOfBound: false
             };
 
             WordCloud(document.getElementById('my_canvas'), options );
@@ -506,13 +508,13 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
                 {% for item in cohare_count_list %}
                     [
                       "{% autoescape false %}{{item.THE_VALUE[:18]}}{% endautoescape %}"
-                    ,"{{item.THE_COUNT}}"],
+                    ,"{{min(80,item.THE_COUNT * 5)}}"],
                 {% endfor %}
               ],
               drawMask: false,
               shape: "diamond",
-              gridSize: 1,
-              weightFactor: {{85/cohare_count_max}}
+              gridSize: 5,
+              drawOutOfBound: false
             };
 
             WordCloud(document.getElementById('my_canvas2'), options2 );

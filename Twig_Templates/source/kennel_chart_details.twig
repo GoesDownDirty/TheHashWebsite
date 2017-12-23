@@ -677,7 +677,8 @@ function getListData(url_value,div_value, column_one_header, column_two_header){
               ],
               drawMask: false,
               shape: "diamond",
-              gridSize: 5
+              gridSize: 5,
+              drawOutOfBound: false
             };
 
             WordCloud(document.getElementById('my_canvas'), options );

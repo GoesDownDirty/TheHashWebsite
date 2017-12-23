@@ -622,7 +622,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
       </div>
 
       <div class="row">
-        <div id = "div_one" class="col-sm-12">
+        <div id = "div_one" class="col-sm-12" style="width:100%;height:600px">
           <h4>Hashes By City</h4>
           <canvas id="my_canvas" class="wordcloud"></canvas>
         </div>
@@ -642,13 +642,12 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
                     [
                     "{% autoescape 'js' %}{{item.THE_VALUE}}{% endautoescape %}"
                     ,
-                    "{{item.THE_COUNT}}"],
+                    "{{min(80,item.THE_COUNT * 5)}}"],
                 {% endfor %}
               ],
               drawMask: false,
               shape: "diamond",
-              gridSize: 1,
-              weightFactor: {{85/city_hashings_max_value}}
+              gridSize: 5
             };
 
             WordCloud(document.getElementById('my_canvas'), options );
@@ -683,7 +682,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
           var event_location = "{{hashEventValue.EVENT_LOCATION | escape('html')}}";
           var event_date = "{{hashEventValue.EVENT_DATE | date("m/d/Y" ) | escape('html')}}";
 
-          var textValue = "{{kennel_abbreviation}}"+ event_num +":" + event_description + " at " + event_location + " on " + event_date;      
+          var textValue = "{{kennel_abbreviation}}"+ event_num +":" + event_description + " at " + event_location + " on " + event_date;
           var eventLink = "/{{kennel_abbreviation}}/hashes/{{hashEventValue.HASH_KY}}";
           var marker = new google.maps.Marker({
             position: {lat: {{hashEventValue.LAT}}, lng:{{hashEventValue.LNG}}},

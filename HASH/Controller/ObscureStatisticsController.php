@@ -138,14 +138,45 @@ class ObscureStatisticsController{
     #Landing screen for year in review
     public function getYearInReviewAction(Request $request, Application $app, int $year_value, string $kennel_abbreviation){
 
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
       #Establish the page title
       $pageTitle = "$year_value: Year in review";
+
+      #Obtain number of hashes
+      $hashCount = ($app['db']->fetchAssoc(PER_KENNEL_HASH_COUNTS_BY_YEAR,array((int)$year_value, (int) $kennelKy)))['THE_COUNT'];
+
+      #Obtain number of hyper hashes
+      $hyperHashCount = ($app['db']->fetchAssoc(PER_KENNEL_HYPER_HASH_COUNTS_BY_YEAR,array((int)$year_value, (int) $kennelKy)))['THE_COUNT'];
+
+      #Obtain number of true hashes
+      $trueHashCount = ($app['db']->fetchAssoc(PER_KENNEL_TRUE_HASH_COUNTS_BY_YEAR,array((int)$year_value, (int) $kennelKy)))['THE_COUNT'];
+
+      #Obtain number of hashers
+      $hasherCount = ($app['db']->fetchAssoc(PER_KENNEL_HASHERS_COUNT_BY_YEAR,array((int)$year_value, (int) $kennelKy)))['THE_COUNT'];
+
+      #Obtain number of overall hares
+      $overallHareCount = ($app['db']->fetchAssoc(PER_KENNEL_HARES_COUNT_BY_YEAR,array((int)$year_value, (int) $kennelKy)))['THE_COUNT'];
+
+      #Obtain number of hyper hares
+      $hyperHareCount = ($app['db']->fetchAssoc(PER_KENNEL_HYPER_HARES_COUNT_BY_YEAR,array((int)$year_value, (int) $kennelKy)))['THE_COUNT'];
+
+      #Obtain number of true hares
+      $trueHareCount = ($app['db']->fetchAssoc(PER_KENNEL_TRUE_HARES_COUNT_BY_YEAR,array((int)$year_value, (int) $kennelKy)))['THE_COUNT'];
 
       #Establish the return value
       $returnValue = $app['twig']->render('year_in_review.twig', array (
         'pageTitle' => $pageTitle,
         'yearValue' => $year_value,
-        'kennel_abbreviation' => $kennel_abbreviation
+        'kennel_abbreviation' => $kennel_abbreviation,
+        'hash_count' => $hashCount,
+        'hyper_hash_count' => $hyperHashCount,
+        'true_hash_count' => $trueHashCount,
+        'hasher_count' => $hasherCount,
+        'overall_hare_count' => $overallHareCount,
+        'true_hare_count' => $trueHareCount,
+        'hyper_hare_counts' => $hyperHareCount
       ));
 
       #Return the return value

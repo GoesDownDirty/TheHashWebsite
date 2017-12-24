@@ -191,6 +191,32 @@ function getNonHyperHareCountsByYear(yearValue){
 
 <div class="container">
   <h1>{{pageTitle}}</h1>
+
+  <div class="row">
+    <div class="col-sm-6" style="background-color:gold;">
+      <h3>Event Details</h3>
+      <dl class="dl-horizontal">
+          {% autoescape %}
+            <dt># of Hashes</dt><dd>{{hash_count}}</dd>
+            <dt># of Hyper Hashes </dt><dd>{{hyper_hash_count}} </dd>
+            <dt># of True Hashes</dt><dd>{{true_hash_count}}</dd>
+          {% endautoescape %}
+      </dl>
+    </div>
+
+    <div class="col-sm-6" style="background-color:orange;">
+      <h3>People Details</h3>
+      <dl class="dl-horizontal">
+          {% autoescape %}
+            <dt># of Hashers</dt><dd>{{hasher_count}}</dd>
+            <dt># of True Hares </dt><dd>{{true_hare_count}}</dd>
+            <dt># of Hyper Hares</dt><dd>{{hyper_hare_counts}}</dd>
+            <dt># of Overall Hares</dt><dd>{{overall_hare_count}}</dd>
+          {% endautoescape %}
+      </dl>
+    </div>
+  </div>
+
   <div class="row">
     <div class="col-sm-3" style="background-color:#35A1A5;">
       <h3>Hasher Counts</h3>
@@ -203,17 +229,17 @@ function getNonHyperHareCountsByYear(yearValue){
     </div>
 
     <div class="col-sm-3" style="background-color:#81459E;">
-      <h3>Hare Counts</h3>
+      <h3>True Haring Counts</h3>
       <dl class="dl-horizontal">
         <div data-role="content">
-          <ul data-role="listview" id="totalHareCounts-list">
+          <ul data-role="listview" id="nonHyperHareCounts-list">
           </ul>
         </div>
       </dl>
     </div>
 
     <div class="col-sm-3" style="background-color:#35A1A5;">
-      <h3>Hyper Hare Counts</h3>
+      <h3>Hyper Haring Counts</h3>
       <dl class="dl-horizontal">
         <div data-role="content">
           <ul data-role="listview" id="hyperHareCounts-list">
@@ -223,14 +249,18 @@ function getNonHyperHareCountsByYear(yearValue){
     </div>
 
     <div class="col-sm-3" style="background-color:#81459E;">
-      <h3>NonHyper Hare Counts</h3>
+      <h3>Overall Haring Counts</h3>
       <dl class="dl-horizontal">
         <div data-role="content">
-          <ul data-role="listview" id="nonHyperHareCounts-list">
+          <ul data-role="listview" id="totalHareCounts-list">
           </ul>
         </div>
       </dl>
     </div>
+
+
+
+
 
   </div>
 </div>

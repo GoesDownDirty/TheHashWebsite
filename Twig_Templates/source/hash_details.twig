@@ -14,7 +14,7 @@
             Basic Info
           </div>
           <div class="panel-body">
-            <table id="table" class="table table-hover">
+            <table id="table" class="table table-hover" style="margin-bottom:0px">
                 <tbody>
                   <tr data-index="0"><td class="key" style="">Event Number</td><td style="">{{hashValue.KENNEL_EVENT_NUMBER}}</td></tr>
                   <tr data-index="1"><td class="key" style="">Date</td><td style="">{{hashValue.EVENT_DATE}}</td></tr>
@@ -32,6 +32,9 @@
                   </tr>
                   <tr data-index="4"><td class="key" style="">Hound Count</td><td style="">{{theHoundCount}}</td></tr>
                   <tr data-index="5"><td class="key" style="">Hare Count</td><td style="">{{theHareCount}}</td></tr>
+                  <tr data-index="6"><td class="key" style=""></td><td style="">
+                      {% if previousHashId != null %}<a href="{{previousHashId}}">{% endif %}Previous Event{% if previousHashId != null %}</a>{% endif %} | 
+                      {% if nextHashId != null %}<a href="{{nextHashId}}">{% endif %}Next Event{% if nextHashId != null %}</a>{% endif %}</td></tr>
                 </tbody>
               </table>
           </div>

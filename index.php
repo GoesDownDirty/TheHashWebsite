@@ -425,6 +425,12 @@ $app->post('/{kennel_abbreviation}/statistics/getHasherCountsByYear',           
 $app->post('/{kennel_abbreviation}/statistics/getTotalHareCountsByYear',                  'HASH\Controller\ObscureStatisticsController::getTotalHareCountsByYear');
 $app->post('/{kennel_abbreviation}/statistics/getHyperHareCountsByYear',                  'HASH\Controller\ObscureStatisticsController::getHyperHareCountsByYear');
 $app->post('/{kennel_abbreviation}/statistics/getNonHyperHareCountsByYear',               'HASH\Controller\ObscureStatisticsController::getNonHyperHareCountsByYear');
+$app->post('/{kennel_abbreviation}/statistics/getNewbieHasherListByYear',                 'HASH\Controller\ObscureStatisticsController::getNewbieHasherListByYear');
+$app->post('/{kennel_abbreviation}/statistics/getNewbieTrueHareListByYear',               'HASH\Controller\ObscureStatisticsController::getNewbieTrueHareListByYear');
+$app->post('/{kennel_abbreviation}/statistics/getNewbieHyperHareListByYear',              'HASH\Controller\ObscureStatisticsController::getNewbieHyperHareListByYear');
+$app->post('/{kennel_abbreviation}/statistics/getNewbieOverallHareListByYear',            'HASH\Controller\ObscureStatisticsController::getNewbieOverallHareListByYear');
+
+
 
 # Mappings for hasher specific statistics
 $app->post('/{kennel_abbreviation}/statistics/hasher/firstHash',                           'HASH\Controller\ObscureStatisticsController::getHashersVirginHash');

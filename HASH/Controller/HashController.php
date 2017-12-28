@@ -777,6 +777,9 @@ class HashController
 
   public function viewHashAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
 
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
     # Declare the SQL used to retrieve this information
     $sql = "SELECT * FROM HASHES WHERE HASH_KY = ?";
 
@@ -790,10 +793,17 @@ class HashController
 
 
     # Obtain the hare count
-    # Obtain the hound count
     $hareCountSQL = HARE_COUNT_BY_HASH_KEY;
     $theHareCountValue = $app['db']->fetchAssoc($hareCountSQL, array((int) $hash_id));
     $theHareCount = $theHareCountValue['THE_COUNT'];
+
+    # Determine previous hash
+    $previousHashSql = "SELECT hash_ky AS THE_COUNT FROM HASHES WHERE kennel_ky=? AND event_date < (SELECT event_date FROM HASHES WHERE hash_ky = ?) ORDER BY event_date DESC LIMIT 1";
+    $previousHashId = $app['db']->fetchAssoc($previousHashSql, array($kennelKy, $hash_id))['THE_COUNT'];
+
+    # Determine next hash
+    $nextHashSql = "SELECT hash_ky AS THE_COUNT FROM HASHES WHERE kennel_ky=? AND event_date > (SELECT event_date FROM HASHES WHERE hash_ky = ?) ORDER BY event_date LIMIT 1";
+    $nextHashId = $app['db']->fetchAssoc($nextHashSql, array($kennelKy, $hash_id))['THE_COUNT'];
 
 
     # Make a database call to obtain the hasher information
@@ -845,7 +855,9 @@ class HashController
       'showNeighborhoodCountList' => $showNeighborhood,
       'showPostalCodeCountList' => $showPostalCode,
       'theHoundCount' => $theHoundCount,
-      'theHareCount' => $theHareCount
+      'theHareCount' => $theHareCount,
+      'nextHashId' => $nextHashId,
+      'previousHashId' => $previousHashId
     ));
 
     # Return the return value

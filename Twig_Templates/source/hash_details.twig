@@ -33,7 +33,7 @@
                   <tr data-index="4"><td class="key" style="">Hound Count</td><td style="">{{theHoundCount}}</td></tr>
                   <tr data-index="5"><td class="key" style="">Hare Count</td><td style="">{{theHareCount}}</td></tr>
                   <tr data-index="6"><td class="key" style=""></td><td style="">
-                      {% if previousHashId != null %}<a href="{{previousHashId}}">{% endif %}Previous Event{% if previousHashId != null %}</a>{% endif %} | 
+                      {% if previousHashId != null %}<a href="{{previousHashId}}">{% endif %}Previous Event{% if previousHashId != null %}</a>{% endif %} |
                       {% if nextHashId != null %}<a href="{{nextHashId}}">{% endif %}Next Event{% if nextHashId != null %}</a>{% endif %}</td></tr>
                 </tbody>
               </table>
@@ -94,8 +94,9 @@
 
       <div class="col-sm-6">
         <a href="#" class="list-group-item active">Streakers</a>
-        <a class="list-group-item" href='/{{kennel_abbreviation}}/listStreakersByDate/byhash/{{hashValue.HASH_KY}}'>Streakers (By Date)</a>
-        <a class="list-group-item" href='/{{kennel_abbreviation}}/listStreakersByCount/byhash/{{hashValue.HASH_KY}}'>Streakers (By No. of Events)</a>
+        <a class="list-group-item" href='/{{kennel_abbreviation}}/listStreakersByDate/byhash/{{hashValue.HASH_KY}}'>Streakers (By Date) (Deprecated)</a>
+        <a class="list-group-item" href='/{{kennel_abbreviation}}/listStreakersByCount/byhash/{{hashValue.HASH_KY}}'>Streakers (By No. of Events) (Deprecated)</a>
+        <a class="list-group-item" href='/{{kennel_abbreviation}}/listStreakers/byhash/{{hashValue.HASH_KY}}'>Streakers By Events, Days, and Date</a>
       </div>
     </div>
 

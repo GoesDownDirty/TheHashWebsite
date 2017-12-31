@@ -230,6 +230,38 @@ class HashController
 
   }
 
+
+
+  public function listStreakersByHashAction(Request $request, Application $app, string $kennel_abbreviation, int $hash_id){
+
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+    #Execute the SQL statement; create an array of rows
+    $theList = $app['db']->fetchAll(STREAKERS_LIST,array((int) $hash_id,(int) $kennelKy));
+
+    # Declare the SQL used to retrieve this information
+    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+
+    # Make a database call to obtain the hasher information
+    $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
+
+    # Establish and set the return value
+    $returnValue = $app['twig']->render('streaker_results.twig',array(
+      'pageTitle' => 'The Streakers!',
+      'pageSubTitle' => '...',
+      'theList' => $theList,
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'theHashValue' => $theHashValue,
+      'pageCaption' => "",
+      'tableCaption' => ""
+    ));
+
+    #Return the return value
+    return $returnValue;
+
+  }
+
   #Define the action
   public function listHashersPreActionJson(Request $request, Application $app, string $kennel_abbreviation){
 

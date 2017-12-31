@@ -255,6 +255,7 @@ $app->get('/{kennel_abbreviation}/eventsMarkerMap',                             
 
 $app->get('/{kennel_abbreviation}/listStreakersByCount/byhash/{hash_id}',       'HASH\Controller\HashController::listStreakersByCountsByHashAction');
 $app->get('/{kennel_abbreviation}/listStreakersByDate/byhash/{hash_id}',        'HASH\Controller\HashController::listStreakersByDateByHashAction');
+$app->get('/{kennel_abbreviation}/listStreakers/byhash/{hash_id}',              'HASH\Controller\HashController::listStreakersByHashAction');
 
 $app->get('/{kennel_abbreviation}/attendanceRecordForHasher/{hasher_id}',        'HASH\Controller\HashController::attendanceRecordForHasherAction');
 

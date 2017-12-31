@@ -299,6 +299,7 @@ $app->get('/{kennel_abbreviation}/hasherCountsForEventNeighborhood/{hash_id}',  
 
 
 $app->get('/{kennel_abbreviation}/backSlidersForEvent/{hash_id}',                       'HASH\Controller\HashController::backSlidersForEventAction');
+$app->get('/{kennel_abbreviation}/backSlidersForEventV2/{hash_id}',                     'HASH\Controller\HashController::backSlidersForEventV2Action');
 
 $app->get('/{kennel_abbreviation}/trendingHashers/{day_count}',                         'HASH\Controller\ObscureStatisticsController::trendingHashersAction');
 $app->get('/{kennel_abbreviation}/trendingTrueHares/{day_count}',                       'HASH\Controller\ObscureStatisticsController::trendingTrueHaresAction');

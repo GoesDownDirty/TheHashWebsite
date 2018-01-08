@@ -1,0 +1,62 @@
+{% extends "admin_base.twig" %}
+
+{% block template %}
+
+<script type = "text/javascript" language = "javascript">
+
+  //Call these functions upon page load
+  $(document).ready(function() {
+    //Convert the main table into a data table
+    $('#the_main_table').DataTable({
+      "paging":   true,
+      "aaSorting": [],
+      "pageLength": 5,
+      "lengthMenu": [5,10,25]
+    });
+
+    //Convert the main table into a data table
+    $('#the_secondary_table').DataTable({
+      "paging":   true,
+      "aaSorting": [],
+      "pageLength": 5,
+      "lengthMenu": [5,10,25]
+    });
+
+  });
+</script>
+
+
+  <h1>{{pageTitle}}</h1>
+  <h3>{{pageSubTitle}}</h3>
+  <div class="table-responsive">
+  <table class="table table-condensed table-hover" id="the_main_table">
+    <thead>
+      <tr>
+        <td>Hash Number</td>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in theirHashings %}
+          <tr>
+          <td><a href='/admin/event/manageparticipation2/{{item.HASH_KY}}'>Edit Participation for {{item.KENNEL_ABBREVIATION}} #{{item.KENNEL_EVENT_NUMBER}}</a></td>
+        </tr>
+      {% endfor %}
+  </table>
+  </div>
+
+  <div class="table-responsive">
+  <table class="table table-condensed table-hover" id="the_secondary_table">
+    <thead>
+      <tr>
+        <td>Hash Number</td>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in theirHarings %}
+          <tr>
+          <td><a href='/admin/event/manageparticipation2/{{item.HASH_KY}}'>Edit Participation for {{item.KENNEL_ABBREVIATION}} #{{item.KENNEL_EVENT_NUMBER}}</a></td>
+        </tr>
+      {% endfor %}
+  </table>
+  </div>
+{% endblock %}

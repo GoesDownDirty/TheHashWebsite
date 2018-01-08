@@ -827,7 +827,9 @@ class HashEventController
         'pageHeader' => 'Why is this so complicated ?',
         'hasherList' => $hasherList,
         'hareList' => $hareList,
-        'hash_key'=> $hash_id
+        'hash_key'=> $hash_id,
+        'kennel_abbreviation' => $kennelAbbreviation,
+        'kennel_event_number' => $kennelEventNumber
       ));
 
       #Return the return value

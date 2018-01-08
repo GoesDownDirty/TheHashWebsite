@@ -20,6 +20,38 @@ class HashPersonController
 {
 
 
+
+
+  public function deleteHashPersonPreAction(Request $request, Application $app, int $hasher_id){
+
+    # Make a database call to obtain the hasher information
+    $sql = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
+    $hasherValue = $app['db']->fetchAssoc($sql, array((int) $hasher_id));
+
+    # Obtain all of their hashings (all kennels)
+    $allHashings = $app['db']->fetchAll(ALL_HASHINGS_IN_ALL_KENNELS_FOR_HASHER, array((int)$hasher_id));
+
+    # Obtain all of their harings (all kennels)
+    $allHarings = $app['db']->fetchAll(ALL_HARINGS_IN_ALL_KENNELS_FOR_HASHER, array((int)$hasher_id));
+
+    # Obtain the number of newbie hyper hares
+    # $newOverallHaresCount = count($newOverallHares);
+
+    # Establish the return value
+    $returnValue = $app['twig']->render('admin_delete_hasher.twig',array(
+      'pageTitle' => 'Hasher Deletion',
+      'pageSubTitle' => 'There iss no going back!',
+      'theirHashings' => $allHashings,
+      'theirHarings' => $allHarings,
+      'theirHaringCount' => count($allHarings),
+      'theirHashingCount' => count($allHashings)
+    ));
+
+    #Return the return value
+    return $returnValue;
+  }
+
+
   public function modifyHashPersonAction(Request $request, Application $app, int $hasher_id){
 
     # Declare the SQL used to retrieve this information

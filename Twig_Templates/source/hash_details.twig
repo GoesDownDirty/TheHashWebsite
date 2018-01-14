@@ -2,6 +2,7 @@
 
 {% block content %}
     <h1>{{pageTitle}}</h1>
+    {% set bgcolor = "white" %}
 
 
     <div class="row">
@@ -14,55 +15,108 @@
             Basic Info
           </div>
           <div class="panel-body">
-            <table id="table" class="table table-hover" style="margin-bottom:0px">
-                <tbody>
-                  <tr data-index="0"><td class="key" style="">Event Number</td><td style="">{{hashValue.KENNEL_EVENT_NUMBER}}</td></tr>
-                  <tr data-index="1"><td class="key" style="">Date</td><td style="">{{hashValue.EVENT_DATE}}</td></tr>
-                  <tr data-index="2"><td class="key" style="">Description</td><td style="">{{hashValue.SPECIAL_EVENT_DESCRIPTION}}</td></tr>
-                  <tr data-index="3">
-                    <td class="key" style="">Hyper Hash ?</td>
-                    <td style="">
-                      {% if hashValue.IS_HYPER == "0000000000" %}
-                        No
-                      {% else %}
-                        Yes
-                      {% endif %}
-                  </td>
 
-                  </tr>
-                  <tr data-index="4"><td class="key" style="">Hound Count</td><td style="">{{theHoundCount}}</td></tr>
-                  <tr data-index="5"><td class="key" style="">Hare Count</td><td style="">{{theHareCount}}</td></tr>
-                  <tr data-index="6"><td class="key" style=""></td><td style="">
-                      {% if previousHashId != null %}<a href="{{previousHashId}}">{% endif %}Previous Event{% if previousHashId != null %}</a>{% endif %} |
-                      {% if nextHashId != null %}<a href="{{nextHashId}}">{% endif %}Next Event{% if nextHashId != null %}</a>{% endif %}</td></tr>
-                </tbody>
-              </table>
+            <div class="row">
+              <div class="col-xs-12 col-md-4"   style="background-color:#d3d3d3;"><b>Event Number</b></div>
+              <div class="col-xs-12 col-md-8"   style="background-color:#d3d3d3;">{{kennel_abbreviation}} #{{hashValue.KENNEL_EVENT_NUMBER}}</div>
+              <div class="col-xs-12 visible-xs"></br></div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12 col-md-4"   style="background-color:#d3d3d3;"><b>Date</b></div>
+              <div class="col-xs-12 col-md-8"   style="background-color:#d3d3d3;">{{hashValue.EVENT_DATE|date('m/d/Y')}}</div>
+              <div class="col-xs-12 visible-xs"></br></div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12 col-md-4"   style="background-color:#d3d3d3;"><b>Time</b></div>
+              <div class="col-xs-12 col-md-8"   style="background-color:#d3d3d3;">{{hashValue.EVENT_DATE|date('h:i A')}}</div>
+              <div class="col-xs-12 visible-xs"></br></div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12 col-md-4"   style="background-color:#d3d3d3;"><b>Description</b></div>
+              <div class="col-xs-12 col-md-8"   style="background-color:#d3d3d3;">{{hashValue.SPECIAL_EVENT_DESCRIPTION}}</div>
+              <div class="col-xs-12 visible-xs"></br></div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12 col-md-4"   style="background-color:#d3d3d3;"><b>Hyper Hash ?</b></div>
+              <div class="col-xs-12 col-md-8"   style="background-color:#d3d3d3;">
+                {% if hashValue.IS_HYPER == "0000000000" %}
+                  No, regular hash
+                {% else %}
+                  Yes, hyper hash
+                {% endif %}
+              </div>
+              <div class="col-xs-12 visible-xs"></br></div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12 col-md-4"   style="background-color:#d3d3d3;"><b>Hounds</b></div>
+              <div class="col-xs-12 col-md-8"   style="background-color:#d3d3d3;">
+                <a href='/{{kennel_abbreviation}}/listhashers/byhash/{{hashValue.HASH_KY}}'>{{theHoundCount}}</a>
+              </div>
+              <div class="col-xs-12 visible-xs"></br></div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12 col-md-4"   style="background-color:#d3d3d3;"><b>Hares</b></div>
+              <div class="col-xs-12 col-md-8"   style="background-color:#d3d3d3;">
+                <a href='/{{kennel_abbreviation}}/listhares/byhash/{{hashValue.HASH_KY}}'>{{theHareCount}}</a>
+              </div>
+              <div class="col-xs-12 visible-xs"></br></div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12 "></br></div>
+              <div class="col-xs-12 col-md-12" align="center">
+                <b>
+                  {% if previousHashId != null %}
+                    <a href="{{previousHashId}}">
+                  {% endif %}
+                  Previous Event
+                  {% if previousHashId != null %}
+                    </a>
+                  {% endif %} |
+                  {% if nextHashId != null %}
+                    <a href="{{nextHashId}}">
+                  {% endif %}
+                  Next Event
+                {% if nextHashId != null %}
+                  </a>
+                {% endif %}
+                </b>
+              </div>
+            </div>
+
+
+
           </div>
         </div>
       </div>
 
       <div class="col-sm-6">
-        <div class="list-group">
-          <a href="#" class="list-group-item active">
-            More Info
-          </a>
-          <a class="list-group-item" href='/{{kennel_abbreviation}}/hasherAnalversariesForEvent/{{hashValue.HASH_KY}}'>Hound Analversaries For This Event</a>
-          <a class="list-group-item" href='/{{kennel_abbreviation}}/hareAnalversariesForEvent/{{hashValue.HASH_KY}}'>Hare Analversaries For This Event</a>
-          <a class="list-group-item" href='/{{kennel_abbreviation}}/listhashers/byhash/{{hashValue.HASH_KY}}'>Hounds at this event</a>
-          <a class="list-group-item" href='/{{kennel_abbreviation}}/listhares/byhash/{{hashValue.HASH_KY}}'>Hares at this event</a>
-          <a class="list-group-item" href='/{{kennel_abbreviation}}/omniAnalversariesForEvent/{{hashValue.HASH_KY}}'>OmniAnalversary List</a>
-
-        </div>
+        <a href="#" class="list-group-item active">Analversaries, Streakers, and Backsliders</a>
+        <a class="list-group-item" href='/{{kennel_abbreviation}}/consolidatedEventAnalversaries/{{hashValue.HASH_KY}}'>Consolidated Analversaries</a>
+        <a class="list-group-item" href='/{{kennel_abbreviation}}/omniAnalversariesForEvent/{{hashValue.HASH_KY}}'>OmniAnalversary List</a>
+        <a class="list-group-item" href='/{{kennel_abbreviation}}/listStreakers/byhash/{{hashValue.HASH_KY}}'>Streakers By Events, Days, and Date</a>
+        <a class="list-group-item" href='/{{kennel_abbreviation}}/backSlidersForEventV2/{{hashValue.HASH_KY}}'>Backsliders</a>
+        <br>
       </div>
 
 
 
     </div>
 
+
+
+
+
     <div class="row">
       <div class="col-sm-6">
         <a href="#" class="list-group-item active">
-          Hound Counts
+          Hound Counts (Overall and Overly Broken Down)
         </a>
         <a class="list-group-item" href='/{{kennel_abbreviation}}/hasherCountsForEvent/{{hashValue.HASH_KY}}'>Hound Counts For This Event</a>
 
@@ -89,44 +143,103 @@
 
       </div>
 
-
-
-      <div class="col-sm-6">
-        <a href="#" class="list-group-item active">Streakers and Backsliders</a>
-        <a class="list-group-item" href='/{{kennel_abbreviation}}/listStreakers/byhash/{{hashValue.HASH_KY}}'>Streakers By Events, Days, and Date</a>
-        <a class="list-group-item" href='/{{kennel_abbreviation}}/backSlidersForEventV2/{{hashValue.HASH_KY}}'>Back Sliders Version 2</a>
-        <a class="list-group-item" href='/{{kennel_abbreviation}}/consolidatedEventAnalversaries/{{hashValue.HASH_KY}}'>Consolidated Analversaries</a>
-        <br>
-      </div>
-    </div>
-
-    <div class="row">
       <div class="col-sm-6">
         <div class="panel panel-primary">
           <div class="panel-heading">
             Location Data
           </div>
           <div class="panel-body">
-            <table id="table" class="table table-hover">
-              <tbody>
-                <tr data-index="0"><td class="key" style="">Location</td><td style="">{{hashValue.EVENT_LOCATION}}</td></tr>
-                <tr data-index="1"><td class="key" style="">Formatted Address</td><td style="">{{hashValue.FORMATTED_ADDRESS}}</td></tr>
-                <tr data-index="2"><td class="key" style="">Street Number </td><td style="">{{hashValue.STREET_NUMBER}}</td></tr>
-                <tr data-index="3"><td class="key" style="">Route </td><td style="">{{hashValue.ROUTE}}</td></tr>
-                <tr data-index="4"><td class="key" style="">City </td><td style="">{{hashValue.EVENT_CITY}}</td></tr>
-                <tr data-index="5"><td class="key" style="">State </td><td style="">{{hashValue.EVENT_STATE}}</td></tr>
-                <tr data-index="6"><td class="key" style="">Postal Code </td><td style="">{{hashValue.POSTAL_CODE}}</td></tr>
-                <tr data-index="7"><td class="key" style="">Neighborhood  </td><td style="">{{hashValue.NEIGHBORHOOD}}</td></tr>
-                <tr data-index="8"><td class="key" style="">County </td><td style="">{{hashValue.COUNTY}}</td></tr>
-                <tr data-index="9"><td class="key" style="">Country </td><td style="">{{hashValue.COUNTRY}}</td></tr>
-                <tr data-index="10"><td class="key" style="">Lat </td><td style="">{{hashValue.LAT}}</td></tr>
-                <tr data-index="11"><td class="key" style="">Long </td><td style="">{{hashValue.LNG}}</td></tr>
-                <tr data-index="12"><td class="key" style="">Place ID </td><td style="">{{hashValue.PLACE_ID}}</td></tr>
-              </tbody>
-            </table>
+
+            <div class="row">
+              <div class="col-xs-12 col-md-4"   style="background-color:#d3d3d3;"><b>Location</b></div>
+              <div class="col-xs-12 col-md-8"   style="background-color:#d3d3d3;">{{hashValue.EVENT_LOCATION}} &nbsp</div>
+              <div class="col-xs-12 visible-xs"></br></div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12 col-md-4"   style="background-color:#d3d3d3;"><b>Formatted Address</b></div>
+              <div class="col-xs-12 col-md-8"   style="background-color:#d3d3d3;">{{hashValue.FORMATTED_ADDRESS}} &nbsp</div>
+              <div class="col-xs-12 visible-xs"></br></div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12 col-md-4"   style="background-color:#d3d3d3;"><b>Street Number</b></div>
+              <div class="col-xs-12 col-md-8"   style="background-color:#d3d3d3;">{{hashValue.STREET_NUMBER}} &nbsp</div>
+              <div class="col-xs-12 visible-xs"></br></div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12 col-md-4"   style="background-color:#d3d3d3;"><b>Route</b></div>
+              <div class="col-xs-12 col-md-8"   style="background-color:#d3d3d3;">{{hashValue.ROUTE}} &nbsp</div>
+              <div class="col-xs-12 visible-xs"></br></div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12 col-md-4"   style="background-color:#d3d3d3;"><b>City</b></div>
+              <div class="col-xs-12 col-md-8"   style="background-color:#d3d3d3;">{{hashValue.EVENT_CITY}} &nbsp</div>
+              <div class="col-xs-12 visible-xs"></br></div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12 col-md-4"   style="background-color:#d3d3d3;"><b>State</b></div>
+              <div class="col-xs-12 col-md-8"   style="background-color:#d3d3d3;">{{hashValue.EVENT_STATE}} &nbsp</div>
+              <div class="col-xs-12 visible-xs"></br></div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12 col-md-4"   style="background-color:#d3d3d3;"><b>Postal Code</b></div>
+              <div class="col-xs-12 col-md-8"   style="background-color:#d3d3d3;">{{hashValue.POSTAL_CODE}} &nbsp</div>
+              <div class="col-xs-12 visible-xs"></br></div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12 col-md-4"   style="background-color:#d3d3d3;"><b>Neighborhood</b></div>
+              <div class="col-xs-12 col-md-8"   style="background-color:#d3d3d3;">{{hashValue.NEIGHBORHOOD}}  &nbsp</div>
+              <div class="col-xs-12 visible-xs"></br></div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12 col-md-4"   style="background-color:#d3d3d3;"><b>County</b></div>
+              <div class="col-xs-12 col-md-8"   style="background-color:#d3d3d3;">{{hashValue.COUNTY}} &nbsp</div>
+              <div class="col-xs-12 visible-xs"></br></div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12 col-md-4"   style="background-color:#d3d3d3;"><b>Country</b></div>
+              <div class="col-xs-12 col-md-8"   style="background-color:#d3d3d3;">{{hashValue.COUNTRY}} &nbsp</div>
+              <div class="col-xs-12 visible-xs"></br></div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12 col-md-4"   style="background-color:#d3d3d3;"><b>Lat</b></div>
+              <div class="col-xs-12 col-md-8"   style="background-color:#d3d3d3;">{{hashValue.LAT}} &nbsp</div>
+              <div class="col-xs-12 visible-xs"></br></div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12 col-md-4"   style="background-color:#d3d3d3;"><b>Long</b></div>
+              <div class="col-xs-12 col-md-8"   style="background-color:#d3d3d3;">{{hashValue.LNG}} &nbsp</div>
+              <div class="col-xs-12 visible-xs"></br></div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12 col-md-4"   style="background-color:#d3d3d3;"><b>Place ID</b></div>
+              <div class="col-xs-12 col-md-8"   style="background-color:#d3d3d3;">{{hashValue.PLACE_ID}} &nbsp</div>
+              <div class="col-xs-12 visible-xs"></br></div>
+            </div>
+
+
           </div>
         </div>
       </div>
+
+
+
+
+    </div>
+
+    <div class="row">
+
 
 
       <div class="col-sm-6">
@@ -157,6 +270,8 @@
       </div>
     </div>
 
+  <br><br><br>
+    <br><br><br>
 
 
 {% endblock %}

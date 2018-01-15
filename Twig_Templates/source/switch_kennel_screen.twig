@@ -9,14 +9,41 @@
               Other Kennels
             </a>
             {% for kennelValue in kennelValues %}
+
+
               {% if kennel_abbreviation == kennelValue.KENNEL_ABBREVIATION %}
-                <a class="list-group-item" href="{{kennelValue.SITE_ADDRESS}}/{{kennelValue.KENNEL_ABBREVIATION}}"><b>{{kennelValue.KENNEL_ABBREVIATION}} Statistics</b></a>
+                {% set openTag = "<b>" %}
+                {% set closingTag = "</b>" %}
+                {% set listGroupItemType = "list-group-item-success" %}
               {% else %}
-                <a class="list-group-item" href="{{kennelValue.SITE_ADDRESS}}/{{kennelValue.KENNEL_ABBREVIATION}}">{{kennelValue.KENNEL_ABBREVIATION}} Statistics</a>
+                {% set openTag = "" %}
+                {% set closingTag = "" %}
+                {% set listGroupItemType = "list-group-item-info" %}
               {% endif %}
+
+              {% if kennelValue.IN_RECORD_KEEPING == 0 %}
+                {% set externalIndicator = "*" %}
+                {% set targetHtml = "target = newtab" %}
+                {% set openTag = "<i>" %}
+                {% set closingTag = "</i>" %}
+                {% set listGroupItemType = "list-group-item-warning" %}
+              {% else %}
+                {% set externalIndicator = "" %}
+                {% set targetHtml = "" %}
+              {% endif %}
+
+              <a class="list-group-item {{listGroupItemType}}"  {{targetHtml}} href="{{kennelValue.SITE_ADDRESS}}/{{kennelValue.KENNEL_ABBREVIATION}}">
+                {{openTag|raw}}
+                  {{kennelValue.KENNEL_ABBREVIATION}} ({{kennelValue.KENNEL_NAME}}){{externalIndicator}}
+                {{closingTag|raw}}
+              </a>
+
+
+
             {% endfor %}
 
           </div>
+          <i>* Stats stored on an external website. Link opens in a new tab.</i>
         </div>
       </div>
 

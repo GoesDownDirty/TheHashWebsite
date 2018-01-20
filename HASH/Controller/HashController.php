@@ -1925,8 +1925,9 @@ public function predictedHasherAnalversariesAction(Request $request, Application
     'theList' => $hasherList,
     'tableCaption' => 'Analversary Predictions',
     'columnOneName' => 'Hasher Name',
-    'columnTwoName' => 'Next Milestone',
-    'columnThreeName' => 'Predicted Date',
+    'columnTwoName' => 'Current Run Count',
+    'columnThreeName' => 'Next Milestone',
+    'columnFourName' => 'Predicted Date',
     'kennel_abbreviation' => $kennel_abbreviation
   ));
 

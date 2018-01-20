@@ -25,12 +25,14 @@
             <th>{{columnOneName}}</th>
             <td>{{columnTwoName}}</td>
             <td>{{columnThreeName}}</td>
+            <td>{{columnFourName}}</td>
           </tr>
         </thead>
         <tbody>
           {% for item in theList %}
             <tr>
               <td><a href='/{{kennel_abbreviation}}/hashers/{{item.HASHER_KEY}}'>{{item.HASHER_NAME}}</a></td>
+              <td>{{item.TOTAL_HASH_COUNT}}</td>
               <td>{{item.NEXT_MILESTONE}}</td>
               <td>{{item.PREDICTED_MILESTONE_DATE}}</td>
             </tr>

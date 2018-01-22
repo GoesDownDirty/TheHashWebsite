@@ -4,6 +4,30 @@
 
 <script type = "text/javascript" language = "javascript">
 
+  function displayMessage(messageValue){
+
+    //Determine the type of message to display
+    var indexLocation = messageValue.indexOf("Success!");
+    var messageType = "";
+    if(indexLocation >= 0){
+      messageType = "success";
+    }else {
+      messageType = "danger";
+    }
+
+    $.bootstrapGrowl(messageValue, {
+      ele: 'body', // which element to append to
+      type: messageType, // (null, 'info', 'error', 'success')
+      offset: {from: 'top', amount: 20}, // 'top', or 'bottom'
+      align: 'center', // ('left', 'right', or 'center')
+      width: 'auto', // (integer, or 'auto')
+      delay: 4000,
+      allow_dismiss: true,
+      stackup_spacing: 10 // spacing between consecutively stacked growls.
+    });
+
+  }
+
   //Call these functions upon page load
   $(document).ready(function() {
     //Convert the main table into a data table
@@ -23,40 +47,86 @@
     });
 
   });
+
+  //Function to add a hasher to the event
+  function deleteHasher(hasher_key){
+    var csrfToken = '{{csrf_token('delete')}}';
+    var formData = {hasher_key:hasher_key,csrf_token:csrfToken};
+    $.ajax({
+       url : "/admin/deleteHasherPost",
+       type: "POST",
+       data : formData,
+       dataType : 'json',
+       success: function(data, textStatus, jqXHR){
+           displayMessage(data);
+       },
+       error: function (jqXHR, textStatus, errorThrown){
+            displayMessage(data);
+            alert("failure");
+            alert(jqXHR);
+            alert(textStatus);
+            alert(errorThrown);
+       }
+   });
+ }
+
+
+
 </script>
 
 
   <h1>{{pageTitle}}</h1>
   <h3>{{pageSubTitle}}</h3>
-  <div class="table-responsive">
-  <table class="table table-condensed table-hover" id="the_main_table">
-    <thead>
-      <tr>
-        <td>Hash Number</td>
-      </tr>
-    </thead>
-    <tbody>
-      {% for item in theirHashings %}
-          <tr>
-          <td><a href='/admin/event/manageparticipation2/{{item.HASH_KY}}'>Edit Participation for {{item.KENNEL_ABBREVIATION}} #{{item.KENNEL_EVENT_NUMBER}}</a></td>
-        </tr>
-      {% endfor %}
-  </table>
-  </div>
+  {% if hasher_exists == TRUE %}
+    {% if theirHaringCount == 0 and theirHashingCount == 0 %}
+        <p>
+          This individual, {{hasher_value.HASHER_NAME}} has {{theirHaringCount}} harings and {{theirHashingCount}} hashings.
+          If you realllllllllly hate them, you may <a href="javascript:deleteHasher({{hasher_id}})">delete them</a>.
+        </p>
+    {% else %}
+        <p>
+          This individual, {{hasher_value.HASHER_NAME}}, has {{theirHaringCount}} harings and {{theirHashingCount}} hashings.
+          As such you cannot delete them until they have no hashings and no harings.
+          Please see their hashings and harings below and update the event participations accordingly.
+        </p>
+    {% endif %}
+  {% else %}
+    This hasher has vanished.
+  {% endif %}
 
-  <div class="table-responsive">
-  <table class="table table-condensed table-hover" id="the_secondary_table">
-    <thead>
-      <tr>
-        <td>Hash Number</td>
-      </tr>
-    </thead>
-    <tbody>
-      {% for item in theirHarings %}
-          <tr>
-          <td><a href='/admin/event/manageparticipation2/{{item.HASH_KY}}'>Edit Participation for {{item.KENNEL_ABBREVIATION}} #{{item.KENNEL_EVENT_NUMBER}}</a></td>
+
+
+  {% if hasher_exists == TRUE %}
+    <div class="table-responsive">
+    <table class="table table-condensed table-hover" id="the_main_table">
+      <thead>
+        <tr>
+          <td>Hash Number</td>
         </tr>
-      {% endfor %}
-  </table>
-  </div>
+      </thead>
+      <tbody>
+        {% for item in theirHashings %}
+            <tr>
+            <td><a href='/admin/event/manageparticipation2/{{item.HASH_KY}}'>Edit Participation for {{item.KENNEL_ABBREVIATION}} #{{item.KENNEL_EVENT_NUMBER}}</a></td>
+          </tr>
+        {% endfor %}
+    </table>
+    </div>
+
+    <div class="table-responsive">
+    <table class="table table-condensed table-hover" id="the_secondary_table">
+      <thead>
+        <tr>
+          <td>Hash Number</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in theirHarings %}
+            <tr>
+            <td><a href='/admin/event/manageparticipation2/{{item.HASH_KY}}'>Edit Participation for {{item.KENNEL_ABBREVIATION}} #{{item.KENNEL_EVENT_NUMBER}}</a></td>
+          </tr>
+        {% endfor %}
+    </table>
+    </div>
+  {% endif %}
 {% endblock %}

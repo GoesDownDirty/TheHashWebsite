@@ -2,7 +2,10 @@
 
 {% block formContent %}
 
-  <dt>Hasher KY</dt><dd>{{hasherValue.HASHER_KY}}</dd>
+
+  <br>
+  <a href="/admin/deleteHasher/{{hasherValue.HASHER_KY}}">Delete this jerk</a>
+  <br>
 
   {{ form_row(form.HASHER_NAME) }}
   {{ form_row(form.HASHER_ABBREVIATION) }}
@@ -11,5 +14,7 @@
   {{ form_row(form.HOME_KENNEL) }}
   {{ form_row(form.DECEASED) }}
   {{ form_row(form._token) }}
+
+
 
 {% endblock %}

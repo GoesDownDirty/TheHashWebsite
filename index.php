@@ -369,6 +369,7 @@ $app->post('/admin/modifyhasher/form/{hasher_id}',                'HASH\Controll
 
 # Hash person deletion
 $app->get('/admin/deleteHasher/{hasher_id}',                      'HASH\Controller\HashPersonController::deleteHashPersonPreAction');
+$app->post('/admin/deleteHasherPost',                      'HASH\Controller\HashPersonController::deleteHashPersonAjaxAction');
 
 # Hash person creation
 $app->get('/admin/newhasher/form',                                'HASH\Controller\HashPersonController::createHashPersonAction');

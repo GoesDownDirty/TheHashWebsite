@@ -22,11 +22,21 @@ class HashPersonController
 
 
 
+
   public function deleteHashPersonPreAction(Request $request, Application $app, int $hasher_id){
 
     # Make a database call to obtain the hasher information
     $sql = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
     $hasherValue = $app['db']->fetchAssoc($sql, array((int) $hasher_id));
+
+    #Determine if the hasher exists
+    if(!$hasherValue){
+      $hasherExists = False;
+      $pageSubTitle = "This hasher does not exist!";
+    }else{
+      $hasherExists = True;
+      $pageSubTitle = "There is no going back!";
+    }
 
     # Obtain all of their hashings (all kennels)
     $allHashings = $app['db']->fetchAll(ALL_HASHINGS_IN_ALL_KENNELS_FOR_HASHER, array((int)$hasher_id));
@@ -40,15 +50,124 @@ class HashPersonController
     # Establish the return value
     $returnValue = $app['twig']->render('admin_delete_hasher.twig',array(
       'pageTitle' => 'Hasher Deletion',
-      'pageSubTitle' => 'There iss no going back!',
+      'pageSubTitle' => $pageSubTitle,
       'theirHashings' => $allHashings,
       'theirHarings' => $allHarings,
       'theirHaringCount' => count($allHarings),
-      'theirHashingCount' => count($allHashings)
+      'theirHashingCount' => count($allHashings),
+      'hasher_id' => $hasher_id,
+      'hasher_value' => $hasherValue,
+      'hasher_exists' => $hasherExists
     ));
 
     #Return the return value
     return $returnValue;
+  }
+
+
+
+  public function deleteHashPersonAjaxAction (Request $request, Application $app){
+
+    #Establish the return message
+    $returnMessage = "This has not been set yet...";
+
+    #Obtain the post values
+    $hasherKey = $request->request->get('hasher_key');
+
+    #Obtain the csrf token
+    $csrfToken = $request->request->get('csrf_token');
+
+    #Check if the csrf token is valid
+    /*
+    if($this->isCsrfTokenValid('delete',$csrfToken)){
+      $returnValue =  $app->json("valid", 200);
+      return $returnValue;
+    }else{
+      $returnValue =  $app->json("not valid", 200);
+      return $returnValue;
+    }
+    */
+
+    #Validate the post values; ensure that they are both numbers
+    if(ctype_digit($hasherKey)){
+
+      #1. Ensure this hasher exists
+      #Determine the hasher identity
+      $hasherIdentitySql = "SELECT * FROM HASHERS WHERE HASHERS.HASHER_KY = ? ;";
+
+      # Make a database call to obtain the hasher information
+      $hasherValue = $app['db']->fetchAssoc($hasherIdentitySql, array((int) $hasherKey));
+
+      #2. Ensure they have no hashings
+      $hasHashingsSQL = "SELECT * FROM HASHINGS JOIN HASHERS ON HASHINGS.HASHER_KY = HASHERS.HASHER_KY WHERE HASHERS.HASHER_KY = ?";
+      $hashingsList = $app['db']->fetchAll($hasHashingsSQL,array((int)$hasherKey));
+      $hashingCount = count($hashingsList);
+
+
+      #3. Ensure they have no harings
+      $hasHaringsSQL = "SELECT * FROM HARINGS JOIN HASHERS ON HARINGS.HARINGS_HASHER_KY = HASHERS.HASHER_KY WHERE HASHERS.HASHER_KY = ?";
+      $haringsList = $app['db']->fetchAll($hasHaringsSQL,array((int)$hasherKey));
+      $haringCount = count($haringsList);
+
+      #If the hasher exists
+      if($hasherValue != $null){
+
+        #Set the name of the hasher
+        $hasherName = $hasherValue['HASHER_NAME'];
+
+
+        #If the hasher still has hashings
+        if($hashingCount == 0 && $haringCount ==0){
+
+          $returnMessage = "Success! Hasher has $hashingCount hashings and $haringCount harings. You may delete them.";
+
+          #Define the deletion sql statement
+          $deletionSQL = "DELETE FROM HASHERS WHERE HASHER_KY=?";
+
+          try{
+            #Execute the query
+            $app['dbs']['mysql_write']->executeUpdate($deletionSQL,array((int) $hasherKey));
+
+            #Audit the action
+            $hasherNickname = $hasherValue['HASHER_ABBREVIATION'];
+            $hasherFirstName = $hasherValue['FIRST_NAME'];
+            $hasherLastName = $hasherValue['LAST_NAME'];
+            $hasherHomeKennel = $hasherValue['HOME_KENNEL'];
+            $hasherDeceased = $hasherValue['DECEASED'];
+            $tempActionType = "Delete Person";
+            $tempActionDescription = "Deleted ($hasherName|$hasherNickname|$hasherFirstName|$hasherLastName|$hasherHomeKennel|$hasherDeceased)";
+            AdminController::auditTheThings($request, $app, $tempActionType, $tempActionDescription);
+
+            #Define the return message
+            $returnMessage = "Success! They are gonzo!";
+          } catch (PDOException $theException){
+
+            $tempActionType = "Delete Person";
+            $tempActionDescription = "Failed to delete $hasherName";
+            AdminController::auditTheThings($request, $app, $tempActionType, $tempActionDescription);
+
+            #Define the return message
+            $returnMessage = "Oh crap. Something bad happened.";
+          }
+
+
+        }else{
+          $returnMessage = "Hasher has $hashingCount hashings and $haringCount harings. You cannot delete them.";
+        }
+
+      }else{
+        $returnMessage = "The hasher ($hasherKey) does not exist.";
+      }
+
+    } else {
+      $returnMessage = "The hasher key ($hasherKey) is invalid.";
+
+    }
+
+    #Set the return value
+    $returnValue =  $app->json($returnMessage, 200);
+    return $returnValue;
+
   }
 
 

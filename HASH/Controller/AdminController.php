@@ -152,6 +152,35 @@ class AdminController
   }
 
 
+    public function listOrphanedHashersAction(Request $request, Application $app){
+
+      #Define the SQL to execute
+      $sql = "SELECT *
+              FROM
+              	HASHERS
+              WHERE
+              	HASHERS.HASHER_KY NOT IN (SELECT HASHER_KY FROM HASHINGS)
+                  AND
+                  HASHERS.HASHER_KY NOT IN (SELECT HARINGS_HASHER_KY FROM HARINGS)";
+
+      #Execute the SQL statement; create an array of rows
+      $theList = $app['db']->fetchAll($sql);
+
+      # Establish and set the return value
+      $returnValue = $app['twig']->render('admin_orphaned_hashers.twig',array(
+        'pageTitle' => 'The List of Orphaned Hashers',
+        'pageSubTitle' => 'Hashers who have never hashed or hared',
+        'theList' => $theList,
+        'tableCaption' => 'A list of all hashes ever, since forever.',
+        'kennel_abbreviation' => 'XXX'
+      ));
+
+
+      #Return the return value
+      return $returnValue;
+    }
+
+
 
 
 

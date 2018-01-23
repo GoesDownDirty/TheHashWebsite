@@ -1,0 +1,68 @@
+{% extends "admin_base.twig" %}
+
+{% block template %}
+
+<script type = "text/javascript" language = "javascript">
+
+  //Call these functions upon page load
+  $(document).ready(function() {
+    //Convert the main table into a data table
+    $('#the_main_table').DataTable({
+      "paging":   false,
+      "aaSorting": []
+    });
+
+  });
+</script>
+
+
+  <h1>{{pageTitle}}</h1>
+  <h3>{{pageSubTitle}}</h3>
+  <div class="container">
+    {% set headerColor = "#d3d3d3" %}
+
+    <div class="row">
+      <div class="col-md-3 hidden-xs"  style="background-color:{{headerColor}};">Hasher Name </div>
+      <div class="col-md-2 hidden-xs"  style="background-color:{{headerColor}};">Abbreviation</div>
+      <div class="col-md-2 hidden-xs"  style="background-color:{{headerColor}};">First Name</div>
+      <div class="col-md-3 hidden-xs"  style="background-color:{{headerColor}};">Last Name </div>
+      <div class="col-md-2 hidden-xs"  style="background-color:{{headerColor}};">Home Kennel</div>
+    </div>
+
+      {% set bgcolor1 = "#d6eaf8" %}
+      {% set bgcolor2 = "#d6eae0" %}
+
+      {% set counter = 0 %}
+      {% for item in theList %}
+        {% if counter is divisible by(2) %}
+          {% set bgcolor = bgcolor1 %}
+        {% else %}
+          {% set bgcolor = bgcolor2 %}
+        {% endif %}
+        {% set counter = counter + 1 %}
+
+        <div class="row">
+
+          <div class="col-xs-12 col-md-3"    style="background-color:{{headerColor}};"><a href="/admin/modifyhasher/form/{{item.HASHER_KY}}">{{item.HASHER_NAME}}</a></div>
+
+          <div class="col-xs-6 visible-xs"  style="background-color:{{bgcolor}};">Abbreviation</div>
+          <div class="col-xs-6 col-md-2"    style="background-color:{{bgcolor}};">{{item.HASHER_ABBREVIATION}}&nbsp;</div>
+
+          <div class="col-xs-6 visible-xs"  style="background-color:{{bgcolor}};">First Name</div>
+          <div class="col-xs-6 col-md-2"    style="background-color:{{bgcolor}};">{{item.FIRST_NAME}}&nbsp;</div>
+
+          <div class="col-xs-6 visible-xs"  style="background-color:{{bgcolor}};">Last Name</div>
+          <div class="col-xs-6 col-md-3"    style="background-color:{{bgcolor}};">{{item.LAST_NAME}}&nbsp;</div>
+
+          <div class="col-xs-6 visible-xs"  style="background-color:{{bgcolor}};">Home Kennel</div>
+          <div class="col-xs-6 col-md-2"    style="background-color:{{bgcolor}};">{{item.HOME_KENNEL}}&nbsp;</div>
+
+
+          <div class="col-xs-12 visible-xs"></br></div>
+        </div>
+
+
+      {% endfor %}
+
+  </div>
+{% endblock %}

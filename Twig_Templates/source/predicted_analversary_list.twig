@@ -1,0 +1,42 @@
+{% extends "fullwidth.twig" %}
+
+{% block content %}
+
+<script type = "text/javascript" language = "javascript">
+
+  //Call these functions upon page load
+  $(document).ready(function() {
+    //Convert the main table into a data table
+    $('#the_main_table').DataTable({
+      "paging":   false,
+      "aaSorting": []
+    });
+
+  });
+</script>
+
+    <h1>{{pageTitle}}</h1>
+    <h3>{{pageSubTitle}}</h3>
+
+      <table class="table table-condensed table-hover" id="the_main_table">
+        <caption>{{tableCaption}}</caption>
+        <thead>
+          <tr>
+            <th>{{columnOneName}}</th>
+            <td>{{columnTwoName}}</td>
+            <td>{{columnThreeName}}</td>
+            <td>{{columnFourName}}</td>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in theList %}
+            <tr>
+              <td><a href='/{{kennel_abbreviation}}/hashers/{{item.HASHER_KEY}}'>{{item.HASHER_NAME}}</a></td>
+              <td>{{item.TOTAL_HASH_COUNT}}</td>
+              <td>{{item.NEXT_MILESTONE}}</td>
+              <td>{{item.PREDICTED_MILESTONE_DATE}}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+{% endblock %}

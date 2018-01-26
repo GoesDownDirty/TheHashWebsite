@@ -858,7 +858,20 @@ DEFINE('PREDICTED_HASHER_ANALVERSARIES',
               TOTAL_HASH_COUNT,
               ((DATEDIFF(CURDATE(),RECENT_FIRST_HASH.EVENT_DATE)) / RECENT_HASH_COUNT) AS DAYS_BETWEEN_HASHES,
               (SELECT MIN(MILESTONE) 
-                 FROM MILESTONES
+                 FROM (SELECT 25 AS MILESTONE
+                        UNION
+                       SELECT 50
+                        UNION
+                       SELECT 69
+                        UNION
+		       SELECT THE_NUMBER FROM (
+		           SELECT
+			       @NUMBERX:=@NUMBERX+100 AS THE_NUMBER
+		           FROM
+			       (SELECT null FROM HASHINGS LIMIT 10) AS CART1,
+			       (SELECT null FROM HASHINGS LIMIT 10) AS CART2,
+			       (SELECT @NUMBERX:=0) NUMBERX
+		       ) DERIVEDX) DERIVEDY
                 WHERE MILESTONE > TOTAL_HASH_COUNT
                   AND KENNEL_KY=?) AS NEXT_MILESTONE
          FROM (

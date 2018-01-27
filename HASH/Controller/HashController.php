@@ -2196,6 +2196,36 @@ public function predictedHasherAnalversariesAction(Request $request, Application
 
 }
 
+public function predictedMugAction(Request $request, Application $app, string $kennel_abbreviation){
+
+  # Declare the SQL used to retrieve this information
+  $sql = DH3_MUGLESS;
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  #Execute the SQL statement; create an array of rows
+  $hasherList = $app['db']->fetchAll($sql);
+
+  # Establish the return value
+  $returnValue = $app['twig']->render('predicted_analversary_list.twig',array(
+    'pageTitle' => 'Predicted Mug Distribution (experimental)',
+    'pageSubTitle' => 'Upcoming mug distribution predictions',
+    'theList' => $hasherList,
+    'tableCaption' => 'Mug Distribution Dates',
+    'columnOneName' => 'Hasher Name',
+    'columnTwoName' => 'Current Run Count',
+    'columnThreeName' => 'Mug Milestone',
+    'columnFourName' => 'Predicted Date',
+    'kennel_abbreviation' => $kennel_abbreviation
+  ));
+
+
+  #Return the return value
+  return $returnValue;
+
+}
+
 public function pendingHareAnalversariesAction(Request $request, Application $app, string $kennel_abbreviation){
 
   # Declare the SQL used to retrieve this information

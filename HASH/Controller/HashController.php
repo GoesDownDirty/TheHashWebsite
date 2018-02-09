@@ -93,34 +93,8 @@ class HashController
   #Define the action
   public function slashAction(Request $request, Application $app){
 
-    #$app['monolog']->addDebug('Entering the slash action');
-
-    #$token = $app['security.token_storage']->getToken();
-    #$app['monolog']->addDebug($token);
-
-    # Obtain the logged in user
-    #$user = $app['session']->get('user');
-    #$userName = $user['username'];
-
-    #Establish the page caption
-    #$pageCaption = "You are logged in as: $userName and your password is password";
-
-    #Establish the kennel abbreviation. By default, it is pulled from the config file
-    $kennelAbbreviation = DEFAULT_KENNEL_ABBREVIATION;
-
-    #Establish the page title
-    $pageTitle = "$kennelAbbreviation Stats";
-
     #Set the return value
-    $returnValue = $app['twig']->render('slash.twig',array(
-      'pageTitle' => $pageTitle,
-      #'pageCaption' => $pageCaption,
-      'subTitle1' => 'Standard Statistics',
-      'subTitle2' => 'Analversary Statistics',
-      'subTitle3' => 'Hare Statistics',
-      'subTitle4' => 'Other Statistics',
-      'kennel_abbreviation' => $kennelAbbreviation
-    ));
+    $returnValue = $this->slashKennelAction2($request,$app,DEFAULT_KENNEL_ABBREVIATION);
 
     #Return the return value
     return $returnValue;
@@ -149,6 +123,109 @@ class HashController
 
   }
 
+
+  #Define the action
+  public function slashKennelAction2(Request $request, Application $app, string $kennel_abbreviation){
+
+    #Establish the page title
+    $pageTitle = "$kennel_abbreviation Stats";
+
+    #Get hound counts
+    $baseSql = HASHING_COUNTS;
+    $sql = "$baseSql  LIMIT 10";
+
+    #Get Top (True) Hare Counts
+    $baseSql2 = NON_HYPER_HARING_COUNTS;
+    $sql2 = "$baseSql2 LIMIT 10";
+
+    #Get Top (Hyper) Hare Counts
+    $baseSql3 = HYPER_HARING_COUNTS;
+    $sql3 = "$baseSql3 LIMIT 10";
+
+    #Get Top (Overall) Hare Counts
+    $baseSql4 = HARING_COUNTS;
+    $sql4 = "$baseSql4 LIMIT 10";
+
+    #Obtain the kennel key
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+    #Execute the SQL statement; create an array of rows
+    $topHashersList = $app['db']->fetchAll($sql, array((int) $kennelKy));
+    $topTrueHareList = $app['db']->fetchAll($sql2, array((int) $kennelKy));
+    $topHyperHareList = $app['db']->fetchAll($sql3, array((int) $kennelKy));
+    $topOverallHareList = $app['db']->fetchAll($sql4, array((int) $kennelKy));
+
+    #Get the quickest to 5 hashes
+    $theQuickestToXNumber = 5;
+    $theSql = str_replace("XLIMITX",$theQuickestToXNumber-1,FASTEST_HASHERS_TO_ANALVERSARIES2);
+    $theSql = str_replace("XORDERX","ASC",$theSql);
+    $theSql = str_replace("XORDERCOLUMNX","DAYS_TO_REACH_ANALVERSARY",$theSql);
+    $theSql = "$theSql LIMIT 10";
+    $theQuickestToXResults = $app['db']->fetchAll($theSql, array((int) $kennelKy,(int) $kennelKy));
+
+    #Get the quickest to 100 hashes
+    $theQuickestToYNumber = 100;
+    $theSql = str_replace("XLIMITX",$theQuickestToYNumber-1,FASTEST_HASHERS_TO_ANALVERSARIES2);
+    $theSql = str_replace("XORDERX","ASC",$theSql);
+    $theSql = str_replace("XORDERCOLUMNX","DAYS_TO_REACH_ANALVERSARY",$theSql);
+    $theSql = "$theSql LIMIT 10";
+    $theQuickestToYResults = $app['db']->fetchAll($theSql, array((int) $kennelKy,(int) $kennelKy));
+
+    #Get the slowest to 5 hashes
+    $theSlowestToXNumber = 5;
+    $theSql = str_replace("XLIMITX",$theSlowestToXNumber-1,FASTEST_HASHERS_TO_ANALVERSARIES2);
+    $theSql = str_replace("XORDERX","DESC",$theSql);
+    $theSql = str_replace("XORDERCOLUMNX","DAYS_TO_REACH_ANALVERSARY",$theSql);
+    $theSql = "$theSql LIMIT 10";
+    $theSlowestToXResults = $app['db']->fetchAll($theSql, array((int) $kennelKy,(int) $kennelKy));
+
+
+    #Get the quickest to 5 true harings
+    $theQuickestToXTrueHaringsNumber = 5;
+    $theSql = str_replace("XLIMITX",$theQuickestToXTrueHaringsNumber-1,FASTEST_HARES_TO_ANALVERSARIES2);
+    $theSql = str_replace("XORDERX","ASC",$theSql);
+    $theSql = str_replace("XORDERCOLUMNX","DAYS_TO_REACH_ANALVERSARY",$theSql);
+    $theSql = "$theSql LIMIT 10";
+    $theQuickestToXTrueHaringsResults = $app['db']->fetchAll($theSql, array((int) $kennelKy,0,0,(int) $kennelKy,0,0));
+
+    #Get the quickest to 5 hyper harings
+    $theQuickestToXHyperHaringsNumber = 5;
+    $theSql = str_replace("XLIMITX",$theQuickestToXHyperHaringsNumber-1,FASTEST_HARES_TO_ANALVERSARIES2);
+    $theSql = str_replace("XORDERX","ASC",$theSql);
+    $theSql = str_replace("XORDERCOLUMNX","DAYS_TO_REACH_ANALVERSARY",$theSql);
+    $theSql = "$theSql LIMIT 10";
+    $theQuickestToXHyperHaringsResults = $app['db']->fetchAll($theSql, array((int) $kennelKy,1,1,(int) $kennelKy,1,1));
+
+    #Set the return value
+    $returnValue = $app['twig']->render('slash2.twig',array(
+      'pageTitle' => $pageTitle,
+      'pageCaption' => "Provide page caption",
+      'subTitle1' => 'Standard Statistics',
+      'subTitle2' => 'Analversary Statistics',
+      'subTitle3' => 'Hare Statistics',
+      'subTitle4' => 'Other Statistics',
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'top_alltime_hashers' =>$topHashersList,
+      'top_true_hares' =>$topTrueHareList,
+      'top_hyper_hares' =>$topHyperHareList,
+      'top_overall_hares' => $topOverallHareList,
+      'the_quickest_to_x_number' => $theQuickestToXNumber,
+      'the_quickest_to_x_results' => $theQuickestToXResults,
+      'the_quickest_to_y_number' => $theQuickestToYNumber,
+      'the_quickest_to_y_results' => $theQuickestToYResults,
+
+      'the_slowest_to_x_number' => $theSlowestToXNumber,
+      'the_slowest_to_x_results' => $theSlowestToXResults,
+      'the_quickest_to_x_true_harings_number' => $theQuickestToXTrueHaringsNumber,
+      'the_quickest_to_x_true_harings_results' => $theQuickestToXTrueHaringsResults,
+      'the_quickest_to_x_hyper_harings_number' => $theQuickestToXHyperHaringsNumber,
+      'the_quickest_to_x_hyper_harings_results' => $theQuickestToXHyperHaringsResults
+    ));
+
+    #Return the return value
+    return $returnValue;
+
+  }
 
 
 
@@ -2659,6 +2736,118 @@ public function basicStatsAction(Request $request, Application $app, string $ken
 }
 
 
+public function peopleStatsAction(Request $request, Application $app, string $kennel_abbreviation){
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  # Establish and set the return value
+  $returnValue = $app['twig']->render('section_people.twig',array(
+    'pageTitle' => 'People Stats',
+    'kennel_abbreviation' => $kennel_abbreviation
+  ));
+
+  #Return the return value
+  return $returnValue;
+
+}
+
+
+public function analversariesStatsAction(Request $request, Application $app, string $kennel_abbreviation){
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  #Determine the number of hashes already held for this kennel
+  $sql2 = HASHING_COUNTS;
+  $sql2 = "$sql2 LIMIT 1";
+  $theCount2 = $app['db']->fetchAssoc($sql2, array((int) $kennelKy));
+  $theCount2 = $theCount2['VALUE'];
+
+  # Establish and set the return value
+  $returnValue = $app['twig']->render('section_analversaries.twig',array(
+    'pageTitle' => 'Analversary Stats',
+    'kennel_abbreviation' => $kennel_abbreviation,
+    'the_count' => $theCount2
+  ));
+
+  #Return the return value
+  return $returnValue;
+
+}
+
+public function yearByYearStatsAction(Request $request, Application $app, string $kennel_abbreviation){
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  #SQL to determine the distinct year values
+  $sql = "SELECT YEAR(EVENT_DATE) AS YEAR, COUNT(*) AS THE_COUNT
+  FROM HASHES
+  WHERE
+    KENNEL_KY = ?
+  GROUP BY YEAR(EVENT_DATE)
+  ORDER BY YEAR(EVENT_DATE) DESC";
+
+  #Execute the SQL statement; create an array of rows
+  $yearValues = $app['db']->fetchAll($sql,array( (int) $kennelKy));
+
+  # Establish and set the return value
+  $returnValue = $app['twig']->render('section_year_by_year.twig',array(
+    'pageTitle' => 'Year Summary Stats',
+    'kennel_abbreviation' => $kennel_abbreviation,
+    'year_values' => $yearValues
+  ));
+
+  #Return the return value
+  return $returnValue;
+
+}
+
+public function kennelRecordsStatsAction(Request $request, Application $app, string $kennel_abbreviation){
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  # Establish and set the return value
+  $returnValue = $app['twig']->render('section_kennel_records.twig',array(
+    'pageTitle' => 'Kennel Records',
+    'kennel_abbreviation' => $kennel_abbreviation
+  ));
+
+  #Return the return value
+  return $returnValue;
+
+}
+
+
+public function kennelGeneralInfoStatsAction(Request $request, Application $app, string $kennel_abbreviation){
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  #Obtain the first hash
+  $firstHashSQL = "SELECT * FROM HASHES WHERE KENNEL_KY = ? ORDER BY EVENT_DATE ASC LIMIT 1";
+  $firstHashValue = $app['db']->fetchAssoc($firstHashSQL, array((int) $kennelKy));
+
+  #Obtain the most recent hash
+  $mostRecentHashSQL = "SELECT * FROM HASHES WHERE KENNEL_KY = ? ORDER BY EVENT_DATE DESC LIMIT 1";
+  $mostRecentHashValue = $app['db']->fetchAssoc($mostRecentHashSQL, array((int) $kennelKy));
+
+  # Establish and set the return value
+  $returnValue = $app['twig']->render('section_kennel_general_info.twig',array(
+    'pageTitle' => 'Kennel General Info',
+    'kennel_abbreviation' => $kennel_abbreviation,
+    'first_hash' => $firstHashValue,
+    'latest_hash' => $mostRecentHashValue,
+  ));
+
+  #Return the return value
+  return $returnValue;
+
+}
+
+
 public function hashingStatsAction(Request $request, Application $app, string $kennel_abbreviation){
 
   # Establish and set the return value
@@ -2718,7 +2907,6 @@ public function cautionaryStatsAction(Request $request, Application $app, string
   $arrayOfRidiculousness = array(
     "Hashes where VD was contrated",
     "Hashes where someone got pregnant",
-    "Hashes where someone was sexually harassed",
     "Hashes where someone coveted their neighbor's wife",
     "Hashes where hashers were mocked for their Kentucky heritage",
     "Hashes where hashers were mocked for their Michigan heritage",

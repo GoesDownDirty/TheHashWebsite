@@ -1,0 +1,79 @@
+{% extends "main_page.twig" %}
+
+{% block main_page_content %}
+
+<style>
+  .list-group-item-analversaries.active{
+    background-color:"#00C851";
+  }
+</style>
+
+<div class="row marketing">
+  <div class="col-lg-4">
+    <div class="list-group">
+      <a href="#1" class="list-group-item active">Map of Events</a>
+      <a class="list-group-item" href='/{{kennel_abbreviation}}/eventsHeatMap'>Heat Map</a>
+      <a class="list-group-item" href='/{{kennel_abbreviation}}/eventsClusterMap'>Cluster Map</a>
+      <a class="list-group-item" href='/{{kennel_abbreviation}}/eventsMarkerMap'>Simple Map</a>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="list-group">
+      <a href="#2" class="list-group-item active">Hasher Name Analysis</a>
+      <a class="list-group-item" href="/{{kennel_abbreviation}}/hasherNameAnalysis">Hashername Substring Fequency Analysis V 1.0</a>
+      <a class="list-group-item" href="/{{kennel_abbreviation}}/hasherNameAnalysis2">Hashername Substring Fequency Analysis V 2.0</a>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="list-group">
+      <a href="#3" class="list-group-item active">Kennel Details</a>
+      <a class="list-group-item" href="/{{kennel_abbreviation}}/hashes/{{first_hash.HASH_KY}}">First Hash: # {{first_hash.KENNEL_EVENT_NUMBER}} on {{first_hash.EVENT_DATE |date("Y/m/d", false)}}</a>
+      <a class="list-group-item" href="/{{kennel_abbreviation}}/hashes/{{latest_hash.HASH_KY}}">Latest Hash: # {{latest_hash.KENNEL_EVENT_NUMBER}} on {{latest_hash.EVENT_DATE |date("Y/m/d", false)}}</a>
+      <a class="list-group-item" href="/{{kennel_abbreviation}}/chartsAndDetails">Charts and Details </a>
+      <a class="list-group-item" href="/{{kennel_abbreviation}}/attendanceStatistics">Event Attendance Statistics</a>
+    </div>
+  </div>
+
+
+</div>
+
+<div class="row marketing">
+
+  <div class="col-lg-4">
+    <div class="list-group">
+      <a href="#4" class="list-group-item active">Hare Attendance</a>
+      <a class="list-group-item" href='/{{kennel_abbreviation}}/hashattendance/byhare/lowest' >Lowest Attended Hash by Hare</a>
+      <a class="list-group-item" href='/{{kennel_abbreviation}}/hashattendance/byhare/highest' >Highest Attended Hash by Hare</a>
+      <a class="list-group-item" href='/{{kennel_abbreviation}}/hashattendance/byhare/average' >Average Hash Attendance by Hare</a>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="list-group">
+      <a href="#5" class="list-group-item active">Trending Hares & Hounds</a>
+      <a class="list-group-item" href="/{{kennel_abbreviation}}/trendingTrueHares/180">Trending (True) Hares!</a>
+      <a class="list-group-item" href="/{{kennel_abbreviation}}/unTrendingTrueHaresJsonPre/180/6/10/15">Un-Trending (True) Hares!</a>
+      <a class="list-group-item" href="/{{kennel_abbreviation}}/trendingHashers/180">Trending Hashers!</a>
+    </div>
+  </div>
+
+
+  <div class="col-lg-4">
+    <div class="list-group">
+      <a href="#6" class="list-group-item active">Group Membership Stats</a>
+      <a class="list-group-item" href="/{{kennel_abbreviation}}/everyones/latest/hashes/5">Everyone's latest hash (by date)</a>
+      <a class="list-group-item" href="/{{kennel_abbreviation}}/everyones/first/hashes/5">Everyone's first hash (by date)</a>
+      <a class="list-group-item" href="/{{kennel_abbreviation}}/firstTimersStatistics/5">First Timers Charts</a>
+      <a class="list-group-item" href="/{{kennel_abbreviation}}/lastTimersStatistics/5/6">Last Timers Charts</a>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+{% endblock %}

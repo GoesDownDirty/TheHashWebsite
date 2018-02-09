@@ -230,7 +230,8 @@ $app->register(new Silex\Provider\MonologServiceProvider(), array(
 
 # Register the URls
 $app->get('/',                                                    'HASH\Controller\HashController::slashAction')->bind('homepage');
-$app->get('/{kennel_abbreviation}',                               'HASH\Controller\HashController::slashKennelAction');
+$app->get('/{kennel_abbreviation}',                               'HASH\Controller\HashController::slashKennelAction2');
+
 
 
 $app->get('/logonscreen',                                         'HASH\Controller\HashController::logonScreenAction');
@@ -494,6 +495,13 @@ $app->get('/{kennel_abbreviation}/haring/stats',        'HASH\Controller\HashCon
 $app->get('/{kennel_abbreviation}/analversary/stats',   'HASH\Controller\HashController::analversaryStatsAction');
 $app->get('/{kennel_abbreviation}/cautionary/stats',    'HASH\Controller\HashController::cautionaryStatsAction');
 $app->get('/{kennel_abbreviation}/miscellaneous/stats', 'HASH\Controller\HashController::miscellaneousStatsAction');
+
+#Revised top level pages
+$app->get('/{kennel_abbreviation}/people/stats', 'HASH\Controller\HashController::peopleStatsAction');
+$app->get('/{kennel_abbreviation}/analversaries/stats', 'HASH\Controller\HashController::analversariesStatsAction');
+$app->get('/{kennel_abbreviation}/year_by_year/stats', 'HASH\Controller\HashController::yearByYearStatsAction');
+$app->get('/{kennel_abbreviation}/kennel/records', 'HASH\Controller\HashController::kennelRecordsStatsAction');
+$app->get('/{kennel_abbreviation}/kennel/general_info', 'HASH\Controller\HashController::kennelGeneralInfoStatsAction');
 
 #Wordcloud test
 $app->get('/{kennel_abbreviation}/wordcloudtest', 'HASH\Controller\ObscureStatisticsController::wordcloudTestAction');

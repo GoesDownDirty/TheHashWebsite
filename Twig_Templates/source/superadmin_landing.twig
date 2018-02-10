@@ -1,29 +1,32 @@
-{% extends "admin_base.twig" %}
+{% extends "superadmin_base.twig" %}
 
 {% block template %}
 
     <h1>{{pageTitle}}</h1>
     <h3>{{subTitle1}}</h3>
 
-    {% if is_granted('ROLE_USER') %}
-        Welcome, you are in the ROLE_USER role, and are very special! You are:{{ app.user.username }} <br>
-        <a href="{{ path('logout') }}">Log out (Regular)</a>
-        <a href="{{ path('admin_logoutaction') }}">Log out (Admin)</a><br>
-    {% elseif is_granted('ROLE_ADMIN') %}
-        Welcome, you are in the ROLE_ADMIN role, and are very special! You are:{{ app.user.username }} <br>
-        <a href="{{ path('admin_logoutaction') }}">Log out</a><br>
-        <a href="/admin/modifyhash/form/989">Modify a specific event</a><br>
-        <a href="/admin/newhash/form">Create a new event</a><br>
-        <a href="/admin/modifyhasher/form/1432">Modify Elephant</a><br>
-        <a href="/admin/newhasher/form">Create a person!</a><br>
-        <a href="/admin/event/manageparticipation/989">Modify an event's participation</a><br>
-    {% elseif is_granted('ROLE_SUPERADMIN') %}
-        Elseif condition. You are the ROLE_SUPERADMIN. You are:{{ app.user.username }}
-        <a href="{{ path('admin_logoutaction') }}">Log out (Admin)</a><br>
+    {% if is_granted('ROLE_SUPERADMIN') %}
+        Role: ROLE_SUPERADMIN.<br>
+        User:{{ app.user.username }}<br>
+        <a href="{{ path('superadmin_logoutaction') }}">Log out (Admin)</a><br>
+
+        <h2>Manage admin users</h2>
+        * Create admin users <br>
+        * Read admin users <br>
+        * Update admin users <br>
+        * Delete admin users <br>
+
+        <h2> Manage kennels</h2>
+        * Create kennels <br>
+        * Read kennels <br>
+        * Update kennels <br>
+        * Delete kennels <br>
+
+        <h2>Manage system settings</h2>
+        <h2>View audit activity</h2>
     {% else %}
         You seem not to be logged in.
-        <a href="{{ path('logout') }}">Log out (Regular)</a>
-        <a href="{{ path('admin_logoutaction') }}">Log out (Admin)</a><br>
+        <a href="{{ path('superadmin_logoutaction') }}">Log out (Admin)</a><br>
     {% endif %}
 
 {% endblock %}

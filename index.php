@@ -152,29 +152,26 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
         'login' => array(
             'pattern' => '^/logonscreen$',
         ),
-        #'supersecured' => array(
-        #    'pattern' => '^/superadmin',
-        #    'form' => array('login_path' => '/logonscreen', 'check_path' => '/admin/login_check'),
-        #    'logout' => array('logout_path' => '/logoutaction'),
-        #    'users' => $app->share(function () use ($app) {return new UserProvider($app['db']);}),
-        #    'logout' => array('logout_path' => '/admin/logoutaction', 'invalidate_session' => true),
-        #),
-        #'secured' => array(
-        #    'pattern' => '^/admin',
-        #    'form' => array('login_path' => '/logonscreen', 'check_path' => '/admin/login_check'),
-        #    'logout' => array('logout_path' => '/logoutaction'),
-        #    'users' => $app->share(function () use ($app) {return new UserProvider($app['db']);}),
-        #    'logout' => array('logout_path' => '/admin/logoutaction', 'invalidate_session' => true),
-        #),
+        'supersecured' => array(
+            'pattern' => '^/superadmin',
+            'form' => array('login_path' => '/logonscreen/sa', 'check_path' => '/superadmin/login_check'),
+            'logout' => array('logout_path' => '/superadmin/logoutaction'),
+            'users' => $app->share(function () use ($app) {return new UserProvider($app['db']);}),
+            'logout' => array('logout_path' => '/superadmin/logoutaction', 'invalidate_session' => true),
+          ),
         'secured' => array(
-            'pattern' => '^/superadmin|/admin',
+            'pattern' => '^/admin',
             'form' => array('login_path' => '/logonscreen', 'check_path' => '/admin/login_check'),
             'logout' => array('logout_path' => '/logoutaction'),
             'users' => $app->share(function () use ($app) {return new UserProvider($app['db']);}),
             'logout' => array('logout_path' => '/admin/logoutaction', 'invalidate_session' => true),
         ),
-        #'supersecured' => array(
-        #    'pattern' => '^/superadmin',
+        #'secured' => array(
+        #    'pattern' => '^/superadmin|/admin',
+        #    'form' => array('login_path' => '/logonscreen', 'check_path' => '/admin/login_check'),
+        #    'logout' => array('logout_path' => '/logoutaction'),
+        #    'users' => $app->share(function () use ($app) {return new UserProvider($app['db']);}),
+        #    'logout' => array('logout_path' => '/admin/logoutaction', 'invalidate_session' => true),
         #),
         'unsecured' => array(
           'pattern' => '^.*$',
@@ -187,14 +184,6 @@ $app['security.access_rules'] = array(
     array('^/admin',        'ROLE_ADMIN',),
 );
 
-
-/*
-$app['security.access_rules'] = array(
-    #array('^/superadmin',   'ROLE_SUPERADMIN'),
-    #array('^/superadmin',   'ROLE_ADMIN'),
-    array('^/admin',        'ROLE_ADMIN')
-);
-*/
 
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new FormServiceProvider());
@@ -233,11 +222,16 @@ $app->get('/',                                                    'HASH\Controll
 $app->get('/{kennel_abbreviation}',                               'HASH\Controller\HashController::slashKennelAction2');
 
 
-
+#Admin section logon
 $app->get('/logonscreen',                                         'HASH\Controller\HashController::logonScreenAction');
 $app->get('/admin/logoutaction',                                  'HASH\Controller\AdminController::logoutAction');
+$app->get('/admin/hello',                                         'HASH\Controller\AdminController::helloAction');
+
+#Superadmin section logon
+$app->get('/logonscreen/sa',                                      'HASH\Controller\SuperAdminController::logonScreenAction');
+$app->get('/superadmin/logoutaction',                             'HASH\Controller\SuperAdminController::logoutAction');
 $app->get('/superadmin/hello',                                    'HASH\Controller\SuperAdminController::helloAction');
-$app->get('/admin/hello',                                         'HASH\Controller\AdminController::adminHelloAction');
+
 $app->get('/user/hello',                                          'HASH\Controller\AdminController::userHelloAction');
 
 #$app->get('/{kennel_abbreviation}/listhashers',                                        'HASH\Controller\HashController::listHashersAction');

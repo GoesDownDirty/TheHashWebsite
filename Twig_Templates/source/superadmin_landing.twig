@@ -10,20 +10,94 @@
         User:{{ app.user.username }}<br>
         <a href="{{ path('superadmin_logoutaction') }}">Log out (Admin)</a><br>
 
-        <h2>Manage admin users</h2>
-        * Create admin users <br>
-        * Read admin users <br>
-        * Update admin users <br>
-        * Delete admin users <br>
+        <div class="row marketing">
+          <div class="col-lg-12"><div style="padding:2">
+            <h4>Admin Users (Create New Users)</h4>
+              {% set bgcolor = "#d1f2eb" %}
+              {% set headerColor = "#d3d3d3" %}
+              <div class="row" >
+                <div class="col-xs-4 col-md-4 hidden-xs"  style="background-color:{{headerColor}};">Name</div>
+                <div class="col-xs-4 col-md-4 hidden-xs"  style="background-color:{{headerColor}};">Role</div>
+                <div class="col-xs-4 col-md-4 hidden-xs"  style="background-color:{{headerColor}};">Actions</div>
+              </div>
 
-        <h2> Manage kennels</h2>
-        * Create kennels <br>
-        * Read kennels <br>
-        * Update kennels <br>
-        * Delete kennels <br>
+              {% for item in user_list %}
+                <div class="row">
+                  <div class="col-xs-12 col-md-4 visible-xs"  style="background-color:{{headerColor}};">{{item.username}}</div>
+                  <div class="col-xs-4 col-md-4 visible-xs"    style="background-color:{{bgcolor}};">Role</div>
+                  <div class="col-xs-8 col-md-8 visible-xs"    style="background-color:{{bgcolor}};">{{item.roles}}</div>
+                  <div class="col-xs-4 col-md-4 visible-xs"    style="background-color:{{bgcolor}};">Actions</div>
+                  <div class="col-xs-8 col-md-8 visible-xs"    style="background-color:{{bgcolor}};">Modify | Delete</div>
+                  <div class="col-xs-12 visible-xs"></br></div>
+
+                  <div class="col-xs-4 col-md-4 hidden-xs"    style="background-color:{{bgcolor}};">{{item.username}}</div>
+                  <div class="col-xs-4 col-md-4 hidden-xs"    style="background-color:{{bgcolor}};">{{item.roles}}</div>
+                  <div class="col-xs-4 col-md-4 hidden-xs"    style="background-color:{{bgcolor}};">Modify | Delete</div>
+                </div>
+              {% endfor %}
+          </div></div>
+        </div>
+
+
+        <div class="row marketing">
+          <div class="col-lg-12"><div style="padding:2">
+            <h4>Kennels (Create New Kennel)</h4>
+              
+              {% set headerColor = "#d3d3d3" %}
+              <div class="row" >
+                <div class="col-xs-4 col-md-3 hidden-xs"  style="background-color:{{headerColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; ">Name</div>
+                <div class="col-xs-4 col-md-3 hidden-xs"  style="background-color:{{headerColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Description</div>
+                <div class="col-xs-4 col-md-2 hidden-xs"  style="background-color:{{headerColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Abbreviation</div>
+                <div class="col-xs-4 col-md-1 hidden-xs"  style="background-color:{{headerColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">In Record Keeping</div>
+                <div class="col-xs-4 col-md-3 hidden-xs"  style="background-color:{{headerColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Address</div>
+              </div>
+
+              {% for item in kennel_list %}
+                {% if item.IN_RECORD_KEEPING == 1 %}
+                  {% set bgcolor = "#fdedec" %}
+                {% elseif item.SITE_ADDRESS is not null%}
+                  {% set bgcolor = "#eaeded" %}
+                {% else %}
+                  {% set bgcolor = "#d6eaf8" %}
+                {% endif %}
+                <div class="row">
+                  <div class="col-xs-12 col-md-4 visible-xs"  style="background-color:{{headerColor}};">{{item.KENNEL_NAME}}</div>
+                  <div class="col-xs-6 col-md-4 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Description</div>
+                  <div class="col-xs-6 col-md-8 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.KENNEL_DESCRIPTION}}&nbsp;</div>
+                  <div class="col-xs-6 col-md-4 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Abbreviation</div>
+                  <div class="col-xs-6 col-md-8 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.KENNEL_ABBREVIATION}}&nbsp;</div>
+                  <div class="col-xs-6 col-md-4 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">In Record Keeping</div>
+                  <div class="col-xs-6 col-md-8 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    {% if item.IN_RECORD_KEEPING == 0 %}
+                      No
+                    {% elseif item.IN_RECORD_KEEPING == 1 %}
+                      Yes
+                    {% endif %}
+                  </div>
+                  <div class="col-xs-6 col-md-4 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Address</div>
+                  <div class="col-xs-6 col-md-8 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.SITE_ADDRESS}}&nbsp;</div>
+                  <div class="col-xs-6 col-md-4 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Actions</div>
+                  <div class="col-xs-6 col-md-8 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Modify | Delete&nbsp;</div>
+                  <div class="col-xs-12 visible-xs"></br></div>
+
+                  <div class="col-xs-4 col-md-3 hidden-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.KENNEL_NAME}}&nbsp;</div>
+                  <div class="col-xs-4 col-md-3 hidden-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.KENNEL_DESCRIPTION}}&nbsp;</div>
+                  <div class="col-xs-4 col-md-2 hidden-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.KENNEL_ABBREVIATION}}&nbsp;</div>
+                  <div class="col-xs-4 col-md-1 hidden-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    {% if item.IN_RECORD_KEEPING == 0 %}
+                      No
+                    {% elseif item.IN_RECORD_KEEPING == 1 %}
+                      Yes
+                    {% endif %}
+                  </div>
+                  <div class="col-xs-4 col-md-3 hidden-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.SITE_ADDRESS}}&nbsp;</div>
+                </div>
+              {% endfor %}
+          </div></div>
+        </div>
 
         <h2>Manage system settings</h2>
-        <h2>View audit activity</h2>
+
     {% else %}
         You seem not to be logged in.
         <a href="{{ path('superadmin_logoutaction') }}">Log out (Admin)</a><br>

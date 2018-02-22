@@ -21,10 +21,20 @@ class SuperAdminController{
   #Define the action
   public function helloAction(Request $request, Application $app){
 
+      #Establish the list of admin users
+      $userList = $app['db']->fetchAll("SELECT username, roles FROM USERS ORDER BY username ASC");
+
+      #Establish the list of kennels
+      $kennelList = $app['db']->fetchAll("SELECT KENNEL_NAME, KENNEL_DESCRIPTION,
+          KENNEL_ABBREVIATION, IN_RECORD_KEEPING, SITE_ADDRESS
+          FROM KENNELS ORDER BY IN_RECORD_KEEPING DESC, SITE_ADDRESS DESC");
+
       #return $app->redirect('/');
       return $app['twig']->render('superadmin_landing.twig', array (
         'pageTitle' => 'This is the super admin landing screen',
         'subTitle1' => 'This is the super admin landing screen',
+        'user_list' => $userList,
+        'kennel_list' => $kennelList
       ));
   }
 

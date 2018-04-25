@@ -526,65 +526,190 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
 
 
-                        <div class="row">
-                          <div id="map" class="col-sm-12"></div>
-                            <style>
-                            #map{
-                              height: 100%;
-                            }
-                            </style>
-                          </div>
-                        </div>
+      <!--  ------------------------------------------------------------------------->
 
-                        <script>
-                          var map;
-                          function initMap(){
-                            map = new google.maps.Map(document.getElementById('map'),{
-                              zoom: 10,
-                              center: new google.maps.LatLng( {{avg_lat}}, {{avg_lng}} )
-                              //mapTypeId: 'terrain'
-                            });
+          <div class="row"><h2>Event Map</h2>
+            <div id="TheMap1" class="col-sm-10"></div>
+              <style>
+              #TheMap1{
+                height: 100%;
+              }
+              </style>
+          </div>
+          <br><br><br><br><br><br><br>
 
-                            //var latLng = new google.maps.LatLng(2.8, -187.3);
-                            //var marker = new google.maps.Marker({
-                          //    position: latLng,
-                            //  map: map
-                            //});
+            <script>
 
-                          {% for hashEventValue in the_hashes %}
-                            var event_num = "#{{hashEventValue.KENNEL_EVENT_NUMBER | escape('html')}}";
-                            var event_description = "{{hashEventValue.SPECIAL_EVENT_DESCRIPTION | escape('html')}}";
-                            var event_location = "{{hashEventValue.EVENT_LOCATION | escape('html')}}";
-                            var event_date = "{{hashEventValue.EVENT_DATE | date("m/d/Y" ) | escape('html')}}";
-
-                            var textValue = "{{kennel_abbreviation}}"+ event_num +":" + event_description + " at " + event_location + " on " + event_date;                          var textValue = "{{kennel_abbreviation}} #{{hashEventValue.KENNEL_EVENT_NUMBER}}: {{hashEventValue.SPECIAL_EVENT_DESCRIPTION | raw}} at {{hashEventValue.EVENT_LOCATION | raw}} on {{hashEventValue.EVENT_DATE | date("m/d/Y")}}";
-                            var eventLink = "/{{kennel_abbreviation}}/hashes/{{hashEventValue.HASH_KY}}";
-                            var marker = new google.maps.Marker({
-                              //position: new google.maps.LatLng(7,-188);,
-                              position: {lat: {{hashEventValue.LAT}}, lng:{{hashEventValue.LNG}}},
-                              map: map,
-                              title: textValue,
-                              url: eventLink
-                            });
-                            google.maps.event.addListener(marker,'click', function(){
-                              window.open(this.url);
-                            });
-                          {% endfor %}
-
-                          }
-                        </script>
-                        <script async defer src="https://maps.googleapis.com/maps/api/js?key={{geocode_api_value}}&callback=initMap">
-                        </script>
+              var map1;
+              function initMap1(){
+                map1 = new google.maps.Map(document.getElementById('TheMap1'),{
+                  zoom: 10,
+                  center: new google.maps.LatLng( {{avg_lat}}, {{avg_lng}} )
+                  //mapTypeId: 'terrain'
+                });
 
 
-                  <div class="row"><br><br><br><br>
-                  </div>
+                {% for hashEventValue in the_hashes %}
+                  var event_num = "#{{hashEventValue.KENNEL_EVENT_NUMBER | escape('html')}}";
+                  var event_description = "{{hashEventValue.SPECIAL_EVENT_DESCRIPTION | escape('html')}}";
+                  var event_location = "{{hashEventValue.EVENT_LOCATION | escape('html')}}";
+                  var event_date = "{{hashEventValue.EVENT_DATE | date("m/d/Y" ) | escape('html')}}";
+
+                  var textValue = "{{kennel_abbreviation}}"+ event_num +":" + event_description + " at " + event_location + " on " + event_date;
+                  var eventLink = "/{{kennel_abbreviation}}/hashes/{{hashEventValue.HASH_KY}}";
+                  var marker = new google.maps.Marker({
+                    position: {lat: {{hashEventValue.LAT}}, lng:{{hashEventValue.LNG}}},
+                    map: map1,
+                    title: textValue,
+                    url: eventLink
+                  });
+                  google.maps.event.addListener(marker,'click', function(){
+                    window.open(this.url);
+                  });
+                {% endfor %}
+              }
+
+            </script>
+
+
+            <!--  ------------------------------------------------------------------------->
 
 
 
+            <div class="row"><h2>Heat Map</h2>
+              <div id="TheMap2" class="col-sm-10"></div>
+                <style>
+                #TheMap2{
+                  height: 100%;
+                }
+                </style>
+            </div>
+            <br><br><br><br><br><br><br>
+
+            <script>
+              var map2,heatmap;
+              function initMap2(){
+                map2 = new google.maps.Map(document.getElementById('TheMap2'),{
+                  zoom: 11,
+                  center: new google.maps.LatLng( {{avg_lat}}, {{avg_lng}} ),
+                  mapTypeId: 'terrain'
+                });
+
+                heatmap = new google.maps.visualization.HeatmapLayer({
+                  data: getPoints2(),
+                  map: map2
+                });
+
+                changeGradient();
+                changeRadius();
+              }
+
+              function getPoints2() {
+                return [
+                  {% for hashEventValue in the_hashes %}
+                  new google.maps.LatLng(
+                    {{hashEventValue.LAT}}, {{hashEventValue.LNG}}
+                  ),
+                  {% endfor %}
+                ];
+              }
+
+              function toggleHeatmap() {
+                heatmap.setMap(heatmap.getMap() ? null : map2);
+              }
+
+              function changeGradient() {
+                var gradient = [
+                  'rgba(0, 255, 255, 0)',
+                  'rgba(0, 255, 255, 1)',
+                  'rgba(0, 191, 255, 1)',
+                  'rgba(0, 127, 255, 1)',
+                  'rgba(0, 63, 255, 1)',
+                  'rgba(0, 0, 255, 1)',
+                  'rgba(0, 0, 223, 1)',
+                  'rgba(0, 0, 191, 1)',
+                  'rgba(0, 0, 159, 1)',
+                  'rgba(0, 0, 127, 1)',
+                  'rgba(63, 0, 91, 1)',
+                  'rgba(127, 0, 63, 1)',
+                  'rgba(191, 0, 31, 1)',
+                  'rgba(255, 0, 0, 1)'
+                ]
+                heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
+              }
+
+              function changeRadius() {
+                heatmap.set('radius', heatmap.get('radius') ? null : 30);
+              }
+
+              function changeOpacity() {
+                heatmap.set('opacity', heatmap.get('opacity') ? null : 0.2);
+              }
+            </script>
+
+
+            <!--  ------------------------------------------------------------------------->
+
+              <div class="row"><h2>Cluster Map</h2>
+                <div id="TheMap3" class="col-sm-10"></div>
+                  <style>
+                  #TheMap3{
+                    height: 100%;
+                  }
+                  </style>
+              </div>
+              <br><br><br><br><br><br><br>
+
+              <script>
+                var locations3 = getPoints3();
+
+                function getPoints3() {
+                  return [
+                    {% for hashEventValue in the_hashes %}
+                      { lat:{{hashEventValue.LAT}}, lng:{{hashEventValue.LNG}} },
+                    {% endfor %}
+                  ];
+                }
+
+                var map3;
+                function initMap3(){
+
+                  var map3 = new google.maps.Map(document.getElementById('TheMap3'), {
+                    zoom: 9,
+                    center: {lat:  {{avg_lat}}, lng: {{avg_lng}}}
+                  });
+
+                  var markers3 = locations3.map(function(location, i) {
+                   return new google.maps.Marker({
+                     position: location
+                   });
+                  });
+
+                  // Add a marker clusterer to manage the markers.
+                  var markerCluster = new MarkerClusterer(
+                    map3,
+                    markers3,
+                    //{imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'}
+                    {imagePath: '/web/images/google_map_cluster_map/m'}
+                  );
+
+                }
+              </script>
+              <script src="/web/javascript/markerclusterer/markerclusterer.js"></script>
+
+              <script>
+                function initMapX(){
+                  initMap1();
+                  initMap2();
+                  initMap3();
+                }
+              </script>
+              <script async defer src="https://maps.googleapis.com/maps/api/js?key={{geocode_api_value}}&callback=initMapX&libraries=visualization">
+              </script>
 
 
 
-    </div>
+
+          </div>
 
 {% endblock %}

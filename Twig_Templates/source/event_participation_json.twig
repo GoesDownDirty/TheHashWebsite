@@ -131,6 +131,7 @@ function displayMessage(messageValue){
        success: function(data, textStatus, jqXHR){
            getHashers({{hash_key}});
            displayMessage(data);
+           clearSearch();
        },
        error: function (jqXHR, textStatus, errorThrown)
        {
@@ -140,6 +141,10 @@ function displayMessage(messageValue){
             alert(errorThrown);
        }
    });
+ }
+
+ function clearSearch() {
+  mainTable.search("").draw();
  }
 
  //Function to add a hare to the event
@@ -154,6 +159,7 @@ function displayMessage(messageValue){
       {
           getHares({{hash_key}});
           displayMessage(data);
+          clearSearch();
       },
       error: function (jqXHR, textStatus, errorThrown)
       {
@@ -211,12 +217,12 @@ function deleteHare(hasher_key, hash_key){
  });
 }
 
-
+var mainTable;
 
 //Call these functions upon page load
 $(document).ready(function() {
   //Convert the main table into a data table
-  $('#the_main_table').DataTable({
+  mainTable = $('#the_main_table').DataTable({
     "bSort": false,
     "paging":   true,
     "pageLength": 10,

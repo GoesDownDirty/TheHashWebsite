@@ -344,7 +344,7 @@ $app->post('/admin/modifyhash/form/{hash_id}',                    'HASH\Controll
 # Hash name (substring) analysis
 $app->get('/{kennel_abbreviation}/hasherNameAnalysis',            'HASH\Controller\ObscureStatisticsController::hasherNameAnalysisAction');
 $app->get('/{kennel_abbreviation}/hasherNameAnalysis2',            'HASH\Controller\ObscureStatisticsController::hasherNameAnalysisAction2');
-
+$app->get('/{kennel_abbreviation}/hasherNameAnalysisWordCloud',            'HASH\Controller\ObscureStatisticsController::hasherNameAnalysisWordCloudAction');
 
 # Hash event creation
 $app->get('/admin/newhash/form',                                  'HASH\Controller\HashEventController::adminCreateHashAction');

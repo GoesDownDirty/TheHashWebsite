@@ -357,6 +357,23 @@ class HashController
 
   }
 
+  public function miaPreActionJson(Request $request, Application $app, string $kennel_abbreviation){
+
+    # Establish and set the return value
+    $returnValue = $app['twig']->render('hasher_mia.twig',array(
+      'pageTitle' => 'Hashers Missing In Action',
+      'pageSubTitle' => '',
+      #'theList' => $hasherList,
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'pageCaption' => "",
+      'tableCaption' => ""
+    ));
+
+    #Return the return value
+    return $returnValue;
+
+  }
+
   public function listHashersByHashAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
 
     #Define the SQL to execute
@@ -521,6 +538,151 @@ class HashController
     #-------------- Begin: Query the database   --------------------------------
     #Perform the filtered search
     $theResults = $app['db']->fetchAll($sql,array(
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified));
+
+    #Perform the untiltered count
+    $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
+
+    #Perform the filtered count
+    $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified)))['THE_COUNT'];
+    #-------------- End: Query the database   --------------------------------
+
+    #Establish the output
+    $output = array(
+      "sEcho" => "foo",
+      "iTotalRecords" => $theUnfilteredCount,
+      "iTotalDisplayRecords" => $theFilteredCount,
+      "aaData" => $theResults
+    );
+
+    #Set the return value
+    $returnValue = $app->json($output,200);
+
+    #Return the return value
+    return $returnValue;
+  }
+
+
+  public function miaPostActionJson(Request $request, Application $app, string $kennel_abbreviation){
+
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+    #Obtain the post parameters
+    #$inputDraw = $_POST['draw'] ;
+    $inputStart = $_POST['start'] ;
+    $inputLength = $_POST['length'] ;
+    $inputColumns = $_POST['columns'];
+    $inputSearch = $_POST['search'];
+    $inputSearchValue = $inputSearch['value'];
+
+    #-------------- Begin: Validate the post parameters ------------------------
+    #Validate input start
+    if(!is_numeric($inputStart)){
+      #$app['monolog']->addDebug("input start is not numeric: $inputStart");
+      $inputStart = 0;
+    }
+
+    #Validate input length
+    if(!is_numeric($inputLength)){
+      #$app['monolog']->addDebug("input length is not numeric");
+      $inputStart = "0";
+      $inputLength = "50";
+    } else if($inputLength == "-1"){
+      #$app['monolog']->addDebug("input length is negative one (all rows selected)");
+      $inputStart = "0";
+      $inputLength = "1000000000";
+    }
+
+    #Validate input search
+    #We are using database parameterized statements, so we are good already...
+
+    #---------------- End: Validate the post parameters ------------------------
+
+    #-------------- Begin: Modify the input parameters  ------------------------
+    #Modify the search string
+    $inputSearchValueModified = "%$inputSearchValue%";
+
+    #Obtain the column/order information
+    $inputOrderRaw = isset($_POST['order']) ? $_POST['order'] : null;
+    $inputOrderColumnExtracted = "1";
+    $inputOrderColumnIncremented = "1";
+    $inputOrderDirectionExtracted = "asc";
+    if(!is_null($inputOrderRaw)){
+      #$app['monolog']->addDebug("inside inputOrderRaw not null");
+      $inputOrderColumnExtracted = $inputOrderRaw[0]['column'];
+      $inputOrderColumnIncremented = $inputOrderColumnExtracted + 1;
+      $inputOrderDirectionExtracted = $inputOrderRaw[0]['dir'];
+    }else{
+      #$app['monolog']->addDebug("inside inputOrderRaw is null");
+      $inputOrderColumnIncremented = "DAYS_MIA";
+      $inputOrderDirectionExtracted = "DESC";
+    }
+
+    #-------------- End: Modify the input parameters  --------------------------
+
+
+    #-------------- Begin: Define the SQL used here   --------------------------
+
+    #Define the sql that performs the filtering
+    $sql =
+       "SELECT HASHER_NAME, HASHER_KY AS THE_KEY, HASHER_ABBREVIATION, LAST_SEEN_EVENT, LAST_SEEN_DATE, NUM_HASHES_MISSED,
+	       DATEDIFF(CURDATE(), LAST_SEEN_DATE) AS DAYS_MIA, (
+        SELECT MAX(HASH_KY)
+          FROM HASHES
+         WHERE KENNEL_EVENT_NUMBER = LAST_SEEN_EVENT
+           AND KENNEL_KY = $kennelKy) AS HASH_KY
+	  FROM (
+	SELECT HASHER_NAME, HASHER_KY, HASHER_ABBREVIATION, LAST_SEEN_DATE, (
+	       SELECT COUNT(*)
+		 FROM HASHES
+		WHERE KENNEL_KY = $kennelKy
+		  AND HASHES.EVENT_DATE > LAST_SEEN_DATE) AS NUM_HASHES_MISSED, (
+	       SELECT MAX(KENNEL_EVENT_NUMBER)
+		 FROM HASHES
+		WHERE HASHES.EVENT_DATE = LAST_SEEN_DATE
+		  AND HASHES.HASH_KY IN (
+		      SELECT HASH_KY
+			FROM HASHINGS
+		       WHERE KENNEL_KY = $kennelKy
+			 AND HASHINGS.HASHER_KY = HASHER_KY)) AS LAST_SEEN_EVENT
+	  FROM (
+	SELECT HASHER_NAME, HASHER_ABBREVIATION, HASHERS.HASHER_KY AS HASHER_KY, (
+		SELECT MAX(EVENT_DATE)
+		  FROM HASHES
+		 WHERE HASHES.HASH_KY IN (
+		       SELECT HASH_KY
+			 FROM HASHINGS
+			WHERE KENNEL_KY = $kennelKy
+			  AND HASHINGS.HASHER_KY = HASHERS.HASHER_KY)) AS LAST_SEEN_DATE
+	  FROM HASHERS
+	 WHERE HASHER_NAME NOT LIKE 'Just %'
+	   AND HASHER_NAME NOT LIKE 'NHN %'
+	   AND DECEASED = 0) INNER1
+	 WHERE LAST_SEEN_DATE IS NOT NULL) INNER2
+	 WHERE NUM_HASHES_MISSED > 0";
+
+    $sql2 = "$sql
+          AND (HASHER_NAME LIKE ? OR
+          HASHER_ABBREVIATION LIKE ?)";
+
+    $sql3 = "$sql2
+         ORDER BY $inputOrderColumnIncremented $inputOrderDirectionExtracted
+         LIMIT $inputStart,$inputLength";
+
+    #Define the SQL that gets the count for the filtered results
+    $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM ($sql2) A";
+
+    #Define the sql that gets the overall counts
+    $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM ($sql) A";
+
+    #-------------- End: Define the SQL used here   ----------------------------
+
+    #-------------- Begin: Query the database   --------------------------------
+    #Perform the filtered search
+    $theResults = $app['db']->fetchAll($sql3,array(
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified));
 

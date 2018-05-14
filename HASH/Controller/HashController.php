@@ -146,6 +146,18 @@ class HashController
     $baseSql4 = HARING_COUNTS;
     $sql4 = "$baseSql4 LIMIT 10";
 
+    $baseSql5 = HASHING_COUNTS_THIS_YEAR;
+    $sql5 = "$baseSql5 LIMIT 10";
+    
+    $baseSql6 = HASHING_COUNTS_LAST_YEAR;
+    $sql6 = "$baseSql6 LIMIT 10";
+
+    $baseSql7 = HARING_COUNTS_THIS_YEAR;
+    $sql7 = "$baseSql7 LIMIT 10";
+    
+    $baseSql8 = HARING_COUNTS_LAST_YEAR;
+    $sql8 = "$baseSql8 LIMIT 10";
+
     #Obtain the kennel key
     $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
@@ -154,6 +166,10 @@ class HashController
     $topTrueHareList = $app['db']->fetchAll($sql2, array((int) $kennelKy));
     $topHyperHareList = $app['db']->fetchAll($sql3, array((int) $kennelKy));
     $topOverallHareList = $app['db']->fetchAll($sql4, array((int) $kennelKy));
+    $topHashersThisYear = $app['db']->fetchAll($sql5, array((int) $kennelKy));
+    $topHashersLastYear = $app['db']->fetchAll($sql6, array((int) $kennelKy));
+    $topHaresThisYear = $app['db']->fetchAll($sql7, array((int) $kennelKy));
+    $topHaresLastYear = $app['db']->fetchAll($sql8, array((int) $kennelKy));
 
     #Get the quickest to 5 hashes
     $theQuickestToXNumber = 5;
@@ -219,7 +235,11 @@ class HashController
       'the_quickest_to_x_true_harings_number' => $theQuickestToXTrueHaringsNumber,
       'the_quickest_to_x_true_harings_results' => $theQuickestToXTrueHaringsResults,
       'the_quickest_to_x_hyper_harings_number' => $theQuickestToXHyperHaringsNumber,
-      'the_quickest_to_x_hyper_harings_results' => $theQuickestToXHyperHaringsResults
+      'the_quickest_to_x_hyper_harings_results' => $theQuickestToXHyperHaringsResults,
+      'top_hashers_this_year' => $topHashersThisYear,
+      'top_hashers_last_year' => $topHashersLastYear,
+      'top_hares_this_year' => $topHaresThisYear,
+      'top_hares_last_year' => $topHaresLastYear
     ));
 
     #Return the return value

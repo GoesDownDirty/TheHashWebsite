@@ -33,7 +33,7 @@
           var years_elapsed = data.YEARS_SINCE_EVENT;
           var months_elapsed = data.MONTHS_SINCE_EVENT;
           var days_elapsed = data.DAYS_SINCE_EVENT;
-          var time_elapsed = years_elapsed + " years, " + months_elapsed + " months, " + days_elapsed + " days";
+          var time_elapsed = years_elapsed + " year" + ( years_elapsed != 1 ? "s" : "") + ", " + months_elapsed + " month" + ( months_elapsed != 1 ? "s" : "") + ", " + days_elapsed + " day" + ( days_elapsed != 1 ? "s" : "");
           $('#virgin_hashing_elapsed_time').empty();
           $('#virgin_hashing_elapsed_time').append(time_elapsed);
 
@@ -74,7 +74,7 @@
          var years_elapsed = data.YEARS_SINCE_EVENT;
          var months_elapsed = data.MONTHS_SINCE_EVENT;
          var days_elapsed = data.DAYS_SINCE_EVENT;
-         var time_elapsed = years_elapsed + " years, " + months_elapsed + " months, " + days_elapsed + " days";
+         var time_elapsed = years_elapsed + " year" + ( years_elapsed != 1 ? "s" : "") + ", " + months_elapsed + " month" + ( months_elapsed != 1 ? "s" : "") + ", " + days_elapsed + " day" + ( days_elapsed != 1 ? "s" : "");
          $('#latest_hashing_elapsed_time').empty();
          $('#latest_hashing_elapsed_time').append(time_elapsed);
 

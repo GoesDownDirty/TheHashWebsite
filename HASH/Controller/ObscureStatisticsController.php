@@ -1003,7 +1003,6 @@ class ObscureStatisticsController{
             #Define the sql statement to execute
             #$theSql = FASTEST_HASHERS_TO_ANALVERSARIES;
             $theSql = str_replace("XLIMITX",$modifiedAnalversaryNumber,FASTEST_HASHERS_TO_ANALVERSARIES2);
-            $theSql = str_replace("XWHERECLAUSEX", "", $theSql);
             $theSql = str_replace("XORDERX","ASC",$theSql);
             $theSql = str_replace("XORDERCOLUMNX","DAYS_TO_REACH_ANALVERSARY",$theSql);
 
@@ -1042,7 +1041,6 @@ class ObscureStatisticsController{
                   #Define the sql statement to execute
                   #$theSql = FASTEST_HASHERS_TO_ANALVERSARIES;
                   $theSql = str_replace("XLIMITX",$modifiedAnalversaryNumber,FASTEST_HASHERS_TO_ANALVERSARIES2);
-                  $theSql = str_replace("XWHERECLAUSEX", "", $theSql);
                   $theSql = str_replace("XORDERX","ASC",$theSql);
                   $theSql = str_replace("XORDERCOLUMNX","ANALVERSARY_DATE",$theSql);
 
@@ -1084,7 +1082,6 @@ class ObscureStatisticsController{
       #Define the sql statement to execute
       #$theSql = FASTEST_HASHERS_TO_ANALVERSARIES;
       $theSql = str_replace("XLIMITX",$modifiedAnalversaryNumber,FASTEST_HASHERS_TO_ANALVERSARIES2);
-      $theSql = str_replace("XWHERECLAUSEX", "WHERE ANALVERSARYHASHES.HASHER_NAME NOT LIKE 'Just %'", $theSql);
       $theSql = str_replace("XORDERX","DESC",$theSql);
       $theSql = str_replace("XORDERCOLUMNX","DAYS_TO_REACH_ANALVERSARY",$theSql);
 

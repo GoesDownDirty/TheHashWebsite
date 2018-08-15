@@ -174,7 +174,6 @@ class HashController
     #Get the quickest to 5 hashes
     $theQuickestToXNumber = 5;
     $theSql = str_replace("XLIMITX",$theQuickestToXNumber-1,FASTEST_HASHERS_TO_ANALVERSARIES2);
-    $theSql = str_replace("XWHERECLAUSEX", "", $theSql);
     $theSql = str_replace("XORDERX","ASC",$theSql);
     $theSql = str_replace("XORDERCOLUMNX","DAYS_TO_REACH_ANALVERSARY",$theSql);
     $theSql = "$theSql LIMIT 10";
@@ -183,7 +182,6 @@ class HashController
     #Get the quickest to 100 hashes
     $theQuickestToYNumber = 100;
     $theSql = str_replace("XLIMITX",$theQuickestToYNumber-1,FASTEST_HASHERS_TO_ANALVERSARIES2);
-    $theSql = str_replace("XWHERECLAUSEX", "", $theSql);
     $theSql = str_replace("XORDERX","ASC",$theSql);
     $theSql = str_replace("XORDERCOLUMNX","DAYS_TO_REACH_ANALVERSARY",$theSql);
     $theSql = "$theSql LIMIT 10";
@@ -192,7 +190,6 @@ class HashController
     #Get the slowest to 5 hashes
     $theSlowestToXNumber = 5;
     $theSql = str_replace("XLIMITX",$theSlowestToXNumber-1,FASTEST_HASHERS_TO_ANALVERSARIES2);
-    $theSql = str_replace("XWHERECLAUSEX", "WHERE ANALVERSARYHASHES.HASHER_NAME NOT LIKE 'Just %'", $theSql);
     $theSql = str_replace("XORDERX","DESC",$theSql);
     $theSql = str_replace("XORDERCOLUMNX","DAYS_TO_REACH_ANALVERSARY",$theSql);
     $theSql = "$theSql LIMIT 10";

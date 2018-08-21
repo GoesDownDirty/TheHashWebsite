@@ -3,6 +3,7 @@
 // web/index.php
 require_once __DIR__.'/vendor/autoload.php';
 require_once __DIR__.'/HASH/Controller/HashController.php';
+require_once __DIR__.'/HASH/Controller/TagController.php';
 require_once __DIR__.'/HASH/Controller/HashEventController.php';
 require_once __DIR__.'/HASH/Controller/HashPersonController.php';
 require_once __DIR__.'/HASH/Controller/AdminController.php';
@@ -397,6 +398,13 @@ $app->post('/{kennel_abbreviation}/jumboPercentagesTable',                'HASH\
 $app->get('/admin/event/manageparticipation2/{hash_id}',            'HASH\Controller\HashEventController::hashParticipationJsonPreAction');
 $app->post('/admin/event/manageparticipation2/{hash_id}',           'HASH\Controller\HashEventController::hashParticipationJsonPostAction');
 
+# Page to manage the event tags
+$app->get('/admin/tags/manageeventtags',                            'HASH\Controller\TagController::manageEventTagsPreAction');
+$app->get('/admin/tags/geteventtagswithcounts',                     'HASH\Controller\TagController::getEventTagsWithCountsJsonAction');
+$app->get('/admin/tags/getalleventtags',                            'HASH\Controller\TagController::getAllEventTagsJsonAction');
+$app->get('/admin/tags/getmatchingeventtags',                       'HASH\Controller\TagController::getMatchingEventTagsJsonAction');
+#$app->post('/admin/tags/manageeventtags',                           'HASH\Controller\TagController::manageEventTagsJsonPostAction');
+$app->post('/admin/tags/addneweventtag',                            'HASH\Controller\TagController::addNewEventTag');
 
 # Functions to add and delete hounds and hares to the hashes
 $app->post('/admin/event/addHasherToHash',                         'HASH\Controller\HashEventController::addHashParticipant');

@@ -237,6 +237,9 @@ $app->get('/user/hello',                                          'HASH\Controll
 
 #$app->get('/{kennel_abbreviation}/listhashers',                                        'HASH\Controller\HashController::listHashersAction');
 
+$app->get('/{kennel_abbreviation}/mia',                                       'HASH\Controller\HashController::miaPreActionJson');
+$app->post('/{kennel_abbreviation}/mia',                                       'HASH\Controller\HashController::miaPostActionJson');
+
 $app->get('/{kennel_abbreviation}/listhashers2',                                       'HASH\Controller\HashController::listHashersPreActionJson');
 $app->post('/{kennel_abbreviation}/listhashers2',                                       'HASH\Controller\HashController::getHasherListJson');
 

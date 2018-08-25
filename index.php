@@ -409,6 +409,11 @@ $app->get('/admin/tags/getmatchingeventtags',                       'HASH\Contro
 #$app->post('/admin/tags/manageeventtags',                           'HASH\Controller\TagController::manageEventTagsJsonPostAction');
 $app->post('/admin/tags/addneweventtag',                            'HASH\Controller\TagController::addNewEventTag');
 
+# Add or remove tags to events
+$app->post('/admin/tags/addtagtoevent',                             'HASH\Controller\TagController::addTagToEventJsonAction');
+$app->post('/admin/tags/removetagfromevent',                        'HASH\Controller\TagController::removeTagFromEventJsonAction');
+$app->get('/admin/tags/eventscreen/{hash_id}',                      'HASH\Controller\TagController::showEventForTaggingPreAction');
+
 # Functions to add and delete hounds and hares to the hashes
 $app->post('/admin/event/addHasherToHash',                         'HASH\Controller\HashEventController::addHashParticipant');
 $app->post('/admin/event/addHareToHash',                           'HASH\Controller\HashEventController::addHashOrganizer');

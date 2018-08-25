@@ -1,0 +1,302 @@
+{% extends "admin_base.twig" %}
+
+{% block template %}
+
+<link rel = "stylesheet" href="/node_modules/jquery-ui/themes/base/all.css">
+<link rel = "stylesheet" href="/node_modules/jquery-timepicker/jquery.timepicker.css">
+
+<script type = "text/javascript" src = "/vendor/ifightcrime/bootstrap-growl/jquery.bootstrap-growl.min.js"></script>
+<script>
+
+
+function displayMessage(messageValue){
+
+  //Determine the type of message to display
+  var indexLocation = messageValue.indexOf("Success!");
+  var messageType = "";
+  if(indexLocation >= 0){
+    messageType = "success";
+  }else {
+    messageType = "danger";
+  }
+
+  $.bootstrapGrowl(messageValue, {
+    ele: 'body', // which element to append to
+    type: messageType, // (null, 'info', 'error', 'success')
+    offset: {from: 'top', amount: 20}, // 'top', or 'bottom'
+    align: 'center', // ('left', 'right', or 'center')
+    width: 400, // (integer, or 'auto')
+    delay: 4000,
+    allow_dismiss: true,
+    stackup_spacing: 10 // spacing between consecutively stacked growls.
+  });
+
+}
+
+//Function to add a tag to the event
+function addTag(tagText){
+ var formData = {tag_text:tagText,event_key:{{hashValue.HASH_KY}}};
+ //alert("addTag" + tagText);
+ $.ajax({
+     url : "/admin/tags/addtagtoevent",
+     type: "POST",
+     data : formData,
+     dataType : 'json',
+     success: function(data, textStatus, jqXHR){
+         displayMessage(data);
+     },
+     error: function (jqXHR, textStatus, errorThrown)
+     {
+          alert("failure");
+          alert(jqXHR);
+          alert(textStatus);
+          alert(errorThrown);
+     }
+ });
+}
+
+//Function to remove a tag from the event
+function removeTag(tagText){
+ var formData = {tag_text:tagText,event_key:{{hashValue.HASH_KY}}};
+ //alert("removeTag" + tagText);
+ $.ajax({
+     url : "/admin/tags/removetagfromevent",
+     type: "POST",
+     data : formData,
+     dataType : 'json',
+     success: function(data, textStatus, jqXHR){
+         displayMessage(data);
+     },
+     error: function (jqXHR, textStatus, errorThrown)
+     {
+          alert("failure");
+          alert(jqXHR);
+          alert(textStatus);
+          alert(errorThrown);
+     }
+ });
+}
+
+
+</script>
+
+<div class="table-responsive">
+<h3>{{pageTitle}}</h3>
+
+<form class="form-horizontal" id="the_form">
+
+
+
+  <div class="form-group">
+    <label for"tags" class="col-sm-2 control-label">Event Tags</label>
+    <div class="col-sm-10">
+      <input name="tags" class="form-control" id = "tags" value = "
+        {%for tagx in tagList%}
+          {{tagx.TAG_TEXT}}
+          {% if not loop.last %},{% endif %}
+        {% endfor %}" />
+    </div>
+
+  </div>
+
+  <div class="form-group">
+    <label for"kennelName" class="col-sm-2 control-label">Kennel Name</label>
+    <div class="col-sm-4">
+      <input type="text" disabled="true" class="form-control" id="kennelAbbreviation" name="kennelAbbreviation" value="{{hashValue.KENNEL_ABBREVIATION}}">
+    </div>
+
+    <label for"hashEventNumber" class="col-sm-2 control-label">Hash Event Number</label>
+    <div class="col-sm-4">
+      {{hashValue.KENNEL_EVENT_NUMBER}}
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for"hashEventDescription" class="col-sm-2 control-label">Hash Event Description</label>
+    <div class="col-sm-4">
+      <input type="text" disabled="true" class="form-control" id="hashEventDescription" name="hashEventDescription" value="{{hashValue.SPECIAL_EVENT_DESCRIPTION}}">
+    </div>
+
+    <label for"hyperIndicator" class="col-sm-2 control-label">Is a Hyper Hash</label>
+    <div class="col-sm-4">
+      <label class="radio-inline">
+        <input
+          type="radio"
+          disabled="true"
+          name="hyperIndicator"
+          id="hyperIndicator"
+          value="0"
+          {% if(hashValue.IS_HYPER == 0) %}
+            checked="checked"
+          {% endif %}
+          >
+          No
+        </input>
+      </label>
+
+      <label class="radio-inline">
+        <input
+          type="radio"
+          name="hyperIndicator"
+          id="hyperIndicator"
+          disabled="true"
+          {% if (hashValue.IS_HYPER == 1) %}
+            checked="checked"
+          {% endif %}
+          value="1">
+          Yes
+        </input>
+      </label>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for"eventDate" class="col-sm-2 control-label">Event Date</label>
+    <div class="col-sm-4">
+      <input type="text" disabled="true" class="form-control" id="eventDate" name="eventDate" value="{{hashValue.EVENT_DATE_DATE}}">
+      <script>
+        $("#eventDate").datepicker({
+          showOn: "focus",
+          dateFormat: "yy-mm-dd"
+        });
+      </script>
+    </div>
+    <label for"eventTime" class="col-sm-2 control-label">Event Time</label>
+    <div class="col-sm-4">
+      <input type="text" disabled="true" class="form-control" id="eventTime" name="eventTime" >
+      <script>
+        $('#eventTime').timepicker({
+          timeFormat:'HH:mm:ss',
+          interval: 30,
+          minTime:'10:00am',
+          maxTime:'07:00pm',
+          defaultTime: '{{hashValue.EVENT_DATE_TIME}}',
+          startTime: '10:00am',
+          dynamic: false,
+          dropdown: true,
+          scrollbar: true
+        })
+      </script>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for"locationDescription" class="col-sm-2 control-label">Location Description</label>
+    <div class="col-sm-10">
+      <input type="text" disabled="true" class="form-control" id="locationDecription" name="locationDescription" value="{{hashValue.EVENT_LOCATION}}">
+    </div>
+  </div>
+
+
+
+  <div style="background:#D3D3D3">
+    <div class="form-group">
+      <label for"street_number" class="col-sm-2 control-label">Street Number</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="street_number" name="street_number" disabled="true" value="{{hashValue.STREET_NUMBER}}">
+      </div>
+      <label for"route" class="col-sm-2 control-label">Route</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="route" name="route" disabled="true" value="{{hashValue.ROUTE}}">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for"locality" class="col-sm-2 control-label">City</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="locality" name="locality" disabled="true" value="{{hashValue.EVENT_CITY}}">
+      </div>
+
+      <label for"administrative_area_level_1" class="col-sm-2 control-label">State</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="administrative_area_level_1" name="administrative_area_level_1" disabled="true" value="{{hashValue.EVENT_STATE}}">
+      </div>
+
+
+    </div>
+
+    <div class="form-group">
+      <label for"administrative_area_level_2" class="col-sm-2 control-label">Administrative Level 2</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="administrative_area_level_2" name="administrative_area_level_2" disabled="true" value="{{hashValue.COUNTY}}">
+      </div>
+
+      <label for"postal_code" class="col-sm-2 control-label">Postal Code</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="postal_code" name="postal_code" disabled="true" value="{{hashValue.POSTAL_CODE}}">
+      </div>
+
+
+    </div>
+
+    <div class="form-group">
+      <label for"neighborhood" class="col-sm-2 control-label">Neighborhood</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="neighborhood" name="neighborhood" disabled="true" value="{{hashValue.NEIGHBORHOOD}}">
+      </div>
+
+      <label for"country" class="col-sm-2 control-label">Country</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="country" name="country" disabled="true" value="{{hashValue.COUNTRY}}">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for"lat" class="col-sm-2 control-label">Lat</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="lat" name="lat" disabled="true" value="{{hashValue.LAT}}">
+      </div>
+
+      <label for"lng" class="col-sm-2 control-label">Long</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="lng" name="lng" disabled="true" value="{{hashValue.LNG}}">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for"formatted_address" class="col-sm-2 control-label">Formatted Address</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="formatted_address" name="formatted_address" disabled="true" value="{{hashValue.FORMATTED_ADDRESS}}">
+      </div>
+
+      <label for"place_id" class="col-sm-2 control-label">Place ID</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="place_id" name="place_id" disabled="true" value="{{hashValue.PLACE_ID}}">
+      </div>
+    </div>
+  </div>
+</form>
+</div>
+
+
+<script type = "text/javascript" language = "javascript">
+
+  function onAddTag(tag){
+    //alert("Adding the tag: " + tag);
+    addTag(tag);
+  }
+
+  function onRemoveTag(tag){
+    //alert("Removed the tag: " + tag);
+    removeTag(tag);
+  }
+
+  function onChangeTag(input,tag){
+    //alert("Changed a tag: " + tag);
+  }
+
+  $('#tags').tagsInput({
+    //myurl = '/node_modules/jquery-tags-input/test/fake_json_endpoint.html';
+    //myurl = '/admin/tags/getalleventtags';
+    autocomplete_url: '/admin/tags/getmatchingeventtags',
+    onAddTag:onAddTag,
+    onRemoveTag:onRemoveTag,
+    onChange: onChangeTag,
+    width: '96%'
+    //interactive: false
+  });
+
+</script>
+
+
+{% endblock %}

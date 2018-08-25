@@ -674,8 +674,9 @@ class AdminController
         KENNEL_EVENT_NUMBER,
         KENNEL_ABBREVIATION,
         HASH_KY,
-        EVENT_DATE,
+        DATE_FORMAT(EVENT_DATE,\"%Y/%m/%d\") AS EVENT_DATE,
         EVENT_LOCATION,
+        SPECIAL_EVENT_DESCRIPTION,
         IS_HYPER,
         PLACE_ID
       FROM HASHES JOIN KENNELS on HASHES.KENNEL_KY = KENNELS.KENNEL_KY
@@ -684,7 +685,9 @@ class AdminController
           KENNEL_EVENT_NUMBER LIKE ? OR
           KENNEL_ABBREVIATION LIKE ? OR
           EVENT_DATE LIKE ? OR
-          EVENT_LOCATION LIKE ? )
+          EVENT_LOCATION LIKE ?  OR
+          SPECIAL_EVENT_DESCRIPTION LIKE ?
+        )
       ORDER BY $inputOrderColumnIncremented $inputOrderDirectionExtracted
       LIMIT $inputStart,$inputLength";
       #$app['monolog']->addDebug("sql: $sql");
@@ -697,7 +700,8 @@ class AdminController
         KENNEL_EVENT_NUMBER LIKE ? OR
         KENNEL_ABBREVIATION LIKE ? OR
         EVENT_DATE LIKE ? OR
-        EVENT_LOCATION LIKE ? )";
+        EVENT_LOCATION LIKE ? OR
+        SPECIAL_EVENT_DESCRIPTION LIKE ?)";
 
     #Define the sql that gets the overall counts
     $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHES";
@@ -710,6 +714,7 @@ class AdminController
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified,
       (string) $inputSearchValueModified));
 
     #Perform the untiltered count
@@ -717,6 +722,7 @@ class AdminController
 
     #Perform the filtered count
     $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
+      (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,

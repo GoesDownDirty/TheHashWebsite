@@ -65,6 +65,26 @@
 
             </div>
 
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                Event Tags
+              </div>
+              <div class="panel-body">
+                {% for event_tag_summary in event_tag_summaries %}
+                  <a href = "/{{kennel_abbreviation}}/listhashes/byeventtag/{{event_tag_summary.HASHES_TAGS_KY}}">
+                    {{event_tag_summary.TAG_TEXT}}
+                  </a>
+                  <span class="badge"> {{event_tag_summary.THE_COUNT}}</span>
+                {% endfor %}
+              </div>
+
+            </div>
+
+
+
+
+
+
 
 
         </div>
@@ -443,6 +463,10 @@
               {% endfor %}
           </div></div>
         {% endif %}
+
+
+
+
 
       </div>
 

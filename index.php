@@ -106,6 +106,7 @@ $app['controllers']
   ->assert("hasher_id", "\d+")
   ->assert("hasher_id2", "\d+")
   ->assert("hare_id", "\d+")
+  ->assert("event_tag_ky", "\d+")
   ->assert("year_value", "\d+")
   ->assert("kennel_id","\d+")
   ->assert("day_count","\d+")
@@ -413,6 +414,10 @@ $app->post('/admin/tags/addneweventtag',                            'HASH\Contro
 $app->post('/admin/tags/addtagtoevent',                             'HASH\Controller\TagController::addTagToEventJsonAction');
 $app->post('/admin/tags/removetagfromevent',                        'HASH\Controller\TagController::removeTagFromEventJsonAction');
 $app->get('/admin/tags/eventscreen/{hash_id}',                      'HASH\Controller\TagController::showEventForTaggingPreAction');
+
+#Show events by event tag
+$app->get('/{kennel_abbreviation}/listhashes/byeventtag/{event_tag_ky}', 'HASH\Controller\TagController::listHashesByEventTagAction');
+
 
 # Functions to add and delete hounds and hares to the hashes
 $app->post('/admin/event/addHasherToHash',                         'HASH\Controller\HashEventController::addHashParticipant');

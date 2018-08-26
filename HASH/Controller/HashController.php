@@ -148,13 +148,13 @@ class HashController
 
     $baseSql5 = HASHING_COUNTS_THIS_YEAR;
     $sql5 = "$baseSql5 LIMIT 10";
-    
+
     $baseSql6 = HASHING_COUNTS_LAST_YEAR;
     $sql6 = "$baseSql6 LIMIT 10";
 
     $baseSql7 = HARING_COUNTS_THIS_YEAR;
     $sql7 = "$baseSql7 LIMIT 10";
-    
+
     $baseSql8 = HARING_COUNTS_LAST_YEAR;
     $sql8 = "$baseSql8 LIMIT 10";
 
@@ -212,6 +212,18 @@ class HashController
     $theSql = "$theSql LIMIT 10";
     $theQuickestToXHyperHaringsResults = $app['db']->fetchAll($theSql, array((int) $kennelKy,1,1,(int) $kennelKy,1,1));
 
+    #Query for the event tag summary
+    $eventTagSql = "SELECT HT.TAG_TEXT, HT.HASHES_TAGS_KY,COUNT(HTJ.HASHES_KY) AS THE_COUNT
+      FROM
+        HASHES_TAGS HT
+          LEFT JOIN HASHES_TAG_JUNCTION HTJ ON HTJ.HASHES_TAGS_KY = HT.HASHES_TAGS_KY
+          JOIN HASHES ON HT.HASHES_TAGS_KY = HASHES.HASH_KY
+      WHERE
+        HASHES.KENNEL_KY = ?
+      GROUP BY HT.TAG_TEXT,HT.HASHES_TAGS_KY
+      ORDER BY THE_COUNT DESC";
+    $eventTagSummaries = $app['db']->fetchAll($eventTagSql, array((int) $kennelKy));
+
     #Set the return value
     $returnValue = $app['twig']->render('slash2.twig',array(
       'pageTitle' => $pageTitle,
@@ -239,7 +251,8 @@ class HashController
       'top_hashers_this_year' => $topHashersThisYear,
       'top_hashers_last_year' => $topHashersLastYear,
       'top_hares_this_year' => $topHaresThisYear,
-      'top_hares_last_year' => $topHaresLastYear
+      'top_hares_last_year' => $topHaresLastYear,
+      'event_tag_summaries' => $eventTagSummaries
     ));
 
     #Return the return value

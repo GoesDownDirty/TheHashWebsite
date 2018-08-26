@@ -22,6 +22,21 @@ class TagController
 
 
 
+    private function obtainKennelKeyFromKennelAbbreviation(Request $request, Application $app, string $kennel_abbreviation){
+
+      #Define the SQL to RuntimeException
+      $sql = "SELECT * FROM KENNELS WHERE KENNEL_ABBREVIATION = ?";
+
+      #Query the database
+      $kennelValue = $app['db']->fetchAssoc($sql, array((string) $kennel_abbreviation));
+
+      #Obtain the kennel ky from the returned object
+      $returnValue = $kennelValue['KENNEL_KY'];
+
+      #return the return value
+      return $returnValue;
+
+    }
 
 
     public function manageEventTagsPreAction(Request $request, Application $app){
@@ -418,7 +433,53 @@ public function addNewEventTag(Request $request, Application $app){
       return $returnValue;
     }
 
+    public function listHashesByEventTagAction(Request $request, Application $app, int $event_tag_ky, string $kennel_abbreviation){
 
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      #Define the SQL to execute
+      $sql = "SELECT
+            HASHES.HASH_KY,
+            KENNEL_EVENT_NUMBER,
+            EVENT_DATE,
+            DAYNAME(EVENT_DATE) AS EVENT_DAY_NAME,
+            EVENT_LOCATION,
+            EVENT_CITY,
+            EVENT_STATE,
+            SPECIAL_EVENT_DESCRIPTION,
+            IS_HYPER
+      FROM
+        HASHES JOIN HASHES_TAG_JUNCTION ON HASHES.HASH_KY = HASHES_TAG_JUNCTION.HASHES_KY
+      WHERE
+        HASHES_TAGS_KY = ? AND KENNEL_KY = ?
+      ORDER BY HASHES.EVENT_DATE DESC";
+
+      #Execute the SQL statement; create an array of rows
+      $hashList = $app['db']->fetchAll($sql,array((int) $event_tag_ky, (int)$kennelKy));
+
+      # Declare the SQL used to retrieve this information
+      $sql_for_tag_lookup = "SELECT * FROM HASHES_TAGS WHERE HASHES_TAGS_KY = ?";
+
+      # Make a database call to obtain the hasher information
+      $eventTag = $app['db']->fetchAssoc($sql_for_tag_lookup, array((int) $event_tag_ky));
+
+      # Establish and set the return value
+      #$hasherName = $hasher['HASHER_NAME'];
+      $tagText = $eventTag['TAG_TEXT'];
+      $pageSubtitle = "Hashes with the tag: $tagText";
+      $returnValue = $app['twig']->render('hash_list.twig',array(
+        'pageTitle' => 'The List of Hashes',
+        'pageSubTitle' => $pageSubtitle,
+        'theList' => $hashList,
+        'tableCaption' => '',
+        'kennel_abbreviation' => $kennel_abbreviation
+      ));
+
+      #Return the return value
+      return $returnValue;
+
+    }
 
 
 

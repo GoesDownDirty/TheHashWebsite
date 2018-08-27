@@ -1,0 +1,826 @@
+{% extends "fullwidth.twig" %}
+
+{% block content %}
+
+    <script src="/node_modules/chart.js/dist/Chart.bundle.min.js"></script>
+    <script type = "text/javascript" src = "/node_modules/wordcloud/src/wordcloud2.js"></script>
+    <script type = "text/javascript" language = "javascript">
+
+    //Function to get hares for the event
+    /*
+    function getVirginHash(hasher_id){
+     var formData = {hasher_id:hasher_id};
+     $.ajax({
+         url : "/{{kennel_abbreviation}}/statistics/hasher/firstHash",
+         type: "POST",
+         data : formData,
+         dataType : 'json',
+         success: function(data, textStatus, jqXHR){
+
+          var virginHashEventNumber = "<a href=/{{kennel_abbreviation}}/hashes/" +data.HASH_KY+ ">" + data.KENNEL_EVENT_NUMBER + "</a>";
+          $('#virgin_hash_hash_number').empty();
+          $('#virgin_hash_hash_number').append(virginHashEventNumber);
+          //$('#virgin_hash_hash_number').listview('refresh');
+
+          var virginHashEventDate = data.EVENT_DATE_FORMATTED;
+          $('#virgin_hash_event_date').empty();
+          $('#virgin_hash_event_date').append(virginHashEventDate);
+
+          var virgin_hash_location = data.EVENT_LOCATION;
+          $('#virgin_hash_location').empty();
+          $('#virgin_hash_location').append(virgin_hash_location);
+
+
+          var years_elapsed = data.YEARS_SINCE_EVENT;
+          var months_elapsed = data.MONTHS_SINCE_EVENT;
+          var days_elapsed = data.DAYS_SINCE_EVENT;
+          var time_elapsed = years_elapsed + " year" + ( years_elapsed != 1 ? "s" : "") + ", " + months_elapsed + " month" + ( months_elapsed != 1 ? "s" : "") + ", " + days_elapsed + " day" + ( days_elapsed != 1 ? "s" : "");
+          $('#virgin_hashing_elapsed_time').empty();
+          $('#virgin_hashing_elapsed_time').append(time_elapsed);
+
+         },
+         error: function (jqXHR, textStatus, errorThrown){
+              alert("failure");
+              alert(jqXHR);
+              alert(textStatus);
+              alert(errorThrown);
+         }
+     });
+   }
+   */
+
+   //Function to get hares for the event
+   /*
+   function getMostRecentHash(hasher_id){
+    var formData = {hasher_id:hasher_id};
+    $.ajax({
+        url : "/{{kennel_abbreviation}}/statistics/hasher/mostRecentHash",
+        type: "POST",
+        data : formData,
+        dataType : 'json',
+        success: function(data, textStatus, jqXHR){
+
+         var latestHashEventNumber = "<a href=/{{kennel_abbreviation}}/hashes/" +data.HASH_KY+ ">" + data.KENNEL_EVENT_NUMBER + "</a>";
+         $('#latest_hash_hash_number').empty();
+         $('#latest_hash_hash_number').append(latestHashEventNumber);
+         //$('#virgin_hash_hash_number').listview('refresh');
+
+         var latestHashEventDate = data.EVENT_DATE_FORMATTED;
+         $('#latest_hash_event_date').empty();
+         $('#latest_hash_event_date').append(latestHashEventDate);
+
+         var latest_hash_location = data.EVENT_LOCATION;
+         $('#latest_hash_location').empty();
+         $('#latest_hash_location').append(latest_hash_location);
+
+
+         var years_elapsed = data.YEARS_SINCE_EVENT;
+         var months_elapsed = data.MONTHS_SINCE_EVENT;
+         var days_elapsed = data.DAYS_SINCE_EVENT;
+         var time_elapsed = years_elapsed + " year" + ( years_elapsed != 1 ? "s" : "") + ", " + months_elapsed + " month" + ( months_elapsed != 1 ? "s" : "") + ", " + days_elapsed + " day" + ( days_elapsed != 1 ? "s" : "");
+         $('#latest_hashing_elapsed_time').empty();
+         $('#latest_hashing_elapsed_time').append(time_elapsed);
+
+        },
+        error: function (jqXHR, textStatus, errorThrown){
+             alert("failure");
+             alert(jqXHR);
+             alert(textStatus);
+             alert(errorThrown);
+        }
+    });
+  }
+  */
+
+
+
+
+
+
+
+//Generic function to retrieve data
+/*
+function getListData(hasher_id,url_value,div_value, column_one_header, column_two_header){
+ var formData = {hasher_id:hasher_id};
+ $.ajax({
+     url : url_value,
+     type: "POST",
+     data : formData,
+     dataType : 'json',
+     success: function(data, textStatus, jqXHR){
+       $(div_value).empty();
+
+       $(div_value).append('<table class="table table-condensed">');
+       $(div_value).append('<thead>');
+       $(div_value).append('<tr><td><b>' +column_one_header+'</b></td><td>&nbsp;' +column_two_header+'</td></tr>');
+       $(div_value).append('</thead>');
+
+
+
+       $.each(data, function(key,row) {
+         $(div_value).append('<tr>');
+         $(div_value).append('<td><b>'+ row.THE_VALUE + '</b></td>');
+         $(div_value).append('<td>&nbsp;'+ row.THE_COUNT + '</td>');
+         $(div_value).append('</tr>');
+       });
+
+       $(div_value).append('</table>');
+
+     },
+     error: function (jqXHR, textStatus, errorThrown){
+          alert("failure");
+          alert(jqXHR);
+          alert(textStatus);
+          alert(errorThrown);
+     }
+ });
+}
+*/
+
+
+   //Call these functions upon page load
+   $(document).ready(function() {
+      //getVirginHash({{tag_value.HASHES_TAGS_KY}});
+      //getMostRecentHash({{tag_value.HASHES_TAGS_KY}});
+      //getListData({{tag_value.HASHES_TAGS_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/city","#hasherHashesByCity-list","City","Count");
+
+    });
+
+   </script>
+
+
+
+
+    <div class="container">
+      <h1>{{pageTitle}}</h1>
+
+      <div class="row">
+
+        <div class="col-sm-6" style="background-color:lime;">
+          <h3>Event Tag Details</h3>
+          <dl class="dl-horizontal">
+              {% autoescape %}
+                <dt>Tag Name</dt><dd> {{tag_value.TAG_TEXT}}</dd>
+              {% endautoescape %}
+          </dl>
+          <dl class="dl-horizontal">
+            <dt>The Events</td><dd><a href='/{{kennel_abbreviation}}/listhashes/byeventtag/{{tag_value.HASHES_TAGS_KY}}'>Click Here</a></dd>
+          </dl>
+        </div>
+
+        <div class="col-sm-6">
+          <canvas id="myChart" width="50" height="50"></canvas>
+          <script>
+          var ctx = document.getElementById("myChart");
+          var myChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: [
+                    {% for individualValue in hashes_by_year_list %}
+                      {{individualValue.THE_VALUE}},
+                    {% endfor %}
+                  ],
+                  datasets: [{
+                      label: '# of Hashes',
+                      data: [
+                        {% for individualValue in hashes_by_year_list %}
+                          {{individualValue.THE_COUNT}},
+                        {% endfor %}
+
+                      ],
+                      fillColor:'rgba(75, 192, 192, 0.2)',
+                      backgroundColor:'rgba(54, 162, 235, 0.2)',
+                      borderColor:'rgba(54, 162, 235, 1)',
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  },
+                  title: {
+                    display: true,
+                    text: 'Events Per Year'
+                  }
+              }
+          });
+          </script>
+        </div>
+
+      </div>
+
+      <div class="row">
+
+{#
+        <div class="col-sm-6" style="background-color:yellow">
+          <h3>Their first hashing</h3>
+          <dl class="dl-horizontal">
+            <dt>Hash Number</dt>
+            <dd>
+              <div data-role="content" id="virgin_hash_hash_number"></div>
+            </dd>
+            <dt>Hash Date</dt>
+            <dd>
+              <div data-role="content" id="virgin_hash_event_date"></div>
+            </dd>
+            <dt>Hash Location</dt>
+            <dd>
+              <div data-role="content" id="virgin_hash_location"></div>
+            </dd>
+            <dt>Time Elapsed</dt>
+            <dd>
+                <div data-role="content" id="virgin_hashing_elapsed_time"></div>
+            </dd>
+          </dl>
+        </div>
+        #}
+
+{#
+        <div class="col-sm-6" style="background-color:silver">
+          <h3>Their latest hashing</h3>
+          <dl class="dl-horizontal">
+            <dt>Hash Number</dt>
+            <dd>
+              <div data-role="content" id="latest_hash_hash_number"></div>
+            </dd>
+            <dt>Hash Date</dt>
+            <dd>
+              <div data-role="content" id="latest_hash_event_date"></div>
+            </dd>
+            <dt>Hash Location</dt>
+            <dd>
+              <div data-role="content" id="latest_hash_location"></div>
+            </dd>
+            <dt>Time Elapsed</dt>
+            <dd>
+              <div data-role="content" id="latest_hashing_elapsed_time"></div>
+            </dd>
+          </dl>
+        </div>
+      </div>
+      #}
+
+
+
+
+
+
+      <div class="row">
+        <div class="col-sm-6">
+          {#
+          <canvas id="myChart3" width="50" height="50"></canvas>
+          <script>
+          var ctx = document.getElementById("myChart3");
+          var myChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: [
+                    {% for individualValue in hashes_by_month_name_list %}
+                      "{{individualValue.MONTH_NAME[0:3]}}",
+                    {% endfor %}
+                  ],
+                  datasets: [{
+                      label: '# of Hashes',
+                      data: [
+                        {% for individualValue in hashes_by_month_name_list %}
+                          {{individualValue.THE_COUNT}},
+                        {% endfor %}
+
+                      ],
+                      fillColor:'rgba(75, 192, 192, 0.2)',
+                      backgroundColor:'rgba(132, 234, 183,.2)',
+                      borderColor:'rgba(132, 234, 183,1)',
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  },
+                  title: {
+                    display: true,
+                    text: 'Hashes By Month'
+                  }
+              }
+          });
+          </script>
+
+        </div>
+
+        <div class="col-sm-6">
+
+          <canvas id="myChart4" width="50" height="50"></canvas>
+          <script>
+          var ctx = document.getElementById("myChart4");
+          var myChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: [
+                    {% for individualValue in hashes_by_quarter_list %}
+                      {{individualValue.THE_VALUE}},
+                    {% endfor %}
+                  ],
+                  datasets: [{
+                      label: '# of Hashes',
+                      data: [
+                        {% for individualValue in hashes_by_quarter_list %}
+                          {{individualValue.THE_COUNT}},
+                        {% endfor %}],
+                        backgroundColor:'rgba(127, 15, 239, 0.2)',
+                        borderColor:'rgba(127, 15, 239, 1)',
+                      borderWidth: 1
+                  }
+                ]
+              },
+              options: {
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  },
+                  title: {
+                    display: true,
+                    text: 'Hashes per Quarter'
+                  }
+              }
+          });
+          </script>
+#}
+        </div>
+
+
+      </div>
+
+      <div class="row">
+        {#
+        <div class="col-sm-6">
+          <canvas id="myChart55" width="50" height="50"></canvas>
+          <script>
+          var ctx = document.getElementById("myChart55");
+          var myChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: [
+                    {% for individualValue in hashes_by_county_list %}
+                      "{{individualValue.THE_VALUE}}",
+                    {% endfor %}
+                  ],
+                  datasets: [{
+                      label: '# of Hashes',
+                      data: [
+                        {% for individualValue in hashes_by_county_list %}
+                          {{individualValue.THE_COUNT}},
+                        {% endfor %}
+
+                      ],
+                      backgroundColor:'rgba(127, 15, 239, 0.2)',
+                      borderColor:'rgba(127, 15, 239, 1)',
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  },
+                  title: {
+                    display: true,
+                    text: 'Hashes By County'
+                  }
+              }
+          });
+          </script>
+        </div>
+
+        <div class="col-sm-6">
+          <canvas id="myChart56" width="50" height="50"></canvas>
+          <script>
+          var ctx = document.getElementById("myChart56");
+          var myChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: [
+                    {% for individualValue in hashes_by_postal_code_list %}
+                      "{{individualValue.THE_VALUE}}",
+                    {% endfor %}
+                  ],
+                  datasets: [{
+                      label: '# of Hashes',
+                      data: [
+                        {% for individualValue in hashes_by_postal_code_list %}
+                          {{individualValue.THE_COUNT}},
+                        {% endfor %}
+
+                      ],
+                      //fillColor:'rgba(75, 192, 192, 0.2)',
+                      backgroundColor:'rgba(132, 234, 183,.2)',
+                      borderColor:'rgba(132, 234, 183,1)',
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  },
+                  title: {
+                    display: true,
+                    text: 'Hashes By Postal Code'
+                  }
+              }
+          });
+          </script>
+          #}
+        </div>
+      </div>
+
+
+      <div class="row">
+
+        <div class="col-sm-6">
+          <canvas id="myChart5" width="50" height="50"></canvas>
+          {#
+          <script>
+          var ctx = document.getElementById("myChart5");
+          var myChart = new Chart(ctx, {
+              type: 'polarArea',
+              data: {
+                  labels: [
+                    {% for individualValue in hashes_by_state_list %}
+                      "{{individualValue.THE_VALUE}}",
+                    {% endfor %}
+                  ],
+                  datasets: [{
+                      label: '# of Hashes',
+                      data: [
+                        {% for individualValue in hashes_by_state_list %}
+                          {{individualValue.THE_COUNT}},
+                        {% endfor %}
+
+                      ],
+                      fillColor:'rgba(75, 192, 192, 0.2)',
+                      backgroundColor:[
+                        'rgba(132, 234, 183,.2)',
+                        'rgba(239, 127, 15, 0.2)',
+                        'rgba(239, 15, 15, 0.2)',
+                        'rgba(201, 200, 253, 0.2)'
+                      ],
+                      borderColor:[
+                        'rgba(132, 234, 183,1)',
+                        'rgba(239, 127, 15, 1)',
+                        'rgba(239, 15, 15, 1)',
+                        'rgba(201, 200, 253, 1)'
+                      ],
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  },
+                  title: {
+                    display: true,
+                    text: 'Hashes By State'
+                  }
+              }
+          });
+          </script>
+          #}
+
+        </div>
+
+        <div class="col-sm-6">
+          {#
+          <canvas id="myChart6" width="50" height="50"></canvas>
+          <script>
+          var ctx = document.getElementById("myChart6");
+          var myChart = new Chart(ctx, {
+              type: 'radar',
+              data: {
+                  labels: [
+                    {% for individualValue in hashes_by_day_name_list %}
+                      "{{individualValue.THE_VALUE}}",
+                    {% endfor %}
+                  ],
+                  datasets: [{
+                      label: '# of Hashes',
+                      data: [
+                        {% for individualValue in hashes_by_day_name_list %}
+                          {{individualValue.THE_COUNT}},
+                        {% endfor %}
+
+                      ],
+                      fillColor:'rgba(75, 192, 192, 0.2)',
+                      backgroundColor:'rgba(239, 127, 15, 0.2)',
+                      borderColor:'rgba(239, 127, 15, 1)',
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  },
+                  title: {
+                    display: true,
+                    text: 'Hashes By Day Name'
+                  }
+              }
+          });
+          </script>
+#}
+        </div>
+      </div>
+
+
+
+
+
+<!--  ------------------------------------------------------------------------->
+      <div class="row">
+        <div id = "div_one" class="col-sm-12" style="width:100%;height:600px">
+          <h4>Hasher Counts</h4>
+          <canvas id="my_canvas" class="wordcloud"></canvas>
+        </div>
+      </div>
+
+      <script type = "text/javascript" language = "javascript">
+          var canvas = document.getElementById("my_canvas");
+          var parent = document.getElementById("div_one");
+          canvas.width = parent.offsetWidth;
+          canvas.height = parent.offsetHeight;
+      </script>
+
+      <script>
+            var options = {
+              list: [
+                {% for item in hasher_count_list %}
+                    [
+                    "{% autoescape 'js' %}{{item.THE_VALUE}}{% endautoescape %}"
+                    ,
+                    "{{min(80,item.THE_COUNT * 5)}}"],
+                {% endfor %}
+              ],
+              drawMask: false,
+              shape: "circle",
+              gridSize: 5
+            };
+            WordCloud(document.getElementById('my_canvas'), options );
+      </script>
+
+<!--  ------------------------------------------------------------------------->
+
+      <div class="row">
+        <div id = "div_two" class="col-sm-12" style="width:100%;height:600px">
+          <h4>Hare Counts</h4>
+          <canvas id="my_canvas2" class="wordcloud"></canvas>
+        </div>
+      </div>
+
+      <script type = "text/javascript" language = "javascript">
+          var canvas = document.getElementById("my_canvas2");
+          var parent = document.getElementById("div_two");
+          canvas.width = parent.offsetWidth;
+          canvas.height = parent.offsetHeight;
+      </script>
+
+      <script>
+            var options = {
+              list: [
+                {% for item in hare_count_list %}
+                    [
+                    "{% autoescape 'js' %}{{item.THE_VALUE}}{% endautoescape %}"
+                    ,
+                    "{{min(80,item.THE_COUNT * 10)}}"],
+                {% endfor %}
+              ],
+              drawMask: false,
+              shape: "circle",
+              gridSize: 5
+            };
+            WordCloud(document.getElementById('my_canvas2'), options );
+      </script>
+<!--  ------------------------------------------------------------------------->
+
+
+    <div class="row"><h2>Event Map</h2>
+      <div id="TheMap1" class="col-sm-10"></div>
+        <style>
+        #TheMap1{
+          height: 100%;
+        }
+        </style>
+    </div>
+
+    <br><br><br><br><br><br><br>
+
+
+      <script>
+
+        var map1;
+        function initMap1(){
+          map1 = new google.maps.Map(document.getElementById('TheMap1'),{
+            zoom: 10,
+            center: new google.maps.LatLng( {{avg_lat}}, {{avg_lng}} )
+            //mapTypeId: 'terrain'
+          });
+
+
+          {% for hashEventValue in the_hashes %}
+            var event_num = "#{{hashEventValue.KENNEL_EVENT_NUMBER | escape('html')}}";
+            var event_description = "{{hashEventValue.SPECIAL_EVENT_DESCRIPTION | escape('html')}}";
+            var event_location = "{{hashEventValue.EVENT_LOCATION | escape('html')}}";
+            var event_date = "{{hashEventValue.EVENT_DATE | date("m/d/Y" ) | escape('html')}}";
+
+            var textValue = "{{kennel_abbreviation}}"+ event_num +":" + event_description + " at " + event_location + " on " + event_date;
+            var eventLink = "/{{kennel_abbreviation}}/hashes/{{hashEventValue.HASH_KY}}";
+            var marker = new google.maps.Marker({
+              position: {lat: {{hashEventValue.LAT}}, lng:{{hashEventValue.LNG}}},
+              map: map1,
+              title: textValue,
+              url: eventLink
+            });
+            google.maps.event.addListener(marker,'click', function(){
+              window.open(this.url);
+            });
+          {% endfor %}
+        }
+
+      </script>
+
+
+
+      <!--  ------------------------------------------------------------------------->
+
+
+
+      <div class="row"><h2>Heat Map</h2>
+        <div id="TheMap2" class="col-sm-10"></div>
+          <style>
+          #TheMap2{
+            height: 100%;
+          }
+          </style>
+      </div>
+
+      <br><br><br><br><br><br><br>
+
+
+      <script>
+        var map2,heatmap;
+        function initMap2(){
+          map2 = new google.maps.Map(document.getElementById('TheMap2'),{
+            zoom: 11,
+            center: new google.maps.LatLng( {{avg_lat}}, {{avg_lng}} ),
+            mapTypeId: 'terrain'
+          });
+
+          heatmap = new google.maps.visualization.HeatmapLayer({
+            data: getPoints2(),
+            map: map2
+          });
+
+          changeGradient();
+          changeRadius();
+        }
+
+        function getPoints2() {
+          return [
+            {% for hashEventValue in the_hashes %}
+            new google.maps.LatLng(
+              {{hashEventValue.LAT}}, {{hashEventValue.LNG}}
+            ),
+            {% endfor %}
+          ];
+        }
+
+        function toggleHeatmap() {
+          heatmap.setMap(heatmap.getMap() ? null : map2);
+        }
+
+        function changeGradient() {
+          var gradient = [
+            'rgba(0, 255, 255, 0)',
+            'rgba(0, 255, 255, 1)',
+            'rgba(0, 191, 255, 1)',
+            'rgba(0, 127, 255, 1)',
+            'rgba(0, 63, 255, 1)',
+            'rgba(0, 0, 255, 1)',
+            'rgba(0, 0, 223, 1)',
+            'rgba(0, 0, 191, 1)',
+            'rgba(0, 0, 159, 1)',
+            'rgba(0, 0, 127, 1)',
+            'rgba(63, 0, 91, 1)',
+            'rgba(127, 0, 63, 1)',
+            'rgba(191, 0, 31, 1)',
+            'rgba(255, 0, 0, 1)'
+          ]
+          heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
+        }
+
+        function changeRadius() {
+          heatmap.set('radius', heatmap.get('radius') ? null : 30);
+        }
+
+        function changeOpacity() {
+          heatmap.set('opacity', heatmap.get('opacity') ? null : 0.2);
+        }
+      </script>
+
+
+      <!--  ------------------------------------------------------------------------->
+
+        <div class="row"><h2>Cluster Map</h2>
+          <div id="TheMap3" class="col-sm-10"></div>
+            <style>
+            #TheMap3{
+              height: 100%;
+            }
+            </style>
+        </div>
+
+        <br><br><br><br><br><br><br>
+
+        <script>
+          var locations3 = getPoints3();
+
+          function getPoints3() {
+            return [
+              {% for hashEventValue in the_hashes %}
+                { lat:{{hashEventValue.LAT}}, lng:{{hashEventValue.LNG}} },
+              {% endfor %}
+            ];
+          }
+
+          var map3;
+          function initMap3(){
+
+            var map3 = new google.maps.Map(document.getElementById('TheMap3'), {
+              zoom: 9,
+              center: {lat:  {{avg_lat}}, lng: {{avg_lng}}}
+            });
+
+            var markers3 = locations3.map(function(location, i) {
+             return new google.maps.Marker({
+               position: location
+             });
+            });
+
+            // Add a marker clusterer to manage the markers.
+            var markerCluster = new MarkerClusterer(
+              map3,
+              markers3,
+              //{imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'}
+              {imagePath: '/web/images/google_map_cluster_map/m'}
+            );
+
+          }
+        </script>
+
+
+
+
+        <script src="/web/javascript/markerclusterer/markerclusterer.js"></script>
+
+        <script>
+          function initMapX(){
+            initMap1();
+            initMap2();
+            initMap3();
+          }
+        </script>
+
+
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key={{geocode_api_value}}&callback=initMapX&libraries=visualization">
+        </script>
+
+
+
+
+
+    </div>
+
+{% endblock %}

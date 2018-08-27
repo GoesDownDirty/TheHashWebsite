@@ -417,6 +417,7 @@ $app->get('/admin/tags/eventscreen/{hash_id}',                      'HASH\Contro
 
 #Show events by event tag
 $app->get('/{kennel_abbreviation}/listhashes/byeventtag/{event_tag_ky}', 'HASH\Controller\TagController::listHashesByEventTagAction');
+$app->get('/{kennel_abbreviation}/chartsGraphs/byeventtag/{event_tag_ky}', 'HASH\Controller\TagController::chartsGraphsByEventTagAction');
 
 
 # Functions to add and delete hounds and hares to the hashes

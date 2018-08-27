@@ -483,6 +483,194 @@ public function addNewEventTag(Request $request, Application $app){
 
 
 
+    public function chartsGraphsByEventTagAction(Request $request, Application $app, int $event_tag_ky, string $kennel_abbreviation){
+
+      # Declare the SQL used to retrieve this information
+      $sql = "SELECT * FROM HASHES_TAGS WHERE HASHES_TAGS_KY = ?";
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      # Make a database call to obtain the hasher information
+      $tagValue = $app['db']->fetchAssoc($sql, array((int) $event_tag_ky));
+
+      # Obtain their hashes
+      $sqlTheHashes = "SELECT
+        HASHES.*
+        FROM
+        HASHES
+        JOIN HASHES_TAG_JUNCTION ON HASHES.HASH_KY = HASHES_TAG_JUNCTION.HASHES_KY
+        WHERE
+        HASHES_TAGS_KY = ? AND KENNEL_KY = ?
+        AND LAT IS NOT NULL AND LNG IS NOT NULL";
+      $theHashes = $app['db']->fetchAll($sqlTheHashes, array((int) $hasher_id, (int) $kennelKy));
+
+      #Obtain the average lat
+      $sqlTheAverageLatLong = "SELECT AVG(LAT) AS THE_LAT, AVG(LNG) AS THE_LNG FROM
+        HASHES
+        JOIN HASHES_TAG_JUNCTION ON HASHES.HASH_KY = HASHES_TAG_JUNCTION.HASHES_KY
+        WHERE
+        HASHES_TAGS_KY = ? AND KENNEL_KY = ?
+        AND LAT IS NOT NULL AND LNG IS NOT NULL";
+      $theAverageLatLong = $app['db']->fetchAssoc($sqlTheAverageLatLong, array((int) $hasher_id, (int) $kennelKy));
+      $avgLat = $theAverageLatLong['THE_LAT'];
+      $avgLng = $theAverageLatLong['THE_LNG'];
+
+      # Obtain the number of hashings
+      #$hashCountValue = $app['db']->fetchAssoc(PERSONS_HASHING_COUNT, array((int) $hasher_id, (int) $kennelKy));
+
+      # Obtain the number of harings
+      #$hareCountValue = $app['db']->fetchAssoc(PERSONS_HARING_COUNT_FLEXIBLE, array((int) $hasher_id, (int) $kennelKy,  (int) 0, (int) 1));
+
+      # Obtain the hashes by month (name)
+      #$theHashesByMonthNameList = $app['db']->fetchAll(HASHER_HASH_COUNTS_BY_MONTH_NAME, array((int) $hasher_id, (int) $kennelKy));
+
+      # Obtain the hashes by quarter
+      #$theHashesByQuarterList = $app['db']->fetchAll(HASHER_HASH_COUNTS_BY_QUARTER, array((int) $hasher_id, (int) $kennelKy));
+
+      # Obtain the hashes by quarter
+      #$theHashesByStateList = $app['db']->fetchAll(HASHER_HASH_COUNTS_BY_STATE, array((int) $hasher_id, (int) $kennelKy));
+
+      # Obtain the hashes by county
+      #$theHashesByCountyList = $app['db']->fetchAll(HASHER_HASH_COUNTS_BY_COUNTY, array((int) $hasher_id, (int) $kennelKy));
+
+      # Obtain the hashes by postal code
+      #$theHashesByPostalCodeList = $app['db']->fetchAll(HASHER_HASH_COUNTS_BY_POSTAL_CODE, array((int) $hasher_id, (int) $kennelKy));
+
+      # Obtain the hashes by day name
+      #$theHashesByDayNameList = $app['db']->fetchAll(HASHER_HASH_COUNTS_BY_DAYNAME, array((int) $hasher_id, (int) $kennelKy));
+
+      #Obtain the hashes by year
+      $sqlHashesByYear = "SELECT TEMP_A.YEAR_A AS THE_VALUE, COUNT(TEMP_B.YEAR_B) AS THE_COUNT
+        FROM
+        (
+        SELECT
+        	DISTINCT(YEAR(EVENT_DATE)) AS YEAR_A
+        FROM
+        	HASHES
+        WHERE KENNEL_KY = ?
+        	AND EVENT_DATE >= (
+        		SELECT MIN(EVENT_DATE)
+                FROM
+        			HASHES
+        			JOIN HASHES_TAG_JUNCTION ON HASHES.HASH_KY = HASHES_TAG_JUNCTION.HASHES_KY
+                WHERE
+        			HASHES_TAGS_KY = ? AND KENNEL_KY = ?)
+        	AND EVENT_DATE <= (
+        		SELECT MAX(EVENT_DATE)
+                FROM
+        			HASHES
+        			JOIN HASHES_TAG_JUNCTION ON HASHES.HASH_KY = HASHES_TAG_JUNCTION.HASHES_KY
+                WHERE
+        			HASHES_TAGS_KY = ? AND KENNEL_KY = ?
+        )) TEMP_A LEFT JOIN (
+        SELECT Year(EVENT_DATE) AS YEAR_B
+                FROM
+                HASHES
+                JOIN HASHES_TAG_JUNCTION ON HASHES.HASH_KY = HASHES_TAG_JUNCTION.HASHES_KY
+                WHERE
+                HASHES_TAGS_KY = ? AND KENNEL_KY = ?
+        ) TEMP_B ON TEMP_A.YEAR_A = TEMP_B.YEAR_B
+        GROUP BY TEMP_A.YEAR_A";
+      $hashesByYearList = $app['db']->fetchAll($sqlHashesByYear, array(
+        (int) $kennelKy,
+        (int) $event_tag_ky,
+        (int) $kennelKy,
+        (int) $event_tag_ky,
+        (int) $kennelKy,
+        (int) $event_tag_ky,
+        (int) $kennelKy)
+      );
+
+      #Hasher Counts
+      $sqlHasherCounts = "SELECT HASHER_NAME AS THE_VALUE, COUNT(*) AS THE_COUNT
+        FROM
+          HASHES
+        JOIN HASHES_TAG_JUNCTION ON HASHES.HASH_KY = HASHES_TAG_JUNCTION.HASHES_KY
+        JOIN HASHINGS ON HASHINGS.HASH_KY = HASHES.HASH_KY
+        JOIN HASHERS ON HASHINGS.HASHER_KY = HASHERS.HASHER_KY
+        WHERE
+          HASHES_TAGS_KY = ? AND KENNEL_KY = ?
+        GROUP BY HASHER_NAME
+        ORDER BY THE_COUNT DESC";
+      $hasherCountList = $app['db']->fetchAll($sqlHasherCounts, array((int) $event_tag_ky,(int) $kennelKy));
+
+      #Hare Counts
+      $sqlHareCounts = "SELECT HASHER_NAME AS THE_VALUE, COUNT(*) AS THE_COUNT
+      FROM
+        HASHES
+        JOIN HASHES_TAG_JUNCTION ON HASHES.HASH_KY = HASHES_TAG_JUNCTION.HASHES_KY
+        JOIN HARINGS ON HARINGS_HASH_KY = HASHES.HASH_KY
+        JOIN HASHERS ON HARINGS_HASHER_KY = HASHERS.HASHER_KY
+        WHERE
+          HASHES_TAGS_KY = ? AND KENNEL_KY = ?
+        GROUP BY HASHER_NAME
+        ORDER BY THE_COUNT DESC";
+      $hareCountList = $app['db']->fetchAll($sqlHareCounts, array((int) $event_tag_ky,(int) $kennelKy));
+
+      #Obtain the harings by year
+      #$sqlHaringsByYear = "SELECT
+      #	  YEAR(EVENT_DATE) AS THE_VALUE,
+      #    SUM(CASE WHEN HASHES.IS_HYPER IN (0)  THEN 1 ELSE 0 END) NON_HYPER_COUNT,
+      #	  SUM(CASE WHEN HASHES.IS_HYPER IN (1)  THEN 1 ELSE 0 END) HYPER_COUNT,
+      #    COUNT(*) AS TOTAL_HARING_COUNT
+      #FROM
+      #    HARINGS
+      #	  JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+      #WHERE
+      #    HARINGS.HARINGS_HASHER_KY = ? AND
+      #    HASHES.KENNEL_KY = ?
+      #GROUP BY YEAR(EVENT_DATE)
+      #ORDER BY YEAR(EVENT_DATE)";
+      #$haringsByYearList = $app['db']->fetchAll($sqlHaringsByYear, array((int) $hasher_id,(int) $kennelKy));
+
+      #Query the database
+      #$cityHashingsCountList = $app['db']->fetchAll(HASHER_HASH_COUNTS_BY_CITY, array((int) $hasher_id, (int) $kennelKy));
+
+      #Obtain largest entry from the list
+      #$cityHashingsCountMax = 1;
+      #if(isset($cityHashingsCountList[0]['THE_COUNT'])){
+      #  $cityHashingsCountMax = $cityHashingsCountList[0]['THE_COUNT'];
+      #}
+
+      #Obtain their largest streak
+      #$longestStreakValue = $app['db']->fetchAssoc(THE_LONGEST_STREAKS_FOR_HASHER, array((int) $kennelKy , (int) $hasher_id));
+
+      # Establish and set the return value
+      $returnValue = $app['twig']->render('eventtag_chart_details.twig',array(
+        'pageTitle' => 'Tag Charts and Details',
+        'firstHeader' => 'Basic Details',
+        'secondHeader' => 'Statistics',
+        'tag_value' => $tagValue,
+        #'hashCount' => $hashCountValue['THE_COUNT'],
+        #'hareCount' => $hareCountValue['THE_COUNT'],
+        'kennel_abbreviation' => $kennel_abbreviation,
+        'hashes_by_year_list' => $hashesByYearList,
+        'hasher_count_list' => $hasherCountList,
+        'hare_count_list' => $hareCountList,
+        #'harings_by_year_list' => $haringsByYearList,
+        #'hashes_by_month_name_list' => $theHashesByMonthNameList,
+        #'hashes_by_quarter_list' => $theHashesByQuarterList,
+        #'hashes_by_state_list' => $theHashesByStateList,
+        #'hashes_by_county_list' => $theHashesByCountyList,
+        #'hashes_by_postal_code_list' => $theHashesByPostalCodeList,
+        #'hashes_by_day_name_list' => $theHashesByDayNameList,
+        #'city_hashings_count_list' => $cityHashingsCountList,
+        #'city_hashings_max_value' => $cityHashingsCountMax,
+        'the_hashes' => $theHashes,
+        'geocode_api_value' => GOOGLE_MAPS_JAVASCRIPT_API_KEY,
+        'avg_lat' => $avgLat,
+        'avg_lng' => $avgLng,
+        #'longest_streak' => $longestStreakValue['MAX_STREAK']
+      ));
+
+      # Return the return value
+      return $returnValue;
+
+    }
+
+
+
 
 
 

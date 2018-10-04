@@ -503,7 +503,7 @@ public function addNewEventTag(Request $request, Application $app){
         WHERE
         HASHES_TAGS_KY = ? AND KENNEL_KY = ?
         AND LAT IS NOT NULL AND LNG IS NOT NULL";
-      $theHashes = $app['db']->fetchAll($sqlTheHashes, array((int) $hasher_id, (int) $kennelKy));
+      $theHashes = $app['db']->fetchAll($sqlTheHashes, array((int) $event_tag_ky, (int) $kennelKy));
 
       #Obtain the average lat
       $sqlTheAverageLatLong = "SELECT AVG(LAT) AS THE_LAT, AVG(LNG) AS THE_LNG FROM
@@ -512,7 +512,7 @@ public function addNewEventTag(Request $request, Application $app){
         WHERE
         HASHES_TAGS_KY = ? AND KENNEL_KY = ?
         AND LAT IS NOT NULL AND LNG IS NOT NULL";
-      $theAverageLatLong = $app['db']->fetchAssoc($sqlTheAverageLatLong, array((int) $hasher_id, (int) $kennelKy));
+      $theAverageLatLong = $app['db']->fetchAssoc($sqlTheAverageLatLong, array((int) $event_tag_ky, (int) $kennelKy));
       $avgLat = $theAverageLatLong['THE_LAT'];
       $avgLng = $theAverageLatLong['THE_LNG'];
 

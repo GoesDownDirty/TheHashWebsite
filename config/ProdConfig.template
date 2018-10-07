@@ -28,3 +28,6 @@ define("DEFAULT_KENNEL_ABBREVIATION", "SCH4");
 
 // Establish the contact email for the local administrator
 define("ADMINISTRATOR_EMAIL","foo@gmail.com");
+
+// Optional banner html
+//define("SITE_BANNER", "<div style=\"width:100%; background-color:yellow; color:black; font-weight:bold; text-align: center\">LOCALHOST TEST INSTANCE</div>");

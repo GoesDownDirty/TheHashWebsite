@@ -2082,70 +2082,25 @@ DEFINE("THE_LONGEST_STREAKS","SELECT
 		ORDER BY MAX_STREAK DESC , HASHER_NAME
 		Limit 25");
 
-		DEFINE("THE_LONGEST_STREAKS_FOR_HASHER","SELECT
-				MAX(RUNNING_COUNT) AS MAX_STREAK,
-				HASHER_KY
-			FROM
-			(
-				SELECT
-					RUNNING_COUNT,
-					HASHER_KY
-				FROM
-				(
-					SELECT
-						@RUNNING_COUNT:=CASE
-							WHEN PREV_HASHER != HASHER_KY THEN 1
-							WHEN PREV_HASHNUM != HASHNUM - 1 THEN 1
-							ELSE @RUNNING_COUNT + 1
-							END AS RUNNING_COUNT,
-						PREV_HASHNUM,
-						PREV_HASHER,
-						HASHNUM,
-						HASH_KY,
-						HASHER_KY
-					FROM
-					(
-						SELECT
-							@PREV_HASHNUM AS PREV_HASHNUM,
-							@PREV_HASHER AS PREV_HASHER,
-							HASHNUM,
-							HASH_KY,
-							HASHER_KY,
-							@PREV_HASHNUM:=HASHNUM,
-							@PREV_HASHER:=HASHER_KY
-						FROM
-						(
-							SELECT
-								HASHES2.HASHNUM,
-								HASHES2.HASH_KY,
-								HASHINGS.HASHER_KY
-							FROM
-							(
-								SELECT
-									@rownum:=@rownum + 1 AS HASHNUM,
-									HASH_KY
-								FROM
-								(
-									SELECT
-										HASHES.HASH_KY
-									FROM
-										HASHES,
-										(SELECT @PREV_HASHNUM:=- 1) v1,
-										(SELECT @PREV_HASHER:=- 1) v2,
-										(SELECT @rownum:=0) v3,
-										(SELECT @RUNNING_COUNT:=0) v4
-									WHERE
-										HASHES.KENNEL_KY = ?
-									ORDER BY HASHES.EVENT_DATE , HASHES.HASH_KY
-								) AS A
-							) AS HASHES2
-						JOIN HASHINGS ON HASHINGS.HASH_KY = HASHES2.HASH_KY
-						ORDER BY HASHINGS.HASHER_KY , HASHES2.HASHNUM
-					) AS B
-				) AS C
-			) AS D
-			) AS E
-			WHERE HASHER_KY = ?");
+                DEFINE("THE_LONGEST_STREAKS_FOR_HASHER","
+                   SELECT MAX(RUNNING_COUNT) AS MAX_STREAK
+                     FROM (SELECT @RUNNING_COUNT:=CASE
+                                                  WHEN @PREV_HASHNUM != HASHNUM - 1 THEN 1
+                                                  ELSE @RUNNING_COUNT + 1
+                                                   END AS RUNNING_COUNT,
+				  @PREV_HASHNUM:=HASHNUM
+                             FROM (SELECT @rownum:=@rownum + 1 AS HASHNUM,
+                                          HASH_KY
+                                     FROM HASHES,
+                                          (SELECT @PREV_HASHNUM:=- 1) v1,
+                                          (SELECT @rownum:=0) v3,
+                                          (SELECT @RUNNING_COUNT:=0) v4
+                                    WHERE HASHES.KENNEL_KY = ?
+                                    ORDER BY HASHES.EVENT_DATE, HASHES.HASH_KY
+                                  ) AS HASHES2
+                            WHERE HASH_KY IN (SELECT HASH_KY FROM HASHINGS WHERE HASHER_KY = ?)
+                            ORDER BY HASHES2.HASHNUM
+                          ) AS E");
 
 DEFINE("ALL_HASHINGS_IN_ALL_KENNELS_FOR_HASHER","SELECT
 	KENNELS.KENNEL_ABBREVIATION,

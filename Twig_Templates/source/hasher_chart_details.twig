@@ -277,48 +277,6 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
       </div>
 
 
-      <div class="row">
-        <div class="col-sm-12">
-
-          <div id="chartA"></div>
-          <script>
-            var chart = c3.generate({
-                bindto: '#chartA',
-                data: {
-                  x:'x',
-                  columns: [
-                    ['x',
-                      {% for individualValue in hashes_by_year_list %}
-                        {{individualValue.THE_VALUE}},
-                      {% endfor %}
-                    ],
-                    ['Number of Hashes',
-                      {% for individualValue in hashes_by_year_list %}
-                        {{individualValue.THE_COUNT}},
-                      {% endfor %}
-                    ]
-                  ],
-                  type: 'bar'
-                }
-            });
-
-          function setTheTimeouts(i){
-            var delayValue=4000;
-            setTimeout(function() {chart.transform('area-step');}, i*delayValue*1);
-            setTimeout(function() {chart.transform('area-spline');}, i*delayValue*2);
-            setTimeout(function() {chart.transform('bar');}, i*delayValue*3);
-          }
-
-          for(var i=1; i<2; i++){
-            setTheTimeouts(i);
-          }
-
-
-
-          </script>
-
-        </div>
-      </div>
 
 
       <div class="row">
@@ -411,6 +369,50 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
 
       </div>
+
+
+            <div class="row" >
+              <div class="col-sm-12" >
+
+                <div id="chartA" ></div>
+                <script >
+                  var  chart = c3.generate({
+                      bindto:  '#chartA',
+                      data:  {
+                        x:'x',
+                        columns:  [
+                          [ 'x',
+                            {% for  individualValue in hashes_by_year_list %}
+                              {{individualValue.THE_VALUE}} ,
+                            {% endfor  %}
+                          ],
+                          ['Number of Hashes',
+                            {% for individualValue in hashes_by_year_list %}
+                              {{individualValue.THE_COUNT}},
+                            {% endfor %}
+                          ]
+                        ],
+                        type: 'bar'
+                      }
+                  });
+
+                function setTheTimeouts(i){
+                  var delayValue=4000;
+                  setTimeout(function() {chart.transform('area-step');}, i*delayValue*1);
+                  setTimeout(function() {chart.transform('area-spline');}, i*delayValue*2);
+                  setTimeout(function() {chart.transform('bar');}, i*delayValue*3);
+                }
+
+                for(var i=1; i<2; i++){
+                  setTheTimeouts(i);
+                }
+
+
+
+                </script>
+
+              </div>
+            </div>
 
       <div class="row">
         <div class="col-sm-6">

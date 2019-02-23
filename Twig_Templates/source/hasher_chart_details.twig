@@ -2,9 +2,15 @@
 
 {% block content %}
 
+    <link rel = "stylesheet" href="/node_modules/c3/c3.css">
+    <script src="/node_modules/c3/c3.min.js"></script>
+    <script src="/node_modules/d3/dist/d3.min.js"></script>
+
     <script src="/node_modules/chart.js/dist/Chart.bundle.min.js"></script>
     <script type = "text/javascript" src = "/node_modules/wordcloud/src/wordcloud2.js"></script>
     <script type = "text/javascript" language = "javascript">
+
+
 
     //Function to get hares for the event
     function getVirginHash(hasher_id){
@@ -270,60 +276,49 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
         </div>
       </div>
 
+
       <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-12">
 
-          <canvas id="myChart" width="50" height="50"></canvas>
+          <div id="chartA"></div>
           <script>
-          var ctx = document.getElementById("myChart");
-          var myChart = new Chart(ctx, {
-              type: 'bar',
-              data: {
-                  labels: [
-                    {% for individualValue in hashes_by_year_list %}
-                      {{individualValue.THE_VALUE}},
-                    {% endfor %}
+            var chart = c3.generate({
+                bindto: '#chartA',
+                data: {
+                  x:'x',
+                  columns: [
+                    ['x',
+                      {% for individualValue in hashes_by_year_list %}
+                        {{individualValue.THE_VALUE}},
+                      {% endfor %}
+                    ],
+                    ['Number of Hashes',
+                      {% for individualValue in hashes_by_year_list %}
+                        {{individualValue.THE_COUNT}},
+                      {% endfor %}
+                    ]
                   ],
-                  datasets: [{
-                      label: '# of Hashes',
-                      data: [
-                        {% for individualValue in hashes_by_year_list %}
-                          {{individualValue.THE_COUNT}},
-                        {% endfor %}
+                  type: 'bar'
+                }
+            });
 
-                      ],
-                      fillColor:'rgba(75, 192, 192, 0.2)',
-                      backgroundColor:'rgba(54, 162, 235, 0.2)',
-                      borderColor:'rgba(54, 162, 235, 1)',
-                      borderWidth: 1
-                  }]
-              },
-              options: {
-                  scales: {
-                      yAxes: [{
-                          ticks: {
-                              beginAtZero:true
-                          }
-                      }]
-                  },
-                  title: {
-                    display: true,
-                    text: 'Hashes Per Year'
-                  }
-              }
-          });
+          function setTheTimeouts(i){
+            var delayValue=4000;
+            setTimeout(function() {chart.transform('area-step');}, i*delayValue*1);
+            setTimeout(function() {chart.transform('area-spline');}, i*delayValue*2);
+            setTimeout(function() {chart.transform('bar');}, i*delayValue*3);
+          }
+
+          for(var i=1; i<2; i++){
+            setTheTimeouts(i);
+          }
+
+
+
           </script>
 
         </div>
-
-
-
-
-
-
       </div>
-
-
 
 
       <div class="row">
@@ -508,55 +503,34 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
       <div class="row">
 
         <div class="col-sm-6">
-          <canvas id="myChart5" width="50" height="50"></canvas>
+          <div id="chartBB"></div>
           <script>
-          var ctx = document.getElementById("myChart5");
-          var myChart = new Chart(ctx, {
-              type: 'polarArea',
-              data: {
-                  labels: [
+            var chartBB = c3.generate({
+                bindto: '#chartBB',
+                data: {
+                  columns:
+                  [
                     {% for individualValue in hashes_by_state_list %}
-                      "{{individualValue.THE_VALUE}}",
+                      ['{{individualValue.THE_VALUE}}',{{individualValue.THE_COUNT}}],
                     {% endfor %}
                   ],
-                  datasets: [{
-                      label: '# of Hashes',
-                      data: [
-                        {% for individualValue in hashes_by_state_list %}
-                          {{individualValue.THE_COUNT}},
-                        {% endfor %}
+                  type: 'pie'
+                }
+            });
 
-                      ],
-                      fillColor:'rgba(75, 192, 192, 0.2)',
-                      backgroundColor:[
-                        'rgba(132, 234, 183,.2)',
-                        'rgba(239, 127, 15, 0.2)',
-                        'rgba(239, 15, 15, 0.2)',
-                        'rgba(201, 200, 253, 0.2)'
-                      ],
-                      borderColor:[
-                        'rgba(132, 234, 183,1)',
-                        'rgba(239, 127, 15, 1)',
-                        'rgba(239, 15, 15, 1)',
-                        'rgba(201, 200, 253, 1)'
-                      ],
-                      borderWidth: 1
-                  }]
-              },
-              options: {
-                  scales: {
-                      yAxes: [{
-                          ticks: {
-                              beginAtZero:true
-                          }
-                      }]
-                  },
-                  title: {
-                    display: true,
-                    text: 'Hashes By State'
-                  }
-              }
-          });
+          function setTheTimeoutsB(i){
+            var delayValue=4000;
+            setTimeout(function() {chartBB.transform('donut');}, i*delayValue*1);
+            setTimeout(function() {chartBB.transform('bar');}, i*delayValue*2);
+            setTimeout(function() {chartBB.transform('pie');}, i*delayValue*3);
+          }
+
+          for(var i=1; i<2; i++){
+            setTheTimeoutsB(i);
+          }
+
+
+
           </script>
 
         </div>

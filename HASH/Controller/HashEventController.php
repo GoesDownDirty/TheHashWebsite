@@ -253,10 +253,21 @@ class HashEventController
 
     #Convert kennel list to the appropriate format for a dropdown menu
     $kennelDropdown = array();
+    // Force DH3 to the top of the list
     foreach ($kennelList as $kennelValue){
       $tempKennelAbbreviation = $kennelValue['KENNEL_ABBREVIATION'];
-      $tempKennelKey = $kennelValue['KENNEL_KY'];
-      $kennelDropdown[$tempKennelAbbreviation] = $tempKennelKey;
+      if($tempKennelAbbreviation=="DH3") {
+        $tempKennelKey = $kennelValue['KENNEL_KY'];
+        $kennelDropdown[$tempKennelAbbreviation] = $tempKennelKey;
+        break;
+      }
+    }
+    foreach ($kennelList as $kennelValue){
+      $tempKennelAbbreviation = $kennelValue['KENNEL_ABBREVIATION'];
+      if($tempKennelAbbreviation!="DH3") {
+        $tempKennelKey = $kennelValue['KENNEL_KY'];
+        $kennelDropdown[$tempKennelAbbreviation] = $tempKennelKey;
+      }
     }
 
     $returnValue = $app['twig']->render('new_hash_form_ajax.twig', array(

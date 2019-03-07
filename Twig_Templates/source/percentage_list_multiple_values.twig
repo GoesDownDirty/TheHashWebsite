@@ -16,9 +16,9 @@
       <tbody>
         {% for item in theList %}
           <tr>
-            <td><a href='/hashers/{{item.HASHER_KY}}'>{{item.HASHER_NAME}}</a></td>
-            <td><a href='/listhashes/byhare/{{item.HASHER_KY}}'>{{item.ALL_HARING_COUNT}}</a></td>
-            <td><a href='/listhashes/byhare/{{item.HASHER_KY}}'>{{item.HYPER_HARING_COUNT}}</a></td>
+            <td><a href='/{{kennel_abbreviation}}/hashers/{{item.HASHER_KY}}'>{{item.HASHER_NAME}}</a></td>
+            <td><a href='/{{kennel_abbreviation}}/listhashes/byhare/{{item.HASHER_KY}}'>{{item.ALL_HARING_COUNT}}</a></td>
+            <td><a href='/{{kennel_abbreviation}}/listhashes/byhare/{{item.HASHER_KY}}'>{{item.HYPER_HARING_COUNT}}</a></td>
             <td>{{item.HYPER_HARINGS_PERCENTAGE}}</td>
             <td>{{item.NON_HYPER_HARINGS_PERCENTAGE}}</td>
           </tr>

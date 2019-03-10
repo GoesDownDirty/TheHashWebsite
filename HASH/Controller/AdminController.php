@@ -900,7 +900,7 @@ class AdminController
     $kennelValues = $app['db']->fetchAll($listOfKennelsSQL);
 
     # Declare the SQL used to retrieve this information
-    $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
+    $sql_for_hasher_lookup = "SELECT HASHER_NAME FROM HASHERS WHERE HASHER_KY = ?";
 
     # Make a database call to obtain the hasher information
     $hasher = $app['db']->fetchAssoc($sql_for_hasher_lookup, array((int) $hasher_id));

@@ -251,20 +251,14 @@ $app->get('/{kennel_abbreviation}/eventsHeatMap',                               
 $app->get('/{kennel_abbreviation}/eventsClusterMap',                                        'HASH\Controller\ObscureStatisticsController::kennelEventsClusterMap');
 $app->get('/{kennel_abbreviation}/eventsMarkerMap',                                        'HASH\Controller\ObscureStatisticsController::kennelEventsMarkerMap');
 
-
-
-$app->get('/{kennel_abbreviation}/listStreakersByCount/byhash/{hash_id}',       'HASH\Controller\HashController::listStreakersByCountsByHashAction');
-$app->get('/{kennel_abbreviation}/listStreakersByDate/byhash/{hash_id}',        'HASH\Controller\HashController::listStreakersByDateByHashAction');
 $app->get('/{kennel_abbreviation}/listStreakers/byhash/{hash_id}',              'HASH\Controller\HashController::listStreakersByHashAction');
 
 $app->get('/{kennel_abbreviation}/attendanceRecordForHasher/{hasher_id}',        'HASH\Controller\HashController::attendanceRecordForHasherAction');
 
 $app->get('/{kennel_abbreviation}/listhashers/byhash/{hash_id}',                        'HASH\Controller\HashController::listHashersByHashAction');
 $app->get('/{kennel_abbreviation}/listhares/byhash/{hash_id}',                          'HASH\Controller\HashController::listHaresByHashAction');
-$app->get('/{kennel_abbreviation}/listhashes',                                          'HASH\Controller\HashController::listHashesAction');
 $app->get('/{kennel_abbreviation}/listhashes/byhasher/{hasher_id}',                     'HASH\Controller\HashController::listHashesByHasherAction');
 $app->get('/{kennel_abbreviation}/listhashes/byhare/{hasher_id}',                       'HASH\Controller\HashController::listHashesByHareAction');
-#$app->get('/{kennel_abbreviation}/hashers/{hasher_id}',                                 'HASH\Controller\HashController::viewHasherAction');
 $app->get('/{kennel_abbreviation}/hashers/{hasher_id}',                                 'HASH\Controller\HashController::viewHasherChartsAction');
 $app->get('/{kennel_abbreviation}/hashedWith/{hasher_id}',                                 'HASH\Controller\HashController::hashedWithAction');
 
@@ -283,7 +277,6 @@ $app->get('/{kennel_abbreviation}/firstTimersStatistics/{min_hash_count}',      
 $app->get('/{kennel_abbreviation}/lastTimersStatistics/{min_hash_count}/{month_count}', 'HASH\Controller\ObscureStatisticsController::viewLastTimersChartsAction');
 
 $app->get('/{kennel_abbreviation}/hashes/{hash_id}',                                    'HASH\Controller\HashController::viewHashAction');
-$app->get('/{kennel_abbreviation}/hasherAnalversariesForEvent/{hash_id}',               'HASH\Controller\HashController::hasherAnalversariesForEventAction');
 $app->get('/{kennel_abbreviation}/hasherCountsForEvent/{hash_id}',               'HASH\Controller\HashController::hasherCountsForEventAction');
 
 $app->get('/{kennel_abbreviation}/omniAnalversariesForEvent/{hash_id}',               'HASH\Controller\HashController::omniAnalversariesForEventAction');
@@ -295,10 +288,6 @@ $app->get('/{kennel_abbreviation}/hasherCountsForEventState/{hash_id}',         
 $app->get('/{kennel_abbreviation}/hasherCountsForEventCity/{hash_id}',             'HASH\Controller\HashController::hasherCountsForEventCityAction');
 $app->get('/{kennel_abbreviation}/hasherCountsForEventNeighborhood/{hash_id}',     'HASH\Controller\HashController::hasherCountsForEventNeighborhoodAction');
 
-
-
-
-$app->get('/{kennel_abbreviation}/backSlidersForEvent/{hash_id}',                       'HASH\Controller\HashController::backSlidersForEventAction');
 $app->get('/{kennel_abbreviation}/backSlidersForEventV2/{hash_id}',                     'HASH\Controller\HashController::backSlidersForEventV2Action');
 
 $app->get('/{kennel_abbreviation}/consolidatedEventAnalversaries/{hash_id}',            'HASH\Controller\HashController::consolidatedEventAnalversariesAction');
@@ -312,7 +301,6 @@ $app->get('/{kennel_abbreviation}/unTrendingTrueHaresJsonPost/{day_count}/{min_h
 
 
 
-$app->get('/{kennel_abbreviation}/hareAnalversariesForEvent/{hash_id}',                 'HASH\Controller\HashController::hareAnalversariesForEventAction');
 $app->get('/{kennel_abbreviation}/pendingHasherAnalversaries',                          'HASH\Controller\HashController::pendingHasherAnalversariesAction');
 $app->get('/{kennel_abbreviation}/predictedHasherAnalversaries',                        'HASH\Controller\HashController::predictedHasherAnalversariesAction');
 $app->get('/{kennel_abbreviation}/pendingHareAnalversaries',                            'HASH\Controller\HashController::pendingHareAnalversariesAction');
@@ -333,7 +321,6 @@ $app->get('/{kennel_abbreviation}/hashattendance/byhare/grandtotal/nondistinctha
 $app->get('/{kennel_abbreviation}/hashattendance/byhare/grandtotal/distincthashers',    'HASH\Controller\HashController::hashAttendanceByHareGrandTotalDistinctHashersAction');
 $app->get('/{kennel_abbreviation}/getHasherCountsByHare/{hare_id}',                     'HASH\Controller\HashController::hasherCountsByHareAction');
 $app->get('/{kennel_abbreviation}/percentages/percentageofharingsthatwerehypers',       'HASH\Controller\HashController::percentageHaringsHypersVsNonHypers');
-#$app->get('/getHasherCountsByHound/{hasher_id}',                     'HASH\Controller\HashController::hasherCountsByHoundAction');
 $app->get('/{kennel_abbreviation}/getHasherAnalversaries/{hasher_id}',                  'HASH\Controller\HashController::getHasherAnalversariesAction');
 $app->get('/{kennel_abbreviation}/getProjectedHasherAnalversaries/{hasher_id}',         'HASH\Controller\HashController::getProjectedHasherAnalversariesAction');
 

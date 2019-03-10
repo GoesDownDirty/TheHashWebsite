@@ -16,7 +16,7 @@ class HashController
   private function obtainKennelKeyFromKennelAbbreviation(Request $request, Application $app, string $kennel_abbreviation){
 
     #Define the SQL to RuntimeException
-    $sql = "SELECT * FROM KENNELS WHERE KENNEL_ABBREVIATION = ?";
+    $sql = "SELECT KENNEL_KY FROM KENNELS WHERE KENNEL_ABBREVIATION = ?";
 
     #Query the database
     $kennelValue = $app['db']->fetchAssoc($sql, array((string) $kennel_abbreviation));
@@ -260,88 +260,6 @@ class HashController
 
   }
 
-
-
-  #Define the action
-  public function listStreakersByDateByHashAction(Request $request, Application $app, string $kennel_abbreviation, int $hash_id){
-
-    #Execute the SQL statement; create an array of rows
-    $theList = $app['db']->fetchAll(EVENTS_LAST_MISSED_FOR_EACH_HASHER,array((int) $hash_id));
-
-    # Declare the SQL used to retrieve this information
-    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
-
-    # Make a database call to obtain the hasher information
-    $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
-
-    # Add a days difference field
-    /*
-    foreach($theList as &$theListEntry){
-      //$theHashEventLocation = $theHashValue['EVENT_LOCATION'];
-      $lastMissedDate = new DateTime($theListEntry['LAST_MISSED_DATE']);
-      $thisHashDate = new DateTime($theHashValue['EVENT_DATE']);
-      $app['monolog']->addDebug("lastMissedDate: $lastMissedDate");
-      $app['monolog']->addDebug("thisHashDate: $thisHashDate");
-      $tempDaysDiff = $lastMissedDate->diff($thisHashDate);
-
-      $tempDaysDiffFormated = $tempDaysDiff->days;
-      $app['monolog']->addDebug("tempDaysDiffFormated: $tempDaysDiffFormated");
-      $theListEntry['DAYS_DIFF'] = "hello";
-    }
-    */
-
-
-
-    # Establish and set the return value
-    $returnValue = $app['twig']->render('streaker_list_date_version.twig',array(
-      'pageTitle' => 'The Streakers!',
-      'pageSubTitle' => '...Last Hash Missed',
-      'theList' => $theList,
-      'kennel_abbreviation' => $kennel_abbreviation,
-      'theHashValue' => $theHashValue,
-      'pageCaption' => "",
-      'tableCaption' => ""
-    ));
-
-    #Return the return value
-    return $returnValue;
-
-  }
-
-
-
-  public function listStreakersByCountsByHashAction(Request $request, Application $app, string $kennel_abbreviation, int $hash_id){
-
-    #Obtain the kennel key
-    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
-
-    #Execute the SQL statement; create an array of rows
-    $theList = $app['db']->fetchAll(EVENTS_MISSED_COUNT_FOR_EACH_HASHER,array((int) $hash_id,(int) $kennelKy,(int) $hash_id));
-
-    # Declare the SQL used to retrieve this information
-    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
-
-    # Make a database call to obtain the hasher information
-    $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
-
-    # Establish and set the return value
-    $returnValue = $app['twig']->render('streaker_list_count_version.twig',array(
-      'pageTitle' => 'The Streakers!',
-      'pageSubTitle' => '...Last Hash Missed',
-      'theList' => $theList,
-      'kennel_abbreviation' => $kennel_abbreviation,
-      'theHashValue' => $theHashValue,
-      'pageCaption' => "",
-      'tableCaption' => ""
-    ));
-
-    #Return the return value
-    return $returnValue;
-
-  }
-
-
-
   public function listStreakersByHashAction(Request $request, Application $app, string $kennel_abbreviation, int $hash_id){
 
     #Obtain the kennel key
@@ -351,7 +269,7 @@ class HashController
     $theList = $app['db']->fetchAll(STREAKERS_LIST,array((int) $hash_id,(int) $kennelKy));
 
     # Declare the SQL used to retrieve this information
-    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+    $sql_for_hash_event = "SELECT KENNEL_EVENT_NUMBER, EVENT_DATE, EVENT_LOCATION FROM HASHES WHERE HASH_KY = ?";
 
     # Make a database call to obtain the hasher information
     $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
@@ -371,6 +289,7 @@ class HashController
     return $returnValue;
 
   }
+  
 
   #Define the action
   public function listHashersPreActionJson(Request $request, Application $app, string $kennel_abbreviation){
@@ -413,8 +332,6 @@ class HashController
     $sql = "SELECT
       HASHERS.HASHER_KY AS THE_KEY,
       HASHERS.HASHER_NAME AS NAME,
-      HASHERS.FIRST_NAME,
-      HASHERS.LAST_NAME,
       HASHERS.HASHER_ABBREVIATION
       FROM HASHERS JOIN HASHINGS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY WHERE HASHINGS.HASH_KY = ?";
 
@@ -422,7 +339,7 @@ class HashController
     $hasherList = $app['db']->fetchAll($sql,array((int) $hash_id));
 
     # Declare the SQL used to retrieve this information
-    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+    $sql_for_hash_event = "SELECT KENNEL_EVENT_NUMBER, EVENT_LOCATION FROM HASHES WHERE HASH_KY = ?";
 
     # Make a database call to obtain the hasher information
     $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
@@ -453,8 +370,6 @@ class HashController
     $sql = "SELECT
       HASHERS.HASHER_KY AS THE_KEY,
       HASHERS.HASHER_NAME AS NAME ,
-      HASHERS.FIRST_NAME,
-      HASHERS.LAST_NAME,
       HASHERS.HASHER_ABBREVIATION
       FROM HASHERS JOIN HARINGS ON HASHERS.HASHER_KY = HARINGS.HARINGS_HASHER_KY WHERE HARINGS.HARINGS_HASH_KY = ?";
 
@@ -462,7 +377,7 @@ class HashController
     $hasherList = $app['db']->fetchAll($sql,array((int) $hash_id));
 
     # Declare the SQL used to retrieve this information
-    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+    $sql_for_hash_event = "SELECT KENNEL_EVENT_NUMBER, EVENT_LOCATION FROM HASHES WHERE HASH_KY = ?";
 
     # Make a database call to obtain the hasher information
     $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
@@ -745,44 +660,6 @@ class HashController
 
 
 
-  public function listhashesAction(Request $request, Application $app, string $kennel_abbreviation){
-
-    #Define the SQL to execute
-    $sql = "SELECT
-      HASH_KY,
-      KENNEL_EVENT_NUMBER,
-      EVENT_DATE,
-      DAYNAME(EVENT_DATE) AS EVENT_DAY_NAME,
-      EVENT_LOCATION,
-      EVENT_CITY,
-      EVENT_STATE,
-      SPECIAL_EVENT_DESCRIPTION,
-      IS_HYPER,
-      VIRGIN_COUNT
-    FROM HASHES
-    WHERE KENNEL_KY = ?
-    ORDER BY HASH_KY DESC";
-
-    #Obtain the kennel key
-    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
-
-    #Execute the SQL statement; create an array of rows
-    $hashList = $app['db']->fetchAll($sql,array((int) $kennelKy));
-
-    # Establish and set the return value
-    $returnValue = $app['twig']->render('hash_list.twig',array(
-      'pageTitle' => 'The List of Hashes',
-      'pageSubTitle' => 'The List of *All* Hashes',
-      'theList' => $hashList,
-      'tableCaption' => 'A list of all hashes ever, since forever.',
-      'kennel_abbreviation' => $kennel_abbreviation
-    ));
-
-
-    #Return the return value
-    return $returnValue;
-  }
-
   public function listHashesByHasherAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
     #Obtain the kennel key
@@ -796,10 +673,8 @@ class HashController
           DAYNAME(EVENT_DATE) AS EVENT_DAY_NAME,
           EVENT_LOCATION,
           EVENT_CITY,
-          EVENT_STATE,
           SPECIAL_EVENT_DESCRIPTION,
-          IS_HYPER,
-          VIRGIN_COUNT
+          IS_HYPER
     FROM HASHES JOIN HASHINGS ON HASHES.HASH_KY = HASHINGS.HASH_KY
     WHERE HASHINGS.HASHER_KY = ? AND HASHES.KENNEL_KY = ?
     ORDER BY HASHES.HASH_KY DESC";
@@ -808,7 +683,7 @@ class HashController
     $hashList = $app['db']->fetchAll($sql,array((int) $hasher_id, (int)$kennelKy));
 
     # Declare the SQL used to retrieve this information
-    $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
+    $sql_for_hasher_lookup = "SELECT HASHER_NAME FROM HASHERS WHERE HASHER_KY = ?";
 
     # Make a database call to obtain the hasher information
     $hasher = $app['db']->fetchAssoc($sql_for_hasher_lookup, array((int) $hasher_id));
@@ -838,7 +713,7 @@ class HashController
     $hashList = $app['db']->fetchAll(HASHER_ATTENDANCE_RECORD_LIST,array((int)$kennelKy,(int) $hasher_id, (int)$kennelKy));
 
     # Declare the SQL used to retrieve this information
-    $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
+    $sql_for_hasher_lookup = "SELECT HASHER_NAME FROM HASHERS WHERE HASHER_KY = ?";
 
     # Make a database call to obtain the hasher information
     $hasher = $app['db']->fetchAssoc($sql_for_hasher_lookup, array((int) $hasher_id));
@@ -874,10 +749,8 @@ class HashController
         DAYNAME(EVENT_DATE) AS EVENT_DAY_NAME,
         EVENT_LOCATION,
         EVENT_CITY,
-        EVENT_STATE,
         SPECIAL_EVENT_DESCRIPTION,
-        IS_HYPER,
-        VIRGIN_COUNT
+        IS_HYPER
       FROM HASHES JOIN HARINGS ON HASHES.HASH_KY = HARINGS.HARINGS_HASH_KY
       WHERE HARINGS.HARINGS_HASHER_KY = ? AND HASHES.KENNEL_KY = ?
       ORDER BY EVENT_DATE DESC";
@@ -886,7 +759,7 @@ class HashController
     $hashList = $app['db']->fetchAll($sql,array((int) $hasher_id, (int) $kennelKy));
 
     # Declare the SQL used to retrieve this information
-    $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ? ";
+    $sql_for_hasher_lookup = "SELECT HASHER_NAME FROM HASHERS WHERE HASHER_KY = ? ";
 
     # Make a database call to obtain the hasher information
     $hasher = $app['db']->fetchAssoc($sql_for_hasher_lookup, array((int) $hasher_id));
@@ -947,7 +820,6 @@ class HashController
     $returnValue = $app['twig']->render('name_number_list.twig',array(
       'pageTitle' => $pageTitle,
       'tableCaption' => '',
-
       'columnOneName' => 'Hasher Name',
       'columnTwoName' => 'Count',
       'theList' => $theResults,
@@ -963,7 +835,7 @@ class HashController
   public function viewHasherChartsAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
     # Declare the SQL used to retrieve this information
-    $sql = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
+    $sql = "SELECT HASHER_KY, HASHER_NAME, HASHER_ABBREVIATION, FIRST_NAME, LAST_NAME, DECEASED FROM HASHERS WHERE HASHER_KY = ?";
 
     #Obtain the kennel key
     $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
@@ -972,7 +844,7 @@ class HashController
     $hasher = $app['db']->fetchAssoc($sql, array((int) $hasher_id));
 
     # Obtain their hashes
-    $sqlTheHashes = "SELECT HASHES.* FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+    $sqlTheHashes = "SELECT KENNEL_EVENT_NUMBER, LAT, LNG, SPECIAL_EVENT_DESCRIPTION, EVENT_LOCATION, EVENT_DATE, HASHINGS.HASH_KY FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
     WHERE HASHER_KY = ? AND KENNEL_KY = ? and LAT is not null and LNG is not null";
     $theHashes = $app['db']->fetchAll($sqlTheHashes, array((int) $hasher_id, (int) $kennelKy));
 
@@ -1084,19 +956,11 @@ class HashController
     #Obtain the kennel key
     $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
-    # Declare the SQL used to retrieve this information
-    $sql = "SELECT * FROM HASHES WHERE HASH_KY = ?";
-
     # Obtain the hound count
     $houndCountSQL = HOUND_COUNT_BY_HASH_KEY;
     $theHoundCountValue = $app['db']->fetchAssoc($houndCountSQL, array((int) $hash_id));
     $theHoundCount = $theHoundCountValue['THE_COUNT'];
 
-    #Execute the SQL statement; create an array of rows
-    $hasherList = $app['db']->fetchAll($sql,array((int) $hash_id));
-
-
-    # Obtain the hare count
     $hareCountSQL = HARE_COUNT_BY_HASH_KEY;
     $theHareCountValue = $app['db']->fetchAssoc($hareCountSQL, array((int) $hash_id));
     $theHareCount = $theHareCountValue['THE_COUNT'];
@@ -1111,6 +975,7 @@ class HashController
 
 
     # Make a database call to obtain the hasher information
+    $sql = "SELECT PLACE_ID, EVENT_STATE, COUNTY, EVENT_CITY, EVENT_LOCATION, STREET_NUMBER, ROUTE, FORMATTED_ADDRESS, NEIGHBORHOOD, POSTAL_CODE, COUNTRY, LAT, LNG, KENNEL_EVENT_NUMBER, EVENT_DATE, SPECIAL_EVENT_DESCRIPTION, IS_HYPER, HASH_KY FROM HASHES WHERE HASH_KY = ?";
     $theHashValue = $app['db']->fetchAssoc($sql, array((int) $hash_id));
 
     $state = $theHashValue['EVENT_STATE'];
@@ -1169,39 +1034,6 @@ class HashController
 
   }
 
-  public function hasherAnalversariesForEventAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
-
-    #Obtain the kennel key
-    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
-
-    # Make a database call to obtain the hasher information
-    $analversaryList = $app['db']->fetchAll(HOUND_ANALVERSARIES_FOR_EVENT, array((int) $hash_id,(int) $kennelKy, (int) $hash_id));
-
-    # Declare the SQL used to retrieve this information
-    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
-
-    # Make a database call to obtain the hasher information
-    $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
-
-    # Establish and set the return value
-    $hashNumber = $theHashValue['KENNEL_EVENT_NUMBER'];
-    $hashLocation = $theHashValue['EVENT_LOCATION'];
-    $pageSubtitle = "Analversaries at the $hashNumber ($hashLocation) Hash";
-
-    # Establish the return value
-    $returnValue = $app['twig']->render('analversary_list.twig',array(
-      'pageTitle' => 'Hasher Analversaries',
-      'pageSubTitle' => $pageSubtitle,
-      'theList' => $analversaryList,
-      'kennel_abbreviation' => $kennel_abbreviation
-    ));
-
-    # Return the return value
-    return $returnValue;
-  }
-
-
-
     public function consolidatedEventAnalversariesAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
 
       #Obtain the kennel key
@@ -1221,7 +1053,7 @@ class HashController
 
 
       # Declare the SQL used to retrieve this information
-      $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+      $sql_for_hash_event = "SELECT KENNEL_EVENT_NUMBER, EVENT_DATE, EVENT_LOCATION FROM HASHES WHERE HASH_KY = ?";
 
       # Make a database call to obtain the hasher information
       $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
@@ -1390,7 +1222,7 @@ class HashController
     $analversaryListHares = $app['db']->fetchAll(OVERALL_HARE_ANALVERSARIES_FOR_EVENT, array((int) $hash_id,(int) $kennelKy, (int) $hash_id));
 
     # Declare the SQL used to retrieve this information
-    $sql_for_hash_event = "SELECT *, YEAR(EVENT_DATE) AS THE_YEAR, MONTHNAME(EVENT_DATE) AS THE_MONTH, DAYNAME(EVENT_DATE) AS THE_DAY FROM HASHES WHERE HASH_KY = ?";
+    $sql_for_hash_event = "SELECT EVENT_STATE, EVENT_CITY, NEIGHBORHOOD, COUNTY, POSTAL_CODE, ROUTE, YEAR(EVENT_DATE) AS THE_YEAR, MONTHNAME(EVENT_DATE) AS THE_MONTH, DAYNAME(EVENT_DATE) AS THE_DAY FROM HASHES WHERE HASH_KY = ?";
 
     # Make a database call to obtain the hasher information
     $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
@@ -1650,7 +1482,7 @@ class HashController
     $analversaryList = $app['db']->fetchAll($sql, array((int) $hash_id,(int) $kennelKy, (int) $hash_id));
 
     # Declare the SQL used to retrieve this information
-    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+    $sql_for_hash_event = "SELECT KENNEL_EVENT_NUMBER, EVENT_LOCATION FROM HASHES WHERE HASH_KY = ?";
 
     # Make a database call to obtain the hasher information
     $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
@@ -1679,7 +1511,7 @@ class HashController
     $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
     # Declare the SQL used to retrieve this information
-    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+    $sql_for_hash_event = "SELECT COUNTY, KENNEL_EVENT_NUMBER, EVENT_LOCATION FROM HASHES WHERE HASH_KY = ?";
 
     # Make a database call to obtain the hasher information
     $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
@@ -1714,12 +1546,6 @@ class HashController
     # Make a database call to obtain the hasher information
     $analversaryList = $app['db']->fetchAll($sql, array((int) $hash_id,(int) $kennelKy, (string) $theHashEventCounty, (int) $hash_id));
 
-    # Declare the SQL used to retrieve this information
-    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
-
-    # Make a database call to obtain the hasher information
-    $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
-
     # Establish and set the return value
     $hashNumber = $theHashValue['KENNEL_EVENT_NUMBER'];
     $hashLocation = $theHashValue['EVENT_LOCATION'];
@@ -1744,7 +1570,7 @@ class HashController
     $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
     # Declare the SQL used to retrieve this information
-    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+    $sql_for_hash_event = "SELECT POSTAL_CODE, KENNEL_EVENT_NUMBER, EVENT_LOCATION FROM HASHES WHERE HASH_KY = ?";
 
     # Make a database call to obtain the hasher information
     $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
@@ -1779,12 +1605,6 @@ class HashController
     # Make a database call to obtain the hasher information
     $analversaryList = $app['db']->fetchAll($sql, array((int) $hash_id,(int) $kennelKy, (string) $theHashEventPostalCode, (int) $hash_id));
 
-    # Declare the SQL used to retrieve this information
-    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
-
-    # Make a database call to obtain the hasher information
-    $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
-
     # Establish and set the return value
     $hashNumber = $theHashValue['KENNEL_EVENT_NUMBER'];
     $hashLocation = $theHashValue['EVENT_LOCATION'];
@@ -1810,7 +1630,7 @@ class HashController
     $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
     # Declare the SQL used to retrieve this information
-    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+    $sql_for_hash_event = "SELECT KENNEL_EVENT_NUMBER, EVENT_LOCATION, EVENT_STATE FROM HASHES WHERE HASH_KY = ?";
 
     # Make a database call to obtain the hasher information
     $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
@@ -1845,12 +1665,6 @@ class HashController
     # Make a database call to obtain the hasher information
     $analversaryList = $app['db']->fetchAll($sql, array((int) $hash_id,(int) $kennelKy, (string) $theHashEventState, (int) $hash_id));
 
-    # Declare the SQL used to retrieve this information
-    #$sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
-
-    # Make a database call to obtain the hasher information
-    #$theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
-
     # Establish and set the return value
     $hashNumber = $theHashValue['KENNEL_EVENT_NUMBER'];
     $hashLocation = $theHashValue['EVENT_LOCATION'];
@@ -1876,7 +1690,7 @@ class HashController
     $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
     # Declare the SQL used to retrieve this information
-    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+    $sql_for_hash_event = "SELECT NEIGHBORHOOD, KENNEL_EVENT_NUMBER, EVENT_LOCATION FROM HASHES WHERE HASH_KY = ?";
 
     # Make a database call to obtain the hasher information
     $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
@@ -1911,12 +1725,6 @@ class HashController
     # Make a database call to obtain the hasher information
     $analversaryList = $app['db']->fetchAll($sql, array((int) $hash_id,(int) $kennelKy, (string) $theHashEventNeighborhood, (int) $hash_id));
 
-    # Declare the SQL used to retrieve this information
-    #$sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
-
-    # Make a database call to obtain the hasher information
-    #$theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
-
     # Establish and set the return value
     $hashNumber = $theHashValue['KENNEL_EVENT_NUMBER'];
     $hashLocation = $theHashValue['EVENT_LOCATION'];
@@ -1941,7 +1749,7 @@ class HashController
     $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
     # Declare the SQL used to retrieve this information
-    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+    $sql_for_hash_event = "SELECT EVENT_CITY, KENNEL_EVENT_NUMBER, EVENT_LOCATION FROM HASHES WHERE HASH_KY = ?";
 
     # Make a database call to obtain the hasher information
     $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
@@ -1973,12 +1781,6 @@ class HashController
     # Make a database call to obtain the hasher information
     $analversaryList = $app['db']->fetchAll($sql, array((int) $hash_id,(int) $kennelKy, (string) $theHashEventCity, (int) $hash_id));
 
-    # Declare the SQL used to retrieve this information
-    #$sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
-
-    # Make a database call to obtain the hasher information
-    #$theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
-
     # Establish and set the return value
     $hashNumber = $theHashValue['KENNEL_EVENT_NUMBER'];
     $hashLocation = $theHashValue['EVENT_LOCATION'];
@@ -1997,41 +1799,6 @@ class HashController
     return $returnValue;
   }
 
-
-    public function backSlidersForEventAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
-
-      #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
-
-      # Declare the SQL used to retrieve this information
-      $sql = BACKSLIDERS_FOR_SPECIFIC_HASH_EVENT;
-
-      # Make a database call to obtain the hasher information
-      $backSliderList = $app['db']->fetchAll($sql, array((int) $kennelKy,(int) $hash_id,(int) $kennelKy, (int) $hash_id));
-
-      # Declare the SQL used to retrieve this information
-      $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
-
-      # Make a database call to obtain the hasher information
-      $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
-
-      # Establish and set the return value
-      $hashNumber = $theHashValue['KENNEL_EVENT_NUMBER'];
-      $hashLocation = $theHashValue['EVENT_LOCATION'];
-      $pageSubtitle = "Back Sliders at the $hashNumber ($hashLocation) Hash";
-
-      # Establish the return value
-      $returnValue = $app['twig']->render('backslider_list.twig',array(
-        'pageTitle' => 'Back Sliders',
-        'pageSubTitle' => $pageSubtitle,
-        'theList' => $backSliderList,
-        'kennel_abbreviation' => $kennel_abbreviation
-      ));
-
-      # Return the return value
-      return $returnValue;
-    }
-
       public function backSlidersForEventV2Action(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
 
         #Obtain the kennel key
@@ -2044,7 +1811,7 @@ class HashController
         $backSliderList = $app['db']->fetchAll($sql, array((int) $kennelKy,(int) $hash_id,(int) $kennelKy, (int) $hash_id));
 
         # Declare the SQL used to retrieve this information
-        $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
+        $sql_for_hash_event = "SELECT EVENT_DATE, KENNEL_EVENT_NUMBER, EVENT_LOCATION FROM HASHES WHERE HASH_KY = ?";
 
         # Make a database call to obtain the hasher information
         $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
@@ -2066,63 +1833,6 @@ class HashController
       # Return the return value
       return $returnValue;
     }
-
-
-
-  public function hareAnalversariesForEventAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
-
-    #Obtain the kennel key
-    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
-
-    # Declare the SQL used to retrieve this information
-    $sql = "	SELECT
-        		HASHERS.HASHER_NAME AS HASHER_NAME,
-                COUNT(*) AS THE_COUNT,
-                MAX(HARINGS.HARINGS_HASH_KY) AS MAX_HASH_KY
-        	FROM
-        		HASHERS
-                JOIN HARINGS ON HASHERS.HASHER_KY = HARINGS.HARINGS_HASHER_KY
-                JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
-        	WHERE
-        		HASHERS.DECEASED = 0 AND
-                HARINGS.HARINGS_HASH_KY <= ? AND
-                HASHES.KENNEL_KY = ?
-        	GROUP BY
-        		HASHERS.HASHER_NAME
-        	HAVING
-        		(((THE_COUNT % 5) = 0)
-                OR ((THE_COUNT % 69) = 0)
-                OR ((THE_COUNT % 666) = 0)
-                OR (((THE_COUNT - 69) % 100) = 0))
-                AND MAX_HASH_KY = ?
-        	ORDER BY THE_COUNT DESC";
-
-    # Make a database call to obtain the hasher information
-    $analversaryList = $app['db']->fetchAll($sql, array((int) $hash_id, (int) $kennelKy, (int) $hash_id));
-
-    # Declare the SQL used to retrieve this information
-    $sql_for_hash_event = "SELECT * FROM HASHES WHERE HASH_KY = ?";
-
-    # Make a database call to obtain the hasher information
-    $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
-
-    # Establish and set the return value
-    $hashNumber = $theHashValue['KENNEL_EVENT_NUMBER'];
-    $hashLocation = $theHashValue['EVENT_LOCATION'];
-    $pageSubtitle = "Analversaries at the $hashNumber ($hashLocation) Hash";
-
-    # Establish the return value
-    $returnValue = $app['twig']->render('analversary_list.twig',array(
-      'pageTitle' => 'Hare Analversaries',
-      'pageSubTitle' => $pageSubtitle,
-      'theList' => $analversaryList,
-      'kennel_abbreviation' => $kennel_abbreviation
-    ));
-
-
-    # Return the return value
-    return $returnValue;
-  }
 
 public function pendingHasherAnalversariesAction(Request $request, Application $app, string $kennel_abbreviation){
 
@@ -2503,7 +2213,7 @@ public function hyperHaringCountsAction(Request $request, Application $app, stri
     $cohareList = $app['db']->fetchAll($sql,array((int) $hasher_id, (int) $hasher_id,0,1, (int) $kennelKy));
 
     # Declare the SQL used to retrieve this information
-    $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
+    $sql_for_hasher_lookup = "SELECT HASHER_NAME FROM HASHERS WHERE HASHER_KY = ?";
 
     # Make a database call to obtain the hasher information
     $hasher = $app['db']->fetchAssoc($sql_for_hasher_lookup, array((int) $hasher_id));
@@ -2562,7 +2272,7 @@ public function hyperHaringCountsAction(Request $request, Application $app, stri
     $cohareList = $app['db']->fetchAll($sql,array((int) $hasher_id, (int) $hasher_id,0,0, (int) $kennelKy));
 
     # Declare the SQL used to retrieve this information
-    $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
+    $sql_for_hasher_lookup = "SELECT HASHER_NAME FROM HASHERS WHERE HASHER_KY = ?";
 
     # Make a database call to obtain the hasher information
     $hasher = $app['db']->fetchAssoc($sql_for_hasher_lookup, array((int) $hasher_id));
@@ -2618,7 +2328,7 @@ public function hyperHaringCountsAction(Request $request, Application $app, stri
     $hashList = $app['db']->fetchAll($sql,array((int) $hasher_id, (int) $hasher_id,0,1, (int) $kennelKy));
 
     # Declare the SQL used to retrieve this information
-    $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
+    $sql_for_hasher_lookup = "SELECT HASHER_NAME FROM HASHERS WHERE HASHER_KY = ?";
 
     # Make a database call to obtain the hasher information
     $hasher = $app['db']->fetchAssoc($sql_for_hasher_lookup, array((int) $hasher_id));
@@ -2675,7 +2385,7 @@ public function hyperHaringCountsAction(Request $request, Application $app, stri
     $hashList = $app['db']->fetchAll($sql,array((int) $hasher_id, (int) $hasher_id,0,0, (int) $kennelKy));
 
     # Declare the SQL used to retrieve this information
-    $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
+    $sql_for_hasher_lookup = "SELECT HASHER_NAME FROM HASHERS WHERE HASHER_KY = ?";
 
     # Make a database call to obtain the hasher information
     $hasher = $app['db']->fetchAssoc($sql_for_hasher_lookup, array((int) $hasher_id));
@@ -2864,7 +2574,7 @@ public function hasherCountsByHareAction(Request $request, Application $app, int
   $hashList = $app['db']->fetchAll($sql,array( (int) $hare_id, (int)$hare_id, (int) $kennelKy));
 
   # Declare the SQL used to retrieve this information
-  $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
+  $sql_for_hasher_lookup = "SELECT HASHER_NAME FROM HASHERS WHERE HASHER_KY = ?";
 
   # Make a database call to obtain the hasher information
   $hasher = $app['db']->fetchAssoc($sql_for_hasher_lookup, array((int) $hare_id));
@@ -3022,11 +2732,11 @@ public function kennelGeneralInfoStatsAction(Request $request, Application $app,
   $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
   #Obtain the first hash
-  $firstHashSQL = "SELECT * FROM HASHES WHERE KENNEL_KY = ? ORDER BY EVENT_DATE ASC LIMIT 1";
+  $firstHashSQL = "SELECT HASH_KY, EVENT_DATE, KENNEL_EVENT_NUMBER FROM HASHES WHERE KENNEL_KY = ? ORDER BY EVENT_DATE ASC LIMIT 1";
   $firstHashValue = $app['db']->fetchAssoc($firstHashSQL, array((int) $kennelKy));
 
   #Obtain the most recent hash
-  $mostRecentHashSQL = "SELECT * FROM HASHES WHERE KENNEL_KY = ? ORDER BY EVENT_DATE DESC LIMIT 1";
+  $mostRecentHashSQL = "SELECT HASH_KY, EVENT_DATE, KENNEL_EVENT_NUMBER FROM HASHES WHERE KENNEL_KY = ? ORDER BY EVENT_DATE DESC LIMIT 1";
   $mostRecentHashValue = $app['db']->fetchAssoc($mostRecentHashSQL, array((int) $kennelKy));
 
   # Establish and set the return value
@@ -3166,7 +2876,7 @@ public function miscellaneousStatsAction(Request $request, Application $app, str
 
   #Obtain the kennels that are being tracked in this website instance
   $listOfKennelsSQL = "
-    SELECT *
+    SELECT KENNEL_ABBREVIATION, KENNEL_NAME, IN_RECORD_KEEPING, SITE_ADDRESS
     FROM KENNELS WHERE IN_RECORD_KEEPING = 1 OR SITE_ADDRESS IS NOT NULL
     ORDER BY IN_RECORD_KEEPING DESC, KENNEL_ABBREVIATION ASC";
   $kennelValues = $app['db']->fetchAll($listOfKennelsSQL);
@@ -3259,7 +2969,7 @@ public function hashersOfTheYearsAction(Request $request, Application $app, stri
   $yearValues = $app['db']->fetchAll($distinctYearsSql,array( (int) $kennelKy));
 
   #Define the sql
-  $topHashersSql = "SELECT 		* , ? AS THE_YEAR,
+  $topHashersSql = "SELECT HASHER_KY, HASHER_NAME, THE_COUNT, ? AS THE_YEAR,
 	  (SELECT COUNT(*) AS THE_HASH_COUNT FROM HASHES WHERE KENNEL_KY = ? AND YEAR(HASHES.EVENT_DATE) = ?) AS THE_YEARS_HASH_COUNT,
     (THE_TEMPORARY_TABLE.THE_COUNT / (SELECT COUNT(*) AS THE_HASH_COUNT FROM HASHES WHERE KENNEL_KY = ? AND YEAR(HASHES.EVENT_DATE) = ?))*100 AS HASHING_PERCENTAGE
   FROM HASHERS JOIN (
@@ -3338,7 +3048,7 @@ public function overallHaresOfTheYearsAction(Request $request, Application $app,
 
   #Define the sql
   $topHaresSql = "SELECT
-    	* , ? AS THE_YEAR,
+    	HASHER_KY, HASHER_NAME, THE_COUNT, ? AS THE_YEAR,
     	(SELECT COUNT(*) AS THE_HASH_COUNT FROM HASHES WHERE KENNEL_KY = ? AND YEAR(HASHES.EVENT_DATE) = ? AND HASHES.IS_HYPER = 1) AS THE_YEARS_HYPER_HASH_COUNT,
         (SELECT COUNT(*) AS THE_HASH_COUNT FROM HASHES WHERE KENNEL_KY = ? AND YEAR(HASHES.EVENT_DATE) = ? AND HASHES.IS_HYPER = 0) AS THE_YEARS_NON_HYPER_HASH_COUNT,
         (SELECT COUNT(*) AS THE_HASH_COUNT FROM HASHES WHERE KENNEL_KY = ? AND YEAR(HASHES.EVENT_DATE) = ? ) AS THE_YEARS_OVERALL_HASH_COUNT
@@ -3429,7 +3139,7 @@ public function nonHyperHaresOfTheYearsAction(Request $request, Application $app
 
   #Define the sql
   $topHaresSql = "SELECT
-    	* , ? AS THE_YEAR,
+    	HASHER_KY, HASHER_NAME, THE_COUNT, ? AS THE_YEAR,
     	(SELECT COUNT(*) AS THE_HASH_COUNT FROM HASHES WHERE KENNEL_KY = ? AND YEAR(HASHES.EVENT_DATE) = ? AND HASHES.IS_HYPER = 1) AS THE_YEARS_HYPER_HASH_COUNT,
         (SELECT COUNT(*) AS THE_HASH_COUNT FROM HASHES WHERE KENNEL_KY = ? AND YEAR(HASHES.EVENT_DATE) = ? AND HASHES.IS_HYPER = 0) AS THE_YEARS_NON_HYPER_HASH_COUNT,
         (SELECT COUNT(*) AS THE_HASH_COUNT FROM HASHES WHERE KENNEL_KY = ? AND YEAR(HASHES.EVENT_DATE) = ? ) AS THE_YEARS_OVERALL_HASH_COUNT
@@ -3506,15 +3216,9 @@ public function getHasherAnalversariesAction(Request $request, Application $app,
   #Obtain the kennel key
   $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
-  # Declare the SQL used to retrieve this information
-  $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
-
-  # Make a database call to obtain the hasher information
-  $hasher = $app['db']->fetchAssoc($sql_for_hasher_lookup, array((int) $hasher_id));
-
   # Define the SQL to retrieve all of their hashes
   $sql_all_hashes_for_this_hasher = "	SELECT
-	HASHERS.HASHER_KY, HASHERS.HASHER_NAME , HASHES.*
+	HASHERS.HASHER_KY, HASHERS.HASHER_NAME, HASHES.HASH_KY, KENNEL_EVENT_NUMBER, EVENT_LOCATION, EVENT_DATE, EVENT_CITY, SPECIAL_EVENT_DESCRIPTION
 	FROM HASHINGS
 		JOIN HASHERS ON HASHINGS.HASHER_KY = HASHERS.HASHER_KY
 		JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
@@ -3545,7 +3249,7 @@ public function getHasherAnalversariesAction(Request $request, Application $app,
   }
 
   # Establish and set the return value
-  $hasherName = $hasher['HASHER_NAME'];
+  $hasherName = $theInitialListOfHashes[0]['HASHER_NAME'];
   $pageTitle = "Hashing Analversaries: $hasherName";
   $returnValue = $app['twig']->render('hasher_analversary_list.twig',array(
     'theList' => $destinationArray,
@@ -3573,8 +3277,8 @@ public function getProjectedHasherAnalversariesAction(Request $request, Applicat
   $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
   # Declare the SQL used to retrieve this information
-  $sql_for_hasher_lookup = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
-
+  $sql_for_hasher_lookup = "SELECT HASHER_NAME FROM HASHERS WHERE HASHER_KY = ?";
+  
   # Make a database call to obtain the hasher information
   $hasher = $app['db']->fetchAssoc($sql_for_hasher_lookup, array((int) $hasher_id));
 
@@ -3583,12 +3287,6 @@ public function getProjectedHasherAnalversariesAction(Request $request, Applicat
       HASHER_NAME,
       HASH_COUNT,
       LATEST_HASH.EVENT_DATE AS LATEST_EVENT_DATE,
-      HASHER_ABBREVIATION,
-      LAST_NAME,
-      FIRST_NAME,
-      HOME_KENNEL,
-      HOME_KENNEL_KY,
-      DECEASED,
       FIRST_HASH_KEY,
   	  FIRST_HASH.KENNEL_EVENT_NUMBER AS FIRST_KENNEL_EVENT_NUMBER,
       FIRST_HASH.EVENT_DATE AS FIRST_EVENT_DATE,
@@ -3600,7 +3298,7 @@ public function getProjectedHasherAnalversariesAction(Request $request, Applicat
   FROM
   	(
   	SELECT
-  		HASHERS.*,
+  		HASHER_NAME, HASHER_KY,
   		HASHERS.HASHER_KY AS OUTER_HASHER_KY,
   		(
   			SELECT COUNT(*)
@@ -3836,12 +3534,6 @@ public function jumboCountsTablePostActionJson(Request $request, Application $ap
       NON_HYPER_HARE_COUNT,
       HYPER_HARE_COUNT,
       LATEST_HASH.EVENT_DATE AS LATEST_EVENT_DATE,
-      HASHER_ABBREVIATION,
-      LAST_NAME,
-      FIRST_NAME,
-      HOME_KENNEL,
-      HOME_KENNEL_KY,
-      DECEASED,
       (HARE_COUNT/HASH_COUNT) AS HARING_TO_HASHING_PERCENTAGE,
       (NON_HYPER_HARE_COUNT/HASH_COUNT) AS NON_HYPER_HARING_TO_HASHING_PERCENTAGE,
       (HYPER_HARE_COUNT/HARE_COUNT) AS HYPER_TO_OVERALL_HARING_PERCENTAGE,
@@ -3851,11 +3543,11 @@ public function jumboCountsTablePostActionJson(Request $request, Application $ap
       FIRST_HASH.EVENT_DATE AS FIRST_EVENT_DATE,
       LATEST_HASH_KEY,
       LATEST_HASH.KENNEL_EVENT_NUMBER AS LATEST_KENNEL_EVENT_NUMBER,
-      HASHER_KY
+      OUTER_HASHER_KY AS HASHER_KY
   FROM
   	(
   	SELECT
-  		HASHERS.*,
+  		HASHERS.HASHER_NAME,
   		HASHERS.HASHER_KY AS OUTER_HASHER_KY,
   		(
   			SELECT COUNT(*)
@@ -3903,7 +3595,7 @@ public function jumboCountsTablePostActionJson(Request $request, Application $ap
   FROM
     (
     SELECT
-      HASHERS.*,
+      HASHERS.HASHER_NAME,
       HASHERS.HASHER_KY AS OUTER_HASHER_KY,
       (
         SELECT COUNT(*)
@@ -3921,7 +3613,7 @@ public function jumboCountsTablePostActionJson(Request $request, Application $ap
   FROM
       (
       SELECT
-        HASHERS.*,
+        HASHERS.HASHER_NAME,
         HASHERS.HASHER_KY AS OUTER_HASHER_KY,
         (
           SELECT COUNT(*)
@@ -4120,24 +3812,17 @@ public function jumboPercentagesTablePostActionJson(Request $request, Applicatio
       HARE_COUNT,
       HYPER_HARE_COUNT,
       NON_HYPER_HARE_COUNT,
-
       LATEST_HASH.EVENT_DATE AS LATEST_EVENT_DATE,
-      HASHER_ABBREVIATION,
-      LAST_NAME,
-      FIRST_NAME,
-      HOME_KENNEL,
-      HOME_KENNEL_KY,
-      DECEASED,
       FIRST_HASH_KEY,
-  	  FIRST_HASH.KENNEL_EVENT_NUMBER AS FIRST_KENNEL_EVENT_NUMBER,
+      FIRST_HASH.KENNEL_EVENT_NUMBER AS FIRST_KENNEL_EVENT_NUMBER,
       FIRST_HASH.EVENT_DATE AS FIRST_EVENT_DATE,
       LATEST_HASH_KEY,
       LATEST_HASH.KENNEL_EVENT_NUMBER AS LATEST_KENNEL_EVENT_NUMBER,
-      HASHER_KY
+      OUTER_HASHER_KY AS HASHER_KY
   FROM
   	(
   	SELECT
-  		HASHERS.*,
+  		HASHERS.HASHER_NAME,
   		HASHERS.HASHER_KY AS OUTER_HASHER_KY,
   		(
   			SELECT COUNT(*)
@@ -4185,7 +3870,7 @@ public function jumboPercentagesTablePostActionJson(Request $request, Applicatio
   FROM
     (
     SELECT
-      HASHERS.*,
+      HASHERS.HASHER_NAME,
       HASHERS.HASHER_KY AS OUTER_HASHER_KY,
       (
         SELECT COUNT(*)
@@ -4203,7 +3888,7 @@ public function jumboPercentagesTablePostActionJson(Request $request, Applicatio
   FROM
       (
       SELECT
-        HASHERS.*,
+        HASHERS.HASHER_NAME,
         HASHERS.HASHER_KY AS OUTER_HASHER_KY,
         (
           SELECT COUNT(*)
@@ -4298,7 +3983,7 @@ public function jumboPercentagesTablePostActionJson(Request $request, Applicatio
 private function getStandardHareChartsAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
   # Declare the SQL used to retrieve this information
-  $sql = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
+  $sql = "SELECT HASHER_KY, HASHER_NAME, HASHER_ABBREVIATION, FIRST_NAME, LAST_NAME, DECEASED FROM HASHERS WHERE HASHER_KY = ?";
 
   #Obtain the kennel key
   $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
@@ -4489,7 +4174,7 @@ public function viewOverallHareChartsAction(Request $request, Application $app, 
   }
 
   # Obtain their hashes
-  $sqlTheHashes = "SELECT HASHES.* FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+  $sqlTheHashes = "SELECT KENNEL_EVENT_NUMBER, SPECIAL_EVENT_DESCRIPTION, EVENT_LOCATION, EVENT_DATE, HASHES.HASH_KY, LAT, LNG FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
   WHERE HARINGS.HARINGS_HASHER_KY = ? AND KENNEL_KY = ? and LAT is not null and LNG is not null";
   $theHashes = $app['db']->fetchAll($sqlTheHashes, array((int) $hasher_id, (int) $kennelKy));
 
@@ -4556,7 +4241,7 @@ public function viewTrueHareChartsAction(Request $request, Application $app, int
   }
 
   # Obtain their hashes
-  $sqlTheHashes = "SELECT HASHES.* FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+  $sqlTheHashes = "SELECT KENNEL_EVENT_NUMBER, SPECIAL_EVENT_DESCRIPTION, EVENT_LOCATION, EVENT_DATE, HASHES.HASH_KY, LAT, LNG FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
   WHERE HARINGS.HARINGS_HASHER_KY = ? AND KENNEL_KY = ? and HASHES.IS_HYPER = 0 and LAT is not null and LNG is not null";
   $theHashes = $app['db']->fetchAll($sqlTheHashes, array((int) $hasher_id, (int) $kennelKy));
 
@@ -4621,7 +4306,7 @@ public function viewHyperHareChartsAction(Request $request, Application $app, in
   }
 
   # Obtain their hashes
-  $sqlTheHashes = "SELECT HASHES.* FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+  $sqlTheHashes = "SELECT KENNEL_EVENT_NUMBER, SPECIAL_EVENT_DESCRIPTION, EVENT_LOCATION, EVENT_DATE, HASHES.HASH_KY, LAT, LNG FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
   WHERE HARINGS.HARINGS_HASHER_KY = ? AND KENNEL_KY = ? and HASHES.IS_HYPER = 1 and LAT is not null and LNG is not null";
   $theHashes = $app['db']->fetchAll($sqlTheHashes, array((int) $hasher_id, (int) $kennelKy));
 
@@ -4792,7 +4477,7 @@ private function twoPersonComparisonDataFetch(Request $request, Application $app
   $returnValue = array();
 
   # Declare the SQL used to retrieve this information
-  $sql = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
+  $sql = "SELECT HASHER_NAME FROM HASHERS WHERE HASHER_KY = ?";
 
   # Make a database call to obtain the hasher information
   $hasher1 = $app['db']->fetchAssoc($sql, array((int) $hasher_id1));
@@ -4876,7 +4561,7 @@ public function twoPersonComparisonAction(Request $request, Application $app, st
   $pageTitle = "Hasher Showdown";
 
   # Declare the SQL used to retrieve this information
-  $sql = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
+  $sql = "SELECT HASHER_NAME FROM HASHERS WHERE HASHER_KY = ?";
 
   #Obtain the kennel key
   $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);

@@ -4,26 +4,14 @@
 
 
 <script type="text/javascript" src="/node_modules/chart.js/dist/Chart.bundle.min.js"></script>
-
-{#<script src="http://echarts.baidu.com/build/dist/echarts.js"></script>#}
 <script type="text/javascript" src="/node_modules/echarts/dist/echarts.js" type="module"></script>
-
 <script type = "text/javascript" src = "/node_modules/wordcloud/src/wordcloud2.js"></script>
+<script type="text/javascript" src="/node_modules/d3/dist/d3.min.js"></script>
+<script type="text/javascript" src="/node_modules/c3/c3.min.js"></script>
+<link href="/node_modules/c3/c3.css" rel="stylesheet" type="text/css">
 
 
 
-
-
- <script type="text/javascript" src="/node_modules/d3/dist/d3.min.js"></script>
- <script type="text/javascript" src="/node_modules/c3/c3.min.js"></script>
- <link href="/node_modules/c3/c3.css" rel="stylesheet" type="text/css">
-
-
-{#
- <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.js"></script>
- <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/c3/0.1.29/c3.js"></script>
- <link href="//cdnjs.cloudflare.com/ajax/libs/c3/0.1.29/c3.css" rel="stylesheet" type="text/css">
-#}
 
 
 <script type = "text/javascript" language = "javascript">
@@ -155,92 +143,92 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
 
 
-function loadCountyChart(){
-  // based on prepared DOM, initialize echarts instance
-  var chart = document.getElementById('county');
-  //alert(JSON.stringify(chart));
-  var myChart = echarts.init(chart);
-  //alert(JSON.stringify(myChart));
+  function loadCountyChart(){
+    // based on prepared DOM, initialize echarts instance
+    var chart = document.getElementById('county');
+    //alert(JSON.stringify(chart));
+    var myChart = echarts.init(chart);
+    //alert(JSON.stringify(myChart));
 
-  // specify chart configuration item and data
-  var option = {
-    title: {
-        text: 'County Breakdown',
-        subtext: 'Because of course',
-        textStyle: {
-            fontSize: 14,
-            align: 'center'
-        },
-        subtextStyle: {
-            align: 'center'
-        },
-    },
-    series: [{
-        type: 'treemap',
-        data: [
-          {% for individualValue in hashes_by_county_list %}
-            {
-              name: '{{individualValue.THE_VALUE}}',
-              value: {{individualValue.THE_COUNT}},
-            },
-          {% endfor %}
-        ]
-    }]
-  };
+    // specify chart configuration item and data
+    var option = {
+      title: {
+          text: 'County Breakdown',
+          subtext: 'Because of course',
+          textStyle: {
+              fontSize: 14,
+              align: 'center'
+          },
+          subtextStyle: {
+              align: 'center'
+          },
+      },
+      series: [{
+          type: 'treemap',
+          data: [
+            {% for individualValue in hashes_by_county_list %}
+              {
+                name: '{{individualValue.THE_VALUE}}',
+                value: {{individualValue.THE_COUNT}},
+              },
+            {% endfor %}
+          ]
+      }]
+    };
 
-  // use configuration item and data specified to show chart
-  myChart.setOption(option);
+    // use configuration item and data specified to show chart
+    myChart.setOption(option);
 
-}
+  }
 
 
-function loadPostalCodeChart(){
-  // based on prepared DOM, initialize echarts instance
-  var chart = document.getElementById('postalcode');
-  //alert(JSON.stringify(chart));
-  var myChart = echarts.init(chart);
-  //alert(JSON.stringify(myChart));
+  function loadPostalCodeChart(){
+    // based on prepared DOM, initialize echarts instance
+    var chart = document.getElementById('postalcode');
+    //alert(JSON.stringify(chart));
+    var myChart = echarts.init(chart);
+    //alert(JSON.stringify(myChart));
 
-  // specify chart configuration item and data
-  var option = {
-    title: {
-        text: 'Zip Code Breakdown',
-        subtext: 'Because of course',
-        textStyle: {
-            fontSize: 14,
-            align: 'center'
-        },
-        subtextStyle: {
-            align: 'center'
-        },
-    },
-    series: [{
-        type: 'treemap',
-        data: [
-          {% for individualValue in hashes_by_postal_code_list %}
-            {
-              name: '{{individualValue.THE_VALUE}}',
-              value: {{individualValue.THE_COUNT}},
-            },
-          {% endfor %}
-        ]
-    }]
-  };
+    // specify chart configuration item and data
+    var option = {
+      title: {
+          text: 'Zip Code Breakdown',
+          subtext: 'Because of course',
+          textStyle: {
+              fontSize: 14,
+              align: 'center'
+          },
+          subtextStyle: {
+              align: 'center'
+          },
+      },
+      series: [{
+          type: 'treemap',
+          data: [
+            {% for individualValue in hashes_by_postal_code_list %}
+              {
+                name: '{{individualValue.THE_VALUE}}',
+                value: {{individualValue.THE_COUNT}},
+              },
+            {% endfor %}
+          ]
+      }]
+    };
 
-  // use configuration item and data specified to show chart
-  myChart.setOption(option);
+    // use configuration item and data specified to show chart
+    myChart.setOption(option);
 
-}
+  }
 
-   //Call these functions upon page load
-   $(document).ready(function() {
-      loadPostalCodeChart();
-      loadCountyChart();
-      getVirginHash({{hasherValue.HASHER_KY}});
-      getMostRecentHash({{hasherValue.HASHER_KY}});
-      getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/city","#hasherHashesByCity-list","City","Count");
+     //Call these functions upon page load
+     $(document).ready(function() {
+        loadPostalCodeChart();
+        loadCountyChart();
+        getVirginHash({{hasherValue.HASHER_KY}});
+        getMostRecentHash({{hasherValue.HASHER_KY}});
+        getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/city","#hasherHashesByCity-list","City","Count");
 
-    });
+      });
 
    </script>
 
@@ -359,411 +347,322 @@ function loadPostalCodeChart(){
 
 
 
-      <div class="row">
-        <div class="col-sm-12">
+        <div class="row">
+          <div class="col-sm-12">
 
-          <div id="chartXX"></div>
-          <script>
-            var chartXX = c3.generate({
-                            size: {
-                                height: 400,
-                            },
-                            data: {
-                                type: 'bar',
-                                json: [
-                                  {% for individualValue in hashes_by_year_list %}
-                                    { 'Year': '{{individualValue.THE_VALUE}}', 'Count': '{{individualValue.THE_COUNT}}' },
-                                  {% endfor %}
-                                ],
-                                keys: {
-                                    x: 'Year',
-                                    value: ['Count']
-                                }
-                            },
-                            legend:{hide:true},
-                            bindto: '#chartXX'
+            <div id="chartXX"></div>
+            <script>
+              var chartXX = c3.generate({
+                              size: {
+                                  height: 400,
+                              },
+                              data: {
+                                  type: 'bar',
+                                  json: [
+                                    {% for individualValue in hashes_by_year_list %}
+                                      { 'Year': '{{individualValue.THE_VALUE}}', 'Count': '{{individualValue.THE_COUNT}}' },
+                                    {% endfor %}
+                                  ],
+                                  keys: {
+                                      x: 'Year',
+                                      value: ['Count']
+                                  }
+                              },
+                              legend:{hide:true},
+                              bindto: '#chartXX'
+                          });
+              </script>
+
+          </div>
+        </div>
+
+        <div class="row" >
+          <div class="col-sm-6">
+            <div id="chartMonth"></div>
+            <script>
+            var chartMonth = c3.generate({
+              size: {
+                  height: 400,
+              },
+              data: {
+                  x : 'Month',
+                  columns: [
+                      ['Month',
+                        {% for individualValue in hashes_by_month_name_list %}
+                          '{{individualValue.MONTH_NAME[0:3]}}',
+                        {% endfor %}],
+                      ['Hash Count',
+                        {% for individualValue in hashes_by_month_name_list %}
+                          {{individualValue.THE_COUNT}},
+                        {% endfor %}],
+                  ],
+                  type: 'bar'
+              },
+              axis: {
+                  x: {
+                      type: 'category',
+                      tick: {
+                          rotate: 75,
+                          multiline: false
+                      },
+                      height: 130
+                  }
+              },
+              legend:{hide:true},
+                            bindto: '#chartMonth'
                         });
 
+            </script>
+          </div>
 
-               //function setTheTimeouts(i){
-              //    var delayValue=4000;
-                //  setTimeout(function() {chartXX.transform('area-step');}, i*delayValue*1);
-              //    setTimeout(function() {chartXX.transform('area-spline');}, i*delayValue*2);
-              //    setTimeout(function() {chartXX.transform('bar');}, i*delayValue*3);
-              //  }
+          <div class="col-sm-6">
 
-              //  for(var i=1; i<2; i++){
-              //    setTheTimeouts(i);
-              //  }
+            <div id="chartQuarter"></div>
+            <script>
+
+
+
+            var chartQuarter = c3.generate({
+              size: {
+                  height: 400,
+              },
+              data: {
+                  x : 'Quarter',
+                  columns: [
+                      ['Quarter',
+                        {% for individualValue in hashes_by_quarter_list %}
+                          'Quarter {{individualValue.THE_VALUE}}',
+                        {% endfor %}],
+                      ['Hash Count',
+                        {% for individualValue in hashes_by_quarter_list %}
+                          {{individualValue.THE_COUNT}},
+                        {% endfor %}],
+                  ],
+                  type: 'bar'
+              },
+              axis: {
+                  x: {
+                      type: 'category',
+                      tick: {
+                          rotate: 75,
+                          multiline: false
+                      },
+                      height: 130
+                  }
+              },
+              legend:{hide:true},
+                            bindto: '#chartQuarter'
+                        });
+            </script>
+          </div>
+        </div>
+
+
+
+        <div class="row">
+          <div class="col-sm-8">
+            <div id="d3_div">
+            </div>
+          </div>
+        </div>
+
+
+
+        <div class="row">
+          <div class="col-sm-6">
+            <div id="county" style="width: 600px;height:400px;">
+            </div>
+          </div>
+
+          <div class="col-sm-6">
+            <div id="postalcode" style="width: 600px;height:400px;">
+            </div>
+          </div>
+        </div>
+
+
+        <div class="row">
+
+          <div class="col-sm-6">
+            <div id="chartBB"></div>
+            <script>
+              var chartBB = c3.generate({
+                  bindto: '#chartBB',
+                  data: {
+                    columns:
+                    [
+                      {% for individualValue in hashes_by_state_list %}
+                        ['{{individualValue.THE_VALUE}}',{{individualValue.THE_COUNT}}],
+                      {% endfor %}
+                    ],
+                    type: 'pie'
+                  }
+              });
+
+            function setTheTimeoutsB(i){
+              var delayValue=4000;
+              setTimeout(function() {chartBB.transform('donut');}, i*delayValue*1);
+              setTimeout(function() {chartBB.transform('bar');}, i*delayValue*2);
+              setTimeout(function() {chartBB.transform('pie');}, i*delayValue*3);
+            }
+
+            for(var i=1; i<2; i++){
+              setTheTimeoutsB(i);
+            }
+
+
+
             </script>
 
-        </div>
-      </div>
-
-      <div class="row" >
-        <div class="col-sm-6">
-          <div id="chartMonth"></div>
-          <script>
-
-
-
-          var chartMonth = c3.generate({
-            size: {
-                height: 400,
-            },
-            data: {
-                x : 'Month',
-                columns: [
-                    ['Month',
-                      {% for individualValue in hashes_by_month_name_list %}
-                        '{{individualValue.MONTH_NAME[0:3]}}',
-                      {% endfor %}],
-                    ['Hash Count',
-                      {% for individualValue in hashes_by_month_name_list %}
-                        {{individualValue.THE_COUNT}},
-                      {% endfor %}],
-                ],
-                type: 'bar'
-            },
-            axis: {
-                x: {
-                    type: 'category',
-                    tick: {
-                        rotate: 75,
-                        multiline: false
-                    },
-                    height: 130
-                }
-            },
-            legend:{hide:true},
-                          bindto: '#chartMonth'
-                      });
-
-          </script>
-        </div>
-
-        <div class="col-sm-6">
-
-          <div id="chartQuarter"></div>
-          <script>
-
-
-
-          var chartQuarter = c3.generate({
-            size: {
-                height: 400,
-            },
-            data: {
-                x : 'Quarter',
-                columns: [
-                    ['Quarter',
-                      {% for individualValue in hashes_by_quarter_list %}
-                        'Quarter {{individualValue.THE_VALUE}}',
-                      {% endfor %}],
-                    ['Hash Count',
-                      {% for individualValue in hashes_by_quarter_list %}
-                        {{individualValue.THE_COUNT}},
-                      {% endfor %}],
-                ],
-                type: 'bar'
-            },
-            axis: {
-                x: {
-                    type: 'category',
-                    tick: {
-                        rotate: 75,
-                        multiline: false
-                    },
-                    height: 130
-                }
-            },
-            legend:{hide:true},
-                          bindto: '#chartQuarter'
-                      });
-          </script>
-        </div>
-      </div>
-
-
-
-      <div class="row">
-        <div class="col-sm-8">
-          <div id="d3_div">
           </div>
-        </div>
-      </div>
 
-
-
-      <div class="row">
-        <div class="col-sm-6">
-          <div id="county" style="width: 600px;height:400px;">
-          </div>
-        </div>
-
-        <div class="col-sm-6">
-          <div id="postalcode" style="width: 600px;height:400px;">
-          </div>
-        </div>
-      </div>
-
-
-      <div class="row">
-
-        <div class="col-sm-6">
-          <div id="chartBB"></div>
-          <script>
-            var chartBB = c3.generate({
-                bindto: '#chartBB',
+          <div class="col-sm-6">
+            <canvas id="myChart6" width="50" height="50"></canvas>
+            <script>
+            var ctx = document.getElementById("myChart6");
+            var myChart = new Chart(ctx, {
+                type: 'radar',
                 data: {
-                  columns:
-                  [
-                    {% for individualValue in hashes_by_state_list %}
-                      ['{{individualValue.THE_VALUE}}',{{individualValue.THE_COUNT}}],
-                    {% endfor %}
-                  ],
-                  type: 'pie'
+                    labels: [
+                      {% for individualValue in hashes_by_day_name_list %}
+                        "{{individualValue.THE_VALUE}}",
+                      {% endfor %}
+                    ],
+                    datasets: [{
+                        label: '# of Hashes',
+                        data: [
+                          {% for individualValue in hashes_by_day_name_list %}
+                            {{individualValue.THE_COUNT}},
+                          {% endfor %}
+
+                        ],
+                        fillColor:'rgba(75, 192, 192, 0.2)',
+                        backgroundColor:'rgba(239, 127, 15, 0.2)',
+                        borderColor:'rgba(239, 127, 15, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    },
+                    title: {
+                      display: true,
+                      text: 'Hashes By Day Name'
+                    }
                 }
             });
+            </script>
 
-          function setTheTimeoutsB(i){
-            var delayValue=4000;
-            setTimeout(function() {chartBB.transform('donut');}, i*delayValue*1);
-            setTimeout(function() {chartBB.transform('bar');}, i*delayValue*2);
-            setTimeout(function() {chartBB.transform('pie');}, i*delayValue*3);
-          }
+          </div>
+        </div>
 
-          for(var i=1; i<2; i++){
-            setTheTimeoutsB(i);
-          }
+        <div class="row">
+          <a href="#citylist" class="btn btn-info" data-toggle="collapse">Show Hashings By City List</a>
+        </div>
 
+        <div class="row">
 
-
-          </script>
+          <div class="col-sm-4 collapse" style="background-color:yellow" id="citylist">
+            <dl class="dl-horizontal">
+              <h4>Hashes by city</h4>
+              <div data-role="content" id="hasherHashesByCity-list"></div>
+            </dl>
+          </div>
 
         </div>
 
-        <div class="col-sm-6">
-          <canvas id="myChart6" width="50" height="50"></canvas>
-          <script>
-          var ctx = document.getElementById("myChart6");
-          var myChart = new Chart(ctx, {
-              type: 'radar',
-              data: {
-                  labels: [
-                    {% for individualValue in hashes_by_day_name_list %}
-                      "{{individualValue.THE_VALUE}}",
-                    {% endfor %}
-                  ],
-                  datasets: [{
-                      label: '# of Hashes',
-                      data: [
-                        {% for individualValue in hashes_by_day_name_list %}
-                          {{individualValue.THE_COUNT}},
-                        {% endfor %}
-
-                      ],
-                      fillColor:'rgba(75, 192, 192, 0.2)',
-                      backgroundColor:'rgba(239, 127, 15, 0.2)',
-                      borderColor:'rgba(239, 127, 15, 1)',
-                      borderWidth: 1
-                  }]
-              },
-              options: {
-                  scales: {
-                      yAxes: [{
-                          ticks: {
-                              beginAtZero:true
-                          }
-                      }]
-                  },
-                  title: {
-                    display: true,
-                    text: 'Hashes By Day Name'
-                  }
-              }
-          });
-          </script>
-
-        </div>
-      </div>
-
-      <div class="row">
-        <a href="#citylist" class="btn btn-info" data-toggle="collapse">Show Hashings By City List</a>
-      </div>
-
-      <div class="row">
-
-        <div class="col-sm-4 collapse" style="background-color:yellow" id="citylist">
-          <dl class="dl-horizontal">
-            <h4>Hashes by city</h4>
-            <div data-role="content" id="hasherHashesByCity-list"></div>
-          </dl>
+        <div class="row">
+          <div id = "div_one" class="col-sm-12" style="width:100%;height:600px">
+            <h4>Hashes By City</h4>
+            <canvas id="my_canvas" class="wordcloud"></canvas>
+          </div>
         </div>
 
-      </div>
+        <script type = "text/javascript" language = "javascript">
+            var canvas = document.getElementById("my_canvas");
+            var parent = document.getElementById("div_one");
+            canvas.width = parent.offsetWidth;
+            canvas.height = parent.offsetHeight;
+        </script>
 
-      <div class="row">
-        <div id = "div_one" class="col-sm-12" style="width:100%;height:600px">
-          <h4>Hashes By City</h4>
-          <canvas id="my_canvas" class="wordcloud"></canvas>
-        </div>
-      </div>
+        <script>
+              var options = {
+                list: [
+                  {% for item in city_hashings_count_list %}
+                      [
+                      "{% autoescape 'js' %}{{item.THE_VALUE}}{% endautoescape %}"
+                      ,
+                      "{{min(80,item.THE_COUNT * 5)}}"],
+                  {% endfor %}
+                ],
+                drawMask: false,
+                shape: "diamond",
+                gridSize: 5
+              };
 
-      <script type = "text/javascript" language = "javascript">
-          var canvas = document.getElementById("my_canvas");
-          var parent = document.getElementById("div_one");
-          canvas.width = parent.offsetWidth;
-          canvas.height = parent.offsetHeight;
-      </script>
-
-      <script>
-            var options = {
-              list: [
-                {% for item in city_hashings_count_list %}
-                    [
-                    "{% autoescape 'js' %}{{item.THE_VALUE}}{% endautoescape %}"
-                    ,
-                    "{{min(80,item.THE_COUNT * 5)}}"],
-                {% endfor %}
-              ],
-              drawMask: false,
-              shape: "diamond",
-              gridSize: 5
-            };
-
-            WordCloud(document.getElementById('my_canvas'), options );
-      </script>
+              WordCloud(document.getElementById('my_canvas'), options );
+        </script>
 
 
-<!--  ------------------------------------------------------------------------->
+  <!--  ------------------------------------------------------------------------->
 
-    <div class="row"><h2>Event Map</h2>
-      <div id="TheMap1" class="col-sm-10"></div>
-        <style>
-        #TheMap1{
-          height: 100%;
-        }
-        </style>
-    </div>
-    <br><br><br><br><br><br><br>
-
-      <script>
-
-        var map1;
-        function initMap1(){
-          map1 = new google.maps.Map(document.getElementById('TheMap1'),{
-            zoom: 10,
-            center: new google.maps.LatLng( {{avg_lat}}, {{avg_lng}} )
-            //mapTypeId: 'terrain'
-          });
-
-
-          {% for hashEventValue in the_hashes %}
-            var event_num = "#{{hashEventValue.KENNEL_EVENT_NUMBER | escape('html')}}";
-            var event_description = "{{hashEventValue.SPECIAL_EVENT_DESCRIPTION | escape('html')}}";
-            var event_location = "{{hashEventValue.EVENT_LOCATION | escape('html')}}";
-            var event_date = "{{hashEventValue.EVENT_DATE | date("m/d/Y" ) | escape('html')}}";
-
-            var textValue = "{{kennel_abbreviation}}"+ event_num +":" + event_description + " at " + event_location + " on " + event_date;
-            var eventLink = "/{{kennel_abbreviation}}/hashes/{{hashEventValue.HASH_KY}}";
-            var marker = new google.maps.Marker({
-              position: {lat: {{hashEventValue.LAT}}, lng:{{hashEventValue.LNG}}},
-              map: map1,
-              title: textValue,
-              url: eventLink
-            });
-            google.maps.event.addListener(marker,'click', function(){
-              window.open(this.url);
-            });
-          {% endfor %}
-        }
-
-      </script>
-
-
-      <!--  ------------------------------------------------------------------------->
-
-
-
-      <div class="row"><h2>Heat Map</h2>
-        <div id="TheMap2" class="col-sm-10"></div>
+      <div class="row"><h2>Event Map</h2>
+        <div id="TheMap1" class="col-sm-10"></div>
           <style>
-          #TheMap2{
+          #TheMap1{
             height: 100%;
           }
           </style>
       </div>
       <br><br><br><br><br><br><br>
 
-      <script>
-        var map2,heatmap;
-        function initMap2(){
-          map2 = new google.maps.Map(document.getElementById('TheMap2'),{
-            zoom: 11,
-            center: new google.maps.LatLng( {{avg_lat}}, {{avg_lng}} ),
-            mapTypeId: 'terrain'
-          });
+        <script>
 
-          heatmap = new google.maps.visualization.HeatmapLayer({
-            data: getPoints2(),
-            map: map2
-          });
+          var map1;
+          function initMap1(){
+            map1 = new google.maps.Map(document.getElementById('TheMap1'),{
+              zoom: 10,
+              center: new google.maps.LatLng( {{avg_lat}}, {{avg_lng}} )
+              //mapTypeId: 'terrain'
+            });
 
-          changeGradient();
-          changeRadius();
-        }
 
-        function getPoints2() {
-          return [
             {% for hashEventValue in the_hashes %}
-            new google.maps.LatLng(
-              {{hashEventValue.LAT}}, {{hashEventValue.LNG}}
-            ),
+              var event_num = "#{{hashEventValue.KENNEL_EVENT_NUMBER | escape('html')}}";
+              var event_description = "{{hashEventValue.SPECIAL_EVENT_DESCRIPTION | escape('html')}}";
+              var event_location = "{{hashEventValue.EVENT_LOCATION | escape('html')}}";
+              var event_date = "{{hashEventValue.EVENT_DATE | date("m/d/Y" ) | escape('html')}}";
+
+              var textValue = "{{kennel_abbreviation}}"+ event_num +":" + event_description + " at " + event_location + " on " + event_date;
+              var eventLink = "/{{kennel_abbreviation}}/hashes/{{hashEventValue.HASH_KY}}";
+              var marker = new google.maps.Marker({
+                position: {lat: {{hashEventValue.LAT}}, lng:{{hashEventValue.LNG}}},
+                map: map1,
+                title: textValue,
+                url: eventLink
+              });
+              google.maps.event.addListener(marker,'click', function(){
+                window.open(this.url);
+              });
             {% endfor %}
-          ];
-        }
+          }
 
-        function toggleHeatmap() {
-          heatmap.setMap(heatmap.getMap() ? null : map2);
-        }
-
-        function changeGradient() {
-          var gradient = [
-            'rgba(0, 255, 255, 0)',
-            'rgba(0, 255, 255, 1)',
-            'rgba(0, 191, 255, 1)',
-            'rgba(0, 127, 255, 1)',
-            'rgba(0, 63, 255, 1)',
-            'rgba(0, 0, 255, 1)',
-            'rgba(0, 0, 223, 1)',
-            'rgba(0, 0, 191, 1)',
-            'rgba(0, 0, 159, 1)',
-            'rgba(0, 0, 127, 1)',
-            'rgba(63, 0, 91, 1)',
-            'rgba(127, 0, 63, 1)',
-            'rgba(191, 0, 31, 1)',
-            'rgba(255, 0, 0, 1)'
-          ]
-          heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
-        }
-
-        function changeRadius() {
-          heatmap.set('radius', heatmap.get('radius') ? null : 30);
-        }
-
-        function changeOpacity() {
-          heatmap.set('opacity', heatmap.get('opacity') ? null : 0.2);
-        }
-      </script>
+        </script>
 
 
-      <!--  ------------------------------------------------------------------------->
+        <!--  ------------------------------------------------------------------------->
 
-        <div class="row"><h2>Cluster Map</h2>
-          <div id="TheMap3" class="col-sm-10"></div>
+
+
+        <div class="row"><h2>Heat Map</h2>
+          <div id="TheMap2" class="col-sm-10"></div>
             <style>
-            #TheMap3{
+            #TheMap2{
               height: 100%;
             }
             </style>
@@ -771,55 +670,129 @@ function loadPostalCodeChart(){
         <br><br><br><br><br><br><br>
 
         <script>
-          var locations3 = getPoints3();
+          var map2,heatmap;
+          function initMap2(){
+            map2 = new google.maps.Map(document.getElementById('TheMap2'),{
+              zoom: 11,
+              center: new google.maps.LatLng( {{avg_lat}}, {{avg_lng}} ),
+              mapTypeId: 'terrain'
+            });
 
-          function getPoints3() {
+            heatmap = new google.maps.visualization.HeatmapLayer({
+              data: getPoints2(),
+              map: map2
+            });
+
+            changeGradient();
+            changeRadius();
+          }
+
+          function getPoints2() {
             return [
               {% for hashEventValue in the_hashes %}
-                { lat:{{hashEventValue.LAT}}, lng:{{hashEventValue.LNG}} },
+              new google.maps.LatLng(
+                {{hashEventValue.LAT}}, {{hashEventValue.LNG}}
+              ),
               {% endfor %}
             ];
           }
 
-          var map3;
-          function initMap3(){
+          function toggleHeatmap() {
+            heatmap.setMap(heatmap.getMap() ? null : map2);
+          }
 
-            var map3 = new google.maps.Map(document.getElementById('TheMap3'), {
-              zoom: 9,
-              center: {lat:  {{avg_lat}}, lng: {{avg_lng}}}
-            });
+          function changeGradient() {
+            var gradient = [
+              'rgba(0, 255, 255, 0)',
+              'rgba(0, 255, 255, 1)',
+              'rgba(0, 191, 255, 1)',
+              'rgba(0, 127, 255, 1)',
+              'rgba(0, 63, 255, 1)',
+              'rgba(0, 0, 255, 1)',
+              'rgba(0, 0, 223, 1)',
+              'rgba(0, 0, 191, 1)',
+              'rgba(0, 0, 159, 1)',
+              'rgba(0, 0, 127, 1)',
+              'rgba(63, 0, 91, 1)',
+              'rgba(127, 0, 63, 1)',
+              'rgba(191, 0, 31, 1)',
+              'rgba(255, 0, 0, 1)'
+            ]
+            heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
+          }
 
-            var markers3 = locations3.map(function(location, i) {
-             return new google.maps.Marker({
-               position: location
-             });
-            });
+          function changeRadius() {
+            heatmap.set('radius', heatmap.get('radius') ? null : 30);
+          }
 
-            // Add a marker clusterer to manage the markers.
-            var markerCluster = new MarkerClusterer(
-              map3,
-              markers3,
-              //{imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'}
-              {imagePath: '/web/images/google_map_cluster_map/m'}
-            );
-
+          function changeOpacity() {
+            heatmap.set('opacity', heatmap.get('opacity') ? null : 0.2);
           }
         </script>
-        <script src="/web/javascript/markerclusterer/markerclusterer.js"></script>
-
-        <script>
-          function initMapX(){
-            initMap1();
-            initMap2();
-            initMap3();
-          }
-        </script>
-        <script async defer src="https://maps.googleapis.com/maps/api/js?key={{geocode_api_value}}&callback=initMapX&libraries=visualization">
-        </script>
 
 
+        <!--  ------------------------------------------------------------------------->
+
+          <div class="row"><h2>Cluster Map</h2>
+            <div id="TheMap3" class="col-sm-10"></div>
+              <style>
+              #TheMap3{
+                height: 100%;
+              }
+              </style>
+          </div>
+          <br><br><br><br><br><br><br>
+
+          <script>
+            var locations3 = getPoints3();
+
+            function getPoints3() {
+              return [
+                {% for hashEventValue in the_hashes %}
+                  { lat:{{hashEventValue.LAT}}, lng:{{hashEventValue.LNG}} },
+                {% endfor %}
+              ];
+            }
+
+            var map3;
+            function initMap3(){
+
+              var map3 = new google.maps.Map(document.getElementById('TheMap3'), {
+                zoom: 9,
+                center: {lat:  {{avg_lat}}, lng: {{avg_lng}}}
+              });
+
+              var markers3 = locations3.map(function(location, i) {
+               return new google.maps.Marker({
+                 position: location
+               });
+              });
+
+              // Add a marker clusterer to manage the markers.
+              var markerCluster = new MarkerClusterer(
+                map3,
+                markers3,
+                //{imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'}
+                {imagePath: '/web/images/google_map_cluster_map/m'}
+              );
+
+            }
+          </script>
+          <script src="/web/javascript/markerclusterer/markerclusterer.js"></script>
+
+          <script>
+            function initMapX(){
+              initMap1();
+              initMap2();
+              initMap3();
+            }
+          </script>
+          <script async defer src="https://maps.googleapis.com/maps/api/js?key={{geocode_api_value}}&callback=initMapX&libraries=visualization">
+          </script>
 
 
-    </div>
 
-{% endblock %}
+
+      </div>
+
+  {% endblock %}

@@ -31,7 +31,12 @@
           <div class="panel-body">
             <table id="table" class="table table-hover">
               <tbody>
-                <tr data-index="0"><td class="key" style="">First Hash</td><td style=""><a href="/{{kennel_abbreviation}}/hashes/{{firstHashKey}}">{{kennel_abbreviation}} #{{firstKennelEventNumber}} on {{firstEventDate|date("Y/m/d", false)}} </a></td></tr>
+                <tr data-index="0"><td class="key" style="">First Hash</td>
+                  <td style="">
+                  {% if firstHashKey is not null %}
+                    <a href="/{{kennel_abbreviation}}/hashes/{{firstHashKey}}">{{kennel_abbreviation}} #{{firstKennelEventNumber}} on {{firstEventDate|date("Y/m/d", false)}} </a>
+                  {% endif %}
+                  </td></tr>
                 <tr data-index="1"><td class="key" style="">Overall number of runs</td><td style="">{{overallHashCount}}</td></tr>
                 <tr data-index="2"><td class="key" style="">Overall run rate</td><td style="">{{overallRunRate}} days between hashes</td></tr>
               </tbody>

@@ -107,6 +107,53 @@
       <div class="row">
         <div class="col-sm-12">
 
+          <canvas id="myChart1" width="50" height="25"></canvas>
+          <script>
+          var ctx = document.getElementById("myChart1");
+          var myChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: [
+                    {% for individualEntry in Total_Evt_Participation_By_Year_List %}
+                      {{individualEntry.THE_VALUE}},
+                    {% endfor %}
+                  ],
+                  datasets: [{
+                      label: 'Total Attendance Per Year',
+                      data: [
+                        {% for individualEntry in Total_Evt_Participation_By_Year_List %}
+                          {{individualEntry.THE_COUNT}},
+                        {% endfor %}
+
+                      ],
+                      fillColor:'rgba(75, 192, 192, 0.2)',
+                      backgroundColor:'rgba(54, 162, 235, 0.2)',
+                      borderColor:'rgba(54, 162, 235, 1)',
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  },
+                  title: {
+                    display: true,
+                    text: 'Total Event Attendance Per Year'
+                  }
+              }
+          });
+          </script>
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col-sm-12">
+
           <canvas id="myChart2" width="50" height="25"></canvas>
           <script>
           var ctx = document.getElementById("myChart2");

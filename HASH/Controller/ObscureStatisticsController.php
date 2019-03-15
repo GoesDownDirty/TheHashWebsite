@@ -1593,6 +1593,22 @@ class ObscureStatisticsController{
             ) TEMPORARY_TABLE
         GROUP BY YEAR(THE_DATE)";
       $avgEvtParticipationByYear = $app['db']->fetchAll($sqlAvgEvtParticipationByYear, array((int) $kennelKy));
+      
+      # Obtain the total event attendance per year
+      $sqlTotalEvtParticipationByYear = "SELECT
+            YEAR(THE_DATE) AS THE_VALUE,
+            SUM(THE_COUNT) AS THE_COUNT
+        FROM (
+        		SELECT
+        			HASHES.HASH_KY AS THE_KEY,
+        			HASHES.EVENT_DATE AS THE_DATE,
+        			COUNT(*) AS THE_COUNT
+        		FROM HASHES JOIN HASHINGS ON HASHES.HASH_KY = HASHINGS.HASH_KY
+        		WHERE KENNEL_KY = ?
+        		GROUP BY HASHES.HASH_KY
+            ) TEMPORARY_TABLE
+        GROUP BY YEAR(THE_DATE)";
+      $totalEvtParticipationByYear = $app['db']->fetchAll($sqlTotalEvtParticipationByYear, array((int) $kennelKy));
 
       # Obtain the average event attendance per (year/month)
       $sqlAvgEvtParticipationByYearMonth = "SELECT
@@ -1650,6 +1666,7 @@ class ObscureStatisticsController{
         'secondHeader' => 'SECOND HEADER',
         'kennel_abbreviation' => $kennel_abbreviation,
         'Avg_Evt_Participation_By_Year_List' => $avgEvtParticipationByYear,
+        'Total_Evt_Participation_By_Year_List' => $totalEvtParticipationByYear,
         'Avg_Evt_Participation_By_YearMonth_List' => $avgEvtParticipationByYearMonth,
         'Avg_Evt_Participation_By_YearQuarter_List' => $avgEvtParticipationByYearQuarter,
         'Avg_Evt_Participation_By_Month_List' => $avgEvtParticipationByMonth

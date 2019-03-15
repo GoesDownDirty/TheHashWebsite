@@ -470,14 +470,22 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
         <div class="row">
           <div class="col-sm-6">
-            <div id="county" style="width: 600px;height:400px;">
+            <div id="county" style="width: 100%; min-height:400px;">
             </div>
           </div>
 
           <div class="col-sm-6">
-            <div id="postalcode" style="width: 600px;height:400px;">
+            <div id="postalcode" style="width: 100%; min-height:400px;">
             </div>
           </div>
+
+          <script>
+            $(window).on('resize', function(){
+              if(county != null && chart != undefined){
+                chart.resize();
+              }
+            });
+          </script>
         </div>
 
 

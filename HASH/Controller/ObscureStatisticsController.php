@@ -1581,8 +1581,8 @@ class ObscureStatisticsController{
       # Obtain the average and total event attendance per year
       $sqlAvgTotalEvtParticipationByYear = "SELECT
             YEAR(THE_DATE) AS THE_VALUE,
-            SUM(THE_COUNT) AS AVG_COUNT,
-            AVG(THE_COUNT) AS TOT_COUNT
+            SUM(THE_COUNT) AS TOT_COUNT,
+            AVG(THE_COUNT) AS AVG_COUNT
         FROM (
         		SELECT
         			HASHES.HASH_KY AS THE_KEY,

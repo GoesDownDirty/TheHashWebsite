@@ -677,7 +677,7 @@ class HashController
           IS_HYPER
     FROM HASHES JOIN HASHINGS ON HASHES.HASH_KY = HASHINGS.HASH_KY
     WHERE HASHINGS.HASHER_KY = ? AND HASHES.KENNEL_KY = ?
-    ORDER BY HASHES.HASH_KY DESC";
+    ORDER BY HASHES.EVENT_DATE DESC";
 
     #Execute the SQL statement; create an array of rows
     $hashList = $app['db']->fetchAll($sql,array((int) $hasher_id, (int)$kennelKy));
@@ -2207,7 +2207,7 @@ public function hyperHaringCountsAction(Request $request, Application $app, stri
       	HARINGS.HARINGS_HASHER_KY = ?
           AND TEMPTABLE.HARINGS_HASHER_KY <> ?
           AND HASHES.IS_HYPER IN (?,?) AND HASHES.KENNEL_KY = ?
-      ORDER BY HARINGS.HARINGS_HASH_KY ASC";
+      ORDER BY HASHES.EVENT_DATE, TEMPTABLE.HASHER_NAME ASC";
 
     #Execute the SQL statement; create an array of rows
     $cohareList = $app['db']->fetchAll($sql,array((int) $hasher_id, (int) $hasher_id,0,1, (int) $kennelKy));
@@ -2266,7 +2266,7 @@ public function hyperHaringCountsAction(Request $request, Application $app, stri
       	HARINGS.HARINGS_HASHER_KY = ?
           AND TEMPTABLE.HARINGS_HASHER_KY <> ?
           AND HASHES.IS_HYPER IN (?,?) AND HASHES.KENNEL_KY = ?
-      ORDER BY HARINGS.HARINGS_HASH_KY ASC";
+      ORDER BY HASHES.EVENT_DATE, TEMPTABLE.HASHER_NAME ASC";
 
     #Execute the SQL statement; create an array of rows
     $cohareList = $app['db']->fetchAll($sql,array((int) $hasher_id, (int) $hasher_id,0,0, (int) $kennelKy));

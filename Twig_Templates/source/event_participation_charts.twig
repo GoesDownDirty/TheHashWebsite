@@ -22,15 +22,15 @@
               type: 'bar',
               data: {
                   labels: [
-                    {% for individualEntry in Avg_Evt_Participation_By_Year_List %}
+                    {% for individualEntry in AvgTotal_Evt_Participation_By_Year_List %}
                       {{individualEntry.THE_VALUE}},
                     {% endfor %}
                   ],
                   datasets: [{
                       label: 'Avg Attendance Per Event',
                       data: [
-                        {% for individualEntry in Avg_Evt_Participation_By_Year_List %}
-                          {{individualEntry.THE_COUNT}},
+                        {% for individualEntry in AvgTotal_Evt_Participation_By_Year_List %}
+                          {{individualEntry.AVG_COUNT}},
                         {% endfor %}
 
                       ],
@@ -114,15 +114,15 @@
               type: 'bar',
               data: {
                   labels: [
-                    {% for individualEntry in Total_Evt_Participation_By_Year_List %}
+                    {% for individualEntry in AvgTotal_Evt_Participation_By_Year_List %}
                       {{individualEntry.THE_VALUE}},
                     {% endfor %}
                   ],
                   datasets: [{
                       label: 'Total Attendance Per Year',
                       data: [
-                        {% for individualEntry in Total_Evt_Participation_By_Year_List %}
-                          {{individualEntry.THE_COUNT}},
+                        {% for individualEntry in AvgTotal_Evt_Participation_By_Year_List %}
+                          {{individualEntry.TOT_COUNT}},
                         {% endfor %}
 
                       ],

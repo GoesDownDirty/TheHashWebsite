@@ -140,6 +140,28 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 }
 
 
+  function  loadQuarterMonthSunburst(){
+    var chart = document.getElementById('quartermonthsunburst');
+    var myChart = echarts.init(chart);
+
+    var data = {{quarter_month_formatted_data|raw}};
+
+    var option = {
+      series: {
+          type: 'sunburst',
+          // highlightPolicy: 'ancestor',
+          data: data,
+          radius: [0, '90%'],
+          label: {
+              rotate: 'radial'
+          }
+      }
+    };
+
+    // use configuration item and data specified to show chart
+    myChart.setOption(option);
+  }
+
   function loadHelloWorldSunburst(){
     var chart = document.getElementById('locationsunburst');
     var myChart = echarts.init(chart);
@@ -283,6 +305,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
         loadPostalCodeChart();
         loadCountyChart();
         loadHelloWorldSunburst();
+        loadQuarterMonthSunburst();
         getVirginHash({{hasherValue.HASHER_KY}});
         getMostRecentHash({{hasherValue.HASHER_KY}});
         getListData({{hasherValue.HASHER_KY}},"/{{kennel_abbreviation}}/statistics/hasher/hashes/by/city","#hasherHashesByCity-list","City","Count");
@@ -429,86 +452,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
           </div>
         </div>
 
-        <div class="row" >
-          <div class="col-sm-6">
-            <div id="chartMonth"></div>
-            <script>
-            var chartMonth = c3.generate({
-              size: {
-                  height: 400,
-              },
-              data: {
-                  x : 'Month',
-                  columns: [
-                      ['Month',
-                        {% for individualValue in hashes_by_month_name_list %}
-                          '{{individualValue.MONTH_NAME[0:3]}}',
-                        {% endfor %}],
-                      ['Hash Count',
-                        {% for individualValue in hashes_by_month_name_list %}
-                          {{individualValue.THE_COUNT}},
-                        {% endfor %}],
-                  ],
-                  type: 'bar'
-              },
-              axis: {
-                  x: {
-                      type: 'category',
-                      tick: {
-                          rotate: 75,
-                          multiline: false
-                      },
-                      height: 130
-                  }
-              },
-              legend:{hide:true},
-                            bindto: '#chartMonth'
-                        });
 
-            </script>
-          </div>
-
-          <div class="col-sm-6">
-
-            <div id="chartQuarter"></div>
-            <script>
-
-
-
-            var chartQuarter = c3.generate({
-              size: {
-                  height: 400,
-              },
-              data: {
-                  x : 'Quarter',
-                  columns: [
-                      ['Quarter',
-                        {% for individualValue in hashes_by_quarter_list %}
-                          'Quarter {{individualValue.THE_VALUE}}',
-                        {% endfor %}],
-                      ['Hash Count',
-                        {% for individualValue in hashes_by_quarter_list %}
-                          {{individualValue.THE_COUNT}},
-                        {% endfor %}],
-                  ],
-                  type: 'bar'
-              },
-              axis: {
-                  x: {
-                      type: 'category',
-                      tick: {
-                          rotate: 75,
-                          multiline: false
-                      },
-                      height: 130
-                  }
-              },
-              legend:{hide:true},
-                            bindto: '#chartQuarter'
-                        });
-            </script>
-          </div>
-        </div>
 
 
 
@@ -519,7 +463,21 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
           </div>
         </div>
 
+        <br><br><br>
+        <div class="row">
+          <div class="col-sm-12">
+            <div id="locationsunburst" style="width: 100%; min-height:900px;">
+            </div>
+          </div>
+        </div>
 
+        <br><br>
+        <div class="row">
+          <div class="col-sm-12">
+            <div id="quartermonthsunburst" style="width: 100%; min-height:900px;">
+            </div>
+          </div>
+        </div>
 
         <div class="row">
           <div class="col-sm-6">
@@ -541,13 +499,8 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
           </script>
         </div>
 
-        <br><br><br>
-        <div class="row">
-          <div class="col-sm-12">
-            <div id="locationsunburst" style="width: 100%; min-height:900px;">
-            </div>
-          </div>
-        </div>
+
+
 
 
         <div class="row">

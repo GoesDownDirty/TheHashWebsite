@@ -1086,6 +1086,64 @@ Source: https://kvz.io/blog/2007/10/03/convert-anything-to-tree-structures-in-ph
     #Obtain their largest streak
     $longestStreakValue = $app['db']->fetchAssoc(THE_LONGEST_STREAKS_FOR_HASHER, array((int) $kennelKy , (int) $hasher_id));
 
+    #By Quarter/ Month ---------------------------------------------------
+    $quarterMonthSql = "SELECT CONCAT (THE_QUARTER,'/',MONTH_NAME,'/',THE_COUNT) AS THE_VALUE, THE_COUNT
+      FROM (
+      	SELECT
+      		CASE
+      			WHEN THE_VALUE IN ('1','2','3')  THEN 'Q1'
+      			WHEN THE_VALUE IN ('4','5','6') THEN 'Q2'
+      			WHEN THE_VALUE IN ('7','8','9') THEN 'Q3'
+      			WHEN THE_VALUE IN ('10','11','12') THEN 'Q4'
+      			ELSE 'XXX'
+      		END AS THE_QUARTER,
+      		CASE THE_VALUE
+      			WHEN '1' THEN 'January'
+      			WHEN '2' THEN 'February'
+      			WHEN '3' THEN 'March'
+      			WHEN '4' THEN 'April'
+      			WHEN '5' THEN 'May'
+      			WHEN '6' THEN 'June'
+      			WHEN '7' THEN 'July'
+      			WHEN '8' THEN 'August'
+      			WHEN '9' THEN 'September'
+      			WHEN '10' THEN 'October'
+      			WHEN '11' THEN 'November'
+      			WHEN '12' THEN 'December'
+      		END AS MONTH_NAME,
+      		THE_COUNT
+      	FROM
+      	(
+      		SELECT MONTH(EVENT_DATE) AS THE_VALUE, COUNT(*) AS THE_COUNT
+      		FROM
+      			HASHINGS
+      			JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+      		WHERE
+      			HASHINGS.HASHER_KY = ? AND
+      			HASHES.KENNEL_KY = ?
+      		GROUP BY MONTH(EVENT_DATE)
+      		ORDER BY MONTH(EVENT_DATE)
+      	) TEMP_TABLE
+      ) ASDF";
+
+    #1. Query the db
+    $quarterMonthValues = $app['db']->fetchAll($quarterMonthSql, array((int) $hasher_id , (int) $kennelKy));
+
+    #2. Convert the values into an associative array
+    #Convert to an associative array
+    $quarterMonthAssocArray = array();
+    foreach($quarterMonthValues as $item){
+      $quarterMonthAssocArray += array(($item[THE_VALUE]) => ($item[THE_COUNT]));
+    }
+
+    #3. Explode the associative array into a hierarchial format
+    $quarterMonthHierarchyData = $this->explodeTree($quarterMonthAssocArray,"/",false);
+
+    #4. Create the formatted data for the sunburst graph
+    $quarterMonthFormattedData = $this->createSunburstFormatted($quarterMonthHierarchyData);
+
+    # End by Quarter Month ------------------------------------------------
+
     #Obtain the state/county/city data for the sunburst chart
     $sunburstSqlA = "SELECT
 	     CONCAT(EVENT_STATE,'/',COUNTY,'/',EVENT_CITY,'/',THE_COUNT) AS THE_VALUE, THE_COUNT
@@ -1122,6 +1180,7 @@ Source: https://kvz.io/blog/2007/10/03/convert-anything-to-tree-structures-in-ph
     # Establish and set the return value
     $returnValue = $app['twig']->render('hasher_chart_details.twig',array(
       'sunburst_formatted_data' => $sunburstFormattedData,
+      'quarter_month_formatted_data' => $quarterMonthFormattedData,
       'pageTitle' => 'Hasher Charts and Details',
       'firstHeader' => 'Basic Details',
       'secondHeader' => 'Statistics',

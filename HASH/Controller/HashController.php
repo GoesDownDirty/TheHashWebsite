@@ -2177,7 +2177,37 @@ public function predictedHasherAnalversariesAction(Request $request, Application
 
   #Return the return value
   return $returnValue;
+}
 
+public function predictedCenturionsAction(Request $request, Application $app, string $kennel_abbreviation){
+
+  # Declare the SQL used to retrieve this information
+  $sql = PREDICTED_CENTURIONS;
+
+  #Obtain the kennel key
+  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+  $runrate=180;
+
+  #Execute the SQL statement; create an array of rows
+  $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy, (int) $kennelKy, (int) $kennelKy, $runrate, (int) $kennelKy, $runrate));
+
+  # Establish the return value
+  $returnValue = $app['twig']->render('predicted_analversary_list.twig',array(
+    'pageTitle' => 'Predicted Centurions (experimental)',
+    'pageSubTitle' => 'Upcoming centurion predictions based on recent run rate (last '.$runrate.' days).',
+    'theList' => $hasherList,
+    'tableCaption' => 'Centurion Predictions',
+    'columnOneName' => 'Hasher Name',
+    'columnTwoName' => 'Current Run Count',
+    'columnThreeName' => 'Next Milestone',
+    'columnFourName' => 'Predicted Date',
+    'kennel_abbreviation' => $kennel_abbreviation
+  ));
+
+
+  #Return the return value
+  return $returnValue;
 }
 
 public function pendingHareAnalversariesAction(Request $request, Application $app, string $kennel_abbreviation){

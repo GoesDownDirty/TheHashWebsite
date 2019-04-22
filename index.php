@@ -303,6 +303,7 @@ $app->get('/{kennel_abbreviation}/unTrendingTrueHaresJsonPost/{day_count}/{min_h
 
 $app->get('/{kennel_abbreviation}/pendingHasherAnalversaries',                          'HASH\Controller\HashController::pendingHasherAnalversariesAction');
 $app->get('/{kennel_abbreviation}/predictedHasherAnalversaries',                        'HASH\Controller\HashController::predictedHasherAnalversariesAction');
+$app->get('/{kennel_abbreviation}/predictedCenturions',                                 'HASH\Controller\HashController::predictedCenturionsAction');
 $app->get('/{kennel_abbreviation}/pendingHareAnalversaries',                            'HASH\Controller\HashController::pendingHareAnalversariesAction');
 $app->get('/{kennel_abbreviation}/haringPercentageAllHashes',                           'HASH\Controller\HashController::haringPercentageAllHashesAction');
 $app->get('/{kennel_abbreviation}/haringPercentageNonHypers',                           'HASH\Controller\HashController::haringPercentageNonHypersAction');

@@ -2,7 +2,9 @@
 User-agent: *
 Crawl-delay: 5
 
-# Block bad bots
+# Block bots
+User-agent: SemrushBot
+Disallow: /
 User-agent: ahrefsbot
 Disallow: /
 User-agent: aihitbot

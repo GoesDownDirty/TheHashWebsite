@@ -1,0 +1,18 @@
+#!/bin/bash -e
+
+tmpdir=/tmp/dist.$$
+rm -rf $tmpdir
+mkdir $tmpdir
+mkdir $tmpdir/dist
+
+cd `dirname $0`
+tar cf - * | (cd $tmpdir/dist; tar xf -)
+pushd $tmpdir/dist
+rm makedist
+rm -rf Twig_Templates/compiled
+rm -rf sql_scripts
+cd ..
+tar cfz dist.tgz dist
+popd
+mv $tmpdir/dist.tgz .
+rm -rf $tmpdir

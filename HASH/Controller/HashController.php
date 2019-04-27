@@ -403,6 +403,8 @@ class HashController
 
     #$app['monolog']->addDebug("Entering the function------------------------");
 
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
     #Obtain the post parameters
     #$inputDraw = $_POST['draw'] ;
     $inputStart = $_POST['start'] ;
@@ -461,39 +463,65 @@ class HashController
     $sql = "SELECT
       HASHER_NAME AS NAME,
       HASHER_ABBREVIATION,
-      HASHER_KY AS THE_KEY
+      COUNT(HASHINGS.HASHER_KY) AS THE_COUNT,
+      HASHINGS.HASHER_KY AS THE_KEY
       FROM HASHERS
+      JOIN HASHINGS
+        ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY
+      JOIN HASHES
+        ON HASHES.HASH_KY = HASHINGS.HASH_KY
       WHERE
-        (
+          KENNEL_KY = ? AND (
           HASHER_NAME LIKE ? OR
           HASHER_ABBREVIATION LIKE ?)
+      GROUP BY HASHINGS.HASHER_KY
       ORDER BY $inputOrderColumnIncremented $inputOrderDirectionExtracted
       LIMIT $inputStart,$inputLength";
       #$app['monolog']->addDebug("sql: $sql");
 
     #Define the SQL that gets the count for the filtered results
     $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT
+      FROM (
+    SELECT 1
       FROM HASHERS
+      JOIN HASHINGS
+        ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY
+      JOIN HASHES
+        ON HASHES.HASH_KY = HASHINGS.HASH_KY
       WHERE
+          KENNEL_KY = ? AND (
           HASHER_NAME LIKE ? OR
-          HASHER_ABBREVIATION LIKE ?";
+          HASHER_ABBREVIATION LIKE ?)
+      GROUP BY HASHINGS.HASHER_KY) AS INNER_QUERY";
 
     #Define the sql that gets the overall counts
-    $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHERS";
+    $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT
+      FROM (
+    SELECT 1
+      FROM HASHERS
+      JOIN HASHINGS
+        ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY
+      JOIN HASHES
+        ON HASHES.HASH_KY = HASHINGS.HASH_KY
+      WHERE
+          KENNEL_KY = ?
+      GROUP BY HASHINGS.HASHER_KY) AS INNER_QUERY";
 
     #-------------- End: Define the SQL used here   ----------------------------
 
     #-------------- Begin: Query the database   --------------------------------
     #Perform the filtered search
     $theResults = $app['db']->fetchAll($sql,array(
+      $kennelKy,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified));
 
     #Perform the untiltered count
-    $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
+    $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array($kennelKy)))['THE_COUNT'];
 
     #Perform the filtered count
     $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
+      $kennelKy,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified)))['THE_COUNT'];
     #-------------- End: Query the database   --------------------------------

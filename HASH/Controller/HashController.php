@@ -309,6 +309,23 @@ class HashController
 
   }
 
+  #Define the action
+  public function listLocationCountsPreActionJson(Request $request, Application $app, string $kennel_abbreviation){
+
+    # Establish and set the return value
+    $returnValue = $app['twig']->render('location_counts_json.twig',array(
+      'pageTitle' => 'The List of Event Locations',
+      'pageSubTitle' => '',
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'pageCaption' => "",
+      'tableCaption' => ""
+    ));
+
+    #Return the return value
+    return $returnValue;
+
+  }
+
   public function miaPreActionJson(Request $request, Application $app, string $kennel_abbreviation){
 
     # Establish and set the return value
@@ -506,6 +523,142 @@ class HashController
       WHERE
           KENNEL_KY = ?
       GROUP BY HASHINGS.HASHER_KY) AS INNER_QUERY";
+
+    #-------------- End: Define the SQL used here   ----------------------------
+
+    #-------------- Begin: Query the database   --------------------------------
+    #Perform the filtered search
+    $theResults = $app['db']->fetchAll($sql,array(
+      $kennelKy,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified));
+
+    #Perform the untiltered count
+    $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array($kennelKy)))['THE_COUNT'];
+
+    #Perform the filtered count
+    $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
+      $kennelKy,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified)))['THE_COUNT'];
+    #-------------- End: Query the database   --------------------------------
+
+    #Establish the output
+    $output = array(
+      "sEcho" => "foo",
+      "iTotalRecords" => $theUnfilteredCount,
+      "iTotalDisplayRecords" => $theFilteredCount,
+      "aaData" => $theResults
+    );
+
+    #Set the return value
+    $returnValue = $app->json($output,200);
+
+    #Return the return value
+    return $returnValue;
+  }
+
+  public function getLocationCountsJson(Request $request, Application $app, string $kennel_abbreviation){
+
+    #$app['monolog']->addDebug("Entering the function------------------------");
+
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+    #Obtain the post parameters
+    #$inputDraw = $_POST['draw'] ;
+    $inputStart = $_POST['start'] ;
+    $inputLength = $_POST['length'] ;
+    $inputColumns = $_POST['columns'];
+    $inputSearch = $_POST['search'];
+    $inputSearchValue = $inputSearch['value'];
+
+    #-------------- Begin: Validate the post parameters ------------------------
+    #Validate input start
+    if(!is_numeric($inputStart)){
+      #$app['monolog']->addDebug("input start is not numeric: $inputStart");
+      $inputStart = 0;
+    }
+
+    #Validate input length
+    if(!is_numeric($inputLength)){
+      #$app['monolog']->addDebug("input length is not numeric");
+      $inputStart = "0";
+      $inputLength = "50";
+    } else if($inputLength == "-1"){
+      #$app['monolog']->addDebug("input length is negative one (all rows selected)");
+      $inputStart = "0";
+      $inputLength = "1000000000";
+    }
+
+    #Validate input search
+    #We are using database parameterized statements, so we are good already...
+
+    #---------------- End: Validate the post parameters ------------------------
+
+    #-------------- Begin: Modify the input parameters  ------------------------
+    #Modify the search string
+    $inputSearchValueModified = "%$inputSearchValue%";
+
+    #Obtain the column/order information
+    $inputOrderRaw = isset($_POST['order']) ? $_POST['order'] : null;
+    if(!is_null($inputOrderRaw)){
+      #$app['monolog']->addDebug("inside inputOrderRaw not null");
+      $inputOrderColumnExtracted = $inputOrderRaw[0]['column']+1;
+      $inputOrderDirectionExtracted = $inputOrderRaw[0]['dir'];
+    } else {
+      $inputOrderColumnExtracted = "2";
+      $inputOrderDirectionExtracted = "desc";
+    }
+
+    #-------------- End: Modify the input parameters  --------------------------
+
+
+    #-------------- Begin: Define the SQL used here   --------------------------
+
+    #Define the sql that performs the filtering
+    $sql = "
+       SELECT (
+       SELECT CONCAT(CASE WHEN EVENT_LOCATION!='' THEN CONCAT(EVENT_LOCATION,', ') ELSE '' END,FORMATTED_ADDRESS)
+         FROM HASHES I
+        WHERE I.PLACE_ID = O.PLACE_ID
+        ORDER BY KENNEL_EVENT_NUMBER DESC
+        LIMIT 1) AS LOCATION, COUNT(*) AS THE_COUNT
+         FROM HASHES O
+        WHERE KENNEL_KY=?
+          AND PLACE_ID != ''
+          AND (EVENT_LOCATION!=''
+           OR FORMATTED_ADDRESS!='')
+          AND (EVENT_LOCATION LIKE ?
+           OR FORMATTED_ADDRESS LIKE ?)
+        GROUP BY PLACE_ID
+        ORDER BY $inputOrderColumnExtracted $inputOrderDirectionExtracted
+        LIMIT $inputStart,$inputLength";
+
+    #Define the SQL that gets the count for the filtered results
+    $sqlFilteredCount =
+       "SELECT COUNT(*) AS THE_COUNT
+          FROM (
+        SELECT 1
+          FROM HASHES O
+         WHERE KENNEL_KY=?
+           AND PLACE_ID != ''
+           AND (EVENT_LOCATION!=''
+            OR FORMATTED_ADDRESS!='')
+           AND (EVENT_LOCATION LIKE ?
+            OR FORMATTED_ADDRESS LIKE ?)
+         GROUP BY PLACE_ID) I";
+
+    #Define the sql that gets the overall counts
+    $sqlUnfilteredCount =
+       "SELECT COUNT(*) AS THE_COUNT
+         FROM (
+       SELECT 1
+         FROM HASHES O
+        WHERE KENNEL_KY=?
+          AND PLACE_ID != ''
+          AND (EVENT_LOCATION!=''
+           OR FORMATTED_ADDRESS!='')
+        GROUP BY PLACE_ID) I";
 
     #-------------- End: Define the SQL used here   ----------------------------
 

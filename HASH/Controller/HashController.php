@@ -314,7 +314,7 @@ class HashController
     # Establish and set the return value
     $returnValue = $app['twig']->render('cohare_list_json.twig',array(
       'pageTitle' => ($type == "true" ? "True" : ($type=="hyper" ? "Hyper" : "All")).' Co-Hare Counts',
-      'pageSubTitle' => 'Total number of events where two hashers have co-hared together.',
+      'pageSubTitle' => 'Total number of events where two hashers have hared together.',
       'kennel_abbreviation' => $kennel_abbreviation,
       'type' => $type=="true" ? "true" : ($type=="hyper" ? "hyper" : "all"),
       'pageTracking' => 'CoHareCounts'

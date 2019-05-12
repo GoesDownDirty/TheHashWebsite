@@ -244,6 +244,14 @@ $app->post('/{kennel_abbreviation}/mia',                                       '
 $app->get('/{kennel_abbreviation}/listhashers2',                                       'HASH\Controller\HashController::listHashersPreActionJson');
 $app->post('/{kennel_abbreviation}/listhashers2',                                       'HASH\Controller\HashController::getHasherListJson');
 
+$app->get('/{kennel_abbreviation}/trueCohareCounts',                                     'HASH\Controller\HashController::trueCohareCountsPreActionJson');
+$app->get('/{kennel_abbreviation}/hyperCohareCounts',                                    'HASH\Controller\HashController::hyperCohareCountsPreActionJson');
+$app->get('/{kennel_abbreviation}/allCohareCounts',                                      'HASH\Controller\HashController::allCohareCountsPreActionJson');
+$app->post('/{kennel_abbreviation}/cohareCounts',                                        'HASH\Controller\HashController::getCohareCountsJson');
+
+$app->get('/{kennel_abbreviation}/locationCounts',                                       'HASH\Controller\HashController::listLocationCountsPreActionJson');
+$app->post('/{kennel_abbreviation}/locationCounts',                                      'HASH\Controller\HashController::getLocationCountsJson');
+
 $app->get('/{kennel_abbreviation}/listhashes2',                                         'HASH\Controller\HashEventController::listHashesPreActionJson');
 $app->post('/{kennel_abbreviation}/listhashes2',                                        'HASH\Controller\HashEventController::listHashesPostActionJson');
 
@@ -303,6 +311,7 @@ $app->get('/{kennel_abbreviation}/unTrendingTrueHaresJsonPost/{day_count}/{min_h
 
 $app->get('/{kennel_abbreviation}/pendingHasherAnalversaries',                          'HASH\Controller\HashController::pendingHasherAnalversariesAction');
 $app->get('/{kennel_abbreviation}/predictedHasherAnalversaries',                        'HASH\Controller\HashController::predictedHasherAnalversariesAction');
+$app->get('/{kennel_abbreviation}/predictedCenturions',                                 'HASH\Controller\HashController::predictedCenturionsAction');
 $app->get('/{kennel_abbreviation}/pendingHareAnalversaries',                            'HASH\Controller\HashController::pendingHareAnalversariesAction');
 $app->get('/{kennel_abbreviation}/haringPercentageAllHashes',                           'HASH\Controller\HashController::haringPercentageAllHashesAction');
 $app->get('/{kennel_abbreviation}/haringPercentageNonHypers',                           'HASH\Controller\HashController::haringPercentageNonHypersAction');

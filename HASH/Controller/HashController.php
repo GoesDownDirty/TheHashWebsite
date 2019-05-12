@@ -3,8 +3,9 @@
 namespace HASH\Controller;
 
 require_once realpath(__DIR__ . '/../..').'/config/SQL_Queries.php';
-
 use Silex\Application;
+#use HASH\Utils;
+require_once realpath(__DIR__ . '/..').'/Utils/Helper.php';
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 use \Datetime;
@@ -830,174 +831,6 @@ class HashController
     return $returnValue;
   }
 
-/*
-Source: https://kvz.io/blog/2007/10/03/convert-anything-to-tree-structures-in-php/
-* Explode any single-dimensional array into a full blown tree structure,
-* based on the delimiters found in it's keys.
-*
-* The following code block can be utilized by PEAR's Testing_DocTest
-* <code>
-* // Input //
-* $key_files = array(
-*	 "/etc/php5" => "/etc/php5",
-*	 "/etc/php5/cli" => "/etc/php5/cli",
-*	 "/etc/php5/cli/conf.d" => "/etc/php5/cli/conf.d",
-*	 "/etc/php5/cli/php.ini" => "/etc/php5/cli/php.ini",
-*	 "/etc/php5/conf.d" => "/etc/php5/conf.d",
-*	 "/etc/php5/conf.d/mysqli.ini" => "/etc/php5/conf.d/mysqli.ini",
-*	 "/etc/php5/conf.d/curl.ini" => "/etc/php5/conf.d/curl.ini",
-*	 "/etc/php5/conf.d/snmp.ini" => "/etc/php5/conf.d/snmp.ini",
-*	 "/etc/php5/conf.d/gd.ini" => "/etc/php5/conf.d/gd.ini",
-*	 "/etc/php5/apache2" => "/etc/php5/apache2",
-*	 "/etc/php5/apache2/conf.d" => "/etc/php5/apache2/conf.d",
-*	 "/etc/php5/apache2/php.ini" => "/etc/php5/apache2/php.ini"
-* );
-
-* // Execute //
- * $tree = explodeTree($key_files, "/", true);
- *
- * // Show //
- * print_r($tree);
- *
- * // expects:
- * // Array
- * // (
- * //	 [etc] => Array
- * //		 (
- * //			 [php5] => Array
- * //				 (
- * //					 [__base_val] => /etc/php5
- * //					 [cli] => Array
- * //						 (
- * //							 [__base_val] => /etc/php5/cli
- * //							 [conf.d] => /etc/php5/cli/conf.d
- * //							 [php.ini] => /etc/php5/cli/php.ini
- * //						 )
- * //
- * //					 [conf.d] => Array
- * //						 (
- * //							 [__base_val] => /etc/php5/conf.d
- * //							 [mysqli.ini] => /etc/php5/conf.d/mysqli.ini
- * //							 [curl.ini] => /etc/php5/conf.d/curl.ini
- * //							 [snmp.ini] => /etc/php5/conf.d/snmp.ini
- * //							 [gd.ini] => /etc/php5/conf.d/gd.ini
- * //						 )
- * //
- * //					 [apache2] => Array
- * //						 (
- * //							 [__base_val] => /etc/php5/apache2
- * //							 [conf.d] => /etc/php5/apache2/conf.d
- * //							 [php.ini] => /etc/php5/apache2/php.ini
- * //						 )
- * //
- * //				 )
- * //
- * //		 )
- * //
- * // )
- * </code>
- * @author	Kevin van Zonneveld <kevin@vanzonneveld.net>
-* @author	Lachlan Donald
-* @author	Takkie
-* @copyright 2008 Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-* @license   http://www.opensource.org/licenses/bsd-license.php New BSD Licence
-* @version   SVN: Release: $Id: explodeTree.inc.php 89 2008-09-05 20:52:48Z kevin $
-* @link	  http://kevin.vanzonneveld.net/
-*
-* @param array   $array
-* @param string  $delimiter
-* @param boolean $baseval
-*
-* @return array
-*/
-  public function explodeTree($array, $delimiter = '_', $baseval = false) {
-  	if(!is_array($array)) return false;
-  	$splitRE   = '/' . preg_quote($delimiter, '/') . '/';
-  	$returnArr = array();
-  	foreach ($array as $key => $val) {
-  		// Get parent parts and the current leaf
-  		$parts	= preg_split($splitRE, $key, -1, PREG_SPLIT_NO_EMPTY);
-  		$leafPart = array_pop($parts);
-
-  		// Build parent structure
-  		// Might be slow for really deep and large structures
-  		$parentArr = &$returnArr;
-  		foreach ($parts as $part) {
-  			if (!isset($parentArr[$part])) {
-  				$parentArr[$part] = array();
-  			} elseif (!is_array($parentArr[$part])) {
-  				if ($baseval) {
-  					$parentArr[$part] = array('__base_val' => $parentArr[$part]);
-  				} else {
-  					$parentArr[$part] = array();
-  				}
-  			}
-  			$parentArr = &$parentArr[$part];
-  		}
-
-  		// Add the final part to the structure
-  		if (empty($parentArr[$leafPart])) {
-  			$parentArr[$leafPart] = $val;
-  		} elseif ($baseval && is_array($parentArr[$leafPart])) {
-  			$parentArr[$leafPart]['__base_val'] = $val;
-  		}
-  	}
-  	return $returnArr;
-  }
-
-/*
-  if(leafnode){
-		print opening squiggly bracket
-		name: name,
-		value: value,
-		itemstyle: {color: color}
-		print closing squiggly bracket
-	}else{
-		print opening squiggly bracket
-		name: name,
-		itemstyle: {color:color},
-		children: [
-			foreach(children){
-				printTheItem()
-				print ","
-			}
-		]
-		print closing squiggly bracket
-	}
-  */
-
-
-  public function printSunburstItem($theArray){
-    $returnValue = "";
-
-    foreach ($theArray as $theKey => $theValue){
-      foreach ($theValue as $theInnerKey => $theInnerValue){
-
-        if($theInnerKey == $theInnerValue){
-          //Print a leaf node
-          //$returnValue .= "[$theKey|$theInnerKey|$theInnerValue::Matches]";
-          $returnValue .= "{name:'$theKey',value:$theInnerKey,itemStyle:{color: ''}},";
-        }else{
-          //Print a non-leaf node
-          //$returnValue .= "[$theKey|$theInnerKey|$theInnerValue::Different]";
-          $returnValue .= "{name:'$theKey',itemStyle:{color: ''},children: [";
-          $returnValue .= ($this->printSunburstItem($theValue));
-          $returnValue .= "]},";
-        }
-        break;
-      }
-    }
-
-    return $returnValue;
-  }
-
-  public function createSunburstFormatted($theArray){
-    $returnValue = "";
-    $returnValue .= "[";
-    $returnValue .= ($this->printSunburstItem($theArray));
-    $returnValue .= "]";
-    return $returnValue;
-  }
 
   public function viewHasherChartsAction(Request $request, Application $app, int $hasher_id, string $kennel_abbreviation){
 
@@ -1126,21 +959,10 @@ Source: https://kvz.io/blog/2007/10/03/convert-anything-to-tree-structures-in-ph
       	) TEMP_TABLE
       ) ASDF";
 
-    #1. Query the db
+
+    #Query the db
     $quarterMonthValues = $app['db']->fetchAll($quarterMonthSql, array((int) $hasher_id , (int) $kennelKy));
-
-    #2. Convert the values into an associative array
-    #Convert to an associative array
-    $quarterMonthAssocArray = array();
-    foreach($quarterMonthValues as $item){
-      $quarterMonthAssocArray += array(($item[THE_VALUE]) => ($item[THE_COUNT]));
-    }
-
-    #3. Explode the associative array into a hierarchial format
-    $quarterMonthHierarchyData = $this->explodeTree($quarterMonthAssocArray,"/",false);
-
-    #4. Create the formatted data for the sunburst graph
-    $quarterMonthFormattedData = $this->createSunburstFormatted($quarterMonthHierarchyData);
+    $quarterMonthFormattedData = convertToFormattedHiarchy($quarterMonthValues);
 
     # End by Quarter Month ------------------------------------------------
 
@@ -1162,20 +984,7 @@ Source: https://kvz.io/blog/2007/10/03/convert-anything-to-tree-structures-in-ph
 
     #Obtain their sunburst data
     $sunburstValuesA = $app['db']->fetchAll($sunburstSqlA, array((int) $hasher_id , (int) $kennelKy));
-
-    #Convert to an associative array
-    $sunburstAssocArray = array();
-    foreach($sunburstValuesA as $item){
-      $sunburstAssocArray += array(($item[THE_VALUE]) => ($item[THE_COUNT]));
-    }
-
-    #Explode the associative array into a hierarchial format
-    //$testToPrint= print_r($this->explodeTree($sunburstAssocArray,"/",false));
-    $sunburstHierarchyData = $this->explodeTree($sunburstAssocArray,"/",false);
-
-    #Create the formatted data for the sunburst graph
-    $sunburstFormattedData = $this->createSunburstFormatted($sunburstHierarchyData);
-
+    $sunburstFormattedData = convertToFormattedHiarchy($sunburstValuesA);
 
     # Establish and set the return value
     $returnValue = $app['twig']->render('hasher_chart_details.twig',array(

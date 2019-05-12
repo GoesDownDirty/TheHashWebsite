@@ -3,7 +3,7 @@
 namespace HASH\Controller;
 
 require_once realpath(__DIR__ . '/../..').'/config/SQL_Queries.php';
-
+require_once realpath(__DIR__ . '/..').'/Utils/Helper.php';
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -2276,12 +2276,43 @@ class ObscureStatisticsController{
         }
 
 
+        #0. Define the query for the state / county / city / neighborhood chart
+        $locationBreakdownSql = "SELECT
+          CASE
+            WHEN NEIGHBORHOOD =''
+            THEN
+                CONCAT(EVENT_STATE,'/',COUNTY,'/',EVENT_CITY,'/','123BLANK123','/',THE_COUNT)
+            ELSE
+                CONCAT(EVENT_STATE,'/',COUNTY,'/',EVENT_CITY,'/',NEIGHBORHOOD,'/',THE_COUNT)
+            END AS THE_VALUE,
+            THE_COUNT
+        FROM (
+        	SELECT
+        		EVENT_STATE, COUNTY, EVENT_CITY, NEIGHBORHOOD, COUNT(*) AS THE_COUNT
+        	FROM HASHES
+        	WHERE HASHES.KENNEL_KY = ?
+        	GROUP BY EVENT_STATE, COUNTY, EVENT_CITY,NEIGHBORHOOD
+        	ORDER BY EVENT_STATE, COUNTY, EVENT_CITY,NEIGHBORHOOD
+        ) TEMPTABLE
+        WHERE
+        	EVENT_STATE IS NOT NULL AND EVENT_STATE != '' AND
+        	COUNTY IS NOT NULL AND COUNTY != '' AND
+        	EVENT_CITY IS NOT NULL AND EVENT_CITY != ''
+        ORDER BY THE_COUNT DESC";
+
+        #1. Query the db
+        $locationBreakdownValues = $app['db']->fetchAll($locationBreakdownSql, array((int) $kennelKy));
+        #4. Create the formatted data for the sunburst graph
+        $locationBreakdownFormattedData = convertToFormattedHiarchyV2($locationBreakdownValues);
+
+
         # Establish and set the return value
         $returnValue = $app['twig']->render('kennel_chart_details.twig',array(
           'pageTitle' => 'Kennel Charts and Details',
           'firstHeader' => 'Basic Details',
           'secondHeader' => 'Statistics',
           'kennelName' => $kennelValue['KENNEL_NAME'],
+          'location_breakdown_formatted_data' => $locationBreakdownFormattedData,
           #'hasherValue' => $hasher,
           #'hashCount' => $hashCountValue['THE_COUNT'],
           #'hareCount' => $hareCountValue['THE_COUNT'],

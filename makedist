@@ -6,6 +6,7 @@ mkdir $tmpdir
 mkdir $tmpdir/dist
 
 cd `dirname $0`
+rm -f dist.tgz
 tar cf - * | (cd $tmpdir/dist; tar xf -)
 pushd $tmpdir/dist
 rm makedist

@@ -26,6 +26,7 @@
         <script type = "text/javascript" src = "/vendor/datatables/datatables/media/js/jquery.dataTables.js"></script>
         <script type = "text/javascript" src = "/vendor/datatables/datatables/media/js/dataTables.bootstrap.min.js"></script>
 
+        <script type = "text/javascript" src = "/node_modules/js-cookie/src/js.cookie.js"></script>
         <script type = "text/javascript" src = "/node_modules/datatables.net-responsive/js/dataTables.responsive.js"></script>
         {# <script type = "text/javascript" src = "/node_modules/jquery-validation/dist/jquery.validate.min.js"></script> #}
         {# <script type = "text/javascript" src = "/node_modules/jquery-ui/ui/widgets/datepicker.js"></script> #}
@@ -43,7 +44,31 @@
         content: none !important;
       }
     }
+    .darkmode {
+      color: white;
+      background-color: black;
+    }
     </style>
+
+    <script>
+      $(document).ready(function() {
+        if(Cookies.get("darkmode")=="1") {
+          $("body").addClass("darkmode");
+        }
+      });
+        
+      function toggleDarkMode() {
+        if(Cookies.get("darkmode")=="1") {
+          Cookies.remove("darkmode");
+          $("body").removeClass("darkmode");
+          alert("Dark mode disabled.");
+        } else {
+          Cookies.set("darkmode","1");
+          $("body").addClass("darkmode");
+          alert("Congratulations!  Dark mode unlocked!");
+        }
+      }
+    </script>
 
   </head>
 

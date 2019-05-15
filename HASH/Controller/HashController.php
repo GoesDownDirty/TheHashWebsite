@@ -310,6 +310,24 @@ class HashController
 
   }
 
+  #Define the action
+  public function listVirginHaringsPreActionJson(Request $request, Application $app, string $kennel_abbreviation){
+
+    # Establish and set the return value
+    $returnValue = $app['twig']->render('virgin_haring_list_json.twig',array(
+      'pageTitle' => 'The List of Virgin (True) Harings',
+      'pageSubTitle' => '',
+      #'theList' => $hasherList,
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'pageCaption' => "",
+      'tableCaption' => ""
+    ));
+
+    #Return the return value
+    return $returnValue;
+
+  }
+
   public function cohareCountsPreActionJson(Request $request, Application $app, string $kennel_abbreviation, $type){
 
     # Establish and set the return value
@@ -734,6 +752,165 @@ class HashController
     $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
       $kennelKy,
       (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified)))['THE_COUNT'];
+    #-------------- End: Query the database   --------------------------------
+
+    #Establish the output
+    $output = array(
+      "sEcho" => "foo",
+      "iTotalRecords" => $theUnfilteredCount,
+      "iTotalDisplayRecords" => $theFilteredCount,
+      "aaData" => $theResults
+    );
+
+    #Set the return value
+    $returnValue = $app->json($output,200);
+
+    #Return the return value
+    return $returnValue;
+  }
+
+
+  public function getVirginHaringsListJson(Request $request, Application $app, string $kennel_abbreviation){
+
+    #$app['monolog']->addDebug("Entering the function------------------------");
+
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+    #Obtain the post parameters
+    #$inputDraw = $_POST['draw'] ;
+    $inputStart = $_POST['start'] ;
+    $inputLength = $_POST['length'] ;
+    $inputColumns = $_POST['columns'];
+    $inputSearch = $_POST['search'];
+    $inputSearchValue = $inputSearch['value'];
+
+    #-------------- Begin: Validate the post parameters ------------------------
+    #Validate input start
+    if(!is_numeric($inputStart)){
+      #$app['monolog']->addDebug("input start is not numeric: $inputStart");
+      $inputStart = 0;
+    }
+
+    #Validate input length
+    if(!is_numeric($inputLength)){
+      #$app['monolog']->addDebug("input length is not numeric");
+      $inputStart = "0";
+      $inputLength = "50";
+    } else if($inputLength == "-1"){
+      #$app['monolog']->addDebug("input length is negative one (all rows selected)");
+      $inputStart = "0";
+      $inputLength = "1000000000";
+    }
+
+    #Validate input search
+    #We are using database parameterized statements, so we are good already...
+
+    #---------------- End: Validate the post parameters ------------------------
+
+    #-------------- Begin: Modify the input parameters  ------------------------
+    #Modify the search string
+    $inputSearchValueModified = "%$inputSearchValue%";
+
+    #Obtain the column/order information
+    $inputOrderRaw = isset($_POST['order']) ? $_POST['order'] : null;
+    $inputOrderColumnExtracted = "2";
+    $inputOrderColumnIncremented = "2";
+    $inputOrderDirectionExtracted = "asc";
+    if(!is_null($inputOrderRaw)){
+      #$app['monolog']->addDebug("inside inputOrderRaw not null");
+      $inputOrderColumnExtracted = $inputOrderRaw[0]['column'];
+      $inputOrderColumnIncremented = $inputOrderColumnExtracted + 1;
+      $inputOrderDirectionExtracted = $inputOrderRaw[0]['dir'];
+    }else{
+      #$app['monolog']->addDebug("inside inputOrderRaw is null");
+    }
+
+    #-------------- End: Modify the input parameters  --------------------------
+
+
+    #-------------- Begin: Define the SQL used here   --------------------------
+
+    #Define the sql that performs the filtering
+    $sql = "SELECT
+		    HASHERS.HASHER_NAME AS HASHER_NAME,
+        FIRST_HARING_EVENT_TABLE.FIRST_HASH_DATE AS FIRST_HARING_DATE,
+		    HASHERS.HASHER_KY AS HASHER_KY,
+		    FIRST_HARING_EVENT_TABLE.FIRST_HASH_KEY AS FIRST_HARING_KEY
+	  FROM
+		    (HASHERS
+		        JOIN (
+			           SELECT
+				            HARINGS.HARINGS_HASHER_KY AS HASHER_KY,
+				            MIN(HASHES.EVENT_DATE) AS FIRST_HASH_DATE,
+				            MIN(HASHES.HASH_KY) AS FIRST_HASH_KEY
+			           FROM
+				             HARINGS
+				             JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+			           WHERE
+				             HASHES.KENNEL_KY = ?
+                     AND HASHES.IS_HYPER IN (?,?)
+			          GROUP BY HARINGS.HARINGS_HASHER_KY
+			    ) FIRST_HARING_EVENT_TABLE ON ((HASHERS.HASHER_KY = FIRST_HARING_EVENT_TABLE.HASHER_KY)))
+      WHERE HASHERS.HASHER_NAME LIKE ?
+      ORDER BY $inputOrderColumnIncremented $inputOrderDirectionExtracted
+      LIMIT $inputStart,$inputLength";
+      #$app['monolog']->addDebug("sql: $sql");
+
+    #Define the SQL that gets the count for the filtered results
+    $sqlFilteredCount = "SELECT
+		    COUNT(*)
+	  FROM
+		    (HASHERS
+		        JOIN (
+			           SELECT
+				            HARINGS.HARINGS_HASHER_KY AS HASHER_KY,
+				            MIN(HASHES.EVENT_DATE) AS FIRST_HASH_DATE,
+				            MIN(HASHES.HASH_KY) AS FIRST_HASH_KEY
+			           FROM
+				             HARINGS
+				             JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+			           WHERE
+				             HASHES.KENNEL_KY = ?
+                     AND HASHES.IS_HYPER IN (?,?)
+			          GROUP BY HARINGS.HARINGS_HASHER_KY
+			    ) FIRST_HARING_EVENT_TABLE ON ((HASHERS.HASHER_KY = FIRST_HARING_EVENT_TABLE.HASHER_KY)))
+      WHERE HASHERS.HASHER_NAME LIKE ?";
+
+    #Define the sql that gets the overall counts
+    $sqlUnfilteredCount = "SELECT
+		    COUNT(*)
+	  FROM
+		    (HASHERS
+		        JOIN (
+			           SELECT
+				            HARINGS.HARINGS_HASHER_KY AS HASHER_KY,
+				            MIN(HASHES.EVENT_DATE) AS FIRST_HASH_DATE,
+				            MIN(HASHES.HASH_KY) AS FIRST_HASH_KEY
+			           FROM
+				             HARINGS
+				             JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+			           WHERE
+				             HASHES.KENNEL_KY = ?
+                     AND HASHES.IS_HYPER IN (?,?)
+			          GROUP BY HARINGS.HARINGS_HASHER_KY
+			    ) FIRST_HARING_EVENT_TABLE ON ((HASHERS.HASHER_KY = FIRST_HARING_EVENT_TABLE.HASHER_KY)))";
+
+    #-------------- End: Define the SQL used here   ----------------------------
+
+    #-------------- Begin: Query the database   --------------------------------
+    #Perform the filtered search
+    $theResults = $app['db']->fetchAll($sql,array(
+      $kennelKy,0,0,
+      (string) $inputSearchValueModified));
+
+    #Perform the untiltered count
+    $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array($kennelKy,0,0)))['THE_COUNT'];
+
+    #Perform the filtered count
+    $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
+      $kennelKy,
+      0,0,
       (string) $inputSearchValueModified)))['THE_COUNT'];
     #-------------- End: Query the database   --------------------------------
 

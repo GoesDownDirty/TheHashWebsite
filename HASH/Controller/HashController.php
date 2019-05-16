@@ -859,7 +859,7 @@ class HashController
 
     #Define the SQL that gets the count for the filtered results
     $sqlFilteredCount = "SELECT
-		    COUNT(*)
+		    COUNT(*) AS THE_COUNT
 	  FROM
 		    (HASHERS
 		        JOIN (
@@ -879,7 +879,7 @@ class HashController
 
     #Define the sql that gets the overall counts
     $sqlUnfilteredCount = "SELECT
-		    COUNT(*)
+		    COUNT(*) AS THE_COUNT
 	  FROM
 		    (HASHERS
 		        JOIN (
@@ -900,18 +900,13 @@ class HashController
 
     #-------------- Begin: Query the database   --------------------------------
     #Perform the filtered search
-    $theResults = $app['db']->fetchAll($sql,array(
-      $kennelKy,0,0,
-      (string) $inputSearchValueModified));
+    $theResults = $app['db']->fetchAll($sql,array($kennelKy,0,0,(string) $inputSearchValueModified));
 
     #Perform the untiltered count
     $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array($kennelKy,0,0)))['THE_COUNT'];
 
     #Perform the filtered count
-    $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
-      $kennelKy,
-      0,0,
-      (string) $inputSearchValueModified)))['THE_COUNT'];
+    $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array($kennelKy,0,0,(string) $inputSearchValueModified)))['THE_COUNT'];
     #-------------- End: Query the database   --------------------------------
 
     #Establish the output

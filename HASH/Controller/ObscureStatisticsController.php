@@ -1702,6 +1702,48 @@ class ObscureStatisticsController{
 
     }
 
+
+
+
+        public function virginHaringsChartsAction(Request $request, Application $app, string $kennel_abbreviation){
+
+          #Obtain the kennel key
+          $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+          # Obtain the average event attendance per year
+          $sqlByYear = VIRGIN_HARINGS_BY_YEAR;
+          $listByYear = $app['db']->fetchAll($sqlByYear, array((int) $kennelKy,0,0));
+
+          # Obtain the average event attendance per (year/month)
+          $sqlByYearQuarter = VIRGIN_HARINGS_BY_YEAR_QUARTER;
+          $listByYearQuarter = $app['db']->fetchAll($sqlByYearQuarter, array((int) $kennelKy,0,0));
+
+          # Obtain the average event attendance per (year/quarter)
+          $sqlByYearMonth = VIRGIN_HARINGS_BY_YEAR_MONTH;
+          $listByYearMonth = $app['db']->fetchAll($sqlByYearMonth, array((int) $kennelKy,0,0));
+
+
+          # Obtain the average event attendance per (year/month)
+          $sqlByMonth = VIRGIN_HARINGS_BY_MONTH;
+          $listByMonth = $app['db']->fetchAll($sqlByMonth, array((int) $kennelKy,0,0));
+
+          # Establish and set the return value
+          $returnValue = $app['twig']->render('virgin_harings_charts.twig',array(
+            'pageTitle' => 'Virgin (True) Harings Statistics',
+            'firstHeader' => 'FIRST HEADER',
+            'secondHeader' => 'SECOND HEADER',
+            'kennel_abbreviation' => $kennel_abbreviation,
+            'List_By_Year_List' => $listByYear,
+            'List_By_YearMonth_List' => $listByYearMonth,
+            'List_By_YearQuarter_List' => $listByYearQuarter,
+            'List_By_Month_List' => $listByMonth
+          ));
+
+          # Return the return value
+          return $returnValue;
+
+        }
+
     public function viewLastTimersChartsAction(Request $request, Application $app, string $kennel_abbreviation, int $min_hash_count, int $month_count){
 
       #Obtain the kennel key

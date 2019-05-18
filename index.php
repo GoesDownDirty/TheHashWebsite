@@ -294,6 +294,11 @@ $app->get('/{kennel_abbreviation}/virginHaringsStatistics',              'HASH\C
 #Distinct Hasher hashings charts
 $app->get('/{kennel_abbreviation}/distinctHasherStatistics',              'HASH\Controller\ObscureStatisticsController::distinctHasherChartsAction');
 
+#Distinct True Hares charts
+$app->get('/{kennel_abbreviation}/distinctTrueHareStatistics',              'HASH\Controller\ObscureStatisticsController::distinctTrueHaresChartsAction');
+#Distinct Hyper Hares charts
+$app->get('/{kennel_abbreviation}/distinctHyperHareStatistics',              'HASH\Controller\ObscureStatisticsController::distinctHyperHaresChartsAction');
+
 $app->get('/{kennel_abbreviation}/hashes/{hash_id}',                                    'HASH\Controller\HashController::viewHashAction');
 $app->get('/{kennel_abbreviation}/hasherCountsForEvent/{hash_id}',               'HASH\Controller\HashController::hasherCountsForEventAction');
 

@@ -1728,7 +1728,7 @@ class ObscureStatisticsController{
           $listByMonth = $app['db']->fetchAll($sqlByMonth, array((int) $kennelKy,0,0));
 
           # Establish and set the return value
-          $returnValue = $app['twig']->render('virgin_harings_charts.twig',array(
+          $returnValue = $app['twig']->render('generic_charts_template.twig',array(
             'pageTitle' => 'Virgin (True) Harings Statistics',
             'firstHeader' => 'FIRST HEADER',
             'secondHeader' => 'SECOND HEADER',
@@ -1736,13 +1736,71 @@ class ObscureStatisticsController{
             'List_By_Year_List' => $listByYear,
             'List_By_YearMonth_List' => $listByYearMonth,
             'List_By_YearQuarter_List' => $listByYearQuarter,
-            'List_By_Month_List' => $listByMonth
+            'List_By_Month_List' => $listByMonth,
+            'BY_YEAR_BAR_LABEL' => 'Total Number of Virgin Harings',
+            'BY_YEAR_TITLE' => 'Virgin Harings Per Year',
+            'BY_MONTH_BAR_LABEL' => 'Total Virgin Harings By Month',
+            'BY_MONTH_TITLE' => 'Virgin Harings Per Month',
+            'BY_YEAR_QUARTER_BAR_LABEL' => 'Total Virgin Harings By Year/Quarter',
+            'BY_YEAR_QUARTER_TITLE' => 'Virgin Harings Per Year/Quarter',
+            'BY_YEAR_MONTH_BAR_LABEL' => 'Total Virgin Harings By Year/Month',
+            'BY_YEAR_MONTH_TITLE' => 'Virgin Harings Per Year/Month',
           ));
 
           # Return the return value
           return $returnValue;
 
         }
+
+
+
+    public function distinctHasherChartsAction(Request $request, Application $app, string $kennel_abbreviation){
+
+      #Obtain the kennel key
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+      # Obtain the average event attendance per year
+      $sqlByYear = DISTINCT_HASHERS_BY_YEAR;
+      $listByYear = $app['db']->fetchAll($sqlByYear, array((int) $kennelKy));
+
+      # Obtain the average event attendance per (year/month)
+      $sqlByYearQuarter = DISTINCT_HASHERS_BY_YEAR_QUARTER;
+      $listByYearQuarter = $app['db']->fetchAll($sqlByYearQuarter, array((int) $kennelKy));
+
+      # Obtain the average event attendance per (year/quarter)
+      $sqlByYearMonth = DISTINCT_HASHERS_BY_YEAR_MONTH;
+      $listByYearMonth = $app['db']->fetchAll($sqlByYearMonth, array((int) $kennelKy));
+
+
+      # Obtain the average event attendance per (year/month)
+      $sqlByMonth = DISTINCT_HASHERS_BY_MONTH;
+      $listByMonth = $app['db']->fetchAll($sqlByMonth, array((int) $kennelKy));
+
+      # Establish and set the return value
+      $returnValue = $app['twig']->render('generic_charts_template.twig',array(
+        'pageTitle' => 'Distinct Hashers Statistics',
+        'firstHeader' => 'FIRST HEADER',
+        'secondHeader' => 'SECOND HEADER',
+        'kennel_abbreviation' => $kennel_abbreviation,
+        'List_By_Year_List' => $listByYear,
+        'List_By_YearMonth_List' => $listByYearMonth,
+        'List_By_YearQuarter_List' => $listByYearQuarter,
+        'List_By_Month_List' => $listByMonth,
+        'BY_YEAR_BAR_LABEL' => 'Number of Unique Hashers',
+        'BY_YEAR_TITLE' => 'Distinct Hashers Per Year',
+        'BY_MONTH_BAR_LABEL' => 'Number of Unique Hashers',
+        'BY_MONTH_TITLE' => 'Distinct Hashers Per Month',
+        'BY_YEAR_QUARTER_BAR_LABEL' => 'Number of Unique Hashers',
+        'BY_YEAR_QUARTER_TITLE' => 'Distinct Hashers Per Year/Quarter',
+        'BY_YEAR_MONTH_BAR_LABEL' => 'Number of Unique Hashers',
+        'BY_YEAR_MONTH_TITLE' => 'Distinct Hashers Per Year/Month',
+      ));
+
+      # Return the return value
+      return $returnValue;
+
+    }
+
 
     public function viewLastTimersChartsAction(Request $request, Application $app, string $kennel_abbreviation, int $min_hash_count, int $month_count){
 

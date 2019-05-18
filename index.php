@@ -291,6 +291,9 @@ $app->get('/{kennel_abbreviation}/lastTimersStatistics/{min_hash_count}/{month_c
 #Virgin harings charts
 $app->get('/{kennel_abbreviation}/virginHaringsStatistics',              'HASH\Controller\ObscureStatisticsController::virginHaringsChartsAction');
 
+#Distinct Hasher hashings charts
+$app->get('/{kennel_abbreviation}/distinctHasherStatistics',              'HASH\Controller\ObscureStatisticsController::distinctHasherChartsAction');
+
 $app->get('/{kennel_abbreviation}/hashes/{hash_id}',                                    'HASH\Controller\HashController::viewHashAction');
 $app->get('/{kennel_abbreviation}/hasherCountsForEvent/{hash_id}',               'HASH\Controller\HashController::hasherCountsForEventAction');
 

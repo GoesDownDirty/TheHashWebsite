@@ -26,7 +26,7 @@
                     {% endfor %}
                   ],
                   datasets: [{
-                      label: 'Total Number of Virgin Harings',
+                      label: '{{BY_YEAR_BAR_LABEL}}',
                       data: [
                         {% for individualEntry in List_By_Year_List %}
                           {{individualEntry.THE_COUNT}},
@@ -49,7 +49,7 @@
                   },
                   title: {
                     display: true,
-                    text: 'Virgin Harings Per Year'
+                    text: '{{BY_YEAR_TITLE}}'
                   }
               }
           });
@@ -70,7 +70,7 @@
                     {% endfor %}
                   ],
                   datasets: [{
-                      label: 'Virgin Harings By Month',
+                      label: '{{BY_MONTH_BAR_LABEL}}',
                       data: [
                         {% for individualEntry in List_By_Month_List %}
                           {{individualEntry.THE_COUNT}},
@@ -93,7 +93,7 @@
                   },
                   title: {
                     display: true,
-                    text: 'Virgin Harings By Month'
+                    text: '{{BY_MONTH_TITLE}}'
                   }
               }
           });
@@ -118,7 +118,7 @@
                     {% endfor %}
                   ],
                   datasets: [{
-                      label: 'Virgin Harings by Year/Quarter',
+                      label: '{{BY_YEAR_QUARTER_BAR_LABEL}}',
                       data: [
                         {% for individualEntry in List_By_YearQuarter_List %}
                           {{individualEntry.THE_COUNT}},
@@ -141,7 +141,7 @@
                   },
                   title: {
                     display: true,
-                    text: 'Virgin Harings by Year/Quarter'
+                    text: '{{BY_YEAR_QUARTER_TITLE}}'
                   }
               }
           });
@@ -166,7 +166,7 @@
                     {% endfor %}
                   ],
                   datasets: [{
-                      label: 'Virgin Harings by Year/Month',
+                      label: '{{BY_YEAR_MONTH_BAR_LABEL}}',
                       data: [
                         {% for individualEntry in List_By_YearMonth_List %}
                           {{individualEntry.THE_COUNT}},
@@ -189,7 +189,7 @@
                   },
                   title: {
                     display: true,
-                    text: 'Virgin Harings by Year/Month'
+                    text: '{{BY_YEAR_MONTH_TITLE}}'
                   }
               }
           });

@@ -1,0 +1,30 @@
+@media print {
+  a[href]:after {
+    content: none !important;
+  }
+}
+.darkmode {
+  color: white;
+  background-color: black;
+}
+.darkmode .jumbotron {
+  color: black;
+}
+.darkmode a {
+  color: yellow;
+}
+.darkmode .c3-axis-y text {
+  fill: white;
+}
+.darkmode .c3-axis-x text {
+  fill: white;
+}
+.darkmode .c3 path {
+  stroke: white;
+}
+.box_style_1 {
+  background-color: yellow;
+}
+.darkmode .box_style_1 {
+  background-color: blue;
+}

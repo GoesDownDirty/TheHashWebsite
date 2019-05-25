@@ -32,43 +32,11 @@
         {# <script type = "text/javascript" src = "/node_modules/jquery-ui/ui/widgets/datepicker.js"></script> #}
         {# <script type = "text/javascript" src = "/node_modules/jquery-timepicker/jquery.timepicker.js"></script> #}
         <link rel = "stylesheet" href="/node_modules/datatables.net-responsive-dt/css/responsive.dataTables.css">
-
+        <link rel = "stylesheet" href="/site.css"/>
+        <script type = "text/javascript" src = "/site.js"></script>
 
         <title>{{pageTitle}}</title>
     {% endblock %}
-
-
-    <style>
-    @media print {
-      a[href]:after {
-        content: none !important;
-      }
-    }
-    .darkmode {
-      color: white;
-      background-color: black;
-    }
-    </style>
-
-    <script>
-      $(document).ready(function() {
-        if(Cookies.get("darkmode")=="1") {
-          $("body").addClass("darkmode");
-        }
-      });
-        
-      function toggleDarkMode() {
-        if(Cookies.get("darkmode")=="1") {
-          Cookies.remove("darkmode");
-          $("body").removeClass("darkmode");
-          alert("Dark mode disabled.");
-        } else {
-          Cookies.set("darkmode","1", { expires : 3650 });
-          $("body").addClass("darkmode");
-          alert("Congratulations!  Dark mode unlocked!");
-        }
-      }
-    </script>
 
   </head>
 

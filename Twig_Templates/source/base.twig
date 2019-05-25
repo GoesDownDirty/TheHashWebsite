@@ -63,7 +63,7 @@
           $("body").removeClass("darkmode");
           alert("Dark mode disabled.");
         } else {
-          Cookies.set("darkmode","1");
+          Cookies.set("darkmode","1", { expires : 3650 });
           $("body").addClass("darkmode");
           alert("Congratulations!  Dark mode unlocked!");
         }

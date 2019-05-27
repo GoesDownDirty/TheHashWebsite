@@ -247,6 +247,8 @@ $app->post('/{kennel_abbreviation}/listhashers2',                               
 $app->get('/{kennel_abbreviation}/listvirginharings',                                       'HASH\Controller\HashController::listVirginHaringsPreActionJson');
 $app->post('/{kennel_abbreviation}/listvirginharings',                                       'HASH\Controller\HashController::getVirginHaringsListJson');
 
+$app->get('/{kennel_abbreviation}/attendancePercentages',                                'HASH\Controller\HashController::attendancePercentagesPreActionJson');
+$app->post('/{kennel_abbreviation}/attendancePercentages',                               'HASH\Controller\HashController::attendancePercentagesPostActionJson');
 
 $app->get('/{kennel_abbreviation}/trueCohareCounts',                                     'HASH\Controller\HashController::trueCohareCountsPreActionJson');
 $app->get('/{kennel_abbreviation}/hyperCohareCounts',                                    'HASH\Controller\HashController::hyperCohareCountsPreActionJson');

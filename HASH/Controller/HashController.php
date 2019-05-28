@@ -555,6 +555,18 @@ class HashController
 
   }
 
+  public function attendancePercentagesPreActionJson(Request $request, Application $app, string $kennel_abbreviation){
+
+    # Establish and set the return value
+    $returnValue = $app['twig']->render('attendance_percentages_list_json.twig',array(
+      'pageTitle' => 'Attendance Percentages',
+      'kennel_abbreviation' => $kennel_abbreviation
+    ));
+
+    #Return the return value
+    return $returnValue;
+  }
+
   public function listHashersByHashAction(Request $request, Application $app, int $hash_id, string $kennel_abbreviation){
 
     #Define the SQL to execute
@@ -1193,6 +1205,144 @@ class HashController
     #Establish the output
     $output = array(
       "sEcho" => "foo",
+      "iTotalRecords" => $theUnfilteredCount,
+      "iTotalDisplayRecords" => $theFilteredCount,
+      "aaData" => $theResults
+    );
+
+    #Set the return value
+    $returnValue = $app->json($output,200);
+
+    #Return the return value
+    return $returnValue;
+  }
+
+  public function attendancePercentagesPostActionJson(Request $request, Application $app, string $kennel_abbreviation) {
+
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+
+    #Obtain the post parameters
+    $inputStart = $_POST['start'] ;
+    $inputLength = $_POST['length'] ;
+    $inputColumns = $_POST['columns'];
+    $inputSearch = $_POST['search'];
+    $inputSearchValue = $inputSearch['value'];
+
+    #-------------- Begin: Validate the post parameters ------------------------
+    #Validate input start
+    if(!is_numeric($inputStart)){
+      $inputStart = 0;
+    }
+
+    #Validate input length
+    if(!is_numeric($inputLength)){
+      $inputStart = "0";
+      $inputLength = "50";
+    } else if($inputLength == "-1"){
+      $inputStart = "0";
+      $inputLength = "1000000000";
+    }
+
+    #Validate input search
+    #We are using database parameterized statements, so we are good already...
+
+    #---------------- End: Validate the post parameters ------------------------
+
+    #-------------- Begin: Modify the input parameters  ------------------------
+    #Modify the search string
+    $inputSearchValueModified = "%$inputSearchValue%";
+
+    #Obtain the column/order information
+    $inputOrderRaw = isset($_POST['order']) ? $_POST['order'] : null;
+    $inputOrderColumn = "2";
+    $inputOrderDirection = "desc";
+    if(!is_null($inputOrderRaw)){
+      $inputOrderColumn = $inputOrderRaw[0]['column'] + 1;
+      $inputOrderDirection = $inputOrderRaw[0]['dir'];
+    }
+
+    #-------------- End: Modify the input parameters  --------------------------
+
+
+    #-------------- Begin: Define the SQL used here   --------------------------
+
+    #Define the sql that performs the filtering
+    $sql =
+      "SELECT HASHER_NAME,
+	      100 * (NUM_HASHES / ALL_EVENTS_COUNT) AS OVERALL_PERCENTAGE,
+              100 * (NUM_HASHES / HASHER_EVENTS_TO_DATE) AS CURRENT_PERCENTAGE,
+              100 * (NUM_HASHES / CAREER_EVENTS) AS CAREER_PERCENTAGE,
+              NUM_HASHES, HASHER_KY
+          FROM (
+	SELECT HASHERS.HASHER_NAME AS HASHER_NAME, HASHERS.HASHER_KY AS HASHER_KY,
+               HASHERS.HASHER_ABBREVIATION AS HASHER_ABBREVIATION,
+               ALL_EVENTS.THE_COUNT AS ALL_EVENTS_COUNT,
+               HASHER_DETAILS.THE_COUNT AS NUM_HASHES,
+               (SELECT COUNT(*)
+                  FROM HASHES
+                 WHERE HASHES.KENNEL_KY=?
+                   AND HASHES.EVENT_DATE >= HASHER_DETAILS.FIRST_HASH_DATE) AS HASHER_EVENTS_TO_DATE,
+               (SELECT COUNT(*)
+                  FROM HASHES
+                 WHERE HASHES.KENNEL_KY=?
+                   AND HASHES.EVENT_DATE >= HASHER_DETAILS.FIRST_HASH_DATE
+                   AND HASHES.EVENT_DATE <= HASHER_DETAILS.LAST_HASH_DATE) AS CAREER_EVENTS
+	  FROM HASHERS
+         CROSS JOIN
+               (SELECT COUNT(*) AS THE_COUNT
+                  FROM HASHES
+                 WHERE HASHES.KENNEL_KY=?) AS ALL_EVENTS
+         JOIN (SELECT HASHER_KY, MIN(HASHES.EVENT_DATE) AS FIRST_HASH_DATE, MAX(HASHES.EVENT_DATE) AS LAST_HASH_DATE,
+                      COUNT(*) AS THE_COUNT
+                 FROM HASHINGS
+                 JOIN HASHES
+                   ON HASHES.HASH_KY=HASHINGS.HASH_KY
+                WHERE HASHES.KENNEL_KY=?
+                GROUP BY HASHER_KY
+               HAVING COUNT(*)>=10) AS HASHER_DETAILS
+           ON HASHER_DETAILS.HASHER_KY=HASHERS.HASHER_KY
+           ) AS INNER_QUERY
+         WHERE (HASHER_NAME LIKE ? OR HASHER_ABBREVIATION LIKE ?)
+         ORDER BY $inputOrderColumn $inputOrderDirection
+         LIMIT $inputStart,$inputLength";
+
+    #Define the sql that gets the overall counts
+    $sqlUnfilteredCount =
+      "SELECT COUNT(*) AS THE_COUNT
+         FROM HASHERS
+         JOIN (SELECT HASHER_KY
+                 FROM HASHINGS
+                 JOIN HASHES
+                   ON HASHES.HASH_KY=HASHINGS.HASH_KY
+                WHERE HASHES.KENNEL_KY=?
+                GROUP BY HASHER_KY
+               HAVING COUNT(*)>=10) AS HASHER_DETAILS
+	   ON HASHER_DETAILS.HASHER_KY=HASHERS.HASHER_KY ";
+
+    #Define the SQL that gets the count for the filtered results
+    $sqlFilteredCount = "$sqlUnfilteredCount
+      WHERE (HASHER_NAME LIKE ? OR HASHER_ABBREVIATION LIKE ?)";
+
+    #-------------- End: Define the SQL used here   ----------------------------
+
+    #-------------- Begin: Query the database   --------------------------------
+    #Perform the filtered search
+    $theResults = $app['db']->fetchAll($sql,array(
+      $kennelKy, $kennelKy, $kennelKy, $kennelKy,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified));
+
+    #Perform the untiltered count
+    $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array($kennelKy)))['THE_COUNT'];
+
+    #Perform the filtered count
+    $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
+      $kennelKy, (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified)))['THE_COUNT'];
+    #-------------- End: Query the database   --------------------------------
+
+    #Establish the output
+    $output = array(
       "iTotalRecords" => $theUnfilteredCount,
       "iTotalDisplayRecords" => $theFilteredCount,
       "aaData" => $theResults

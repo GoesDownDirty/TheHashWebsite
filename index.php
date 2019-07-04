@@ -11,8 +11,6 @@ require_once __DIR__.'/config/ProdConfig.php';
 require_once __DIR__.'/vendor/twig/twig/lib/Twig/Autoloader.php';
 require_once __DIR__.'/HASH/Controller/SuperAdminController.php';
 require_once __DIR__.'/HASH/Controller/ObscureStatisticsController.php';
-//test comment
-
 
 require_once './HASH/UserProvider.php';
 
@@ -454,8 +452,6 @@ $app->post('/admin/listhashers2',                                   'HASH\Contro
 
 $app->get('/admin/hasherDetailsKennelSelection/{hasher_id}',        'HASH\Controller\AdminController::hasherDetailsKennelSelection');
 
-$app->get('/admin/d3test','HASH\Controller\AdminController::d3testAction');
-
 #The per event budget screen
 $app->get('/admin/eventBudget/{hash_id}','HASH\Controller\AdminController::eventBudgetPreAction');
 
@@ -531,12 +527,6 @@ $app->get('/{kennel_abbreviation}/analversaries/stats', 'HASH\Controller\HashCon
 $app->get('/{kennel_abbreviation}/year_by_year/stats', 'HASH\Controller\HashController::yearByYearStatsAction');
 $app->get('/{kennel_abbreviation}/kennel/records', 'HASH\Controller\HashController::kennelRecordsStatsAction');
 $app->get('/{kennel_abbreviation}/kennel/general_info', 'HASH\Controller\HashController::kennelGeneralInfoStatsAction');
-
-#Wordcloud test
-$app->get('/{kennel_abbreviation}/wordcloudtest', 'HASH\Controller\ObscureStatisticsController::wordcloudTestAction');
-
-#Google geocode call test
-$app->get('/{kennel_abbreviation}/googlegeocodetest', 'HASH\Controller\ObscureStatisticsController::googleGeoCodeTestAction');
 
 #URLs for fastest/slowest to reach analversaries
 #$app->get('/{kennel_abbreviation}/{analversary_number}/quickest/to/reach/bydays', 'HASH\Controller\ObscureStatisticsController::quickestToReachAnalversaryByDaysPreAction');

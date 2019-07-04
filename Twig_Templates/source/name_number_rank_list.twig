@@ -1,0 +1,24 @@
+{% extends "fullwidth.twig" %}
+
+{% block content %}
+    <h1>{{pageTitle}}</h1>
+    <table class="table table-condensed table-hover">
+      <caption>{{tableCaption}}</caption>
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>{{columnOneName}}</th>
+          <td>{{columnTwoName}}</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in theList %}
+          <tr>
+            <td>{{item.RANK}}</td>
+            <td><a href="/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}?name={{item.NAME}}&src={{pageTracking}}">{{item.NAME}}</a></td>
+            <td>{{item.VALUE}}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+{% endblock %}

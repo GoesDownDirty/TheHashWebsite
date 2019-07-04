@@ -2861,14 +2861,21 @@ public function percentageHaringsHypersVsNonHypers(Request $request, Application
 }
 
 
-
+function addRankToQuery(string $query, string $selectClause, string $countColumn) {
+  return
+    "SELECT IF($countColumn=@_last_count,@curRank:=@curRank,@curRank:=@_sequence) AS RANK,
+            @_sequence:=@_sequence+1,@_last_count:=$countColumn,
+            $selectClause
+       FROM ($query) AS INNER_QUERY,
+     (SELECT @curRank:=1, @_sequence:=1, @_last_count:=0) AS VARS";
+}
 
 
 
 public function hashingCountsAction(Request $request, Application $app, string $kennel_abbreviation){
 
   # Declare the SQL used to retrieve this information
-  $sql = HASHING_COUNTS;
+  $sql = $this->addRankToQuery(HASHING_COUNTS, "THE_KEY, NAME, VALUE", "VALUE");
 
   #Obtain the kennel key
   $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
@@ -2877,7 +2884,7 @@ public function hashingCountsAction(Request $request, Application $app, string $
   $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy));
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('name_number_list.twig',array(
+  $returnValue = $app['twig']->render('name_number_rank_list.twig',array(
     'pageTitle' => 'Hasher Counts',
     'columnOneName' => 'Hasher Name',
     'columnTwoName' => 'Hash Count',
@@ -2896,7 +2903,7 @@ public function hashingCountsAction(Request $request, Application $app, string $
 public function haringCountsAction(Request $request, Application $app, string $kennel_abbreviation){
 
   # Declare the SQL used to retrieve this information
-  $sql = HARING_COUNTS;
+  $sql = $this->addRankToQuery(HARING_COUNTS, "THE_KEY, NAME, VALUE", "VALUE");
 
   #Obtain the kennel key
   $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
@@ -2905,7 +2912,7 @@ public function haringCountsAction(Request $request, Application $app, string $k
   $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy));
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('name_number_list.twig',array(
+  $returnValue = $app['twig']->render('name_number_rank_list.twig',array(
     'pageTitle' => 'Haring Counts',
     'columnOneName' => 'Hasher Name',
     'columnTwoName' => 'Haring Count',
@@ -2923,7 +2930,7 @@ public function haringCountsAction(Request $request, Application $app, string $k
 public function trueHaringCountsAction(Request $request, Application $app, string $kennel_abbreviation){
 
   # Declare the SQL used to retrieve this information
-  $sql = NON_HYPER_HARING_COUNTS;
+  $sql = $this->addRankToQuery(NON_HYPER_HARING_COUNTS, "THE_KEY, NAME, VALUE", "VALUE");
 
   #Obtain the kennel key
   $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
@@ -2932,7 +2939,7 @@ public function trueHaringCountsAction(Request $request, Application $app, strin
   $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy));
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('name_number_list.twig',array(
+  $returnValue = $app['twig']->render('name_number_rank_list.twig',array(
     'pageTitle' => 'True Haring Counts',
     'columnOneName' => 'Hare Name',
     'columnTwoName' => 'Hash Count',
@@ -2950,7 +2957,7 @@ public function trueHaringCountsAction(Request $request, Application $app, strin
 public function hyperHaringCountsAction(Request $request, Application $app, string $kennel_abbreviation){
 
   # Declare the SQL used to retrieve this information
-  $sql = HYPER_HARING_COUNTS;
+  $sql = $this->addRankToQuery(HYPER_HARING_COUNTS, "THE_KEY, NAME, VALUE", "VALUE");
 
   #Obtain the kennel key
   $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
@@ -2959,7 +2966,7 @@ public function hyperHaringCountsAction(Request $request, Application $app, stri
   $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy));
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('name_number_list.twig',array(
+  $returnValue = $app['twig']->render('name_number_rank_list.twig',array(
     'pageTitle' => 'Hyper Haring Counts',
     'columnOneName' => 'Hare Name',
     'columnTwoName' => 'Hash Count',

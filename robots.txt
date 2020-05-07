@@ -45,3 +45,83 @@ User-agent: youdao
 Disallow: /
 User-agent: zoominfobot
 Disallow: /
+User-agent: MJ12bot
+Disallow: /
+User-agent: AhrefsBot
+Disallow: /
+User-agent: sogou spider
+Disallow: /
+User-agent: SEOkicks-Robot
+Disallow: /
+User-agent: SISTRIX Crawler
+Disallow: /
+User-agent: UptimeRobot/2.0
+Disallow: /
+User-agent: 008
+Disallow: /
+User-agent: Ezooms Robot
+Disallow: /
+User-agent: Perl LWP
+Disallow: /
+User-agent: BLEXBot
+Disallow: /
+User-agent: netEstate NE Crawler (+http://www.website-datenbank.de/)
+Disallow: /
+User-agent: WiseGuys Robot
+Disallow: /
+User-agent: Turnitin Robot
+Disallow: /
+User-agent: TurnitinBot
+Disallow: /
+User-agent: Turnitin Bot
+Disallow: /
+User-agent: TurnitinBot/3.0 (http://www.turnitin.com/robot/crawlerinfo.html)
+Disallow: /
+User-agent: TurnitinBot/3.0
+Disallow: /
+User-agent: Heritrix
+Disallow: /
+User-agent: pimonster
+Disallow: /
+User-agent: Pimonster
+Disallow: /
+User-agent: SearchmetricsBot
+Disallow: /
+User-agent: ECCP/1.0 (search@eniro.com)
+Disallow: /
+User-agent: Yandex
+Disallow: /
+User-agent: Baiduspider
+Disallow: /
+User-agent: Baiduspider-video
+Disallow: /
+User-agent: Baiduspider-image
+Disallow: /
+User-agent: Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)
+Disallow: /
+User-agent: Mozilla/5.0 (compatible; Baiduspider/3.0; +http://www.baidu.com/search/spider.html)
+Disallow: /
+User-agent: Mozilla/5.0 (compatible; Baiduspider/4.0; +http://www.baidu.com/search/spider.html)
+Disallow: /
+User-agent: Mozilla/5.0 (compatible; Baiduspider/5.0; +http://www.baidu.com/search/spider.html)
+Disallow: /
+User-agent: Baiduspider/2.0
+Disallow: /
+User-agent: Baiduspider/3.0
+Disallow: /
+User-agent: Baiduspider/4.0
+Disallow: /
+User-agent: Baiduspider/5.0
+Disallow: /
+User-agent: Sogou Spider
+Disallow: /
+User-agent: YoudaoBot
+Disallow: /
+User-agent: gsa-crawler (Enterprise; T4-KNHH62CDKC2W3; gsa_manage@nikon-sys.co.jp)
+Disallow: /
+User-agent: MegaIndex.ru/2.0
+Disallow: /
+User-agent: MegaIndex.ru
+Disallow: /
+User-agent: megaIndex.ru
+Disallow: /

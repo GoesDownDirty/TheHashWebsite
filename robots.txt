@@ -125,3 +125,5 @@ User-agent: MegaIndex.ru
 Disallow: /
 User-agent: megaIndex.ru
 Disallow: /
+User-agent: serpstatbot
+Disallow: /

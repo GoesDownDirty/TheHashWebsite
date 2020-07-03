@@ -2864,7 +2864,7 @@ public function percentageHaringsHypersVsNonHypers(Request $request, Application
 
 function addRankToQuery(string $query, string $selectClause, string $countColumn) {
   return
-    "SELECT IF($countColumn=@_last_count,@curRank:=@curRank,@curRank:=@_sequence) AS RANK,
+    "SELECT IF($countColumn=@_last_count,@curRank:=@curRank,@curRank:=@_sequence) AS THE_RANK,
             @_sequence:=@_sequence+1,@_last_count:=$countColumn,
             $selectClause
        FROM ($query) AS INNER_QUERY,

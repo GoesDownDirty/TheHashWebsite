@@ -116,42 +116,6 @@ class AdminController
       ));
   }
 
-  public function listhashesAction(Request $request, Application $app){
-
-    #Define the SQL to execute
-    $sql = "SELECT
-      KENNEL_ABBREVIATION,
-      HASH_KY,
-      KENNEL_EVENT_NUMBER,
-      EVENT_DATE,
-      DAYNAME(EVENT_DATE) AS EVENT_DAY_NAME,
-      EVENT_LOCATION,
-      EVENT_CITY,
-      EVENT_STATE,
-      SPECIAL_EVENT_DESCRIPTION,
-      IS_HYPER,
-      VIRGIN_COUNT
-    FROM HASHES JOIN KENNELS on HASHES.KENNEL_KY = KENNELS.KENNEL_KY
-    ORDER BY EVENT_DATE DESC";
-
-    #Execute the SQL statement; create an array of rows
-    $hashList = $app['db']->fetchAll($sql);
-
-    # Establish and set the return value
-    $returnValue = $app['twig']->render('admin_hash_list.twig',array(
-      'pageTitle' => 'The List of Hashes',
-      'pageSubTitle' => 'The List of *All* Hashes',
-      'theList' => $hashList,
-      'tableCaption' => 'A list of all hashes ever, since forever.',
-      'kennel_abbreviation' => 'XXX'
-    ));
-
-
-    #Return the return value
-    return $returnValue;
-  }
-
-
     public function listOrphanedHashersAction(Request $request, Application $app){
 
       #Define the SQL to execute

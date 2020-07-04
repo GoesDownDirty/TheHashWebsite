@@ -161,6 +161,9 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
     )
 ));
 
+// Fallback to default password encoder used in SILEX 1.3
+$app['security.default_encoder'] = $app['security.encoder.digest'];
+
 $app['security.access_rules'] = array(
     array('^/superadmin',   'ROLE_SUPERADMIN',),
     array('^/admin',        'ROLE_ADMIN',),

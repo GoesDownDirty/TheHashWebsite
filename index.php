@@ -99,26 +99,6 @@ if (!$schema->tablesExist('USERS')) {
 
 #-------------------------------------------------------------------------------
 
-#Set your global assertions and stuff ------------------------------------------
-$kennelAssertion = "^(".VALID_KENNEL_ABBREVIATIONS.")$";
-$app['controllers']
-  ->assert("hash_id", "\d+")
-  ->assert("hasher_id", "\d+")
-  ->assert("hasher_id2", "\d+")
-  ->assert("hare_id", "\d+")
-  ->assert("event_tag_ky", "\d+")
-  ->assert("year_value", "\d+")
-  ->assert("kennel_id","\d+")
-  ->assert("day_count","\d+")
-  ->assert("month_count","\d+")
-  ->assert("min_hash_count","\d+")
-  ->assert("max_percentage","\d+")
-  ->assert("analversary_number","\d+")
-  ->assert("row_limit","\d+")
-  ->assert("kennel_abbreviation",$kennelAssertion)
-  ;
-#-------------------------------------------------------------------------------
-
 
 
 
@@ -158,21 +138,21 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
             'pattern' => '^/superadmin',
             'form' => array('login_path' => '/logonscreen/sa', 'check_path' => '/superadmin/login_check'),
             'logout' => array('logout_path' => '/superadmin/logoutaction'),
-            'users' => $app->share(function () use ($app) {return new UserProvider($app['db']);}),
+            'users' => function () use ($app) {return new UserProvider($app['db']);},
             'logout' => array('logout_path' => '/superadmin/logoutaction', 'invalidate_session' => true),
           ),
         'secured' => array(
             'pattern' => '^/admin',
             'form' => array('login_path' => '/logonscreen', 'check_path' => '/admin/login_check'),
             'logout' => array('logout_path' => '/logoutaction'),
-            'users' => $app->share(function () use ($app) {return new UserProvider($app['db']);}),
+            'users' => function () use ($app) {return new UserProvider($app['db']);},
             'logout' => array('logout_path' => '/admin/logoutaction', 'invalidate_session' => true),
         ),
         #'secured' => array(
         #    'pattern' => '^/superadmin|/admin',
         #    'form' => array('login_path' => '/logonscreen', 'check_path' => '/admin/login_check'),
         #    'logout' => array('logout_path' => '/logoutaction'),
-        #    'users' => $app->share(function () use ($app) {return new UserProvider($app['db']);}),
+        #    'users' => function () use ($app) {return new UserProvider($app['db']);},
         #    'logout' => array('logout_path' => '/admin/logoutaction', 'invalidate_session' => true),
         #),
         'unsecured' => array(
@@ -187,12 +167,33 @@ $app['security.access_rules'] = array(
 );
 
 
-$app->register(new Silex\Provider\UrlGeneratorServiceProvider());
+$app->register(new Silex\Provider\RoutingServiceProvider());
 $app->register(new FormServiceProvider());
 $app->register(new Silex\Provider\ValidatorServiceProvider());
+$app->register(new Silex\Provider\LocaleServiceProvider());
 $app->register(new Silex\Provider\TranslationServiceProvider(), array('translator.messages' => array(),));
 #-------------------------------------------------------------------------------
 
+
+#Set your global assertions and stuff ------------------------------------------
+$kennelAssertion = "^(".VALID_KENNEL_ABBREVIATIONS.")$";
+$app['controllers']
+  ->assert("hash_id", "\d+")
+  ->assert("hasher_id", "\d+")
+  ->assert("hasher_id2", "\d+")
+  ->assert("hare_id", "\d+")
+  ->assert("event_tag_ky", "\d+")
+  ->assert("year_value", "\d+")
+  ->assert("kennel_id","\d+")
+  ->assert("day_count","\d+")
+  ->assert("month_count","\d+")
+  ->assert("min_hash_count","\d+")
+  ->assert("max_percentage","\d+")
+  ->assert("analversary_number","\d+")
+  ->assert("row_limit","\d+")
+  ->assert("kennel_abbreviation",$kennelAssertion)
+  ;
+#-------------------------------------------------------------------------------
 
 # Not sure if this should be used here
 $app->boot();

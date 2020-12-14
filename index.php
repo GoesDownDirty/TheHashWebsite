@@ -99,26 +99,6 @@ if (!$schema->tablesExist('USERS')) {
 
 #-------------------------------------------------------------------------------
 
-#Set your global assertions and stuff ------------------------------------------
-$kennelAssertion = "^(".VALID_KENNEL_ABBREVIATIONS.")$";
-$app['controllers']
-  ->assert("hash_id", "\d+")
-  ->assert("hasher_id", "\d+")
-  ->assert("hasher_id2", "\d+")
-  ->assert("hare_id", "\d+")
-  ->assert("event_tag_ky", "\d+")
-  ->assert("year_value", "\d+")
-  ->assert("kennel_id","\d+")
-  ->assert("day_count","\d+")
-  ->assert("month_count","\d+")
-  ->assert("min_hash_count","\d+")
-  ->assert("max_percentage","\d+")
-  ->assert("analversary_number","\d+")
-  ->assert("row_limit","\d+")
-  ->assert("kennel_abbreviation",$kennelAssertion)
-  ;
-#-------------------------------------------------------------------------------
-
 
 
 
@@ -158,21 +138,21 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
             'pattern' => '^/superadmin',
             'form' => array('login_path' => '/logonscreen/sa', 'check_path' => '/superadmin/login_check'),
             'logout' => array('logout_path' => '/superadmin/logoutaction'),
-            'users' => $app->share(function () use ($app) {return new UserProvider($app['db']);}),
+            'users' => function () use ($app) {return new UserProvider($app['db']);},
             'logout' => array('logout_path' => '/superadmin/logoutaction', 'invalidate_session' => true),
           ),
         'secured' => array(
             'pattern' => '^/admin',
             'form' => array('login_path' => '/logonscreen', 'check_path' => '/admin/login_check'),
             'logout' => array('logout_path' => '/logoutaction'),
-            'users' => $app->share(function () use ($app) {return new UserProvider($app['db']);}),
+            'users' => function () use ($app) {return new UserProvider($app['db']);},
             'logout' => array('logout_path' => '/admin/logoutaction', 'invalidate_session' => true),
         ),
         #'secured' => array(
         #    'pattern' => '^/superadmin|/admin',
         #    'form' => array('login_path' => '/logonscreen', 'check_path' => '/admin/login_check'),
         #    'logout' => array('logout_path' => '/logoutaction'),
-        #    'users' => $app->share(function () use ($app) {return new UserProvider($app['db']);}),
+        #    'users' => function () use ($app) {return new UserProvider($app['db']);},
         #    'logout' => array('logout_path' => '/admin/logoutaction', 'invalidate_session' => true),
         #),
         'unsecured' => array(
@@ -181,18 +161,42 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
     )
 ));
 
+// Fallback to default password encoder used in SILEX 1.3
+$app['security.default_encoder'] = $app['security.encoder.digest'];
+
 $app['security.access_rules'] = array(
     array('^/superadmin',   'ROLE_SUPERADMIN',),
     array('^/admin',        'ROLE_ADMIN',),
 );
 
 
-$app->register(new Silex\Provider\UrlGeneratorServiceProvider());
+$app->register(new Silex\Provider\RoutingServiceProvider());
 $app->register(new FormServiceProvider());
 $app->register(new Silex\Provider\ValidatorServiceProvider());
+$app->register(new Silex\Provider\LocaleServiceProvider());
 $app->register(new Silex\Provider\TranslationServiceProvider(), array('translator.messages' => array(),));
 #-------------------------------------------------------------------------------
 
+
+#Set your global assertions and stuff ------------------------------------------
+$kennelAssertion = "^(".VALID_KENNEL_ABBREVIATIONS.")$";
+$app['controllers']
+  ->assert("hash_id", "\d+")
+  ->assert("hasher_id", "\d+")
+  ->assert("hasher_id2", "\d+")
+  ->assert("hare_id", "\d+")
+  ->assert("event_tag_ky", "\d+")
+  ->assert("year_value", "\d+")
+  ->assert("kennel_id","\d+")
+  ->assert("day_count","\d+")
+  ->assert("month_count","\d+")
+  ->assert("min_hash_count","\d+")
+  ->assert("max_percentage","\d+")
+  ->assert("analversary_number","\d+")
+  ->assert("row_limit","\d+")
+  ->assert("kennel_abbreviation",$kennelAssertion)
+  ;
+#-------------------------------------------------------------------------------
 
 # Not sure if this should be used here
 $app->boot();
@@ -235,8 +239,6 @@ $app->get('/superadmin/logoutaction',                             'HASH\Controll
 $app->get('/superadmin/hello',                                    'HASH\Controller\SuperAdminController::helloAction');
 
 $app->get('/user/hello',                                          'HASH\Controller\AdminController::userHelloAction');
-
-#$app->get('/{kennel_abbreviation}/listhashers',                                        'HASH\Controller\HashController::listHashersAction');
 
 $app->get('/{kennel_abbreviation}/mia',                                       'HASH\Controller\HashController::miaPreActionJson');
 $app->post('/{kennel_abbreviation}/mia',                                       'HASH\Controller\HashController::miaPostActionJson');
@@ -354,19 +356,10 @@ $app->get('/{kennel_abbreviation}/getProjectedHasherAnalversaries/{hasher_id}', 
 $app->get('/{kennel_abbreviation}/longestStreaks',                                      'HASH\Controller\ObscureStatisticsController::getLongestStreaksAction');
 $app->get('/{kennel_abbreviation}/aboutContact',                                        'HASH\Controller\ObscureStatisticsController::aboutContactAction');
 
-
-# Hash event modification
-$app->get('/admin/modifyhash/form/{hash_id}',                     'HASH\Controller\HashEventController::adminModifyHashAction');
-$app->post('/admin/modifyhash/form/{hash_id}',                    'HASH\Controller\HashEventController::adminModifyHashAction');
-
 # Hash name (substring) analysis
 $app->get('/{kennel_abbreviation}/hasherNameAnalysis',            'HASH\Controller\ObscureStatisticsController::hasherNameAnalysisAction');
 $app->get('/{kennel_abbreviation}/hasherNameAnalysis2',            'HASH\Controller\ObscureStatisticsController::hasherNameAnalysisAction2');
 $app->get('/{kennel_abbreviation}/hasherNameAnalysisWordCloud',            'HASH\Controller\ObscureStatisticsController::hasherNameAnalysisWordCloudAction');
-
-# Hash event creation
-$app->get('/admin/newhash/form',                                  'HASH\Controller\HashEventController::adminCreateHashAction');
-$app->post('/admin/newhash/form',                                 'HASH\Controller\HashEventController::adminCreateHashAction');
 
 # Hash event creation (ajaxified)
 $app->get('/admin/newhash/ajaxform', 'HASH\Controller\HashEventController::adminCreateHashAjaxPreAction');
@@ -442,8 +435,6 @@ $app->post('/admin/event/deleteHareFromHash',                      'HASH\Control
 $app->post('/admin/event/getHaresForEvent',                        'HASH\Controller\HashEventController::getHaresForEvent');
 $app->post('/admin/event/getHashersForEvent',                      'HASH\Controller\HashEventController::getHashersForEvent');
 
-$app->get('/admin/listhashes',                                     'HASH\Controller\AdminController::listHashesAction');
-#$app->get('/admin/listhashers',                                    'HASH\Controller\AdminController::listHashersAction');
 $app->get('/admin/listOrphanedHashers',                             'HASH\Controller\AdminController::listOrphanedHashersAction');
 
 $app->get('/admin/listhashes2',                                    'HASH\Controller\AdminController::listHashesPreActionJson');
@@ -539,24 +530,15 @@ $app->get('/{kennel_abbreviation}/wordcloudtest', 'HASH\Controller\ObscureStatis
 $app->get('/{kennel_abbreviation}/googlegeocodetest', 'HASH\Controller\ObscureStatisticsController::googleGeoCodeTestAction');
 
 #URLs for fastest/slowest to reach analversaries
-#$app->get('/{kennel_abbreviation}/{analversary_number}/quickest/to/reach/bydays', 'HASH\Controller\ObscureStatisticsController::quickestToReachAnalversaryByDaysPreAction');
-#$app->get('/{kennel_abbreviation}/{analversary_number}/slowest/to/reach/bydays',  'HASH\Controller\ObscureStatisticsController::slowestToReachAnalversaryByDaysPreAction');
-#$app->get('/{kennel_abbreviation}/{analversary_number}/earliest/to/reach',        'HASH\Controller\ObscureStatisticsController::earliestToReachAnalversaryByDatePreAction');
-#$app->get('/{kennel_abbreviation}/{analversary_number}/most/recent/to/reach',     'HASH\Controller\ObscureStatisticsController::mostRecentToReachAnalversaryByDatePreAction');
 $app->get('/{kennel_abbreviation}/{analversary_number}/quickest/to/reach/bydays', 'HASH\Controller\ObscureStatisticsController::quickestToReachAnalversaryByDaysAction');
 $app->get('/{kennel_abbreviation}/{analversary_number}/slowest/to/reach/bydays',  'HASH\Controller\ObscureStatisticsController::slowestToReachAnalversaryByDaysAction');
 $app->get('/{kennel_abbreviation}/{analversary_number}/quickest/to/reach/date', 'HASH\Controller\ObscureStatisticsController::quickestToReachAnalversaryByDate');
-
-
-#$app->post('/{kennel_abbreviation}/{analversary_number}/quickest/to/reach/bydays', 'HASH\Controller\ObscureStatisticsController::quickestToReachAnalversaryByDaysAction');
-#$app->post('/{kennel_abbreviation}/{analversary_number}/slowest/to/reach/bydays', 'HASH\Controller\ObscureStatisticsController::slowestToReachAnalversaryByDaysAction');
 
 $app->get('/{kennel_abbreviation}/longest/career','HASH\Controller\ObscureStatisticsController::longestCareerAction');
 $app->get('/{kennel_abbreviation}/highest/averageDaysBetweenHashes','HASH\Controller\ObscureStatisticsController::highestAverageDaysBetweenHashesAction');
 $app->get('/{kennel_abbreviation}/lowest/averageDaysBetweenHashes','HASH\Controller\ObscureStatisticsController::lowestAverageDaysBetweenHashesAction');
 $app->get('/{kennel_abbreviation}/everyones/latest/hashes/{min_hash_count}','HASH\Controller\ObscureStatisticsController::everyonesLatestHashesAction');
 $app->get('/{kennel_abbreviation}/everyones/first/hashes/{min_hash_count}','HASH\Controller\ObscureStatisticsController::everyonesFirstHashesAction');
-
 
 $app->get('/{kennel_abbreviation}/highest/allharings/averageDaysBetweenHarings','HASH\Controller\ObscureStatisticsController::highestAverageDaysBetweenAllHaringsAction');
 $app->get('/{kennel_abbreviation}/lowest/allharings/averageDaysBetweenHarings','HASH\Controller\ObscureStatisticsController::lowestAverageDaysBetweenAllHaringsAction');

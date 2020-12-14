@@ -50,8 +50,7 @@
 
   //Function to add a hasher to the event
   function deleteHasher(hasher_key){
-    var csrfToken = '{{csrf_token('delete')}}';
-    var formData = {hasher_key:hasher_key,csrf_token:csrfToken};
+    var formData = {hasher_key:hasher_key};
     $.ajax({
        url : "/admin/deleteHasherPost",
        type: "POST",

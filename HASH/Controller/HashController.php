@@ -80,28 +80,6 @@ class HashController extends BaseController
   }
 
   #Define the action
-  public function slashKennelAction(Request $request, Application $app, string $kennel_abbreviation){
-
-    #Establish the page title
-    $pageTitle = "$kennel_abbreviation Stats";
-
-    #Set the return value
-    $returnValue = $app['twig']->render('slash.twig',array(
-      'pageTitle' => $pageTitle,
-      'pageCaption' => "Provide page caption",
-      'subTitle1' => 'Standard Statistics',
-      'subTitle2' => 'Analversary Statistics',
-      'subTitle3' => 'Hare Statistics',
-      'subTitle4' => 'Other Statistics',
-      'kennel_abbreviation' => $kennel_abbreviation
-    ));
-
-    #Return the return value
-    return $returnValue;
-
-  }
-
-  #Define the action
   public function slashKennelAction2(Request $request, Application $app, string $kennel_abbreviation){
 
     #Obtain the kennel key

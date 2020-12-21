@@ -495,8 +495,6 @@ $app->post('/{kennel_abbreviation}/coharecount/byhare/{hare_type}','HASH\Control
 
 
 $app->get('/{kennel_abbreviation}/basic/stats',         'HASH\Controller\HashController::basicStatsAction');
-$app->get('/{kennel_abbreviation}/hashing/stats',       'HASH\Controller\HashController::hashingStatsAction');
-$app->get('/{kennel_abbreviation}/haring/stats',        'HASH\Controller\HashController::haringStatsAction');
 $app->get('/{kennel_abbreviation}/analversary/stats',   'HASH\Controller\HashController::analversaryStatsAction');
 $app->get('/{kennel_abbreviation}/cautionary/stats',    'HASH\Controller\HashController::cautionaryStatsAction');
 $app->get('/{kennel_abbreviation}/miscellaneous/stats', 'HASH\Controller\HashController::miscellaneousStatsAction');

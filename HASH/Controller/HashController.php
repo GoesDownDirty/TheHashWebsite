@@ -3532,34 +3532,6 @@ public function kennelGeneralInfoStatsAction(Request $request, Application $app,
 }
 
 
-public function hashingStatsAction(Request $request, Application $app, string $kennel_abbreviation){
-
-  # Establish and set the return value
-  $returnValue = $app['twig']->render('hashing_stats.twig',array(
-    'pageTitle' => 'Hashing Statistics',
-    'kennel_abbreviation' => $kennel_abbreviation
-  ));
-
-  #Return the return value
-  return $returnValue;
-
-}
-
-
-public function haringStatsAction(Request $request, Application $app, string $kennel_abbreviation){
-
-  # Establish and set the return value
-  $returnValue = $app['twig']->render('haring_stats.twig',array(
-    'pageTitle' => 'Haring Statistics',
-    'kennel_abbreviation' => $kennel_abbreviation
-  ));
-
-  #Return the return value
-  return $returnValue;
-
-}
-
-
 public function analversaryStatsAction(Request $request, Application $app, string $kennel_abbreviation){
 
   # Establish and set the return value

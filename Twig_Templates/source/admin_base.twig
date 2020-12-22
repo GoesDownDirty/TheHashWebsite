@@ -39,7 +39,7 @@
   </head>
 
   <body>
-    {% if(constant("SITE_BANNER")) %}
+    {% if(constant("SITE_BANNER") is defined) %}
         {{constant("SITE_BANNER") | raw}}
     {% endif %}
     {% if(constant("GOOGLE_ANALYTICS_ID") is defined) %}

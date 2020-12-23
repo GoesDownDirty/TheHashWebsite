@@ -541,13 +541,13 @@ class AdminController
 
 
     #Define the sql that gets the overall counts
-    $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHES";
+    $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHES_TABLE";
 
     #Perform the untiltered count
     $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
 
     #Define the sql that gets the overall counts
-    $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHES WHERE PLACE_ID is null";
+    $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHES_TABLE WHERE PLACE_ID is null";
 
     #Perform the untiltered count
     $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array()))['THE_COUNT'];
@@ -643,7 +643,7 @@ class AdminController
         SPECIAL_EVENT_DESCRIPTION,
         IS_HYPER,
         PLACE_ID
-      FROM HASHES JOIN KENNELS on HASHES.KENNEL_KY = KENNELS.KENNEL_KY
+      FROM HASHES_TABLE JOIN KENNELS on HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY
       WHERE
         (
           KENNEL_EVENT_NUMBER LIKE ? OR
@@ -658,7 +658,7 @@ class AdminController
 
     #Define the SQL that gets the count for the filtered results
     $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT
-    FROM HASHES JOIN KENNELS on HASHES.KENNEL_KY = KENNELS.KENNEL_KY
+    FROM HASHES_TABLE JOIN KENNELS on HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY
     WHERE
       (
         KENNEL_EVENT_NUMBER LIKE ? OR
@@ -668,7 +668,7 @@ class AdminController
         SPECIAL_EVENT_DESCRIPTION LIKE ?)";
 
     #Define the sql that gets the overall counts
-    $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHES";
+    $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHES_TABLE";
 
     #-------------- End: Define the SQL used here   ----------------------------
 

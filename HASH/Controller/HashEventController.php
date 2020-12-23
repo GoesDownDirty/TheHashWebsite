@@ -215,7 +215,7 @@ class HashEventController
       if($passedValidation){
 
         $sql = "
-          INSERT INTO HASHES (
+          INSERT INTO HASHES_TABLE (
             KENNEL_KY,
             KENNEL_EVENT_NUMBER,
             EVENT_DATE,
@@ -307,7 +307,7 @@ class HashEventController
       $kennelList = $app['db']->fetchAll($kennelsSQL);
 
       # Declare the SQL used to retrieve this information
-      $sql = "SELECT * ,date_format(event_date, '%Y-%m-%d' ) AS EVENT_DATE_DATE, date_format(event_date, '%k:%i:%S') AS EVENT_DATE_TIME FROM HASHES JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
+      $sql = "SELECT * ,date_format(event_date, '%Y-%m-%d' ) AS EVENT_DATE_DATE, date_format(event_date, '%k:%i:%S') AS EVENT_DATE_TIME FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
       # Make a database call to obtain the hasher information
       $hashValue = $app['db']->fetchAssoc($sql, array((int) $hash_id));
@@ -428,7 +428,7 @@ class HashEventController
       if($passedValidation){
 
         $sql = "
-          UPDATE HASHES
+          UPDATE HASHES_TABLE
             SET
               KENNEL_KY = ?,
               EVENT_DATE = ?,
@@ -471,7 +471,7 @@ class HashEventController
           ));
 
           # Declare the SQL used to retrieve this information
-          $sqlOriginal = "SELECT * FROM HASHES JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
+          $sqlOriginal = "SELECT * FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
           # Make a database call to obtain the hasher information
           $hashValue = $app['db']->fetchAssoc($sqlOriginal, array((int) $hash_id));
@@ -515,7 +515,7 @@ class HashEventController
 
 
       #Obtain hash event information
-      $hashEventInfoSQL = "SELECT * FROM HASHES JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
+      $hashEventInfoSQL = "SELECT * FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
       #Execute the SQL statement; create an array of rows
       $hasherList = $app['db']->fetchAll($hasherListSQL,array((int)$hash_id));
@@ -597,7 +597,7 @@ class HashEventController
           #Audit the activity
 
           # Declare the SQL used to retrieve this information
-          $sql = "SELECT * FROM HASHES JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
+          $sql = "SELECT * FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
           # Make a database call to obtain the hasher information
           $hashValue = $app['db']->fetchAssoc($sql, array((int) $hashKey));
@@ -677,7 +677,7 @@ class HashEventController
 
           #Add the audit statement
           # Declare the SQL used to retrieve this information
-          $sql = "SELECT * FROM HASHES JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
+          $sql = "SELECT * FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
           # Make a database call to obtain the hasher information
           $hashValue = $app['db']->fetchAssoc($sql, array((int) $hashKey));
@@ -744,7 +744,7 @@ class HashEventController
 
           #Add the audit statement
           # Declare the SQL used to retrieve this information
-          $sql = "SELECT * FROM HASHES JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
+          $sql = "SELECT * FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
           # Make a database call to obtain the hasher information
           $hashValue = $app['db']->fetchAssoc($sql, array((int) $hashKey));
@@ -805,7 +805,7 @@ class HashEventController
 
           #Add the audit statement
           # Declare the SQL used to retrieve this information
-          $sql = "SELECT * FROM HASHES JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
+          $sql = "SELECT * FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
           # Make a database call to obtain the hasher information
           $hashValue = $app['db']->fetchAssoc($sql, array((int) $hashKey));
@@ -871,10 +871,8 @@ class HashEventController
 
 
 
-
-
     #Define the action
-    public function listHashesPreActionJson(Request $request, Application $app, string $kennel_abbreviation){
+    public function listHashesPreActionJson(Request $request, Application $app, string $kennel_abbreviation) {
 
       # Establish and set the return value
       $returnValue = $app['twig']->render('hash_list_json.twig',array(
@@ -888,7 +886,6 @@ class HashEventController
 
       #Return the return value
       return $returnValue;
-
     }
 
 

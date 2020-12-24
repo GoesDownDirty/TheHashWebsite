@@ -43,7 +43,9 @@ $(document).ready(function() {
 
 <div class="table-responsive">
 <h3>{{pageTitle}}</h3>
+{% if totalHashesToUpdate > 0 %}
 <h4>{{totalHashesToUpdate}} of {{totalHashes}} are left to update</hf>
+{% endif %}
 <h4><a href="/admin/newhash/ajaxform"><b>Click to create an event !</b></a></h4>
 
 <table class="table table-condensed table-hover" id="the_main_table">

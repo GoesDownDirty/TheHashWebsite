@@ -27,9 +27,20 @@ class DatabaseUpdater {
         $this->createCompositeIndexes();
         $this->setDatabaseVersion(1);
       case 1:
+        $this->createHashesView();
+        $this->setDatabaseVersion(2);
+      case 2:
       default:
         break;
     }
+  }
+
+  private function createHashesView() {
+    $sql = "ALTER TABLE HASHES RENAME TO HASHES_TABLE";
+    $this->app['dbs']['mysql_write']->executeStatement($sql, array());
+
+    $sql = "CREATE VIEW HASHES AS SELECT * FROM HASHES_TABLE WHERE EVENT_DATE <= NOW()";
+    $this->app['dbs']['mysql_write']->executeStatement($sql, array());
   }
 
   private function setDatabaseVersion(int $version) {

@@ -1552,9 +1552,9 @@ class HashController extends BaseController
     $sqlHaringsByYear = "SELECT
     	  YEAR(EVENT_DATE) AS THE_VALUE,
         COUNT(*) AS TOTAL_HARING_COUNT
-    FROM
-        HARINGS
-    	  JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+    FROM HARINGS
+    JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+    JOIN HARE_TYPES ON HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE
     WHERE
         HARINGS.HARINGS_HASHER_KY = ? AND
         HASHES.KENNEL_KY = ?
@@ -2051,6 +2051,7 @@ class HashController extends BaseController
     FROM
         HASHERS
         JOIN HARINGS ON HASHERS.HASHER_KY = HARINGS.HARINGS_HASHER_KY
+        JOIN HARE_TYPES ON HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE
         JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
     WHERE
         (HASHERS.DECEASED = 0) AND
@@ -2072,6 +2073,7 @@ class HashController extends BaseController
     FROM
         HASHERS
         JOIN HARINGS ON HASHERS.HASHER_KY = HARINGS.HARINGS_HASHER_KY
+        JOIN HARE_TYPES ON HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE
         JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
     WHERE
         (HASHERS.DECEASED = 0) AND
@@ -2806,6 +2808,7 @@ public function percentageHarings(Request $request, Application $app, string $ke
       FROM HASHERS
       JOIN (SELECT HARINGS.HARINGS_HASHER_KY AS HARINGS_HASHER_KY, COUNT(HARINGS.HARINGS_HASHER_KY) AS ALL_HARING_COUNT
               FROM HARINGS
+              JOIN HARE_TYPES ON HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE
 	      JOIN HASHES
 	        ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
 	     WHERE HASHES.KENNEL_KY = ?
@@ -3322,7 +3325,8 @@ public function hasherCountsByHareAction(Request $request, Application $app, int
     	HARINGS
         JOIN HASHINGS ON HARINGS.HARINGS_HASH_KY = HASHINGS.HASH_KY
         JOIN HASHERS ON HASHINGS.HASHER_KY = HASHERS.HASHER_KY
-        JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+        JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY ".
+        ($hare_type != 0 ? "" : "JOIN HARE_TYPES ON HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE ")."
     WHERE
     	HARINGS.HARINGS_HASHER_KY = ?
         AND HASHINGS.HASHER_KY != ?
@@ -3808,8 +3812,9 @@ public function HaresOfTheYearsAction(Request $request, Application $app, int $h
     $topHaresSql .=
         "(SELECT COUNT(*) AS THE_HASH_COUNT
             FROM HASHES ".
-         ($hare_type == 0 ? "" : "JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY
-                                  JOIN HASH_TYPES ON HASH_TYPES.HASH_TYPE & KENNELS.HASH_TYPE_MASK != 0 AND HASHES.HASH_TYPE = HASH_TYPES.HASH_TYPE")."
+         ($hare_type == 0 ? "JOIN HARE_TYPES ON HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE" : 
+                            "JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY
+                             JOIN HASH_TYPES ON HASH_TYPES.HASH_TYPE & KENNELS.HASH_TYPE_MASK != 0 AND HASHES.HASH_TYPE = HASH_TYPES.HASH_TYPE")."
            WHERE HASHES.KENNEL_KY = ? ".
          ($hare_type == 0 ? "" : "AND HASH_TYPES.HARE_TYPE_MASK & ? != 0")."
              AND YEAR(HASHES.EVENT_DATE) = ? )
@@ -3819,7 +3824,8 @@ public function HaresOfTheYearsAction(Request $request, Application $app, int $h
     	SELECT HASHERS.HASHER_KY AS THE_HASHER_KY, COUNT(*) AS THE_COUNT
     	FROM HARINGS
     		JOIN HASHERS ON HARINGS.HARINGS_HASHER_KY = HASHERS.HASHER_KY
-    		JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+    		JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY ".
+                ($hare_type != 0 ? "" : "JOIN HARE_TYPES ON HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE ")."
     	WHERE
     		HASHES.KENNEL_KY = ?
     		AND YEAR(HASHES.EVENT_DATE) = ? ".
@@ -4244,7 +4250,9 @@ public function jumboCountsTablePostActionJson(Request $request, Application $ap
                         WHERE HASHINGS.HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?) AS HASH_COUNT,
                 (
                         SELECT COUNT(*)
-                        FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+                        FROM HARINGS
+                        JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+                        JOIN HARE_TYPES ON HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE
                         WHERE HARINGS_HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?) AS HARE_COUNT,";
 
   foreach ($hareTypes as &$hareType) {
@@ -4523,7 +4531,9 @@ public function jumboPercentagesTablePostActionJson(Request $request, Applicatio
                         WHERE HASHINGS.HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?) AS HASH_COUNT,
                 (
                         SELECT COUNT(*)
-                        FROM HARINGS JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+                        FROM HARINGS
+                        JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
+                        JOIN HARE_TYPES ON HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE
                         WHERE HARINGS_HASHER_KY = OUTER_HASHER_KY AND HASHES.KENNEL_KY = ?) AS HARE_COUNT,";
 
   foreach ($hareTypes as &$hareType) {
@@ -4695,6 +4705,7 @@ private function getStandardHareChartsAction(Request $request, Application $app,
       COUNT(*) AS TOTAL_HARING_COUNT
   FROM
       HARINGS
+      JOIN HARE_TYPES ON HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE
       JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
   WHERE
       HARINGS.HARINGS_HASHER_KY = ? AND
@@ -4739,6 +4750,7 @@ private function getStandardHareChartsAction(Request $request, Application $app,
           COUNT(*) AS TOTAL_HARING_COUNT
         FROM
           HARINGS
+          JOIN HARE_TYPES ON HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE
           JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
         WHERE
           HARINGS.HARINGS_HASHER_KY = ? AND
@@ -4759,6 +4771,7 @@ private function getStandardHareChartsAction(Request $request, Application $app,
         COUNT(*) AS TOTAL_HARING_COUNT
       FROM
         HARINGS
+        JOIN HARE_TYPES ON HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE
         JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
       WHERE
         HARINGS.HARINGS_HASHER_KY = ? AND
@@ -4779,6 +4792,7 @@ private function getStandardHareChartsAction(Request $request, Application $app,
       COUNT(*) AS TOTAL_HARING_COUNT
     FROM
       HARINGS
+      JOIN HARE_TYPES ON HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE
       JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
     WHERE
       HARINGS.HARINGS_HASHER_KY = ? AND
@@ -4818,6 +4832,7 @@ private function getStandardHareChartsAction(Request $request, Application $app,
         COUNT(*) AS TOTAL_HARING_COUNT
       FROM
         HARINGS
+        JOIN HARE_TYPES ON HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE
         JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY
       WHERE
         HARINGS.HARINGS_HASHER_KY = ? AND

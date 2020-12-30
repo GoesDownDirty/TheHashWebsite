@@ -430,6 +430,8 @@ $app->post('/admin/event/getHashersForEvent',                      'HASH\Control
 
 $app->get('/admin/listOrphanedHashers',                             'HASH\Controller\AdminController::listOrphanedHashersAction');
 
+$app->get('/admin/roster',                                          'HASH\Controller\AdminController::roster');
+
 $app->get('/admin/listhashes2',                                    'HASH\Controller\AdminController::listHashesPreActionJson');
 $app->post('/admin/listhashes2',                                   'HASH\Controller\AdminController::getHashListJson');
 

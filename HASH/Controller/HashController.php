@@ -125,7 +125,7 @@ class HashController extends BaseController
     }
 
     #Execute the SQL statement; create an array of rows
-    $topHashersList = $app['db']->fetchAll($sql, array((int) $kennelKy));
+    $topHashersList = $app['db']->fetchAll($sql, array((int) $kennelKy, (int) $kennelKy));
     $topOverallHareList = $app['db']->fetchAll($sql4, array((int) $kennelKy));
     $topHashersThisYear = $app['db']->fetchAll($sql5, array((int) $kennelKy));
     $topHashersLastYear = $app['db']->fetchAll($sql6, array((int) $kennelKy));
@@ -671,71 +671,134 @@ class HashController extends BaseController
     #-------------- Begin: Define the SQL used here   --------------------------
 
     #Define the sql that performs the filtering
-    $sql = "SELECT
-      HASHER_NAME AS NAME,
-      HASHER_ABBREVIATION,
-      COUNT(HASHINGS.HASHER_KY) + ".$this->getLegacyHashingsCountSubquery()." AS THE_COUNT,
-      HASHINGS.HASHER_KY AS THE_KEY
-      FROM HASHERS
-      JOIN HASHINGS
-        ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY
-      JOIN HASHES
-        ON HASHES.HASH_KY = HASHINGS.HASH_KY
-      WHERE
-          KENNEL_KY = ? AND (
-          HASHER_NAME LIKE ? OR
-          HASHER_ABBREVIATION LIKE ?)
-      GROUP BY HASHINGS.HASHER_KY
-      ORDER BY $inputOrderColumnIncremented $inputOrderDirectionExtracted
-      LIMIT $inputStart,$inputLength";
-      #$app['monolog']->addDebug("sql: $sql");
+    if(HAS_LEGACY_HASH_COUNTS) {
+      $sql = "
+        SELECT NAME, HASHER_ABBREVIATION, SUM(THE_COUNT) AS THE_COUNT, THE_KEY
+          FROM (
+        SELECT HASHER_NAME AS NAME, HASHER_ABBREVIATION,
+               COUNT(HASHINGS.HASHER_KY) AS THE_COUNT, HASHINGS.HASHER_KY AS THE_KEY
+          FROM HASHERS
+          JOIN HASHINGS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY
+          JOIN HASHES ON HASHES.HASH_KY = HASHINGS.HASH_KY
+         WHERE KENNEL_KY = ? AND (HASHER_NAME LIKE ? OR HASHER_ABBREVIATION LIKE ?)
+         GROUP BY HASHINGS.HASHER_KY
+         UNION ALL
+        SELECT HASHER_NAME AS NAME, HASHER_ABBREVIATION,
+               LEGACY_HASHINGS_COUNT AS THE_COUNT, LEGACY_HASHINGS.HASHER_KY AS THE_KEY
+          FROM HASHERS
+          JOIN LEGACY_HASHINGS ON HASHERS.HASHER_KY = LEGACY_HASHINGS.HASHER_KY
+         WHERE KENNEL_KY = ? AND (HASHER_NAME LIKE ? OR HASHER_ABBREVIATION LIKE ?)) AS INNER1
+         GROUP BY NAME, HASHER_ABBREVIATION, THE_KEY
+         ORDER BY $inputOrderColumnIncremented $inputOrderDirectionExtracted
+         LIMIT $inputStart,$inputLength";
 
-    #Define the SQL that gets the count for the filtered results
-    $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT
-      FROM (
-    SELECT 1
-      FROM HASHERS
-      JOIN HASHINGS
-        ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY
-      JOIN HASHES
-        ON HASHES.HASH_KY = HASHINGS.HASH_KY
-      WHERE
-          KENNEL_KY = ? AND (
-          HASHER_NAME LIKE ? OR
-          HASHER_ABBREVIATION LIKE ?)
-      GROUP BY HASHINGS.HASHER_KY) AS INNER_QUERY";
+      #Define the SQL that gets the count for the filtered results
+      $sqlFilteredCount = "
+        SELECT COUNT(*) AS THE_COUNT
+          FROM (
+        SELECT THE_KEY
+          FROM (
+        SELECT HASHINGS.HASHER_KY AS THE_KEY
+          FROM HASHERS
+          JOIN HASHINGS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY
+          JOIN HASHES ON HASHES.HASH_KY = HASHINGS.HASH_KY
+         WHERE KENNEL_KY = ? AND (HASHER_NAME LIKE ? OR HASHER_ABBREVIATION LIKE ?)
+         GROUP BY HASHINGS.HASHER_KY
+         UNION ALL
+        SELECT LEGACY_HASHINGS.HASHER_KY AS THE_KEY
+          FROM HASHERS
+          JOIN LEGACY_HASHINGS ON HASHERS.HASHER_KY = LEGACY_HASHINGS.HASHER_KY
+         WHERE KENNEL_KY = ? AND (HASHER_NAME LIKE ? OR HASHER_ABBREVIATION LIKE ?)) AS INNER1
+         GROUP BY THE_KEY) AS INNER_QUERY";
 
-    #Define the sql that gets the overall counts
-    $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT
-      FROM (
-    SELECT 1
-      FROM HASHERS
-      JOIN HASHINGS
-        ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY
-      JOIN HASHES
-        ON HASHES.HASH_KY = HASHINGS.HASH_KY
-      WHERE
-          KENNEL_KY = ?
-      GROUP BY HASHINGS.HASHER_KY) AS INNER_QUERY";
+      #Define the sql that gets the overall counts
+      $sqlUnfilteredCount = "
+        SELECT COUNT(*) AS THE_COUNT
+          FROM (
+        SELECT THE_KEY
+          FROM (
+        SELECT HASHINGS.HASHER_KY AS THE_KEY
+          FROM HASHERS
+          JOIN HASHINGS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY
+          JOIN HASHES ON HASHES.HASH_KY = HASHINGS.HASH_KY
+         WHERE KENNEL_KY = ?
+         GROUP BY HASHINGS.HASHER_KY
+         UNION ALL
+        SELECT LEGACY_HASHINGS.HASHER_KY AS THE_KEY
+          FROM HASHERS
+          JOIN LEGACY_HASHINGS ON HASHERS.HASHER_KY = LEGACY_HASHINGS.HASHER_KY
+         WHERE KENNEL_KY = ?) AS INNER1
+         GROUP BY THE_KEY) AS INNER_QUERY";
 
-    #-------------- End: Define the SQL used here   ----------------------------
+      #Perform the filtered search
+      $theResults = $app['db']->fetchAll($sql,array(
+        $kennelKy,
+        (string) $inputSearchValueModified,
+        (string) $inputSearchValueModified,
+        $kennelKy,
+        (string) $inputSearchValueModified,
+        (string) $inputSearchValueModified));
 
-    #-------------- Begin: Query the database   --------------------------------
-    #Perform the filtered search
-    $theResults = $app['db']->fetchAll($sql,array(
-      $kennelKy,
-      (string) $inputSearchValueModified,
-      (string) $inputSearchValueModified));
+      #Perform the untiltered count
+      $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array($kennelKy, $kennelKy)))['THE_COUNT'];
 
-    #Perform the untiltered count
-    $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array($kennelKy)))['THE_COUNT'];
+      #Perform the filtered count
+      $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
+        $kennelKy,
+        (string) $inputSearchValueModified,
+        (string) $inputSearchValueModified,
+        $kennelKy,
+        (string) $inputSearchValueModified,
+        (string) $inputSearchValueModified)))['THE_COUNT'];
 
-    #Perform the filtered count
-    $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
-      $kennelKy,
-      (string) $inputSearchValueModified,
-      (string) $inputSearchValueModified)))['THE_COUNT'];
-    #-------------- End: Query the database   --------------------------------
+    } else {
+
+      $sql = "
+        SELECT HASHER_NAME AS NAME, HASHER_ABBREVIATION,
+               COUNT(HASHINGS.HASHER_KY) AS THE_COUNT, HASHINGS.HASHER_KY AS THE_KEY
+          FROM HASHERS
+          JOIN HASHINGS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY
+          JOIN HASHES ON HASHES.HASH_KY = HASHINGS.HASH_KY
+         WHERE KENNEL_KY = ? AND (HASHER_NAME LIKE ? OR HASHER_ABBREVIATION LIKE ?)
+         GROUP BY HASHINGS.HASHER_KY
+         ORDER BY $inputOrderColumnIncremented $inputOrderDirectionExtracted
+         LIMIT $inputStart,$inputLength";
+
+      #Define the SQL that gets the count for the filtered results
+      $sqlFilteredCount = "
+        SELECT COUNT(*) AS THE_COUNT
+          FROM (SELECT 1
+                  FROM HASHERS
+                  JOIN HASHINGS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY
+                  JOIN HASHES ON HASHES.HASH_KY = HASHINGS.HASH_KY
+                 WHERE KENNEL_KY = ? AND (HASHER_NAME LIKE ? OR HASHER_ABBREVIATION LIKE ?)
+                 GROUP BY HASHINGS.HASHER_KY) AS INNER_QUERY";
+
+      #Define the sql that gets the overall counts
+      $sqlUnfilteredCount = "
+        SELECT COUNT(*) AS THE_COUNT
+          FROM (SELECT 1
+                  FROM HASHERS
+                  JOIN HASHINGS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY
+                  JOIN HASHES ON HASHES.HASH_KY = HASHINGS.HASH_KY
+                 WHERE KENNEL_KY = ?
+                 GROUP BY HASHINGS.HASHER_KY) AS INNER_QUERY";
+
+      #Perform the filtered search
+      $theResults = $app['db']->fetchAll($sql,array(
+        $kennelKy,
+        (string) $inputSearchValueModified,
+        (string) $inputSearchValueModified));
+
+      #Perform the untiltered count
+      $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array($kennelKy)))['THE_COUNT'];
+
+      #Perform the filtered count
+      $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
+        $kennelKy,
+        (string) $inputSearchValueModified,
+        (string) $inputSearchValueModified)))['THE_COUNT'];
+    }
 
     #Establish the output
     $output = array(
@@ -1513,7 +1576,7 @@ class HashController extends BaseController
     $avgLng = $theAverageLatLong['THE_LNG'];
 
     # Obtain the number of hashings
-    $hashCountValue = $app['db']->fetchAssoc($this->getPersonsHashingCountQuery(), array((int) $hasher_id, (int) $kennelKy));
+    $hashCountValue = $app['db']->fetchAssoc($this->getPersonsHashingCountQuery(), array((int) $hasher_id, (int) $kennelKy, (int) $hasher_id, (int) $kennelKy));
 
     # Obtain the number of harings
     $hareCountValue = $app['db']->fetchAssoc(PERSONS_HARING_COUNT, array((int) $hasher_id, (int) $kennelKy));
@@ -2870,7 +2933,7 @@ public function hashingCountsAction(Request $request, Application $app, string $
   $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
   #Execute the SQL statement; create an array of rows
-  $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy));
+  $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy, (int) $kennelKy));
 
   # Establish and set the return value
   $returnValue = $app['twig']->render('name_number_rank_list.twig',array(
@@ -3439,7 +3502,7 @@ public function analversariesStatsAction(Request $request, Application $app, str
   #Determine the number of hashes already held for this kennel
   $sql2 = $this->getHashingCountsQuery();
   $sql2 = "$sql2 LIMIT 1";
-  $theCount2 = $app['db']->fetchAssoc($sql2, array((int) $kennelKy));
+  $theCount2 = $app['db']->fetchAssoc($sql2, array((int) $kennelKy, (int) $kennelKy));
   $theCount2 = $theCount2['VALUE'];
 
   # Establish and set the return value
@@ -3812,7 +3875,7 @@ public function HaresOfTheYearsAction(Request $request, Application $app, int $h
     $topHaresSql .=
         "(SELECT COUNT(*) AS THE_HASH_COUNT
             FROM HASHES ".
-         ($hare_type == 0 ? "JOIN HARE_TYPES ON HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE" : 
+         ($hare_type == 0 ? "JOIN HARE_TYPES ON HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE" :
                             "JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY
                              JOIN HASH_TYPES ON HASH_TYPES.HASH_TYPE & KENNELS.HASH_TYPE_MASK != 0 AND HASHES.HASH_TYPE = HASH_TYPES.HASH_TYPE")."
            WHERE HASHES.KENNEL_KY = ? ".
@@ -5176,8 +5239,8 @@ private function twoPersonComparisonDataFetch(Request $request, Application $app
 
 
   #Obtain the overall hashing count
-  $hashingCountH1 = ($app['db']->fetchAssoc($this->getPersonsHashingCountQuery(), array((int) $hasher_id1, (int) $kennelKy)))['THE_COUNT'];
-  $hashingCountH2 = ($app['db']->fetchAssoc($this->getPersonsHashingCountQuery(), array((int) $hasher_id2, (int) $kennelKy)))['THE_COUNT'];
+  $hashingCountH1 = ($app['db']->fetchAssoc($this->getPersonsHashingCountQuery(), array((int) $hasher_id1, (int) $kennelKy, (int) $hasher_id1, (int) $kennelKy)))['THE_COUNT'];
+  $hashingCountH2 = ($app['db']->fetchAssoc($this->getPersonsHashingCountQuery(), array((int) $hasher_id2, (int) $kennelKy, (int) $hasher_id2, (int) $kennelKy)))['THE_COUNT'];
   $statObject = $this-> createComparisonObjectWithStatsAsInts($hashingCountH1, $hashingCountH2,$hasher1['HASHER_NAME'], $hasher2['HASHER_NAME'], "Hashing Count");
   $returnValue[] = $statObject;
 

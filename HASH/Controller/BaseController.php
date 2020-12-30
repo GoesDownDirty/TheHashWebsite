@@ -85,26 +85,58 @@ class BaseController {
   }
 
   protected function getHashingCountsQuery() {
+   if(HAS_LEGACY_HASH_COUNTS) {
+     return "SELECT THE_KEY, NAME, SUM(VALUE) AS VALUE
+               FROM (
+             SELECT HASHERS.HASHER_KY AS THE_KEY,
+                    HASHERS.HASHER_NAME AS NAME,
+                    COUNT(0) AS VALUE
+               FROM HASHERS
+               JOIN HASHINGS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY
+               JOIN HASHES on HASHINGS.HASH_KY = HASHES.HASH_KY
+              WHERE HASHES.KENNEL_KY = ?
+              GROUP BY HASHERS.HASHER_KY, HASHERS.HASHER_NAME
+              UNION ALL
+             SELECT HASHERS.HASHER_KY AS THE_KEY,
+                    HASHERS.HASHER_NAME AS NAME,
+                    LEGACY_HASHINGS.LEGACY_HASHINGS_COUNT AS VALUE
+               FROM HASHERS
+               JOIN LEGACY_HASHINGS ON HASHERS.HASHER_KY = LEGACY_HASHINGS.HASHER_KY
+              WHERE LEGACY_HASHINGS.KENNEL_KY = ?) AS HASH_COUNTS_INNER
+              GROUP BY THE_KEY, NAME
+              ORDER BY VALUE DESC";
+   }
+
    return "SELECT HASHERS.HASHER_KY AS THE_KEY,
                   HASHERS.HASHER_NAME AS NAME,
-                  COUNT(0) + ".$this->getLegacyHashingsCountSubquery().
-                  " AS VALUE
+                  COUNT(0) AS VALUE
              FROM HASHERS
              JOIN HASHINGS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY
              JOIN HASHES on HASHINGS.HASH_KY = HASHES.HASH_KY
-            WHERE HASHES.KENNEL_KY = ?
+            WHERE HASHES.KENNEL_KY IN ? AND ? != -1
             GROUP BY HASHERS.HASHER_KY, HASHERS.HASHER_NAME
             ORDER BY VALUE DESC";
   }
 
   protected function getPersonsHashingCountQuery() {
-    return "SELECT COUNT(*) + ".
-                   $this->getLegacyHashingsCountSubquery("HASHINGS").
-                   " AS THE_COUNT
+    if(HAS_LEGACY_HASH_COUNTS) {
+      return "SELECT SUM(THE_COUNT) AS THE_COUNT
+                FROM (
+              SELECT COUNT(*) AS THE_COUNT
+                FROM HASHINGS
+                JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+               WHERE HASHER_KY = ? AND KENNEL_KY = ?
+               UNION ALL
+              SELECT LEGACY_HASHINGS.LEGACY_HASHINGS_COUNT AS THE_COUNT
+                FROM LEGACY_HASHINGS
+               WHERE HASHER_KY = ? AND KENNEL_KY = ?) AS INNER_QUERY";
+    }
+
+    return "SELECT COUNT(*) AS THE_COUNT
               FROM HASHINGS
-              JOIN HASHES
-                ON HASHINGS.HASH_KY = HASHES.HASH_KY
-             WHERE HASHER_KY = ? AND KENNEL_KY = ?";
+              JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+             WHERE HASHER_KY = ? AND KENNEL_KY = ?
+               AND ? != -1 AND ? != -1";
   }
 
   protected function getHaringPercentageByHareTypeQuery() {

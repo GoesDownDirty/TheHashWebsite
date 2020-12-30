@@ -863,20 +863,26 @@ class AdminController
   }
 
   public function roster(Request $request, Application $app) {
-    #Define the SQL to execute
-    $sql = "
-      SELECT HASHER_NAME
-        FROM HASHERS
-       WHERE HASHERS.HASHER_KY IN (
-             SELECT HASHER_KY
-               FROM HASHINGS
-              WHERE HASH_KY IN (
-                    SELECT HASH_KY
-                      FROM HASHES
-                     WHERE EVENT_DATE >= DATE_SUB(NOW(), INTERVAL 6 MONTH)))
-       ORDER BY HASHER_NAME";
-    #Execute the SQL statement; create an array of rows
-    $theList = $app['db']->fetchAll($sql);
+    for($i=1; $i<3; $i++) {
+
+      #Define the SQL to execute
+      $sql = "
+        SELECT HASHER_NAME
+          FROM HASHERS
+         WHERE HASHERS.HASHER_KY IN (
+               SELECT HASHER_KY
+                 FROM HASHINGS
+                WHERE HASH_KY IN (
+                      SELECT HASH_KY
+                        FROM HASHES
+                       WHERE EVENT_DATE >= DATE_SUB(NOW(), INTERVAL ? MONTH)))
+         ORDER BY HASHER_NAME";
+
+      #Execute the SQL statement; create an array of rows
+      $theList = $app['db']->fetchAll($sql, array($i * 6));
+
+      if(count($theList) > 0) break;
+    }
 
     # Establish and set the return value
     $returnValue = $app['twig']->render('admin_roster.twig',array(

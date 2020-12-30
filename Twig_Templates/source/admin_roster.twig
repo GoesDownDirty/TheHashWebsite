@@ -5,39 +5,42 @@
   <title>Active Hasher Roster</title>
   <style type="text/css">
     table { border-collapse: collapse; }
-    td { border: 2px solid black; }
+    td, th { border: 2px solid black; text-align: left;}
     .c { min-width: 25px; max-width: 25px; }
-    .d { background-color:#dfa3a3; }
-    .e { background-color:#eec398; }
-    .f { background-color:#f6e3a8; }
-    .g { background-color:#bfeeb4; }
-    .h { background-color:#a1e0ea; }
+    .k1 { background-color:#aaaaaa; }
   </style>
 </head>
 
 <body>
 
 <table>
-{% for item in theList %}
   <tr>
-    <td>{{item.HASHER_NAME}}</td>
-    <td class="c d"></td>
-    <td class="c e"></td>
-    <td class="c f"></td>
-    <td class="c g"></td>
-    <td class="c h"></td>
-    <td class="c g"></td>
-    <td class="c f"></td>
-    <td class="c e"></td>
-    <td class="c d"></td>
-    <td class="c e"></td>
-    <td class="c f"></td>
-    <td class="c g"></td>
-    <td class="c h"></td>
-    <td class="c g"></td>
-    <td class="c f"></td>
-    <td class="c e"></td>
-    <td class="c d"></td>
+    <th></th>
+    <th>HASH #</th>
+    <th></th>
+    <th>Date:</th>
+    <th>****</th>
+    <th>Mark To Left Of Name</th>
+  </tr>
+{% set numRows = (theList|length / 3)|round(0, 'ceil') %}
+{% for i in 0..numRows-1 %}
+  <tr>
+    {% for k in 0..2 %}
+      {% set j = i + k * numRows %}
+      {% if j < theList|length %}
+      <td class="c k{{k}}"></td><td class="k{{k}}">{{theList[j].HASHER_NAME}}</td>
+      {% else %}
+      <td class="c k{{k}}"></td><td class="k{{k}}">&nbsp;</td>
+      {% endif %}
+      {% set j = j + 1 %}
+    {% endfor %}
+  </tr>
+{% endfor %}
+{% for i in 0..4 %}
+  <tr>
+    {% for k in 0..2 %}
+      <td class="c k{{k}}"></td><td class="k{{k}}">&nbsp;</td>
+    {% endfor %}
   </tr>
 {% endfor %}
 </table>

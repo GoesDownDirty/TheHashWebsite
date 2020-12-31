@@ -46,20 +46,22 @@ $twigTemplateCompiledDirectory = __DIR__.'/Twig_Templates/compiled';
 $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
   'dbs.options' => array(
     'mysql_read' => array(
-      'driver'   	=> DB_DRIVER,
-      'dbname'	=> DB_NAME,
-      'host'		=> DB_HOST,
-      'port'		=> DB_PORT,
-      'user'		=> DB_READ_ONLY_USER,
-      'password'	=> DB_READ_ONLY_PASSWORD
+      'driver'   => DB_DRIVER,
+      'dbname'   => DB_NAME,
+      'host'     => DB_HOST,
+      'port'     => DB_PORT,
+      'user'     => DB_READ_ONLY_USER,
+      'password' => DB_READ_ONLY_PASSWORD,
+      'charset'  => "utf8"
     ),
     'mysql_write' => array(
-      'driver'   	=> DB_DRIVER,
-    	'dbname'	=> DB_NAME,
-    	'host'		=> DB_HOST,
-    	'port'		=> DB_PORT,
-    	'user'		=> DB_USER,
-    	'password'	=> DB_PASSWORD
+      'driver'    => DB_DRIVER,
+      'dbname'    => DB_NAME,
+      'host'      => DB_HOST,
+      'port'      => DB_PORT,
+      'user'      => DB_USER,
+      'password'  => DB_PASSWORD,
+      'charset'   => "utf8"
     ))));
 
 

@@ -875,7 +875,9 @@ class AdminController
                 WHERE HASH_KY IN (
                       SELECT HASH_KY
                         FROM HASHES
-                       WHERE EVENT_DATE >= DATE_SUB(NOW(), INTERVAL ? MONTH)))
+                       WHERE EVENT_DATE >= DATE_SUB(NOW(), INTERVAL ? MONTH))
+                GROUP BY HASHER_KY
+               HAVING COUNT(*) >= 5)
          ORDER BY HASHER_NAME";
 
       #Execute the SQL statement; create an array of rows

@@ -3875,7 +3875,7 @@ public function HaresOfTheYearsAction(Request $request, Application $app, int $h
     $topHaresSql .=
         "(SELECT COUNT(*) AS THE_HASH_COUNT
             FROM HASHES ".
-         ($hare_type == 0 ? "JOIN HARE_TYPES ON HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE" :
+         ($hare_type == 0 ? "" :
                             "JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY
                              JOIN HASH_TYPES ON HASH_TYPES.HASH_TYPE & KENNELS.HASH_TYPE_MASK != 0 AND HASHES.HASH_TYPE = HASH_TYPES.HASH_TYPE")."
            WHERE HASHES.KENNEL_KY = ? ".
@@ -3888,7 +3888,7 @@ public function HaresOfTheYearsAction(Request $request, Application $app, int $h
     	FROM HARINGS
     		JOIN HASHERS ON HARINGS.HARINGS_HASHER_KY = HASHERS.HASHER_KY
     		JOIN HASHES ON HARINGS.HARINGS_HASH_KY = HASHES.HASH_KY ".
-                ($hare_type != 0 ? "" : "JOIN HARE_TYPES ON HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE ")."
+                ($hare_type == 0 ? "" : "JOIN HARE_TYPES ON HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE ")."
     	WHERE
     		HASHES.KENNEL_KY = ?
     		AND YEAR(HASHES.EVENT_DATE) = ? ".

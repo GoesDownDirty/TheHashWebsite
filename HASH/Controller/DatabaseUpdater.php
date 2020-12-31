@@ -13,7 +13,8 @@ class DatabaseUpdater {
     $this->db = $db;
 
     $databaseVersion = $this->getDatabaseVersion();
-    if($databaseVersion != 2) {
+
+    if($databaseVersion != 5) {
 
       $has_semaphones = true;
 
@@ -54,6 +55,15 @@ class DatabaseUpdater {
             case 1:
               $this->createHashesView();
               $this->setDatabaseVersion(2);
+            case 2:
+              $this->createHashTypesTable();
+              $this->setDatabaseVersion(3);
+            case 3:
+              $this->createHareTypesTable();
+              $this->setDatabaseVersion(4);
+            case 4:
+              $this->recreateHashesView();
+              $this->setDatabaseVersion(5);
             default:
               break;
           }
@@ -80,8 +90,83 @@ class DatabaseUpdater {
     $this->app['dbs']['mysql_write']->executeStatement($sql, array());
   }
 
+  private function createHareTypesTable() {
+    $this->createTableIfNotExists("HARE_TYPES", "
+      CREATE TABLE HARE_TYPES (
+          `SEQ` INT NOT NULL,
+          `HARE_TYPE` INT NOT NULL,
+          `HARE_TYPE_NAME` VARCHAR(25) NOT NULL,
+          PRIMARY KEY (`HARE_TYPE`),
+          UNIQUE KEY (`SEQ`),
+          UNIQUE KEY (`HARE_TYPE_NAME`)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+
+    $this->executeStatements(array(
+      "INSERT INTO HARE_TYPES VALUES(10, 1<<0, 'Traditional')",
+      "INSERT INTO HARE_TYPES VALUES(30, 1<<2, 'Hyper')",
+      "ALTER TABLE HARINGS ADD `HARE_TYPE` INT",
+      "UPDATE HARINGS SET HARE_TYPE=1<<2 WHERE HARINGS_HASH_KY IN (SELECT HASH_KY FROM HASHES_TABLE WHERE HASH_TYPE=2)",
+      "UPDATE HARINGS SET HARE_TYPE=1<<0 WHERE HARINGS_HASH_KY IN (SELECT HASH_KY FROM HASHES_TABLE WHERE HASH_TYPE=1)",
+      "ALTER TABLE HARINGS CHANGE HARE_TYPE HARE_TYPE INT NOT NULL",
+      "ALTER TABLE HASH_TYPES ADD HARE_TYPE_MASK INT",
+      "UPDATE HASH_TYPES SET HARE_TYPE_MASK = 1<<0 WHERE HASH_TYPE_NAME='Regular'",
+      "UPDATE HASH_TYPES SET HARE_TYPE_MASK = 1<<2 WHERE HASH_TYPE_NAME='Hyper'",
+      "ALTER TABLE HASH_TYPES CHANGE HARE_TYPE_MASK HARE_TYPE_MASK INT NOT NULL",
+      "ALTER TABLE KENNELS ADD HARE_TYPE_MASK INT",
+      "UPDATE KENNELS SET HARE_TYPE_MASK = 1<<0 | 1<<2",
+      "ALTER TABLE KENNELS CHANGE HARE_TYPE_MASK HARE_TYPE_MASK INT NOT NULL",
+      "ALTER TABLE HARE_TYPES ADD CHART_COLOR VARCHAR(20)",
+      "DROP INDEX COMPOSITE1_idx ON HARINGS",
+      "CREATE UNIQUE INDEX COMPOSITE1_idx ON HARINGS(HARINGS_HASHER_KY, HARINGS_HASH_KY, HARE_TYPE)",
+      "UPDATE HARE_TYPES SET CHART_COLOR='255, 255, 0' WHERE HARE_TYPE_NAME = 'Traditional'",
+      "UPDATE HARE_TYPES SET CHART_COLOR='128, 255, 0' WHERE HARE_TYPE_NAME = 'Hyper'",
+      "ALTER TABLE HARE_TYPES CHANGE CHART_COLOR CHART_COLOR VARCHAR(20) NOT NULL"));
+  }
+
+  private function createHashTypesTable() {
+    $this->createTableIfNotExists("HASH_TYPES", "
+      CREATE TABLE HASH_TYPES (
+          `SEQ` INT NOT NULL,
+          `HASH_TYPE` INT NOT NULL,
+          `HASH_TYPE_NAME` VARCHAR(25) NOT NULL,
+          PRIMARY KEY (`HASH_TYPE`),
+          UNIQUE KEY (`SEQ`),
+          UNIQUE KEY (`HASH_TYPE_NAME`)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+
+    $this->executeStatements(array(
+      "INSERT INTO HASH_TYPES VALUES(10, 1<<0, 'Regular')",
+      "INSERT INTO HASH_TYPES VALUES(20, 1<<1, 'Hyper')",
+      "ALTER TABLE HASHES_TABLE ADD `HASH_TYPE` INT",
+      "UPDATE HASHES_TABLE SET HASH_TYPE=1<<0 WHERE IS_HYPER=0",
+      "UPDATE HASHES_TABLE SET HASH_TYPE=1<<1 WHERE IS_HYPER=1",
+      "ALTER TABLE KENNELS ADD HASH_TYPE_MASK INT",
+      "UPDATE KENNELS SET HASH_TYPE_MASK = 1<<0 | 1<<1",
+      "ALTER TABLE KENNELS CHANGE HASH_TYPE_MASK HASH_TYPE_MASK INT NOT NULL",
+      "ALTER TABLE HASHES_TABLE DROP IS_HYPER"));
+  }
+
+  private function executeStatements(array $arr) {
+    foreach($arr as $sql) {
+      $this->executeStatement($sql);
+    }
+  }
+
+  private function executeStatement(string $sql) {
+    $this->app['dbs']['mysql_write']->executeStatement($sql, array());
+  }
+
   private function createHashesView() {
     $sql = "ALTER TABLE HASHES RENAME TO HASHES_TABLE";
+    $this->app['dbs']['mysql_write']->executeStatement($sql, array());
+
+    $sql = "CREATE VIEW HASHES AS SELECT * FROM HASHES_TABLE WHERE EVENT_DATE <= NOW()";
+    $this->app['dbs']['mysql_write']->executeStatement($sql, array());
+  }
+
+  private function recreateHashesView() {
+    // TODO: why is this needed?
+    $sql = "DROP VIEW HASHES";
     $this->app['dbs']['mysql_write']->executeStatement($sql, array());
 
     $sql = "CREATE VIEW HASHES AS SELECT * FROM HASHES_TABLE WHERE EVENT_DATE <= NOW()";

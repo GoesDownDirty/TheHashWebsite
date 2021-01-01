@@ -86,7 +86,7 @@ class BaseController {
 
   protected function getHashingCountsQuery() {
    if(HAS_LEGACY_HASH_COUNTS) {
-     return "SELECT THE_KEY, NAME, SUM(VALUE) AS VALUE
+     return "SELECT THE_KEY, NAME, SUM(VALUE) AS VALUE, KENNEL_KY
                FROM (
              SELECT HASHERS.HASHER_KY AS THE_KEY,
                     HASHERS.HASHER_NAME AS NAME,

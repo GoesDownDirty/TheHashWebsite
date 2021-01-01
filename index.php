@@ -431,6 +431,10 @@ $app->post('/admin/event/getHashersForEvent',                      'HASH\Control
 $app->get('/admin/listOrphanedHashers',                             'HASH\Controller\AdminController::listOrphanedHashersAction');
 
 $app->get('/admin/roster',                                          'HASH\Controller\AdminController::roster');
+$app->get('/admin/{kennel_abbreviation}/roster',                    'HASH\Controller\AdminController::roster');
+$app->get('/admin/awards/{type}',                                   'HASH\Controller\AdminController::awards');
+$app->get('/admin/{kennel_abbreviation}/awards/{type}',             'HASH\Controller\AdminController::awards');
+$app->post('/admin/updateHasherAward',                              'HASH\Controller\AdminController::updateHasherAwardAjaxAction');
 
 $app->get('/admin/listhashes2',                                    'HASH\Controller\AdminController::listHashesPreActionJson');
 $app->post('/admin/listhashes2',                                   'HASH\Controller\AdminController::getHashListJson');

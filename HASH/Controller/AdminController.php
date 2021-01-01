@@ -18,7 +18,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
 
 
-class AdminController
+class AdminController extends BaseController
 {
 
   public static $stateDropdownArray = array(
@@ -862,28 +862,51 @@ class AdminController
 
   }
 
-  public function roster(Request $request, Application $app) {
-    for($i=1; $i<3; $i++) {
+  public function roster(Request $request, Application $app, string $kennel_abbreviation = null) {
 
-      #Define the SQL to execute
-      $sql = "
-        SELECT HASHER_NAME
-          FROM HASHERS
-         WHERE HASHERS.HASHER_KY IN (
-               SELECT HASHER_KY
-                 FROM HASHINGS
-                WHERE HASH_KY IN (
-                      SELECT HASH_KY
-                        FROM HASHES
-                       WHERE EVENT_DATE >= DATE_SUB(NOW(), INTERVAL ? MONTH))
-                GROUP BY HASHER_KY
-               HAVING COUNT(*) >= 5)
-         ORDER BY HASHER_NAME";
+    if($kennel_abbreviation) {
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+    } else {
+      $kennels = $this->getKennels($app);
 
-      #Execute the SQL statement; create an array of rows
-      $theList = $app['db']->fetchAll($sql, array($i * 6));
+      if(count($kennels) == 1) {
+        $kennelKy = $kennels[0]['KENNEL_KY'];
+      } else {
+        return $app['twig']->render('admin_select_kennel.twig',array(
+          'kennels' => $kennels,
+          'pageTracking' => 'AdminSelectKennel',
+          'pageTitle' => 'Select Kennel',
+          'urlSuffix' => 'roster'));
+      }
+    }
 
-      if(count($theList) > 0) break;
+    // Start with 5 minimum hashes in the last 6 months...
+    // if <15 results, widen the search
+    for($j=5; $j>0; $j--) {
+      for($i=1; $i<3; $i++) {
+
+        #Define the SQL to execute
+        $sql = "
+          SELECT HASHER_NAME
+            FROM HASHERS
+           WHERE HASHERS.HASHER_KY IN (
+                 SELECT HASHER_KY
+                   FROM HASHINGS
+                  WHERE HASH_KY IN (
+                        SELECT HASH_KY
+                          FROM HASHES
+                         WHERE EVENT_DATE >= DATE_SUB(NOW(), INTERVAL ? MONTH)
+                           AND KENNEL_KY = ?)
+                  GROUP BY HASHER_KY
+                 HAVING COUNT(*) >= ?)
+           ORDER BY HASHER_NAME";
+
+        #Execute the SQL statement; create an array of rows
+        $theList = $app['db']->fetchAll($sql, array($i * 6, (int) $kennelKy, $j));
+
+        if(count($theList) > 15) break;
+      }
+      if(count($theList) > 15) break;
     }
 
     # Establish and set the return value
@@ -891,6 +914,128 @@ class AdminController
       'theList' => $theList
     ));
     #Return the return value
+    return $returnValue;
+  }
+
+  private function getKennels(Application $app) {
+    $sql = "
+      SELECT KENNEL_KY, KENNEL_ABBREVIATION
+        FROM KENNELS
+       WHERE IN_RECORD_KEEPING = 1
+       ORDER BY KENNEL_ABBREVIATION";
+
+    return $app['db']->fetchAll($sql, array());
+  }
+
+  public function awards(Request $request, Application $app, string $kennel_abbreviation = null, string $type) {
+
+    if($kennel_abbreviation) {
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+    } else {
+      $kennels = $this->getKennels($app);
+
+      if(count($kennels) == 1) {
+        $kennelKy = $kennels[0]['KENNEL_KY'];
+      } else {
+        return $app['twig']->render('admin_select_kennel.twig',array(
+          'kennels' => $kennels,
+          'pageTracking' => 'AdminSelectKennel',
+          'pageTitle' => 'Select Kennel',
+          'urlSuffix' => 'awards/'.$type));
+      }
+    }
+
+    # Declare the SQL used to retrieve this information
+    $sql =
+      "SELECT THE_KEY, NAME, VALUE,
+              HASHER_AWARDS.LAST_AWARD_LEVEL_RECOGNIZED AS LAST_AWARD,".
+              ($type == "pending" ? "MAX" : "MIN")."(AWARD_LEVELS.AWARD_LEVEL) AS NEXT_AWARD_LEVEL
+         FROM (".$this->getHashingCountsQuery().") HASHER_COUNTS
+         LEFT JOIN HASHER_AWARDS
+           ON HASHER_COUNTS.THE_KEY = HASHER_AWARDS.HASHER_KY
+          AND HASHER_COUNTS.KENNEL_KY = HASHER_AWARDS.KENNEL_KY
+         JOIN AWARD_LEVELS
+           ON AWARD_LEVELS.KENNEL_KY = HASHER_COUNTS.KENNEL_KY
+        WHERE AWARD_LEVELS.AWARD_LEVEL > COALESCE(HASHER_AWARDS.LAST_AWARD_LEVEL_RECOGNIZED, 0)".
+              ($type == "pending" ? "
+          AND (VALUE + 5) > AWARD_LEVELS.AWARD_LEVEL" : "
+          AND VALUE <= AWARD_LEVELS.AWARD_LEVEL
+          AND AWARD_LEVELS.AWARD_LEVEL > HASHER_AWARDS.LAST_AWARD_LEVEL_RECOGNIZED")."
+        GROUP BY THE_KEY, NAME, VALUE, HASHER_AWARDS.LAST_AWARD_LEVEL_RECOGNIZED
+        ORDER BY VALUE DESC, NAME";
+
+    #Execute the SQL statement; create an array of rows
+    $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy, (int) $kennelKy));
+
+    # Establish and set the return value
+    $returnValue = $app['twig']->render('admin_awards.twig',array(
+      'pageTitle' => 'Hasher Awards',
+      'tableCaption' => 'Hashers, awards due, and last awards given.  Click the checkbox when a hasher receives their next award.',
+      'theList' => $hasherList,
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'kennel_key' => $kennelKy,
+      'pageTracking' => 'Hasher Awards',
+      'type' => $type
+    ));
+
+    #Return the return value
+    return $returnValue;
+  }
+
+  public function updateHasherAwardAjaxAction(Request $request, Application $app) {
+
+    #Establish the return message
+    $returnMessage = "This has not been set yet...";
+
+    #Obtain the post values
+    $hasherKey = $request->request->get('hasher_key');
+    $kennelKey = $request->request->get('kennel_key');
+    $awardLevel = $request->request->get('award_level');
+
+    #Obtain the csrf token
+    $csrfToken = $request->request->get('csrf_token');
+
+    #Check if the csrf token is valid
+    /*
+    if($this->isCsrfTokenValid('delete',$csrfToken)){
+      $returnValue =  $app->json("valid", 200);
+      return $returnValue;
+    }else{
+      $returnValue =  $app->json("not valid", 200);
+      return $returnValue;
+    }
+    */
+
+    #Validate the post values; ensure that they are both numbers
+    if(ctype_digit($hasherKey) & ctype_digit($kennelKey)) {
+
+      $sql = "SELECT 1 FROM HASHER_AWARDS WHERE HASHER_KY = ? AND KENNEL_KY = ?";
+
+      $exists = $app['db']->fetchAssoc($sql, array((int) $hasherKey, (int) $kennelKey));
+
+      if($exists) {
+        $sql = "UPDATE HASHER_AWARDS SET LAST_AWARD_LEVEL_RECOGNIZED = ? WHERE HASHER_KY = ? AND KENNEL_KY = ?";
+      } else {
+        $sql = "INSERT INTO HASHER_AWARDS(LAST_AWARD_LEVEL_RECOGNIZED, HASHER_KY, KENNEL_KY) VALUES(?,?,?)";
+      }
+
+      try {
+        $app['dbs']['mysql_write']->executeUpdate($sql, array((int) $awardLevel, (int) $hasherKey, (int) $kennelKey));
+
+        $returnMessage = "Success!";
+      } catch (PDOException $theException) {
+
+        $tempActionType = "Update Hasher Award";
+        $tempActionDescription = "Failed to update hasher award for $hasherKey";
+        AdminController::auditTheThings($request, $app, $tempActionType, $tempActionDescription);
+
+        #Define the return message
+        $returnMessage = "Oh crap. Something bad happened.";
+      }
+    }
+
+    #Set the return value
+    $returnValue =  $app->json($returnMessage, 200);
     return $returnValue;
   }
 }

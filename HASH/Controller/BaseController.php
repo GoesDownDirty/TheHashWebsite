@@ -90,7 +90,8 @@ class BaseController {
                FROM (
              SELECT HASHERS.HASHER_KY AS THE_KEY,
                     HASHERS.HASHER_NAME AS NAME,
-                    COUNT(0) AS VALUE
+                    COUNT(0) AS VALUE,
+                    HASHES.KENNEL_KY AS KENNEL_KY
                FROM HASHERS
                JOIN HASHINGS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY
                JOIN HASHES on HASHINGS.HASH_KY = HASHES.HASH_KY
@@ -99,7 +100,8 @@ class BaseController {
               UNION ALL
              SELECT HASHERS.HASHER_KY AS THE_KEY,
                     HASHERS.HASHER_NAME AS NAME,
-                    LEGACY_HASHINGS.LEGACY_HASHINGS_COUNT AS VALUE
+                    LEGACY_HASHINGS.LEGACY_HASHINGS_COUNT AS VALUE,
+                    LEGACY_HASHINGS.KENNEL_KY AS KENNEL_KY
                FROM HASHERS
                JOIN LEGACY_HASHINGS ON HASHERS.HASHER_KY = LEGACY_HASHINGS.HASHER_KY
               WHERE LEGACY_HASHINGS.KENNEL_KY = ?) AS HASH_COUNTS_INNER
@@ -109,7 +111,8 @@ class BaseController {
 
    return "SELECT HASHERS.HASHER_KY AS THE_KEY,
                   HASHERS.HASHER_NAME AS NAME,
-                  COUNT(0) AS VALUE
+                  COUNT(0) AS VALUE,
+                  HASHES.KENNEL_KY AS KENNEL_KY
              FROM HASHERS
              JOIN HASHINGS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY
              JOIN HASHES on HASHINGS.HASH_KY = HASHES.HASH_KY

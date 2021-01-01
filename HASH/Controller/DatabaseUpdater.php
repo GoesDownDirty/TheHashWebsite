@@ -14,7 +14,7 @@ class DatabaseUpdater {
 
     $databaseVersion = $this->getDatabaseVersion();
 
-    if($databaseVersion != 5) {
+    if($databaseVersion != 6) {
 
       $has_semaphones = true;
 
@@ -64,6 +64,9 @@ class DatabaseUpdater {
             case 4:
               $this->recreateHashesView();
               $this->setDatabaseVersion(5);
+            case 5:
+              $this->createAwardsTables();
+              $this->setDatabaseVersion(6);
             default:
               break;
           }
@@ -88,6 +91,42 @@ class DatabaseUpdater {
   private function dropLockTable() {
     $sql = "DROP TABLE DATABASE_UPGRADE_IN_PROGRESS";
     $this->app['dbs']['mysql_write']->executeStatement($sql, array());
+  }
+
+  private function createAwardsTables() {
+    $this->createTableIfNotExists("AWARD_LEVELS", "
+      CREATE TABLE AWARD_LEVELS (
+          `KENNEL_KY` int(11) NOT NULL,
+          `AWARD_LEVEL` INT NOT NULL,
+          PRIMARY KEY (`KENNEL_KY`, `AWARD_LEVEL`)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+
+    $this->createTableIfNotExists("HASHER_AWARDS", "
+      CREATE TABLE HASHER_AWARDS (
+          `KENNEL_KY` int(11) NOT NULL,
+          `HASHER_KY` int(11) NOT NULL,
+          `LAST_AWARD_LEVEL_RECOGNIZED` INT NOT NULL,
+          PRIMARY KEY (`KENNEL_KY`, `HASHER_KY`),
+          CONSTRAINT `HASHER_AWARDS_HASHER_KY` FOREIGN KEY (`HASHER_KY`) REFERENCES `HASHERS` (`HASHER_KY`) ON DELETE NO ACTION ON UPDATE NO ACTION
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+
+    // TODO: need to autopopulate award levels when a new kennel is
+    // added to record keeping
+    $this->executeStatements(array(
+      "INSERT INTO AWARD_LEVELS SELECT KENNEL_KY, 10 FROM KENNELS WHERE IN_RECORD_KEEPING=1",
+      "INSERT INTO AWARD_LEVELS SELECT KENNEL_KY, 25 FROM KENNELS WHERE IN_RECORD_KEEPING=1",
+      "INSERT INTO AWARD_LEVELS SELECT KENNEL_KY, 50 FROM KENNELS WHERE IN_RECORD_KEEPING=1",
+      "INSERT INTO AWARD_LEVELS SELECT KENNEL_KY, 69 FROM KENNELS WHERE IN_RECORD_KEEPING=1",
+      "INSERT INTO AWARD_LEVELS SELECT KENNEL_KY, 100 FROM KENNELS WHERE IN_RECORD_KEEPING=1",
+      "INSERT INTO AWARD_LEVELS SELECT KENNEL_KY, 200 FROM KENNELS WHERE IN_RECORD_KEEPING=1",
+      "INSERT INTO AWARD_LEVELS SELECT KENNEL_KY, 300 FROM KENNELS WHERE IN_RECORD_KEEPING=1",
+      "INSERT INTO AWARD_LEVELS SELECT KENNEL_KY, 400 FROM KENNELS WHERE IN_RECORD_KEEPING=1",
+      "INSERT INTO AWARD_LEVELS SELECT KENNEL_KY, 500 FROM KENNELS WHERE IN_RECORD_KEEPING=1",
+      "INSERT INTO AWARD_LEVELS SELECT KENNEL_KY, 600 FROM KENNELS WHERE IN_RECORD_KEEPING=1",
+      "INSERT INTO AWARD_LEVELS SELECT KENNEL_KY, 700 FROM KENNELS WHERE IN_RECORD_KEEPING=1",
+      "INSERT INTO AWARD_LEVELS SELECT KENNEL_KY, 800 FROM KENNELS WHERE IN_RECORD_KEEPING=1",
+      "INSERT INTO AWARD_LEVELS SELECT KENNEL_KY, 900 FROM KENNELS WHERE IN_RECORD_KEEPING=1",
+      "INSERT INTO AWARD_LEVELS SELECT KENNEL_KY, 1000 FROM KENNELS WHERE IN_RECORD_KEEPING=1"));
   }
 
   private function createHareTypesTable() {

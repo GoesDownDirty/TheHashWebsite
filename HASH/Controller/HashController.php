@@ -4488,7 +4488,7 @@ public function jumboPercentagesTablePostActionJson(Request $request, Applicatio
   $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
   $hareTypes = $this->getHareTypes($app, $kennelKy);
-  $hashTypes = $this->getHashTypes($app, $kennelKy, $hare_type);
+  $hashTypes = $this->getHashTypes($app, $kennelKy, 0);
 
   if(count($hareTypes) == 1) {
     $hareTypes = array();

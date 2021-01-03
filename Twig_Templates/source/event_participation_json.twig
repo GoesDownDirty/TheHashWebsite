@@ -254,7 +254,15 @@ $(document).ready(function() {
 
 
 
-    <h2>Participation for <a target = "blank" href="/{{kennel_abbreviation}}/consolidatedEventAnalversaries/{{hash_key}}">{{kennel_abbreviation}} #{{kennel_event_number}}</a></h2>
+    <h2>Participation for
+    {% if show_event_link %}
+    <a target = "blank" href="/{{kennel_abbreviation}}/consolidatedEventAnalversaries/{{hash_key}}">
+    {% endif %}
+    {{kennel_abbreviation}} #{{kennel_event_number}}
+    {% if show_event_link %}
+    </a>
+    {% endif %}
+    </h2>
     <div id="statusMessage"></div>
 
     <h3><div id="hareCount" data-role="content"></div></h3>

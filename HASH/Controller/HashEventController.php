@@ -515,7 +515,7 @@ class HashEventController
 
 
       #Obtain hash event information
-      $hashEventInfoSQL = "SELECT * FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
+      $hashEventInfoSQL = "SELECT *, EVENT_DATE < NOW() AS SHOW_EVENT_LINK FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
       #Execute the SQL statement; create an array of rows
       $hasherList = $app['db']->fetchAll($hasherListSQL,array((int)$hash_id));
@@ -536,7 +536,8 @@ class HashEventController
         'hareList' => $hareList,
         'hash_key'=> $hash_id,
         'kennel_abbreviation' => $kennelAbbreviation,
-        'kennel_event_number' => $kennelEventNumber
+        'kennel_event_number' => $kennelEventNumber,
+        'show_event_link' => $hashEvent['SHOW_EVENT_LINK']
       ));
 
       #Return the return value

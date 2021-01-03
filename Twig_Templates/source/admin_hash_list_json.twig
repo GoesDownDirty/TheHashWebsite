@@ -17,13 +17,12 @@ $(document).ready(function() {
     "processing": true,
     "serverSide": true,
     "ajax": {
-        "url": "/admin/listhashes2",
+        "url": "/admin/{{kennel_abbreviation}}/listhashes2",
         "type": "POST"
     },
     "columns": [
 
       { "data": "KENNEL_EVENT_NUMBER" },
-      { "data": "KENNEL_ABBREVIATION" },
       {
         "data": "HASH_KY",
         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
@@ -46,13 +45,12 @@ $(document).ready(function() {
 {% if totalHashesToUpdate > 0 %}
 <h4>{{totalHashesToUpdate}} of {{totalHashes}} are left to update</hf>
 {% endif %}
-<h4><a href="/admin/newhash/ajaxform"><b>Click to create an event !</b></a></h4>
+<h4><a href="/admin/{{kennel_abbreviation}}/newhash/ajaxform"><b>Click to create an event !</b></a></h4>
 
 <table class="table table-condensed table-hover" id="the_main_table">
   <thead>
     <tr>
       <th>#</th>
-      <td>Kennel</td>
       <td>Actions</td>
       <td>Date</td>
       <td>Location</td>

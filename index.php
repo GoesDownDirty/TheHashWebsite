@@ -359,8 +359,8 @@ $app->get('/{kennel_abbreviation}/hasherNameAnalysis2',            'HASH\Control
 $app->get('/{kennel_abbreviation}/hasherNameAnalysisWordCloud',            'HASH\Controller\ObscureStatisticsController::hasherNameAnalysisWordCloudAction');
 
 # Hash event creation (ajaxified)
-$app->get('/admin/newhash/ajaxform', 'HASH\Controller\HashEventController::adminCreateHashAjaxPreAction');
-$app->post('/admin/newhash/ajaxform', 'HASH\Controller\HashEventController::adminCreateHashAjaxPostAction');
+$app->get('/admin/{kennel_abbreviation}/newhash/ajaxform', 'HASH\Controller\HashEventController::adminCreateHashAjaxPreAction');
+$app->post('/admin/{kennel_abbreviation}/newhash/ajaxform', 'HASH\Controller\HashEventController::adminCreateHashAjaxPostAction');
 
 # Hash event modification (ajaxified)
 $app->get('/admin/edithash/ajaxform/{hash_id}', 'HASH\Controller\HashEventController::adminModifyHashAjaxPreAction');
@@ -437,7 +437,8 @@ $app->get('/admin/{kennel_abbreviation}/awards/{type}',             'HASH\Contro
 $app->post('/admin/updateHasherAward',                              'HASH\Controller\AdminController::updateHasherAwardAjaxAction');
 
 $app->get('/admin/listhashes2',                                    'HASH\Controller\AdminController::listHashesPreActionJson');
-$app->post('/admin/listhashes2',                                   'HASH\Controller\AdminController::getHashListJson');
+$app->get('/admin/{kennel_abbreviation}/listhashes2',              'HASH\Controller\AdminController::listHashesPreActionJson');
+$app->post('/admin/{kennel_abbreviation}/listhashes2',             'HASH\Controller\AdminController::getHashListJson');
 
 $app->get('/admin/listhashers2',                                    'HASH\Controller\AdminController::listHashersPreActionJson');
 $app->post('/admin/listhashers2',                                   'HASH\Controller\AdminController::getHashersListJson');

@@ -71,7 +71,7 @@ function formSubmitAction(){
 
 
   $.ajax({
-      url : "/admin/newhash/ajaxform",
+      url : "/admin/{{kennel_abbreviation}}/newhash/ajaxform",
       type: "POST",
       data : jsonifiedForm,
       dataType : 'json',
@@ -100,10 +100,6 @@ function formSubmitAction(){
 $(function(){
   var validator = $("#the_form").validate({
     rules:{
-      kennelName: {
-        required:true,
-        minlength:1
-      },
       hashEventNumber: {
         required:true,
         minlength:1
@@ -122,10 +118,6 @@ $(function(){
       }
     },
     messages:{
-      kennelName: {
-        required: "Thou shalt provide a kennel name",
-        minlength: jQuery.validator.format("Enter at least {0} characters")
-      },
       hashEventNumber: {
           required: "Thou shalt provide a hash event number",
           minlength: jQuery.validator.format("Enter at least {0} characters")
@@ -178,11 +170,7 @@ $(function(){
   <div class="form-group">
     <label for"kennelName" class="col-sm-2 control-label">Kennel Name</label>
     <div class="col-sm-4">
-      <select class="form-control" id="kennelName" name="kennelName">
-        {% for abbreviation,kennelKey in kennelList %}
-          <option value="{{kennelKey}}">{{abbreviation}}</option>
-          {% endfor %}
-        </select>
+      {{ kennel_abbreviation }}
     </div>
 
     <label for"hashEventNumber" class="col-sm-2 control-label">Hash Event Number</label>

@@ -99,10 +99,6 @@ function formSubmitAction(){
 $(function(){
   var validator = $("#the_form").validate({
     rules:{
-      kennelName: {
-        required:true,
-        minlength:1
-      },
       hashEventDescription: {
         required:true,
         minlength:3
@@ -117,10 +113,6 @@ $(function(){
       }
     },
     messages:{
-      kennelName: {
-        required: "Thou shalt provide a kennel name",
-        minlength: jQuery.validator.format("Enter at least {0} characters")
-      },
       hashEventDescription: {
           required: "Thou shalt provide a hash event description",
           minlength: jQuery.validator.format("Enter at least {0} characters")
@@ -169,22 +161,12 @@ $(function(){
   <div class="form-group">
     <label for"kennelName" class="col-sm-2 control-label">Kennel Name</label>
     <div class="col-sm-4">
-      <select class="form-control" id="kennelName" name="kennelName">
-        {% for abbreviation,kennelKey in kennelList %}
-          <option
-            {% if hashValue.KENNEL_KY == kennelKey %}
-              selected="selected"
-            {% endif %}
-            value="{{kennelKey}}">
-            {{abbreviation}}
-          </option>
-          {% endfor %}
-        </select>
+      {{hashValue.KENNEL_ABBREVIATION}}
     </div>
 
     <label for"hashEventNumber" class="col-sm-2 control-label">Hash Event Number</label>
     <div class="col-sm-4">
-      {{hashValue.KENNEL_EVENT_NUMBER}}
+      <input type="text" class="form-control" id="hashEventNumber" name="hashEventNumber" value="{{hashValue.KENNEL_EVENT_NUMBER}}">
     </div>
   </div>
 

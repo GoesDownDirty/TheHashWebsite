@@ -108,27 +108,15 @@ class HashEventController extends BaseController {
   }
 
   #Define action
-  public function adminCreateHashAjaxPreAction(Request $request, Application $app){
+  public function adminCreateHashAjaxPreAction(Request $request, Application $app, string $kennel_abbreviation) {
 
-    #Obtain list of kennels
-    $kennelsSQL = "SELECT KENNEL_KY, KENNEL_ABBREVIATION  FROM KENNELS WHERE IN_RECORD_KEEPING = 1";
-
-    #Execute the SQL statement; create an array of rows
-    $kennelList = $app['db']->fetchAll($kennelsSQL);
-
-    #Convert kennel list to the appropriate format for a dropdown menu
-    $kennelDropdown = array();
-    foreach ($kennelList as $kennelValue){
-      $tempKennelAbbreviation = $kennelValue['KENNEL_ABBREVIATION'];
-      $tempKennelKey = $kennelValue['KENNEL_KY'];
-      $kennelDropdown[$tempKennelAbbreviation] = $tempKennelKey;
-    }
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
     $returnValue = $app['twig']->render('new_hash_form_ajax.twig', array(
       'pageTitle' => 'Create an Event!',
       'pageHeader' => 'Page Header',
-      'kennelList' => $kennelDropdown,
-      'hashTypes' => $this->getAllHashTypes($app),
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'hashTypes' => $this->getHashTypes($app, $kennelKy, 0),
       'geocode_api_value' => GOOGLE_PLACES_API_WEB_SERVICE_KEY
     ));
 
@@ -137,18 +125,13 @@ class HashEventController extends BaseController {
 
   }
 
-    public function adminCreateHashAjaxPostAction(Request $request, Application $app){
+    public function adminCreateHashAjaxPostAction(Request $request, Application $app, $kennel_abbreviation) {
+
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
       #Establish the return message
       $returnMessage = "This has not been set yet...";
 
-      #Obtain list of kennels
-      $kennelsSQL = "SELECT KENNEL_KY, KENNEL_ABBREVIATION  FROM KENNELS WHERE IN_RECORD_KEEPING = 1";
-
-      #Execute the SQL statement; create an array of rows
-      $kennelList = $app['db']->fetchAll($kennelsSQL);
-
-      $theKennel = trim(strip_tags($request->request->get('kennelName')));
       $theHashEventNumber = trim(strip_tags($request->request->get('hashEventNumber')));
       $theHashEventDescription = trim(strip_tags($request->request->get('hashEventDescription')));
       $theHashType= trim(strip_tags($request->request->get('hashType')));
@@ -174,12 +157,6 @@ class HashEventController extends BaseController {
 
       // Establish the return message value as empty (at first)
       $returnMessage = "";
-
-      if(!is_numeric($theKennel)){
-        $passedValidation = FALSE;
-        //$app['monolog']->addDebug("--- theKennel failed validation: $theKennel");
-        $returnMessage .= " |Failed validation on the kennel";
-      }
 
       if(!(is_numeric($theLat)||empty($theLat))){
         $passedValidation = FALSE;
@@ -250,12 +227,8 @@ class HashEventController extends BaseController {
             LNG
           ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-
-
-
-
           $app['dbs']['mysql_write']->executeUpdate($sql,array(
-            $theKennel,
+            $kennelKy,
             $theHashEventNumber,
             $theEventDateAndTime,
             $theLocationDescription,
@@ -279,13 +252,7 @@ class HashEventController extends BaseController {
 
         #Audit this activity
         $actionType = "Event Creation (Ajax)";
-        $tempKennelAbbreviation2 = "Unknown";
-        foreach ($kennelList as $kennelValue){
-          if($kennelValue['KENNEL_KY'] == $theKennel){
-            $tempKennelAbbreviation2 = $kennelValue['KENNEL_ABBREVIATION'];
-          }
-        }
-        $actionDescription = "Created event ($tempKennelAbbreviation2 # $theHashEventNumber)";
+        $actionDescription = "Created event ($kennel_abbreviation # $theHashEventNumber)";
         AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
 
 
@@ -314,12 +281,6 @@ class HashEventController extends BaseController {
     #Define action
     public function adminModifyHashAjaxPreAction(Request $request, Application $app, int $hash_id){
 
-      #Obtain list of kennels
-      $kennelsSQL = "SELECT KENNEL_KY, KENNEL_ABBREVIATION  FROM KENNELS WHERE IN_RECORD_KEEPING = 1";
-
-      #Execute the SQL statement; create an array of rows
-      $kennelList = $app['db']->fetchAll($kennelsSQL);
-
       # Declare the SQL used to retrieve this information
       $sql = "
         SELECT *, date_format(event_date, '%Y-%m-%d' ) AS EVENT_DATE_DATE,
@@ -334,19 +295,10 @@ class HashEventController extends BaseController {
       # Make a database call to obtain the hasher information
       $hashValue = $app['db']->fetchAssoc($sql, array((int) $hash_id));
 
-      #Convert kennel list to the appropriate format for a dropdown menu
-      $kennelDropdown = array();
-      foreach ($kennelList as $kennelValue){
-        $tempKennelAbbreviation = $kennelValue['KENNEL_ABBREVIATION'];
-        $tempKennelKey = $kennelValue['KENNEL_KY'];
-        $kennelDropdown[$tempKennelAbbreviation] = $tempKennelKey;
-      }
-
       $returnValue = $app['twig']->render('edit_hash_form_ajax.twig', array(
         'pageTitle' => 'Modify an Event!',
         'pageHeader' => 'Page Header',
-        'hashTypes' => $this->getAllHashTypes($app),
-        'kennelList' => $kennelDropdown,
+        'hashTypes' => $this->getHashTypes($app, $hashValue['KENNEL_KY'], 0),
         'geocode_api_value' => GOOGLE_PLACES_API_WEB_SERVICE_KEY,
         'hashValue' => $hashValue,
         'hashKey' => $hash_id
@@ -363,14 +315,7 @@ class HashEventController extends BaseController {
       #Establish the return message
       $returnMessage = "This has not been set yet...";
 
-      #Obtain list of kennels
-      $kennelsSQL = "SELECT KENNEL_KY, KENNEL_ABBREVIATION  FROM KENNELS WHERE IN_RECORD_KEEPING = 1";
-
-      #Execute the SQL statement; create an array of rows
-      $kennelList = $app['db']->fetchAll($kennelsSQL);
-
-      $theKennel = trim(strip_tags($request->request->get('kennelName')));
-      //$theHashEventNumber = trim(strip_tags($request->request->get('hashEventNumber')));
+      $theHashEventNumber = trim(strip_tags($request->request->get('hashEventNumber')));
       $theHashEventDescription = trim(strip_tags($request->request->get('hashEventDescription')));
       $theHashType= trim(strip_tags($request->request->get('hashType')));
       $theEventDate= trim(strip_tags($request->request->get('eventDate')));
@@ -396,12 +341,6 @@ class HashEventController extends BaseController {
 
       // Establish the return message value as empty (at first)
       $returnMessage = "";
-
-      if(!is_numeric($theKennel)){
-        $passedValidation = FALSE;
-        //$app['monolog']->addDebug("--- theKennel failed validation: $theKennel");
-        $returnMessage .= " |Failed validation on the kennel";
-      }
 
       if(!(is_numeric($theLat)||empty($theLat))){
         $passedValidation = FALSE;
@@ -453,7 +392,7 @@ class HashEventController extends BaseController {
         $sql = "
           UPDATE HASHES_TABLE
             SET
-              KENNEL_KY = ?,
+              KENNEL_EVENT_NUMBER = ?,
               EVENT_DATE = ?,
               EVENT_LOCATION = ?,
               EVENT_CITY = ?,
@@ -473,7 +412,7 @@ class HashEventController extends BaseController {
            WHERE HASH_KY = ?";
 
           $app['dbs']['mysql_write']->executeUpdate($sql,array(
-            $theKennel,
+            $theHashEventNumber,
             $theEventDateAndTime,
             $theLocationDescription,
             $theLocality,
@@ -502,19 +441,12 @@ class HashEventController extends BaseController {
         #Audit this activity
         $tempEventNumber = $hashValue['KENNEL_EVENT_NUMBER'];
         $actionType = "Event Modification (Ajax)";
-        $tempKennelAbbreviation2 = "Unknown";
-        foreach ($kennelList as $kennelValue){
-          if($kennelValue['KENNEL_KY'] == $theKennel){
-            $tempKennelAbbreviation2 = $kennelValue['KENNEL_ABBREVIATION'];
-          }
-        }
+        $tempKennelAbbreviation2 = $hashValue['KENNEL_ABBREVIATION'];
         $actionDescription = "Modified event ($tempKennelAbbreviation2 # $tempEventNumber)";
         AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
 
-
         // Establish the return value message
         $returnMessage = "Success! Great, it worked";
-
       }
 
       #Set the return value

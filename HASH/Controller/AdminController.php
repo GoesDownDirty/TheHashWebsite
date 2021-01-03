@@ -514,43 +514,55 @@ class AdminController extends BaseController
 
 
   #Define the action
-  public function listHashesPreActionJson(Request $request, Application $app){
+  public function listHashesPreActionJson(Request $request, Application $app, string $kennel_abbreviation = null) {
 
+    if($kennel_abbreviation) {
+      $kennelKy = (int) $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+    } else {
+      $kennels = $this->getKennels($app);
 
+      if(count($kennels) == 1) {
+        $kennelKy = (int) $kennels[0]['KENNEL_KY'];
+        $kennel_abbreviation = $kennels[0]['KENNEL_ABBREVIATION'];
+      } else {
+        return $app['twig']->render('admin_select_kennel.twig',array(
+          'kennels' => $kennels,
+          'pageTracking' => 'AdminSelectKennel',
+          'pageTitle' => 'Select Kennel',
+          'urlSuffix' => 'listhashes2'));
+      }
+    }
 
     #Define the sql that gets the overall counts
-    $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHES_TABLE";
+    $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHES_TABLE WHERE KENNEL_KY = ?";
 
     #Perform the untiltered count
-    $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
+    $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array($kennelKy)))['THE_COUNT'];
 
     #Define the sql that gets the overall counts
-    $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHES_TABLE WHERE PLACE_ID is null";
+    $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHES_TABLE WHERE PLACE_ID is null AND KENNEL_KY = ?";
 
     #Perform the untiltered count
-    $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array()))['THE_COUNT'];
-
-
-
+    $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array($kennelKy)))['THE_COUNT'];
 
     # Establish and set the return value
     $returnValue = $app['twig']->render('admin_hash_list_json.twig',array(
-      'pageTitle' => 'The List of Hashes (Experimental Page)',
+      'pageTitle' => 'The List of Hashes',
       'pageSubTitle' => 'The List of *ALL* Hashes',
       'pageCaption' => "",
       'tableCaption' => "",
+      'kennel_abbreviation' => $kennel_abbreviation,
       'totalHashes' => $theUnfilteredCount,
       'totalHashesToUpdate' => $theFilteredCount
     ));
 
     #Return the return value
     return $returnValue;
-
   }
 
+  public function getHashListJson(Request $request, Application $app, string $kennel_abbreviation){
 
-
-  public function getHashListJson(Request $request, Application $app){
+    $kennelKy = (int) $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
     #$app['monolog']->addDebug("Entering the function------------------------");
 
@@ -614,38 +626,37 @@ class AdminController extends BaseController
     #Define the sql that performs the filtering
     $sql = "SELECT
         KENNEL_EVENT_NUMBER,
-        KENNEL_ABBREVIATION,
         HASH_KY,
         DATE_FORMAT(EVENT_DATE,\"%Y/%m/%d\") AS EVENT_DATE,
         EVENT_LOCATION,
         SPECIAL_EVENT_DESCRIPTION,
         PLACE_ID
-      FROM HASHES_TABLE JOIN KENNELS on HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY
+      FROM HASHES_TABLE
       WHERE
         (
           KENNEL_EVENT_NUMBER LIKE ? OR
-          KENNEL_ABBREVIATION LIKE ? OR
           EVENT_DATE LIKE ? OR
           EVENT_LOCATION LIKE ?  OR
           SPECIAL_EVENT_DESCRIPTION LIKE ?
         )
+        AND KENNEL_KY = ?
       ORDER BY $inputOrderColumnIncremented $inputOrderDirectionExtracted
       LIMIT $inputStart,$inputLength";
       #$app['monolog']->addDebug("sql: $sql");
 
     #Define the SQL that gets the count for the filtered results
     $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT
-    FROM HASHES_TABLE JOIN KENNELS on HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY
+    FROM HASHES_TABLE
     WHERE
       (
         KENNEL_EVENT_NUMBER LIKE ? OR
-        KENNEL_ABBREVIATION LIKE ? OR
         EVENT_DATE LIKE ? OR
         EVENT_LOCATION LIKE ? OR
-        SPECIAL_EVENT_DESCRIPTION LIKE ?)";
+        SPECIAL_EVENT_DESCRIPTION LIKE ?)
+        AND KENNEL_KY = ?";
 
     #Define the sql that gets the overall counts
-    $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHES_TABLE";
+    $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHES_TABLE WHERE KENNEL_KY = ?";
 
     #-------------- End: Define the SQL used here   ----------------------------
 
@@ -656,10 +667,10 @@ class AdminController extends BaseController
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
-      (string) $inputSearchValueModified));
+      $kennelKy));
 
     #Perform the untiltered count
-    $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
+    $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array($kennelKy)))['THE_COUNT'];
 
     #Perform the filtered count
     $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
@@ -667,7 +678,7 @@ class AdminController extends BaseController
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
-      (string) $inputSearchValueModified)))['THE_COUNT'];
+      $kennelKy)))['THE_COUNT'];
     #-------------- End: Query the database   --------------------------------
 
     #Establish the output
@@ -936,6 +947,7 @@ class AdminController extends BaseController
 
       if(count($kennels) == 1) {
         $kennelKy = $kennels[0]['KENNEL_KY'];
+        $kennel_abbreviation = $kennels[0]['KENNEL_ABBREVIATION'];
       } else {
         return $app['twig']->render('admin_select_kennel.twig',array(
           'kennels' => $kennels,

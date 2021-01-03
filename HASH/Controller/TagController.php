@@ -220,7 +220,7 @@ public function addNewEventTag(Request $request, Application $app){
       $eventTagList = $app['db']->fetchAll($eventTagListSQL, array((int) $hash_id));
 
       # Declare the SQL used to retrieve this information
-      $sql = "SELECT * ,date_format(event_date, '%Y-%m-%d' ) AS EVENT_DATE_DATE, date_format(event_date, '%k:%i:%S') AS EVENT_DATE_TIME FROM HASHES JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
+      $sql = "SELECT * ,date_format(event_date, '%Y-%m-%d' ) AS EVENT_DATE_DATE, date_format(event_date, '%k:%i:%S') AS EVENT_DATE_TIME FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
       # Make a database call to obtain the hasher information
       $hashValue = $app['db']->fetchAssoc($sql, array((int) $hash_id));
@@ -278,7 +278,7 @@ public function addNewEventTag(Request $request, Application $app){
         $app['dbs']['mysql_write']->executeUpdate($junctionInsertSql,array((int)$theEventKey,(int)$tagKey,(string)$user));
 
         # Declare the SQL used to retrieve this information
-        $hashValueSql = "SELECT * ,date_format(event_date, '%Y-%m-%d' ) AS EVENT_DATE_DATE, date_format(event_date, '%k:%i:%S') AS EVENT_DATE_TIME FROM HASHES JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
+        $hashValueSql = "SELECT * ,date_format(event_date, '%Y-%m-%d' ) AS EVENT_DATE_DATE, date_format(event_date, '%k:%i:%S') AS EVENT_DATE_TIME FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
         # Make a database call to obtain the hasher information
         $hashValue = $app['db']->fetchAssoc($hashValueSql, array((int) $theEventKey));
@@ -340,7 +340,7 @@ public function addNewEventTag(Request $request, Application $app){
               #$user = $this->getUserName($app);
 
               # Declare the SQL used to retrieve this information
-              $hashValueSql = "SELECT * ,date_format(event_date, '%Y-%m-%d' ) AS EVENT_DATE_DATE, date_format(event_date, '%k:%i:%S') AS EVENT_DATE_TIME FROM HASHES JOIN KENNELS ON HASHES.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
+              $hashValueSql = "SELECT * ,date_format(event_date, '%Y-%m-%d' ) AS EVENT_DATE_DATE, date_format(event_date, '%k:%i:%S') AS EVENT_DATE_TIME FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
               # Make a database call to obtain the hasher information
               $hashValue = $app['db']->fetchAssoc($hashValueSql, array((int) $theEventKey));
@@ -387,7 +387,7 @@ public function addNewEventTag(Request $request, Application $app){
       $returnValue = FALSE;
 
       #Query the database for the event
-      $getEventValueSql = "SELECT * FROM HASHES WHERE HASH_KY = ? ;";
+      $getEventValueSql = "SELECT * FROM HASHES_TABLE WHERE HASH_KY = ? ;";
       $eventValues = $app['db']->fetchAll($getEventValueSql,array((int) $eventKey));
 
       #Determine if the event exists
@@ -668,11 +668,4 @@ public function addNewEventTag(Request $request, Application $app){
       return $returnValue;
 
     }
-
-
-
-
-
-
-
 }

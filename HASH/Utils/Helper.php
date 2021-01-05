@@ -182,7 +182,7 @@
     #1. Convert the values into an associative array
     $assocArray = array();
     foreach($inputArray as $item){
-      $assocArray += array(($item[THE_VALUE]) => ($item[THE_COUNT]));
+      $assocArray += array(($item['THE_VALUE']) => ($item['THE_COUNT']));
     }
 
     #2. Explode the associative array into a hierarchial format
@@ -265,7 +265,7 @@
     #1. Convert the values into an associative array
     $assocArray = array();
     foreach($inputArray as $item){
-      $assocArray += array(($item[THE_VALUE]) => ($item[THE_COUNT]));
+      $assocArray += array(($item['THE_VALUE']) => ($item['THE_COUNT']));
     }
 
     #2. Explode the associative array into a hierarchial format

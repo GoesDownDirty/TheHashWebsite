@@ -14,7 +14,7 @@ class DatabaseUpdater {
 
     $databaseVersion = $this->getDatabaseVersion();
 
-    if($databaseVersion != 7) {
+    if($databaseVersion != 8) {
 
       $has_semaphones = true;
 
@@ -69,6 +69,9 @@ class DatabaseUpdater {
             case 6:
               $this->dropEmailColumn();
               $this->setDatabaseVersion(7);
+            case 7:
+              $this->fixStatsConfigKey();
+              $this->setDatabaseVersion(8);
             default:
               // Overkill, but guarantees the view is up to date with the
               // current database structure.
@@ -98,8 +101,14 @@ class DatabaseUpdater {
     $this->app['dbs']['mysql_write']->executeStatement($sql, array());
   }
 
+  private function fixStatsConfigKey() {
+    $this->executeStatement("DROP INDEX NAME_idx ON STATS_CONFIG", array());
+    $this->executeStatement("ALTER TABLE STATS_CONFIG ADD PRIMARY KEY (`NAME`)", array());
+  }
+
   private function dropEmailColumn() {
-    $this->executeStatementIgnoreError("ALTER TABLE HASHERS DROP EMAIL", array());
+    // ignore errors, column may not exist
+    $this->executeStatementIgnoreError("ALTER TABLE HASHERS DROP EMAIL");
   }
 
   private function createAwardsTables() {

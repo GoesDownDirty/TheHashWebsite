@@ -14,7 +14,7 @@ class DatabaseUpdater {
 
     $databaseVersion = $this->getDatabaseVersion();
 
-    if($databaseVersion != 6) {
+    if($databaseVersion != 7) {
 
       $has_semaphones = true;
 
@@ -62,12 +62,17 @@ class DatabaseUpdater {
               $this->createHareTypesTable();
               $this->setDatabaseVersion(4);
             case 4:
-              $this->recreateHashesView();
               $this->setDatabaseVersion(5);
             case 5:
               $this->createAwardsTables();
               $this->setDatabaseVersion(6);
+            case 6:
+              $this->dropEmailColumn();
+              $this->setDatabaseVersion(7);
             default:
+              // Overkill, but guarantees the view is up to date with the
+              // current database structure.
+              $this->recreateHashesView();
               break;
           }
         } finally {
@@ -91,6 +96,10 @@ class DatabaseUpdater {
   private function dropLockTable() {
     $sql = "DROP TABLE DATABASE_UPGRADE_IN_PROGRESS";
     $this->app['dbs']['mysql_write']->executeStatement($sql, array());
+  }
+
+  private function dropEmailColumn() {
+    $this->executeStatementIgnoreError("ALTER TABLE HASHERS DROP EMAIL", array());
   }
 
   private function createAwardsTables() {
@@ -204,9 +213,9 @@ class DatabaseUpdater {
   }
 
   private function recreateHashesView() {
-    // TODO: why is this needed?
+    // If the base table changes, the HASHES view needs to be recreated
     $sql = "DROP VIEW HASHES";
-    $this->app['dbs']['mysql_write']->executeStatement($sql, array());
+    $this->executeStatementIgnoreError($sql);
 
     $sql = "CREATE VIEW HASHES AS SELECT * FROM HASHES_TABLE WHERE EVENT_DATE <= NOW()";
     $this->app['dbs']['mysql_write']->executeStatement($sql, array());

@@ -9,52 +9,6 @@
       return encodeURIComponent(str).replace(/[!'()*]/g, escape);
   }
 
-  function maskName (str) {
-
-    //Establish the return value
-    var returnValue = "";
-
-    if(!str){
-      returnValue = "";
-    }else{
-      for (var i = 0, len = str.length; i < len; i++) {
-        if(i==0){
-          returnValue +=(str[i]);
-        }else{
-          returnValue +="*";
-        }
-      }
-    }
-
-    //Return the return value
-    return returnValue;
-  }
-
-  function maskEmail (str) {
-
-    //Establish the return value
-    var returnValue = "";
-
-    if(!str){
-      returnValue = "";
-    }else{
-      for (var i = 0, len = str.length; i < len; i++) {
-        if(i==0){
-          returnValue +=(str[i]);
-        }else if(str[i]=="@"){
-          returnValue +="@";
-        }else if(str[i]=="."){
-          returnValue +=".";
-        }else{
-          returnValue +="*";
-        }
-      }
-    }
-
-    //Return the return value
-    return returnValue;
-  }
-
   //Call these functions upon page load
   $(document).ready(function() {
     //Convert the main table into a data table

@@ -14,24 +14,38 @@ class DatabaseUpdater {
 
     $databaseVersion = $this->getDatabaseVersion();
 
-    switch(intVal($databaseVersion)) {
-      case 0:
-        $this->createAuditTable();
-        $this->createHashersTable();
-        $this->createKennelsTable();
-        $this->createHashesTable();
-        $this->createHashingsTable();
-        $this->createHaringsTable();
-        $this->createHashesTagsTable();
-        $this->createHashesTagJunctionTable();
-        $this->createCompositeIndexes();
-        $this->setDatabaseVersion(1);
-      case 1:
-        $this->createHashesView();
-        $this->setDatabaseVersion(2);
-      case 2:
-      default:
-        break;
+    if($databaseVersion != 2) {
+
+      $semRes = sem_get(696969);
+
+      if(!sem_acquire($semRes)) {
+        throw new Exception("semaphore acquire failed");
+      }
+
+      $databaseVersion = $this->getDatabaseVersion();
+
+      try {
+        switch(intVal($databaseVersion)) {
+          case 0:
+            $this->createAuditTable();
+            $this->createHashersTable();
+            $this->createKennelsTable();
+            $this->createHashesTable();
+            $this->createHashingsTable();
+            $this->createHaringsTable();
+            $this->createHashesTagsTable();
+            $this->createHashesTagJunctionTable();
+            $this->createCompositeIndexes();
+            $this->setDatabaseVersion(1);
+          case 1:
+            $this->createHashesView();
+            $this->setDatabaseVersion(2);
+          default:
+            break;
+        }
+      } finally {
+        sem_release($semRes);
+      }
     }
   }
 

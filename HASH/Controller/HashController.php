@@ -3670,40 +3670,22 @@ public function cautionaryStatsAction(Request $request, Application $app, string
 
 public function miscellaneousStatsAction(Request $request, Application $app, string $kennel_abbreviation){
 
-  #Obtain the kennel key
-  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
-
-  #SQL to determine the distinct year values
-  $sql = "SELECT YEAR(EVENT_DATE) AS YEAR, COUNT(*) AS THE_COUNT
-  FROM HASHES
-  WHERE
-  	KENNEL_KY = ?
-  GROUP BY YEAR(EVENT_DATE)
-  ORDER BY YEAR(EVENT_DATE) DESC";
-
-  #Execute the SQL statement; create an array of rows
-  $yearValues = $app['db']->fetchAll($sql,array( (int) $kennelKy));
-
-  #Obtain the first hash
-  $firstHashSQL = "SELECT * FROM HASHES WHERE KENNEL_KY = ? ORDER BY EVENT_DATE ASC LIMIT 1";
-  $firstHashValue = $app['db']->fetchAssoc($firstHashSQL, array((int) $kennelKy));
-
-  #Obtain the most recent hash
-  $mostRecentHashSQL = "SELECT * FROM HASHES WHERE KENNEL_KY = ? ORDER BY EVENT_DATE DESC LIMIT 1";
-  $mostRecentHashValue = $app['db']->fetchAssoc($mostRecentHashSQL, array((int) $kennelKy));
+  $siteNamePattern = $this->getConfigItem($app, "site_domain_name", "bogus");
 
   #Obtain the kennels that are being tracked in this website instance
   $listOfKennelsSQL = "
-    SELECT KENNEL_ABBREVIATION, KENNEL_NAME, IN_RECORD_KEEPING, SITE_ADDRESS
-    FROM KENNELS WHERE IN_RECORD_KEEPING = 1 OR SITE_ADDRESS IS NOT NULL
-    ORDER BY IN_RECORD_KEEPING DESC, KENNEL_ABBREVIATION ASC";
-  $kennelValues = $app['db']->fetchAll($listOfKennelsSQL);
+    SELECT KENNEL_ABBREVIATION, KENNEL_NAME, IN_RECORD_KEEPING, SITE_ADDRESS,
+           CASE WHEN IN_RECORD_KEEPING = 1 THEN ''
+                WHEN INSTR(SITE_ADDRESS, ?) > 0 THEN ''
+                ELSE '*'
+            END AS EXTERNAL
+      FROM KENNELS
+     WHERE IN_RECORD_KEEPING = 1 OR SITE_ADDRESS IS NOT NULL
+     ORDER BY IN_RECORD_KEEPING DESC, KENNEL_ABBREVIATION ASC";
+  $kennelValues = $app['db']->fetchAll($listOfKennelsSQL, array($siteNamePattern));
 
   # Establish and set the return value
   $returnValue = $app['twig']->render('switch_kennel_screen.twig',array(
-    'firstEvent' => $firstHashValue,
-    'mostRecentEvent' => $mostRecentHashValue,
-    'theYearValues' => $yearValues,
     'pageTitle' => 'Switch Kennel',
     'kennel_abbreviation' => $kennel_abbreviation,
     'kennelValues' => $kennelValues

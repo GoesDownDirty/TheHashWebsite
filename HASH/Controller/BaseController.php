@@ -7,6 +7,17 @@ use Symfony\Component\HttpFoundation\Request;
 
 class BaseController {
 
+  protected function getConfigItem(Application $app, string $name, string $defaultValue) {
+    $sql = "SELECT VALUE FROM STATS_CONFIG WHERE NAME = ?";
+
+    $value = $app['db']->fetchOne($sql, array($name));
+    if(!$value) {
+      $value = $defaultValue;
+    }
+
+    return $value;
+  }
+
   protected function obtainKennelKeyFromKennelAbbreviation(
       Request $request, Application $app, string $kennel_abbreviation) {
 

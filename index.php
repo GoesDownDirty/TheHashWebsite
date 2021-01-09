@@ -12,8 +12,6 @@ require_once __DIR__.'/config/ProdConfig.php';
 require_once __DIR__.'/vendor/twig/twig/lib/Twig/Autoloader.php';
 require_once __DIR__.'/HASH/Controller/SuperAdminController.php';
 require_once __DIR__.'/HASH/Controller/ObscureStatisticsController.php';
-//test comment
-
 
 require_once './HASH/UserProvider.php';
 

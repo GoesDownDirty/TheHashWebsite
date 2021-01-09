@@ -3670,7 +3670,7 @@ public function cautionaryStatsAction(Request $request, Application $app, string
 
 public function miscellaneousStatsAction(Request $request, Application $app, string $kennel_abbreviation){
 
-  $siteNamePattern = $this->getConfigItem($app, "site_domain_name", "bogus");
+  $siteNamePattern = $this->getSiteConfigItem($app, "site_domain_name", "bogus");
 
   #Obtain the kennels that are being tracked in this website instance
   $listOfKennelsSQL = "

@@ -7,8 +7,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 class BaseController {
 
-  protected function getConfigItem(Application $app, string $name, string $defaultValue) {
-    $sql = "SELECT VALUE FROM STATS_CONFIG WHERE NAME = ?";
+  protected function getSiteConfigItem(Application $app, string $name, string $defaultValue) {
+    $sql = "SELECT VALUE FROM SITE_CONFIG WHERE NAME = ?";
 
     $value = $app['db']->fetchOne($sql, array($name));
     if(!$value) {

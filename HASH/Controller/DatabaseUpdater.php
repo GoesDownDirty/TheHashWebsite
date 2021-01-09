@@ -14,7 +14,7 @@ class DatabaseUpdater {
 
     $databaseVersion = $this->getDatabaseVersion();
 
-    if($databaseVersion != 8) {
+    if($databaseVersion != 9) {
 
       $has_semaphones = true;
 
@@ -72,6 +72,9 @@ class DatabaseUpdater {
             case 7:
               $this->fixStatsConfigKey();
               $this->setDatabaseVersion(8);
+            case 8:
+              $this->renameStatsConfigToSiteConfig();
+              $this->setDatabaseVersion(9);
             default:
               // Overkill, but guarantees the view is up to date with the
               // current database structure.
@@ -98,6 +101,11 @@ class DatabaseUpdater {
 
   private function dropLockTable() {
     $sql = "DROP TABLE DATABASE_UPGRADE_IN_PROGRESS";
+    $this->app['dbs']['mysql_write']->executeStatement($sql, array());
+  }
+
+  private function renameStatsConfigToSiteConfig() {
+    $sql = "ALTER TABLE STATS_CONFIG RENAME TO SITE_CONFIG";
     $this->app['dbs']['mysql_write']->executeStatement($sql, array());
   }
 
@@ -231,7 +239,11 @@ class DatabaseUpdater {
   }
 
   private function setDatabaseVersion(int $version) {
-    $sql = "UPDATE STATS_CONFIG SET VALUE=? WHERE NAME='database_version'";
+    if($version < 9) {
+      $sql = "UPDATE STATS_CONFIG SET VALUE=? WHERE NAME='database_version'";
+    } else {
+      $sql = "UPDATE SITE_CONFIG SET VALUE=? WHERE NAME='database_version'";
+    }
     $this->app['dbs']['mysql_write']->executeStatement($sql, array(strval($version)));
   }
 
@@ -390,6 +402,14 @@ class DatabaseUpdater {
 
   private function getDatabaseVersion() {
 
+    $sql = "SELECT value FROM SITE_CONFIG WHERE name='database_version'";
+    try {
+      return $this->app['db']->fetchOne($sql, array());
+    } catch(Exception $e) {
+      // ignore - table may not exist
+    }
+
+    // former table name before db version 9
     $sql = "SELECT value FROM STATS_CONFIG WHERE name='database_version'";
     try {
       return $this->app['db']->fetchOne($sql, array());

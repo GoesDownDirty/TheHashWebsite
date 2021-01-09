@@ -13,40 +13,71 @@ class DatabaseUpdater {
     $this->db = $db;
 
     $databaseVersion = $this->getDatabaseVersion();
-
     if($databaseVersion != 2) {
 
-      $semRes = sem_get(696969);
-
-      if(!sem_acquire($semRes)) {
-        throw new Exception("semaphore acquire failed");
-      }
-
-      $databaseVersion = $this->getDatabaseVersion();
+      $has_semaphones = true;
 
       try {
-        switch(intVal($databaseVersion)) {
-          case 0:
-            $this->createAuditTable();
-            $this->createHashersTable();
-            $this->createKennelsTable();
-            $this->createHashesTable();
-            $this->createHashingsTable();
-            $this->createHaringsTable();
-            $this->createHashesTagsTable();
-            $this->createHashesTagJunctionTable();
-            $this->createCompositeIndexes();
-            $this->setDatabaseVersion(1);
-          case 1:
-            $this->createHashesView();
-            $this->setDatabaseVersion(2);
-          default:
-            break;
+        $semRes = sem_get(696969);
+      } catch(Error $e) {
+        $has_semaphores = false;
+      }
+
+      if($has_semaphores) {
+        if(!sem_acquire($semRes)) {
+          throw new Exception("semaphore acquire failed");
+        }
+      } else {
+        // if semaphores aren't available, and another thread is
+        // already updating the database, this will throw an error
+        // but that's better than database corruption caused by more
+        // than one thread trying to upgrade the database
+        $this->createLockTable();
+      }
+
+      try {
+        $databaseVersion = $this->getDatabaseVersion();
+
+        try {
+          switch(intVal($databaseVersion)) {
+            case 0:
+              $this->createAuditTable();
+              $this->createHashersTable();
+              $this->createKennelsTable();
+              $this->createHashesTable();
+              $this->createHashingsTable();
+              $this->createHaringsTable();
+              $this->createHashesTagsTable();
+              $this->createHashesTagJunctionTable();
+              $this->createCompositeIndexes();
+              $this->setDatabaseVersion(1);
+            case 1:
+              $this->createHashesView();
+              $this->setDatabaseVersion(2);
+            default:
+              break;
+          }
+        } finally {
+          if($has_semaphores) {
+            sem_release($semRes);
+          }
         }
       } finally {
-        sem_release($semRes);
+        if(!$has_semaphores) {
+          $this->dropLockTable();
+        }
       }
     }
+  }
+
+  private function createLockTable() {
+    $sql = "CREATE TABLE DATABASE_UPGRADE_IN_PROGRESS (`A` INT)";
+    $this->app['dbs']['mysql_write']->executeStatement($sql, array());
+  }
+
+  private function dropLockTable() {
+    $sql = "DROP TABLE DATABASE_UPGRADE_IN_PROGRESS";
+    $this->app['dbs']['mysql_write']->executeStatement($sql, array());
   }
 
   private function createHashesView() {

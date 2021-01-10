@@ -875,7 +875,7 @@ class ObscureStatisticsController extends BaseController {
             $theSql = str_replace("XORDERCOLUMNX","DAYS_TO_REACH_ANALVERSARY",$theSql);
 
             #Query the database
-            $theResults = $app['db']->fetchAll($theSql, array((int) $kenneyKy, (int) $kennelKy,(int) $kennelKy));
+            $theResults = $app['db']->fetchAll($theSql, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy));
 
             #Define the page title
             $pageTitle = "Quickest to reach $analversary_number hashes";
@@ -912,7 +912,7 @@ class ObscureStatisticsController extends BaseController {
                   $theSql = str_replace("XORDERCOLUMNX","ANALVERSARY_DATE",$theSql);
 
                   #Query the database
-                  $theResults = $app['db']->fetchAll($theSql, array((int) $kenneyKy, (int) $kennelKy,(int) $kennelKy));
+                  $theResults = $app['db']->fetchAll($theSql, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy));
 
                   #Define the page title
                   $pageTitle = "Chronological order of analversaries";
@@ -952,7 +952,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = str_replace("XORDERCOLUMNX","DAYS_TO_REACH_ANALVERSARY",$theSql);
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $kenneyKy, (int) $kennelKy,(int) $kennelKy));
+      $theResults = $app['db']->fetchAll($theSql, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy));
 
       #Define the page title
       $pageTitle = "Slowest to reach $analversary_number hashes";

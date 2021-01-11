@@ -127,6 +127,10 @@ class AdminController extends BaseController
                   AND
                   HASHERS.HASHER_KY NOT IN (SELECT HARINGS_HASHER_KY FROM HARINGS)";
 
+      if(HAS_LEGACY_HASH_COUNTS) {
+        $sql .= " AND HASHERS.HASHER_KY NOT IN (SELECT HASHER_KY FROM LEGACY_HASHINGS)";
+      }
+
       #Execute the SQL statement; create an array of rows
       $theList = $app['db']->fetchAll($sql);
 

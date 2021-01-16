@@ -362,8 +362,8 @@ $app->post('/admin/{kennel_abbreviation}/newhash/ajaxform', 'HASH\Controller\Has
 $app->get('/admin/edithash/ajaxform/{hash_id}', 'HASH\Controller\HashEventController::adminModifyHashAjaxPreAction');
 $app->post('/admin/edithash/ajaxform/{hash_id}', 'HASH\Controller\HashEventController::adminModifyHashAjaxPostAction');
 
-$app->get('/admin/{kennel_abbreviation}/editkennel/ajaxform', 'HASH\Controller\AdminController::adminModifyKennelAjaxPreAction');
-$app->post('/admin/{kennel_abbreviation}/editkennel/ajaxform', 'HASH\Controller\AdminController::adminModifyKennelAjaxPostAction');
+$app->get('/superadmin/{kennel_abbreviation}/editkennel/ajaxform', 'HASH\Controller\AdminController::adminModifyKennelAjaxPreAction');
+$app->post('/superadmin/{kennel_abbreviation}/editkennel/ajaxform', 'HASH\Controller\AdminController::adminModifyKennelAjaxPostAction');
 
 # Hash person modification
 $app->get('/admin/modifyhasher/form/{hasher_id}',                 'HASH\Controller\HashPersonController::modifyHashPersonAction');

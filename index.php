@@ -236,6 +236,8 @@ $app->get('/admin/hello',                                         'HASH\Controll
 $app->get('/logonscreen/sa',                                      'HASH\Controller\SuperAdminController::logonScreenAction');
 $app->get('/superadmin/logoutaction',                             'HASH\Controller\SuperAdminController::logoutAction');
 $app->get('/superadmin/hello',                                    'HASH\Controller\SuperAdminController::helloAction');
+$app->get('/superadmin/{kennel_abbreviation}/editkennel/ajaxform', 'HASH\Controller\SuperAdminController::modifyKennelAjaxPreAction');
+$app->post('/superadmin/{kennel_abbreviation}/editkennel/ajaxform', 'HASH\Controller\SuperAdminController::modifyKennelAjaxPostAction');
 
 $app->get('/user/hello',                                          'HASH\Controller\AdminController::userHelloAction');
 
@@ -361,9 +363,6 @@ $app->post('/admin/{kennel_abbreviation}/newhash/ajaxform', 'HASH\Controller\Has
 # Hash event modification (ajaxified)
 $app->get('/admin/edithash/ajaxform/{hash_id}', 'HASH\Controller\HashEventController::adminModifyHashAjaxPreAction');
 $app->post('/admin/edithash/ajaxform/{hash_id}', 'HASH\Controller\HashEventController::adminModifyHashAjaxPostAction');
-
-$app->get('/superadmin/{kennel_abbreviation}/editkennel/ajaxform', 'HASH\Controller\AdminController::adminModifyKennelAjaxPreAction');
-$app->post('/superadmin/{kennel_abbreviation}/editkennel/ajaxform', 'HASH\Controller\AdminController::adminModifyKennelAjaxPostAction');
 
 # Hash person modification
 $app->get('/admin/modifyhasher/form/{hasher_id}',                 'HASH\Controller\HashPersonController::modifyHashPersonAction');

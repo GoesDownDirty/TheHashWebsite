@@ -1054,4 +1054,118 @@ class AdminController extends BaseController
     $returnValue =  $app->json($returnMessage, 200);
     return $returnValue;
   }
+
+  #Define action
+  public function adminModifyKennelAjaxPreAction(Request $request, Application $app, string $kennel_abbreviation) {
+
+    # Declare the SQL used to retrieve this information
+    $sql = "
+      SELECT *
+        FROM KENNELS
+       WHERE KENNEL_ABBREVIATION = ?";
+
+    # Make a database call to obtain the hasher information
+    $kennelValue = $app['db']->fetchAssoc($sql, array($kennel_abbreviation));
+
+    $sql = "
+      SELECT GROUP_CONCAT(AWARD_LEVEL ORDER BY AWARD_LEVEL)
+        FROM AWARD_LEVELS
+       GROUP BY KENNEL_KY
+      HAVING KENNEL_KY = (SELECT KENNEL_KY
+                            FROM KENNELS
+                           WHERE KENNEL_ABBREVIATION = ?)";
+
+    $awardLevels = $app['db']->fetchOne($sql, array($kennel_abbreviation));
+
+    $returnValue = $app['twig']->render('edit_kennel_form_ajax.twig', array(
+      'pageTitle' => 'Modify a Kennel!',
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'kennelValue' => $kennelValue,
+      'awardLevels' => $awardLevels
+    ));
+
+    #Return the return value
+    return $returnValue;
+  }
+
+  public function adminModifyKennelAjaxPostAction(Request $request, Application $app, string $kennel_abbreviation) {
+
+    $theKennelName = trim(strip_tags($request->request->get('kennelName')));
+    $theKennelAbbreviation = trim(strip_tags($request->request->get('kennelAbbreviation')));
+    $theKennelDescription = trim(strip_tags($request->request->get('kennelDescription')));
+    $theSiteAddress = trim(strip_tags($request->request->get('siteAddress')));
+    $theInRecordKeeping = (int) trim(strip_tags($request->request->get('inRecordKeeping')));
+    $theAwardLevels = str_replace(' ', '', trim(strip_tags($request->request->get('awardLevels'))));
+    $theOrigAwardLevels = trim(strip_tags($request->request->get('origAwardLevels')));
+
+    if($theSiteAddress == "") {
+      $theSiteAddress = null;
+    }
+
+    // Establish a "passed validation" variable
+    $passedValidation = TRUE;
+
+    // Establish the return message value as empty (at first)
+    $returnMessage = "";
+
+    if($theInRecordKeeping !=0 && $theInRecordKeeping != 1) {
+      $passedValidation = FALSE;
+      $returnMessage .= " |Failed validation on inRecordKeeping";
+    }
+
+    if($passedValidation) {
+
+      $sql = "
+        UPDATE KENNELS
+          SET
+            KENNEL_NAME = ?,
+            KENNEL_ABBREVIATION = ?,
+            KENNEL_DESCRIPTION = ?,
+            SITE_ADDRESS = ?,
+            IN_RECORD_KEEPING = ?
+         WHERE KENNEL_ABBREVIATION = ?";
+
+        $app['dbs']['mysql_write']->executeUpdate($sql,array(
+          $theKennelName,
+          $theKennelAbbreviation,
+          $theKennelDescription,
+          $theSiteAddress,
+          $theInRecordKeeping,
+          $kennel_abbreviation
+        ));
+
+      if($theAwardLevels != $theOrigAwardLevels) {
+        $sql = "
+          DELETE FROM AWARD_LEVELS
+           WHERE KENNEL_KY = (
+          SELECT KENNEL_KY
+            FROM KENNELS
+           WHERE KENNEL_ABBREVIATION = ?)";
+
+        $app['dbs']['mysql_write']->executeUpdate($sql,array($kennel_abbreviation));
+
+        $sql = "
+          INSERT INTO AWARD_LEVELS(KENNEL_KY, AWARD_LEVEL)
+          VALUES((SELECT KENNEL_KY FROM KENNELS WHERE KENNEL_ABBREVIATION = ?), ?)";
+
+        $kennelAwards = preg_split("/,/", $theAwardLevels);
+
+        foreach($kennelAwards as $kennelAward) {
+          $app['dbs']['mysql_write']->executeUpdate($sql,array($kennel_abbreviation, (int) $kennelAward));
+        }
+      }
+
+      #Audit this activity
+      $actionType = "Kennel Modification (Ajax)";
+      $actionDescription = "Modified kennel $kennel_abbreviation";
+      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+
+      // Establish the return value message
+      $returnMessage = "Success! Great, it worked";
+    }
+
+    #Set the return value
+    $returnValue =  $app->json($returnMessage, 200);
+    return $returnValue;
+  }
 }

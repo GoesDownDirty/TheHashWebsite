@@ -1,0 +1,211 @@
+{% extends "admin_base.twig" %}
+
+{% block template %}
+
+<link rel = "stylesheet" href="/node_modules/jquery-ui/themes/base/all.css">
+<link rel = "stylesheet" href="/node_modules/jquery-timepicker/jquery.timepicker.css">
+<script type = "text/javascript" src = "/node_modules/jquery-ui/ui/widgets/datepicker.js"></script>
+<script type = "text/javascript" src = "/node_modules/jquery-timepicker/jquery.timepicker.js"></script>
+<script type = "text/javascript" src = "/node_modules/jquery-validation/dist/jquery.validate.min.js"></script>
+<script type = "text/javascript" src = "/vendor/ifightcrime/bootstrap-growl/jquery.bootstrap-growl.min.js"></script>
+<script>
+
+function resetTheForm(){
+  $('#the_form')[0].reset();
+}
+
+function displayMessage(messageValue){
+
+  //Determine the type of message to display
+  var indexLocation = messageValue.indexOf("Success!");
+  var messageType = "";
+  if(indexLocation >= 0){
+    messageType = "success";
+  }else {
+    messageType = "danger";
+  }
+
+  $.bootstrapGrowl(messageValue, {
+    ele: 'body', // which element to append to
+    type: messageType, // (null, 'info', 'error', 'success')
+    offset: {from: 'top', amount: 20}, // 'top', or 'bottom'
+    align: 'center', // ('left', 'right', or 'center')
+    width: 400, // (integer, or 'auto')
+    delay: 4000,
+    allow_dismiss: true,
+    stackup_spacing: 10 // spacing between consecutively stacked growls.
+  });
+
+}
+
+function convertFormToJson(theForm){
+  // Establish the return value
+  var returnValue = {};
+
+  jQuery.each(theForm, function(){
+    returnValue[this.name] = this.value || '';
+  });
+
+  // Return the return value
+  return returnValue;
+
+}
+
+function formSubmitAction(){
+
+  // Get the form
+  var theForm = $('#the_form');
+
+  // Find the disabled fields
+  var theDisabledFields = theForm.find(':input:disabled').removeAttr('disabled');
+
+  // Serialize the form
+  var theFormSerialized = theForm.serializeArray();
+
+  // Convert form fields into json object
+  var jsonifiedForm = convertFormToJson(theFormSerialized);
+
+  // Re-disable the form fields
+  theDisabledFields.attr('disabled','disabled');
+
+
+  $.ajax({
+      url : "/admin/{{kennel_abbreviation}}/editkennel/ajaxform",
+      type: "POST",
+      data : jsonifiedForm,
+      dataType : 'json',
+      success: function(data, textStatus, jqXHR){
+        //alert("success");
+        displayMessage(data);
+        //alert(jqXHR);
+        //alert(textStatus);
+      },
+      error: function (jqXHR, textStatus, errorThrown)
+      {
+           //alert("failure, except nothing happened :)");
+           displayMessage("Unknown system error");
+           //alert(jqXHR);
+           //alert(textStatus);
+           //alert(errorThrown);
+      }
+  });
+
+  return false;
+}
+
+$(function(){
+  var validator = $("#the_form").validate({
+    rules:{
+      kennelName: {
+        required:true,
+        minlength:6
+      },
+      kennelAbbreviation: {
+        required:true,
+        minlength:3,
+        kennelAbbrevFormat:true
+      },
+      kennelDescription: {
+        required:true,
+        minlength:6
+      },
+      awardLevels: {
+        required:true,
+        minlength:6,
+        awardLevelsFormat:true
+      },
+    },
+    messages:{
+      kennelName: {
+          required: "Thou shalt provide a kennel name",
+          minlength: jQuery.validator.format("Enter at least {0} characters")
+      },
+      kennelAbbreviation: {
+          required: "Thou shalt provide a kennel abbreviation",
+          minlength: jQuery.validator.format("Enter at least {0} characters"),
+          kennelAbbrevFormat: "Numbers and Uppercase Letters Only"
+      },
+      kennelDescription: {
+          required: "Thou shalt provide a kennel description",
+          minlength: jQuery.validator.format("Enter at least {0} characters")
+      },
+      awardLevels: {
+          required: "Thou shalt provide award levels",
+          minlength: jQuery.validator.format("Enter at least {0} characters"),
+          awardLevelsFormat: "Comma-separated list of integers"
+      },
+    },
+    errorPlacement: function(error,element){
+      error.appendTo(element.parent());
+    },
+    submitHandler: function(){
+      formSubmitAction();
+    }
+  });
+
+  $.validator.addMethod("kennelAbbrevFormat",function(value,element){
+      var regEx =  /^[A-Z][A-Z0-9]*$/;
+      return(value.match(regEx));
+  });
+
+  $.validator.addMethod("awardLevelsFormat",function(value,element){
+      value = value.replace(/ *, */g, ',').trim();
+      var regEx =  /^[0-9]+(,[0-9]+)*$/;
+      return(value.match(regEx));
+  });
+
+});
+</script>
+
+<div class="table-responsive">
+<h3>{{pageTitle}}</h3>
+
+<form class="form-horizontal" id="the_form">
+
+  <div class="form-group">
+    <label for"kennelName" class="col-sm-1 control-label">Kennel Name</label>
+    <div class="col-sm-4">
+      <input type="text" class="form-control" id="kennelName" name="kennelName" value="{{kennelValue.KENNEL_NAME}}"/>
+    </div>
+
+    <label for"kennelAbbreviation" class="col-sm-1 control-label">Kennel Abbreviation</label>
+    <div class="col-sm-4">
+      <input type="text" class="form-control" id="kennelAbbreviation" name="kennelAbbreviation" value="{{kennelValue.KENNEL_ABBREVIATION}}"/>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for"kennelDescription" class="col-sm-1 control-label">Kennel Description</label>
+    <div class="col-sm-4">
+      <input type="text" class="form-control" id="kennelDescription" name="kennelDescription" value="{{kennelValue.KENNEL_DESCRIPTION}}"/>
+    </div>
+
+    <label for"siteAddress" class="col-sm-1 control-label">External Website URL</label>
+    <div class="col-sm-4">
+      <input type="text" class="form-control" id="siteAddress" name="siteAddress" value="{{kennelValue.SITE_ADDRESS}}"/>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for"inRecordKeeping" class="col-sm-1 control-label">In Record Keeping</label>
+    <div class="col-sm-4">
+      <input type="checkbox" class="form-control" id="inRecordKeeping" name="inRecordKeeping" value="1" 
+        {% if kennelValue.IN_RECORD_KEEPING == 1 %}
+        checked="checked"
+        {% endif %}
+      />
+    </div>
+    
+    <label for"awardLevels" class="col-sm-1 control-label">Award Levels</label>
+    <div class="col-sm-4">
+      <input type="text" class="form-control" id="awardLevels" name="awardLevels" value="{{awardLevels}}"/>
+      <input type="hidden" class="form-control" id="origAwardLevels" name="origAwardLevels" value="{{awardLevels}}"/>
+    </div>
+  </div>
+  </div>
+
+  <button type="submit" class="btn btn-default">Submit</button>
+</form>
+</div>
+
+{% endblock %}

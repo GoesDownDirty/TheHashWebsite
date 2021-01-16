@@ -178,9 +178,7 @@ $app->register(new Silex\Provider\LocaleServiceProvider());
 $app->register(new Silex\Provider\TranslationServiceProvider(), array('translator.messages' => array(),));
 #-------------------------------------------------------------------------------
 
-
 #Set your global assertions and stuff ------------------------------------------
-$kennelAssertion = "^(".VALID_KENNEL_ABBREVIATIONS.")$";
 $app['controllers']
   ->assert("hash_id", "\d+")
   ->assert("hasher_id", "\d+")
@@ -195,7 +193,7 @@ $app['controllers']
   ->assert("max_percentage","\d+")
   ->assert("analversary_number","\d+")
   ->assert("row_limit","\d+")
-  ->assert("kennel_abbreviation",$kennelAssertion)
+  ->assert("kennel_abbreviation","^[A-Z0-9]+$")
   ;
 #-------------------------------------------------------------------------------
 
@@ -364,6 +362,8 @@ $app->post('/admin/{kennel_abbreviation}/newhash/ajaxform', 'HASH\Controller\Has
 $app->get('/admin/edithash/ajaxform/{hash_id}', 'HASH\Controller\HashEventController::adminModifyHashAjaxPreAction');
 $app->post('/admin/edithash/ajaxform/{hash_id}', 'HASH\Controller\HashEventController::adminModifyHashAjaxPostAction');
 
+$app->get('/admin/{kennel_abbreviation}/editkennel/ajaxform', 'HASH\Controller\AdminController::adminModifyKennelAjaxPreAction');
+$app->post('/admin/{kennel_abbreviation}/editkennel/ajaxform', 'HASH\Controller\AdminController::adminModifyKennelAjaxPostAction');
 
 # Hash person modification
 $app->get('/admin/modifyhasher/form/{hasher_id}',                 'HASH\Controller\HashPersonController::modifyHashPersonAction');

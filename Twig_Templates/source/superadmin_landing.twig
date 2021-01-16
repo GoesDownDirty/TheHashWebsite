@@ -24,12 +24,6 @@
               {% for item in user_list %}
                 <div class="row">
                   <div class="col-xs-12 col-md-4 visible-xs"  style="background-color:{{headerColor}};">{{item.username}}</div>
-                  <div class="col-xs-4 col-md-4 visible-xs"    style="background-color:{{bgcolor}};">Role</div>
-                  <div class="col-xs-8 col-md-8 visible-xs"    style="background-color:{{bgcolor}};">{{item.roles}}</div>
-                  <div class="col-xs-4 col-md-4 visible-xs"    style="background-color:{{bgcolor}};">Actions</div>
-                  <div class="col-xs-8 col-md-8 visible-xs"    style="background-color:{{bgcolor}};">Modify | Delete</div>
-                  <div class="col-xs-12 visible-xs"></br></div>
-
                   <div class="col-xs-4 col-md-4 hidden-xs"    style="background-color:{{bgcolor}};">{{item.username}}</div>
                   <div class="col-xs-4 col-md-4 hidden-xs"    style="background-color:{{bgcolor}};">{{item.roles}}</div>
                   <div class="col-xs-4 col-md-4 hidden-xs"    style="background-color:{{bgcolor}};">Modify | Delete</div>
@@ -45,11 +39,12 @@
               
               {% set headerColor = "#d3d3d3" %}
               <div class="row" >
-                <div class="col-xs-4 col-md-3 hidden-xs"  style="background-color:{{headerColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; ">Name</div>
-                <div class="col-xs-4 col-md-3 hidden-xs"  style="background-color:{{headerColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Description</div>
-                <div class="col-xs-4 col-md-2 hidden-xs"  style="background-color:{{headerColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Abbreviation</div>
+                <div class="col-xs-4 col-md-3 hidden-xs"  style="background-color:{{headerColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Name</div>
+                <div class="col-xs-4 col-md-2 hidden-xs"  style="background-color:{{headerColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Description</div>
+                <div class="col-xs-4 col-md-1 hidden-xs"  style="background-color:{{headerColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Abbreviation</div>
                 <div class="col-xs-4 col-md-1 hidden-xs"  style="background-color:{{headerColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">In Record Keeping</div>
                 <div class="col-xs-4 col-md-3 hidden-xs"  style="background-color:{{headerColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Address</div>
+                <div class="col-xs-4 col-md-1 hidden-xs"  style="background-color:{{headerColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Actions</div>
               </div>
 
               {% for item in kennel_list %}
@@ -61,28 +56,9 @@
                   {% set bgcolor = "#d6eaf8" %}
                 {% endif %}
                 <div class="row">
-                  <div class="col-xs-12 col-md-4 visible-xs"  style="background-color:{{headerColor}};">{{item.KENNEL_NAME}}</div>
-                  <div class="col-xs-6 col-md-4 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Description</div>
-                  <div class="col-xs-6 col-md-8 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.KENNEL_DESCRIPTION}}&nbsp;</div>
-                  <div class="col-xs-6 col-md-4 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Abbreviation</div>
-                  <div class="col-xs-6 col-md-8 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.KENNEL_ABBREVIATION}}&nbsp;</div>
-                  <div class="col-xs-6 col-md-4 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">In Record Keeping</div>
-                  <div class="col-xs-6 col-md-8 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                    {% if item.IN_RECORD_KEEPING == 0 %}
-                      No
-                    {% elseif item.IN_RECORD_KEEPING == 1 %}
-                      Yes
-                    {% endif %}
-                  </div>
-                  <div class="col-xs-6 col-md-4 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Address</div>
-                  <div class="col-xs-6 col-md-8 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.SITE_ADDRESS}}&nbsp;</div>
-                  <div class="col-xs-6 col-md-4 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Actions</div>
-                  <div class="col-xs-6 col-md-8 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Modify | Delete&nbsp;</div>
-                  <div class="col-xs-12 visible-xs"></br></div>
-
                   <div class="col-xs-4 col-md-3 hidden-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.KENNEL_NAME}}&nbsp;</div>
-                  <div class="col-xs-4 col-md-3 hidden-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.KENNEL_DESCRIPTION}}&nbsp;</div>
-                  <div class="col-xs-4 col-md-2 hidden-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.KENNEL_ABBREVIATION}}&nbsp;</div>
+                  <div class="col-xs-4 col-md-2 hidden-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.KENNEL_DESCRIPTION}}&nbsp;</div>
+                  <div class="col-xs-4 col-md-1 hidden-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.KENNEL_ABBREVIATION}}&nbsp;</div>
                   <div class="col-xs-4 col-md-1 hidden-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                     {% if item.IN_RECORD_KEEPING == 0 %}
                       No
@@ -91,6 +67,7 @@
                     {% endif %}
                   </div>
                   <div class="col-xs-4 col-md-3 hidden-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.SITE_ADDRESS}}&nbsp;</div>
+                  <div class="col-xs-4 col-md-1 hidden-xs"    style="background-color:{{bgcolor}};"><a href="/admin/{{item.KENNEL_ABBREVIATION}}/editkennel/ajaxform">Modify</a> | Delete</div>
                 </div>
               {% endfor %}
           </div></div>

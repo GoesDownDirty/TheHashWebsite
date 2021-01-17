@@ -28,6 +28,8 @@ class SuperAdminController extends BaseController {
           FROM KENNELS ORDER BY IN_RECORD_KEEPING DESC, SITE_ADDRESS DESC");
 
       $hareTypes = $app['db']->fetchAll("SELECT * FROM HARE_TYPES ORDER BY SEQ");
+      
+      $hashTypes = $app['db']->fetchAll("SELECT * FROM HASH_TYPES ORDER BY SEQ");
 
       #return $app->redirect('/');
       return $app['twig']->render('superadmin_landing.twig', array (
@@ -35,7 +37,8 @@ class SuperAdminController extends BaseController {
         'subTitle1' => 'This is the super admin landing screen',
         'user_list' => $userList,
         'kennel_list' => $kennelList,
-        'hare_types' => $hareTypes
+        'hare_types' => $hareTypes,
+        'hash_types' => $hashTypes
       ));
   }
 
@@ -241,6 +244,68 @@ class SuperAdminController extends BaseController {
       #Audit this activity
       $actionType = "Hare Type Modification (Ajax)";
       $actionDescription = "Modified hare type $theHareTypeName";
+      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+
+      // Establish the return value message
+      $returnMessage = "Success! Great, it worked";
+    }
+
+    #Set the return value
+    $returnValue =  $app->json($returnMessage, 200);
+    return $returnValue;
+  }
+
+  #Define action
+  public function modifyHashTypeAjaxPreAction(Request $request, Application $app, int $hash_type) {
+
+    # Declare the SQL used to retrieve this information
+    $sql = "
+      SELECT *
+        FROM HASH_TYPES
+       WHERE HASH_TYPE = ?";
+
+    # Make a database call to obtain the hasher information
+    $hashTypeValue = $app['db']->fetchAssoc($sql, array($hash_type));
+
+    $returnValue = $app['twig']->render('edit_hash_type_form_ajax.twig', array(
+      'pageTitle' => 'Modify a Hash Type!',
+      'hashTypeValue' => $hashTypeValue,
+      'hash_type' => $hash_type
+    ));
+
+    #Return the return value
+    return $returnValue;
+  }
+
+  public function modifyHashTypeAjaxPostAction(Request $request, Application $app, int $hash_type) {
+
+    $theHashTypeName = trim(strip_tags($request->request->get('hashTypeName')));
+    $theSequence = trim(strip_tags($request->request->get('sequence')));
+
+    // Establish a "passed validation" variable
+    $passedValidation = TRUE;
+
+    // Establish the return message value as empty (at first)
+    $returnMessage = "";
+
+    if($passedValidation) {
+
+      $sql = "
+        UPDATE HASH_TYPES
+          SET
+            HASH_TYPE_NAME = ?,
+            SEQ = ?
+         WHERE HASH_TYPE = ?";
+
+        $app['dbs']['mysql_write']->executeUpdate($sql,array(
+          $theHashTypeName,
+          (int) $theSequence,
+          $hash_type
+        ));
+
+      #Audit this activity
+      $actionType = "Hash Type Modification (Ajax)";
+      $actionDescription = "Modified hash type $theHashTypeName";
       AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
 
       // Establish the return value message

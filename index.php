@@ -78,12 +78,6 @@ if (!$schema->tablesExist('USERS')) {
     $schema->createTable($users);
 
     $app['dbs']['mysql_write']->insert('USERS', array(
-      'username' => 'fabien',
-      'password' => DEFAULT_USER_PASSWORD,
-      'roles' => 'ROLE_USER'
-    ));
-
-    $app['dbs']['mysql_write']->insert('USERS', array(
       'username' => 'admin',
       'password' => DEFAULT_USER_PASSWORD,
       'roles' => 'ROLE_ADMIN'
@@ -184,6 +178,7 @@ $app['controllers']
   ->assert("hasher_id", "\d+")
   ->assert("hasher_id2", "\d+")
   ->assert("hare_id", "\d+")
+  ->assert("user_id", "\d+")
   ->assert("hare_type", "\d+")
   ->assert("hash_type", "\d+")
   ->assert("event_tag_ky", "\d+")
@@ -244,6 +239,8 @@ $app->get('/superadmin/{hare_type}/editharetype/ajaxform', 'HASH\Controller\Supe
 $app->post('/superadmin/{hare_type}/editharetype/ajaxform', 'HASH\Controller\SuperAdminController::modifyHareTypeAjaxPostAction');
 $app->get('/superadmin/{hash_type}/edithashtype/ajaxform', 'HASH\Controller\SuperAdminController::modifyHashTypeAjaxPreAction');
 $app->post('/superadmin/{hash_type}/edithashtype/ajaxform', 'HASH\Controller\SuperAdminController::modifyHashTypeAjaxPostAction');
+$app->get('/superadmin/{user_id}/edituser/ajaxform', 'HASH\Controller\SuperAdminController::modifyUserAjaxPreAction');
+$app->post('/superadmin/{user_id}/edituser/ajaxform', 'HASH\Controller\SuperAdminController::modifyUserAjaxPostAction');
 
 $app->get('/user/hello',                                          'HASH\Controller\AdminController::userHelloAction');
 

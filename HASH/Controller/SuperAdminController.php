@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Security\Core\User\User;
 
 class SuperAdminController extends BaseController {
 
@@ -32,7 +33,7 @@ class SuperAdminController extends BaseController {
   public function helloAction(Request $request, Application $app){
 
       #Establish the list of admin users
-      $userList = $app['db']->fetchAll("SELECT username, roles FROM USERS ORDER BY username ASC");
+      $userList = $app['db']->fetchAll("SELECT id, username, roles FROM USERS ORDER BY username ASC");
 
       #Establish the list of kennels
       $kennelList = $app['db']->fetchAll("SELECT KENNEL_NAME, KENNEL_DESCRIPTION,
@@ -367,6 +368,106 @@ class SuperAdminController extends BaseController {
       #Audit this activity
       $actionType = "Hash Type Modification (Ajax)";
       $actionDescription = "Modified hash type $theHashTypeName";
+      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+
+      // Establish the return value message
+      $returnMessage = "Success! Great, it worked";
+    }
+
+    #Set the return value
+    $returnValue =  $app->json($returnMessage, 200);
+    return $returnValue;
+  }
+
+  #Define action
+  public function modifyUserAjaxPreAction(Request $request, Application $app, int $user_id) {
+
+    # Declare the SQL used to retrieve this information
+    $sql = "
+      SELECT username, (INSTR(roles, 'ROLE_SUPERADMIN') > 1) AS SUPERADMIN
+        FROM USERS
+       WHERE ID = ?";
+
+    # Make a database call to obtain the hasher information
+    $userValue = $app['db']->fetchAssoc($sql, array($user_id));
+
+    $returnValue = $app['twig']->render('edit_user_form_ajax.twig', array(
+      'pageTitle' => 'Modify a User!',
+      'userValue' => $userValue,
+      'user_id' => $user_id
+    ));
+
+    #Return the return value
+    return $returnValue;
+  }
+
+  public function modifyUserAjaxPostAction(Request $request, Application $app, int $user_id) {
+
+    $theUsername = trim(strip_tags($request->request->get('username')));
+    $thePassword = trim(strip_tags($request->request->get('password')));
+    $theSuperadmin = $request->request->get('superadmin');
+
+    // Establish a "passed validation" variable
+    $passedValidation = TRUE;
+
+    if($theSuperadmin == "1") {
+      $roles="ROLE_ADMIN,ROLE_SUPERADMIN";
+    } else {
+      $roles="ROLE_ADMIN";
+    }
+
+    // Establish the return message value as empty (at first)
+    $returnMessage = "";
+
+    if(strlen($thePassword) >= 8) {
+
+      // compute the encoded password for the new password
+      $user = new User(theUsername, null, array("ROLE_USER"), true, true, true, true);
+
+      // find the encoder for a UserInterface instance
+      $encoder = $app['security.encoder_factory']->getEncoder($user);
+
+      // compute the encoded password for the new password
+      $encodedNewPassword = $encoder->encodePassword($thePassword, $user->getSalt());
+
+    } else if(strlen($thePassword) != 0) {
+      $passedValidation = FALSE;
+      $returnMessage .= " |Failed validation on password";
+    } else {
+      $encodedNewPassword = null;
+    }
+
+    if($passedValidation) {
+
+      $sql = "
+        UPDATE USERS
+          SET
+            username = ?,
+            roles = ?
+         WHERE id = ?";
+
+        $app['dbs']['mysql_write']->executeUpdate($sql,array(
+          $theUsername,
+          $roles,
+          $user_id
+        ));
+
+      if($encodedNewPassword != null) {
+        $sql = "
+          UPDATE USERS
+            SET
+              password = ?
+           WHERE id = ?";
+
+          $app['dbs']['mysql_write']->executeUpdate($sql,array(
+            $encodedNewPassword,
+            $user_id
+          ));
+      }
+
+      #Audit this activity
+      $actionType = "User Modification (Ajax)";
+      $actionDescription = "Modified user $theUsername";
       AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
 
       // Establish the return value message

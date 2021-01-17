@@ -1,100 +1,14 @@
-{% extends "superadmin_base.twig" %}
+{% extends "superadmin_edit_form_ajax_base.twig" %}
 
 {% block template %}
 
 {% if is_granted('ROLE_SUPERADMIN') %}
 
-<link rel = "stylesheet" href="/node_modules/jquery-ui/themes/base/all.css">
-<link rel = "stylesheet" href="/node_modules/jquery-timepicker/jquery.timepicker.css">
-<script type = "text/javascript" src = "/node_modules/jquery-ui/ui/widgets/datepicker.js"></script>
-<script type = "text/javascript" src = "/node_modules/jquery-timepicker/jquery.timepicker.js"></script>
-<script type = "text/javascript" src = "/node_modules/jquery-validation/dist/jquery.validate.min.js"></script>
-<script type = "text/javascript" src = "/vendor/ifightcrime/bootstrap-growl/jquery.bootstrap-growl.min.js"></script>
 <script>
 
-function resetTheForm(){
-  $('#the_form')[0].reset();
-}
+submitUrl = "/superadmin/{{hare_type}}/editharetype/ajaxform";
 
-function displayMessage(messageValue){
-
-  //Determine the type of message to display
-  var indexLocation = messageValue.indexOf("Success!");
-  var messageType = "";
-  if(indexLocation >= 0){
-    messageType = "success";
-  }else {
-    messageType = "danger";
-  }
-
-  $.bootstrapGrowl(messageValue, {
-    ele: 'body', // which element to append to
-    type: messageType, // (null, 'info', 'error', 'success')
-    offset: {from: 'top', amount: 20}, // 'top', or 'bottom'
-    align: 'center', // ('left', 'right', or 'center')
-    width: 400, // (integer, or 'auto')
-    delay: 4000,
-    allow_dismiss: true,
-    stackup_spacing: 10 // spacing between consecutively stacked growls.
-  });
-
-}
-
-function convertFormToJson(theForm){
-  // Establish the return value
-  var returnValue = {};
-
-  jQuery.each(theForm, function(){
-    returnValue[this.name] = this.value || '';
-  });
-
-  // Return the return value
-  return returnValue;
-}
-
-function formSubmitAction(){
-
-  // Get the form
-  var theForm = $('#the_form');
-
-  // Find the disabled fields
-  var theDisabledFields = theForm.find(':input:disabled').removeAttr('disabled');
-
-  // Serialize the form
-  var theFormSerialized = theForm.serializeArray();
-
-  // Convert form fields into json object
-  var jsonifiedForm = convertFormToJson(theFormSerialized);
-
-  // Re-disable the form fields
-  theDisabledFields.attr('disabled','disabled');
-
-
-  $.ajax({
-      url : "/superadmin/{{hare_type}}/editharetype/ajaxform",
-      type: "POST",
-      data : jsonifiedForm,
-      dataType : 'json',
-      success: function(data, textStatus, jqXHR){
-        //alert("success");
-        displayMessage(data);
-        //alert(jqXHR);
-        //alert(textStatus);
-      },
-      error: function (jqXHR, textStatus, errorThrown)
-      {
-           //alert("failure, except nothing happened :)");
-           displayMessage("Unknown system error");
-           //alert(jqXHR);
-           //alert(textStatus);
-           //alert(errorThrown);
-      }
-  });
-
-  return false;
-}
-
-$(function(){
+$(function() {
   var validator = $("#the_form").validate({
     rules:{
       hareTypeName: {

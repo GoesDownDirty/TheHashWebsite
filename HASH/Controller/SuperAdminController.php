@@ -28,7 +28,7 @@ class SuperAdminController extends BaseController {
           FROM KENNELS ORDER BY IN_RECORD_KEEPING DESC, SITE_ADDRESS DESC");
 
       $hareTypes = $app['db']->fetchAll("SELECT * FROM HARE_TYPES ORDER BY SEQ");
-      
+
       $hashTypes = $app['db']->fetchAll("SELECT * FROM HASH_TYPES ORDER BY SEQ");
 
       #return $app->redirect('/');
@@ -267,10 +267,20 @@ class SuperAdminController extends BaseController {
     # Make a database call to obtain the hasher information
     $hashTypeValue = $app['db']->fetchAssoc($sql, array($hash_type));
 
+    $hareTypes = $app['db']->fetchAll("
+      SELECT *, (
+        COALESCE((SELECT true
+          FROM HASH_TYPES
+         WHERE HASH_TYPE = ?
+           AND HASH_TYPES.HARE_TYPE_MASK & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE), false)) AS SELECTED
+        FROM HARE_TYPES
+       ORDER BY SEQ", array($hash_type));
+
     $returnValue = $app['twig']->render('edit_hash_type_form_ajax.twig', array(
       'pageTitle' => 'Modify a Hash Type!',
       'hashTypeValue' => $hashTypeValue,
-      'hash_type' => $hash_type
+      'hash_type' => $hash_type,
+      'hare_types' => $hareTypes
     ));
 
     #Return the return value
@@ -281,12 +291,27 @@ class SuperAdminController extends BaseController {
 
     $theHashTypeName = trim(strip_tags($request->request->get('hashTypeName')));
     $theSequence = trim(strip_tags($request->request->get('sequence')));
+    $theHareTypes = $request->request->get('hareTypes');
 
     // Establish a "passed validation" variable
     $passedValidation = TRUE;
 
+    if(is_array($theHareTypes)) {
+      $theHareTypeMask = 0;
+      foreach($theHareTypes as $theHareType) {
+        $theHareTypeMask += (int) $theHareType;
+      }
+    } else {
+      $theHareTypeMask = (int) $theHareTypes;
+    }
+
     // Establish the return message value as empty (at first)
     $returnMessage = "";
+
+    if($theHareTypeMask <= 0) {
+      $passedValidation = FALSE;
+      $returnMessage .= " |Failed validation on hare types";
+    }
 
     if($passedValidation) {
 
@@ -294,12 +319,14 @@ class SuperAdminController extends BaseController {
         UPDATE HASH_TYPES
           SET
             HASH_TYPE_NAME = ?,
-            SEQ = ?
+            SEQ = ?,
+            HARE_TYPE_MASK = ?
          WHERE HASH_TYPE = ?";
 
         $app['dbs']['mysql_write']->executeUpdate($sql,array(
           $theHashTypeName,
           (int) $theSequence,
+          $theHareTypeMask,
           $hash_type
         ));
 

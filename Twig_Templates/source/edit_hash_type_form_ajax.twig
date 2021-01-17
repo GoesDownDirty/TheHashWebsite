@@ -45,7 +45,19 @@ function convertFormToJson(theForm){
   var returnValue = {};
 
   jQuery.each(theForm, function(){
-    returnValue[this.name] = this.value || '';
+    switch(typeof returnValue[this.name]) {
+      case 'undefined':
+        returnValue[this.name] = this.value;
+        break;
+      case 'number':
+      case 'string':
+      case 'bigint':
+        returnValue[this.name] = [returnValue[this.name], this.value];
+        break;
+      case 'object':
+        returnValue[this.name].push(this.value);
+        break;
+    }
   });
 
   // Return the return value
@@ -106,6 +118,9 @@ $(function(){
         minlength:1,
         numberFormat:true
       },
+      hareTypes: {
+        required:true
+      },
     },
     messages:{
       hashTypeName: {
@@ -116,6 +131,9 @@ $(function(){
           required: "Thou shalt provide a sequence number",
           minlength: jQuery.validator.format("Enter at least {0} characters"),
           numberFormat: "Numbers only"
+      },
+      hareTypes: {
+          required: "Thou shalt select at least one hare type"
       },
     },
     errorPlacement: function(error,element){
@@ -148,6 +166,21 @@ $(function(){
     <label for"hashTypeName" class="col-sm-1 control-label">Hash Type Name</label>
     <div class="col-sm-4">
       <input type="text" class="form-control" id="hashTypeName" name="hashTypeName" value="{{hashTypeValue.HASH_TYPE_NAME}}"/>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for"hareTypes" class="col-sm-1 control-label">Hare Types</label>
+    <div class="col-sm-4">
+      <select class="form-control" id="hareTypes" name="hareTypes" multiple="multiple">
+        {% for hare_type in hare_types %}
+          <option value="{{hare_type.HARE_TYPE}}"
+          {% if hare_type.SELECTED %}
+            selected=selected
+          {% endif %}
+          >{{hare_type.HARE_TYPE_NAME}}</option>
+        {% endfor %}
+      </select>
     </div>
   </div>
 

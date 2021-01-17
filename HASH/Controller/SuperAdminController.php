@@ -16,6 +16,18 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
 class SuperAdminController extends BaseController {
 
+  private function convertInputToMask($input) {
+    if(is_array($input)) {
+      $mask = 0;
+      foreach($input as $intValue) {
+        $mask += (int) $intValue;
+      }
+    } else {
+      $mask = (int) $input;
+    }
+    return $mask;
+  }
+
   #Define the action
   public function helloAction(Request $request, Application $app){
 
@@ -98,11 +110,31 @@ class SuperAdminController extends BaseController {
 
     $awardLevels = $app['db']->fetchOne($sql, array($kennel_abbreviation));
 
+    $hareTypes = $app['db']->fetchAll("
+      SELECT *, (
+        COALESCE((SELECT true
+          FROM KENNELS
+         WHERE KENNEL_ABBREVIATION = ?
+           AND KENNELS.HARE_TYPE_MASK & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE), false)) AS SELECTED
+        FROM HARE_TYPES
+       ORDER BY SEQ", array($kennel_abbreviation));
+
+    $hashTypes = $app['db']->fetchAll("
+      SELECT *, (
+        COALESCE((SELECT true
+          FROM KENNELS
+         WHERE KENNEL_ABBREVIATION = ?
+           AND KENNELS.HASH_TYPE_MASK & HASH_TYPES.HASH_TYPE = HASH_TYPES.HASH_TYPE), false)) AS SELECTED
+        FROM HASH_TYPES
+       ORDER BY SEQ", array($kennel_abbreviation));
+
     $returnValue = $app['twig']->render('edit_kennel_form_ajax.twig', array(
       'pageTitle' => 'Modify a Kennel!',
       'kennel_abbreviation' => $kennel_abbreviation,
       'kennelValue' => $kennelValue,
-      'awardLevels' => $awardLevels
+      'awardLevels' => $awardLevels,
+      'hare_types' => $hareTypes,
+      'hash_types' => $hashTypes
     ));
 
     #Return the return value
@@ -118,10 +150,15 @@ class SuperAdminController extends BaseController {
     $theInRecordKeeping = (int) trim(strip_tags($request->request->get('inRecordKeeping')));
     $theAwardLevels = str_replace(' ', '', trim(strip_tags($request->request->get('awardLevels'))));
     $theOrigAwardLevels = trim(strip_tags($request->request->get('origAwardLevels')));
+    $theHashTypes = $request->request->get('hashTypes');
+    $theHareTypes = $request->request->get('hareTypes');
 
     if($theSiteAddress == "") {
       $theSiteAddress = null;
     }
+
+    $theHashTypeMask = $this->convertInputToMask($theHashTypes);
+    $theHareTypeMask = $this->convertInputToMask($theHareTypes);
 
     // Establish a "passed validation" variable
     $passedValidation = TRUE;
@@ -143,7 +180,9 @@ class SuperAdminController extends BaseController {
             KENNEL_ABBREVIATION = ?,
             KENNEL_DESCRIPTION = ?,
             SITE_ADDRESS = ?,
-            IN_RECORD_KEEPING = ?
+            IN_RECORD_KEEPING = ?,
+            HASH_TYPE_MASK = ?,
+            HARE_TYPE_MASK = ?
          WHERE KENNEL_ABBREVIATION = ?";
 
         $app['dbs']['mysql_write']->executeUpdate($sql,array(
@@ -152,7 +191,9 @@ class SuperAdminController extends BaseController {
           $theKennelDescription,
           $theSiteAddress,
           $theInRecordKeeping,
-          $kennel_abbreviation
+          $theHashTypeMask,
+          $theHareTypeMask,
+          $kennel_abbreviation,
         ));
 
       if($theAwardLevels != $theOrigAwardLevels) {
@@ -296,14 +337,7 @@ class SuperAdminController extends BaseController {
     // Establish a "passed validation" variable
     $passedValidation = TRUE;
 
-    if(is_array($theHareTypes)) {
-      $theHareTypeMask = 0;
-      foreach($theHareTypes as $theHareType) {
-        $theHareTypeMask += (int) $theHareType;
-      }
-    } else {
-      $theHareTypeMask = (int) $theHareTypes;
-    }
+    $theHareTypeMask = $this->convertInputToMask($theHareTypes);
 
     // Establish the return message value as empty (at first)
     $returnMessage = "";

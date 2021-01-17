@@ -45,7 +45,19 @@ function convertFormToJson(theForm){
   var returnValue = {};
 
   jQuery.each(theForm, function(){
-    returnValue[this.name] = this.value || '';
+    switch(typeof returnValue[this.name]) {
+      case 'undefined':
+        returnValue[this.name] = this.value;
+        break;
+      case 'number':
+      case 'string':
+      case 'bigint':
+        returnValue[this.name] = [returnValue[this.name], this.value];
+        break;
+      case 'object':
+        returnValue[this.name].push(this.value);
+        break;
+    }
   });
 
   // Return the return value
@@ -116,6 +128,12 @@ $(function(){
         minlength:6,
         awardLevelsFormat:true
       },
+      hashTypes: {
+        required:true
+      },
+      hareTypes: {
+        required:true
+      },
     },
     messages:{
       kennelName: {
@@ -135,6 +153,12 @@ $(function(){
           required: "Thou shalt provide award levels",
           minlength: jQuery.validator.format("Enter at least {0} characters"),
           awardLevelsFormat: "Comma-separated list of integers"
+      },
+      hashTypes: {
+          required: "Thou shalt select at least one hash type"
+      },
+      hareTypes: {
+          required: "Thou shalt select at least one hare type"
       },
     },
     errorPlacement: function(error,element){
@@ -204,6 +228,33 @@ $(function(){
       <input type="hidden" class="form-control" id="origAwardLevels" name="origAwardLevels" value="{{awardLevels}}"/>
     </div>
   </div>
+
+  <div class="form-group">
+    <label for"hashTypes" class="col-sm-1 control-label">Hash Types</label>
+    <div class="col-sm-4">
+      <select class="form-control" id="hashTypes" name="hashTypes" multiple="multiple">
+        {% for hash_type in hash_types %}
+          <option value="{{hash_type.HASH_TYPE}}"
+          {% if hash_type.SELECTED %}
+            selected=selected
+          {% endif %}
+          >{{hash_type.HASH_TYPE_NAME}}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <label for"hareTypes" class="col-sm-1 control-label">Hare Types</label>
+    <div class="col-sm-4">
+      <select class="form-control" id="hareTypes" name="hareTypes" multiple="multiple">
+        {% for hare_type in hare_types %}
+          <option value="{{hare_type.HARE_TYPE}}"
+          {% if hare_type.SELECTED %}
+            selected=selected
+          {% endif %}
+          >{{hare_type.HARE_TYPE_NAME}}</option>
+        {% endfor %}
+      </select>
+    </div>
   </div>
 
   <button type="submit" class="btn btn-default">Submit</button>

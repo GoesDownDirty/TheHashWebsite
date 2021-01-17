@@ -184,6 +184,7 @@ $app['controllers']
   ->assert("hasher_id", "\d+")
   ->assert("hasher_id2", "\d+")
   ->assert("hare_id", "\d+")
+  ->assert("hare_type", "\d+")
   ->assert("event_tag_ky", "\d+")
   ->assert("year_value", "\d+")
   ->assert("kennel_id","\d+")
@@ -238,6 +239,8 @@ $app->get('/superadmin/logoutaction',                             'HASH\Controll
 $app->get('/superadmin/hello',                                    'HASH\Controller\SuperAdminController::helloAction');
 $app->get('/superadmin/{kennel_abbreviation}/editkennel/ajaxform', 'HASH\Controller\SuperAdminController::modifyKennelAjaxPreAction');
 $app->post('/superadmin/{kennel_abbreviation}/editkennel/ajaxform', 'HASH\Controller\SuperAdminController::modifyKennelAjaxPostAction');
+$app->get('/superadmin/{hare_type}/editharetype/ajaxform', 'HASH\Controller\SuperAdminController::modifyHareTypeAjaxPreAction');
+$app->post('/superadmin/{hare_type}/editharetype/ajaxform', 'HASH\Controller\SuperAdminController::modifyHareTypeAjaxPostAction');
 
 $app->get('/user/hello',                                          'HASH\Controller\AdminController::userHelloAction');
 

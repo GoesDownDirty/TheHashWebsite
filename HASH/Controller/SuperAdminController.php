@@ -74,7 +74,7 @@ class SuperAdminController extends BaseController {
   }
 
   #Define action
-  public function adminModifyKennelAjaxPreAction(Request $request, Application $app, string $kennel_abbreviation) {
+  public function modifyKennelAjaxPreAction(Request $request, Application $app, string $kennel_abbreviation) {
 
     # Declare the SQL used to retrieve this information
     $sql = "
@@ -106,7 +106,7 @@ class SuperAdminController extends BaseController {
     return $returnValue;
   }
 
-  public function adminModifyKennelAjaxPostAction(Request $request, Application $app, string $kennel_abbreviation) {
+  public function modifyKennelAjaxPostAction(Request $request, Application $app, string $kennel_abbreviation) {
 
     $theKennelName = trim(strip_tags($request->request->get('kennelName')));
     $theKennelAbbreviation = trim(strip_tags($request->request->get('kennelAbbreviation')));
@@ -176,6 +176,71 @@ class SuperAdminController extends BaseController {
       #Audit this activity
       $actionType = "Kennel Modification (Ajax)";
       $actionDescription = "Modified kennel $kennel_abbreviation";
+      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+
+      // Establish the return value message
+      $returnMessage = "Success! Great, it worked";
+    }
+
+    #Set the return value
+    $returnValue =  $app->json($returnMessage, 200);
+    return $returnValue;
+  }
+
+  #Define action
+  public function modifyHareTypeAjaxPreAction(Request $request, Application $app, int $hare_type) {
+
+    # Declare the SQL used to retrieve this information
+    $sql = "
+      SELECT *
+        FROM HARE_TYPES
+       WHERE HARE_TYPE = ?";
+
+    # Make a database call to obtain the hasher information
+    $hareTypeValue = $app['db']->fetchAssoc($sql, array($hare_type));
+
+    $returnValue = $app['twig']->render('edit_hare_type_form_ajax.twig', array(
+      'pageTitle' => 'Modify a Hare Type!',
+      'hareTypeValue' => $hareTypeValue,
+      'hare_type' => $hare_type
+    ));
+
+    #Return the return value
+    return $returnValue;
+  }
+
+  public function modifyHareTypeAjaxPostAction(Request $request, Application $app, int $hare_type) {
+
+    $theHareTypeName = trim(strip_tags($request->request->get('hareTypeName')));
+    $theSequence = trim(strip_tags($request->request->get('sequence')));
+    $theChartColor = trim(strip_tags($request->request->get('chartColor')));
+
+    // Establish a "passed validation" variable
+    $passedValidation = TRUE;
+
+    // Establish the return message value as empty (at first)
+    $returnMessage = "";
+
+    if($passedValidation) {
+
+      $sql = "
+        UPDATE HARE_TYPES
+          SET
+            HARE_TYPE_NAME = ?,
+            SEQ = ?,
+            CHART_COLOR = ?
+         WHERE HARE_TYPE = ?";
+
+        $app['dbs']['mysql_write']->executeUpdate($sql,array(
+          $theHareTypeName,
+          (int) $theSequence,
+          $theChartColor,
+          $hare_type
+        ));
+
+      #Audit this activity
+      $actionType = "Hare Type Modification (Ajax)";
+      $actionDescription = "Modified hare type $theHareTypeName";
       AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
 
       // Establish the return value message

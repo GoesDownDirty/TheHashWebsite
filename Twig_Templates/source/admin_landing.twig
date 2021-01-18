@@ -29,8 +29,8 @@
       </div>
 
       <div class="col-lg-4">
-        <h3><a href="/superadmin/hello">Super Admin Logon</a></h3>
-        More power!
+        <h3><a href="/admin/tags/manageeventtags">Manage Event Tags</a></h3>
+        Create categories for events (red dress, green dress, campouts, etc.)
         <!--
         <h3>Secret and dangerous reports</h3>
         These statistics are all about the hashers. How often they've hared, their favorite hares, all the people they've hashed with, etc.<br>
@@ -54,10 +54,12 @@
       </div>
 
       <div class="col-lg-4">
-        <h3><a href="/admin/tags/manageeventtags">Manage Event Tags</a></h3>
-        Create categories for events (red dress, green dress, campouts, etc.)
         <h3><a href="/admin/roster">Printable Roster</a></h3>
         For those that like pen/paper book keeping.
+        {% if is_granted('ROLE_SUPERADMIN') %}
+          <h3><a href="/superadmin/hello">Super Admin Access</a></h3>
+          More power!
+        {% endif %}
       </div>
 
     </div>

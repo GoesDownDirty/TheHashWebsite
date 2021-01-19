@@ -183,13 +183,13 @@ $app['controllers']
   ->assert("hash_type", "\d+")
   ->assert("event_tag_ky", "\d+")
   ->assert("year_value", "\d+")
-  ->assert("kennel_id","\d+")
   ->assert("day_count","\d+")
   ->assert("month_count","\d+")
   ->assert("min_hash_count","\d+")
   ->assert("max_percentage","\d+")
   ->assert("analversary_number","\d+")
   ->assert("row_limit","\d+")
+  ->assert("kennel_ky","\d+")
   ->assert("kennel_abbreviation","^[A-Z0-9]+$")
   ;
 #-------------------------------------------------------------------------------
@@ -244,6 +244,9 @@ $app->post('/superadmin/{user_id}/edituser/ajaxform',               'HASH\Contro
 $app->get('/superadmin/{user_id}/deleteuser',                       'HASH\Controller\SuperAdminController::deleteUser');
 $app->get('/superadmin/newuser/ajaxform',                           'HASH\Controller\SuperAdminController::newUserAjaxPreAction');
 $app->post('/superadmin/newuser/ajaxform',                          'HASH\Controller\SuperAdminController::newUserAjaxPostAction');
+$app->get('/superadmin/newkennel/ajaxform',                         'HASH\Controller\SuperAdminController::newKennelAjaxPreAction');
+$app->post('/superadmin/newkennel/ajaxform',                        'HASH\Controller\SuperAdminController::newKennelAjaxPostAction');
+$app->get('/superadmin/{kennel_ky}/deletekennel',                   'HASH\Controller\SuperAdminController::deleteKennel');
 
 $app->get('/user/hello',                                          'HASH\Controller\AdminController::userHelloAction');
 

@@ -37,7 +37,8 @@ class SuperAdminController extends BaseController {
 
       #Establish the list of kennels
       $kennelList = $app['db']->fetchAll("SELECT KENNEL_NAME, KENNEL_DESCRIPTION,
-          KENNEL_ABBREVIATION, IN_RECORD_KEEPING, SITE_ADDRESS
+          KENNEL_ABBREVIATION, IN_RECORD_KEEPING, SITE_ADDRESS, KENNEL_KY,
+          COALESCE((SELECT TRUE WHERE EXISTS(SELECT 1 FROM HASHES WHERE HASHES.KENNEL_KY = KENNELS.KENNEL_KY)), FALSE) AS IN_USE
           FROM KENNELS ORDER BY IN_RECORD_KEEPING DESC, SITE_ADDRESS DESC");
 
       $hareTypes = $app['db']->fetchAll("SELECT * FROM HARE_TYPES ORDER BY SEQ");
@@ -216,6 +217,109 @@ class SuperAdminController extends BaseController {
         foreach($kennelAwards as $kennelAward) {
           $app['dbs']['mysql_write']->executeUpdate($sql,array($kennel_abbreviation, (int) $kennelAward));
         }
+      }
+
+      #Audit this activity
+      $actionType = "Kennel Modification (Ajax)";
+      $actionDescription = "Modified kennel $kennel_abbreviation";
+      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+
+      // Establish the return value message
+      $returnMessage = "Success! Great, it worked";
+    }
+
+    #Set the return value
+    $returnValue =  $app->json($returnMessage, 200);
+    return $returnValue;
+  }
+
+  #Define action
+  public function newKennelAjaxPreAction(Request $request, Application $app) {
+
+    $kennelValue['KENNEL_NAME'] = "";
+    $kennelValue['KENNEL_ABBREVIATION'] = "";
+    $kennelValue['KENNEL_DESCRIPTION'] = "";
+    $kennelValue['SITE_ADDRESS'] = "";
+    $kennelValue['IN_RECORD_KEEPING'] = 1;
+
+    $awardLevels = "10,25,50,69,100,200,300,400,500,600,700,800,900,1000";
+
+    $hareTypes = $app['db']->fetchAll("
+      SELECT *, false AS SELECTED
+        FROM HARE_TYPES
+       ORDER BY SEQ", array());
+
+    $hashTypes = $app['db']->fetchAll("
+      SELECT *, false AS SELECTED
+        FROM HASH_TYPES
+       ORDER BY SEQ", array());
+
+    $returnValue = $app['twig']->render('edit_kennel_form_ajax.twig', array(
+      'pageTitle' => 'Add a Kennel!',
+      'kennel_abbreviation' => '_none',
+      'kennelValue' => $kennelValue,
+      'awardLevels' => $awardLevels,
+      'hare_types' => $hareTypes,
+      'hash_types' => $hashTypes
+    ));
+
+    #Return the return value
+    return $returnValue;
+  }
+
+  public function newKennelAjaxPostAction(Request $request, Application $app) {
+
+    $theKennelName = trim(strip_tags($request->request->get('kennelName')));
+    $theKennelAbbreviation = trim(strip_tags($request->request->get('kennelAbbreviation')));
+    $theKennelDescription = trim(strip_tags($request->request->get('kennelDescription')));
+    $theSiteAddress = trim(strip_tags($request->request->get('siteAddress')));
+    $theInRecordKeeping = (int) trim(strip_tags($request->request->get('inRecordKeeping')));
+    $theAwardLevels = str_replace(' ', '', trim(strip_tags($request->request->get('awardLevels'))));
+    $theHashTypes = $request->request->get('hashTypes');
+    $theHareTypes = $request->request->get('hareTypes');
+
+    if($theSiteAddress == "") {
+      $theSiteAddress = null;
+    }
+
+    $theHashTypeMask = $this->convertInputToMask($theHashTypes);
+    $theHareTypeMask = $this->convertInputToMask($theHareTypes);
+
+    // Establish a "passed validation" variable
+    $passedValidation = TRUE;
+
+    // Establish the return message value as empty (at first)
+    $returnMessage = "";
+
+    if($theInRecordKeeping !=0 && $theInRecordKeeping != 1) {
+      $passedValidation = FALSE;
+      $returnMessage .= " |Failed validation on inRecordKeeping";
+    }
+
+    if($passedValidation) {
+
+      $sql = "
+        INSERT INTO KENNELS(KENNEL_NAME, KENNEL_ABBREVIATION, KENNEL_DESCRIPTION,
+            SITE_ADDRESS, IN_RECORD_KEEPING, HASH_TYPE_MASK, HARE_TYPE_MASK)
+        VALUES(?, ?, ?, ?, ?, ?, ?)";
+
+      $app['dbs']['mysql_write']->executeUpdate($sql,array(
+        $theKennelName,
+        $theKennelAbbreviation,
+        $theKennelDescription,
+        $theSiteAddress,
+        $theInRecordKeeping,
+        $theHashTypeMask,
+        $theHareTypeMask));
+
+      $sql = "
+        INSERT INTO AWARD_LEVELS(KENNEL_KY, AWARD_LEVEL)
+          VALUES((SELECT KENNEL_KY FROM KENNELS WHERE KENNEL_ABBREVIATION = ?), ?)";
+
+      $kennelAwards = preg_split("/,/", $theAwardLevels);
+
+      foreach($kennelAwards as $kennelAward) {
+        $app['dbs']['mysql_write']->executeUpdate($sql,array($theKennelAbbreviation, (int) $kennelAward));
       }
 
       #Audit this activity
@@ -570,5 +674,22 @@ class SuperAdminController extends BaseController {
       header("Location: /superadmin/hello");
       return $app->json("", 302);
     }
+  }
+
+  public function deleteKennel(Request $request, Application $app, int $kennel_ky) {
+
+    $sql = "SELECT KENNEL_ABBREVIATION FROM KENNELS WHERE KENNEL_KY = ?";
+    $kennel = $app['db']->fetchOne($sql, array($kennel_ky));
+
+    $sql = "DELETE FROM KENNELS WHERE KENNEL_KY = ?";
+    $app['dbs']['mysql_write']->executeUpdate($sql,array($kennel_ky));
+
+    $actionType = "Kennel Deletion (Ajax)";
+    $actionDescription = "Deleted kennel $kennel";
+
+    AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+
+    header("Location: /superadmin/hello");
+    return $app->json("", 302);
   }
 }

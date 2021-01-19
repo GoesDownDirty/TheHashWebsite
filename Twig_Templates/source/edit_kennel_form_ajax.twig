@@ -6,7 +6,11 @@
 
 <script>
 
+{% if kennel_abbreviation == "_none" %}
+submitUrl = "/superadmin/newkennel/ajaxform";
+{% else %}
 submitUrl = "/superadmin/{{kennel_abbreviation}}/editkennel/ajaxform";
+{% endif %}
 
 $(function(){
   var validator = $("#the_form").validate({
@@ -47,7 +51,7 @@ $(function(){
           kennelAbbrevFormat: "Numbers and Uppercase Letters Only"
       },
       kennelDescription: {
-          required: "Thou shalt provide a kennel description",
+          required: "Thou shalt provide a kennel location",
           minlength: jQuery.validator.format("Enter at least {0} characters")
       },
       awardLevels: {
@@ -102,7 +106,7 @@ $(function(){
   </div>
 
   <div class="form-group">
-    <label for"kennelDescription" class="col-sm-1 control-label">Kennel Description</label>
+    <label for"kennelDescription" class="col-sm-1 control-label">Kennel Location</label>
     <div class="col-sm-4">
       <input type="text" class="form-control" id="kennelDescription" name="kennelDescription" value="{{kennelValue.KENNEL_DESCRIPTION}}"/>
     </div>

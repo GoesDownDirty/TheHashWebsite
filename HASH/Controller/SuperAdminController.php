@@ -422,7 +422,7 @@ class SuperAdminController extends BaseController {
     if(strlen($thePassword) >= 8) {
 
       // compute the encoded password for the new password
-      $user = new User(theUsername, null, array("ROLE_USER"), true, true, true, true);
+      $user = new User($theUsername, null, array("ROLE_USER"), true, true, true, true);
 
       // find the encoder for a UserInterface instance
       $encoder = $app['security.encoder_factory']->getEncoder($user);
@@ -468,6 +468,80 @@ class SuperAdminController extends BaseController {
       #Audit this activity
       $actionType = "User Modification (Ajax)";
       $actionDescription = "Modified user $theUsername";
+      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+
+      // Establish the return value message
+      $returnMessage = "Success! Great, it worked";
+    }
+
+    #Set the return value
+    $returnValue =  $app->json($returnMessage, 200);
+    return $returnValue;
+  }
+
+  #Define action
+  public function newUserAjaxPreAction(Request $request, Application $app) {
+
+    $userValue['username']='';
+    $userValue['SUPERADMIN']=false;
+
+    $returnValue = $app['twig']->render('edit_user_form_ajax.twig', array(
+      'pageTitle' => 'Add a User!',
+      'userValue' => $userValue,
+      'user_id' => -1
+    ));
+
+    #Return the return value
+    return $returnValue;
+  }
+
+  public function newUserAjaxPostAction(Request $request, Application $app) {
+
+    $theUsername = trim(strip_tags($request->request->get('username')));
+    $thePassword = trim(strip_tags($request->request->get('password')));
+    $theSuperadmin = $request->request->get('superadmin');
+
+    // Establish a "passed validation" variable
+    $passedValidation = TRUE;
+
+    if($theSuperadmin == "1") {
+      $roles="ROLE_ADMIN,ROLE_SUPERADMIN";
+    } else {
+      $roles="ROLE_ADMIN";
+    }
+
+    // Establish the return message value as empty (at first)
+    $returnMessage = "";
+
+    if(strlen($thePassword) >= 8) {
+
+      // compute the encoded password for the new password
+      $user = new User($theUsername, null, array("ROLE_USER"), true, true, true, true);
+
+      // find the encoder for a UserInterface instance
+      $encoder = $app['security.encoder_factory']->getEncoder($user);
+
+      // compute the encoded password for the new password
+      $encodedPassword = $encoder->encodePassword($thePassword, $user->getSalt());
+
+    } else {
+      $passedValidation = FALSE;
+      $returnMessage .= " |Failed validation on password";
+    }
+
+    if($passedValidation) {
+
+      $sql = "INSERT INTO USERS(username, roles, password)
+        VALUES(?, ?, ?)";
+
+      $app['dbs']['mysql_write']->executeUpdate($sql,array(
+        $theUsername,
+        $roles,
+        $encodedPassword));
+
+      #Audit this activity
+      $actionType = "User Creation (Ajax)";
+      $actionDescription = "Created user $theUsername";
       AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
 
       // Establish the return value message

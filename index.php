@@ -242,6 +242,8 @@ $app->post('/superadmin/{hash_type}/edithashtype/ajaxform',         'HASH\Contro
 $app->get('/superadmin/{user_id}/edituser/ajaxform',                'HASH\Controller\SuperAdminController::modifyUserAjaxPreAction');
 $app->post('/superadmin/{user_id}/edituser/ajaxform',               'HASH\Controller\SuperAdminController::modifyUserAjaxPostAction');
 $app->get('/superadmin/{user_id}/deleteuser',                       'HASH\Controller\SuperAdminController::deleteUser');
+$app->get('/superadmin/newuser/ajaxform',                           'HASH\Controller\SuperAdminController::newUserAjaxPreAction');
+$app->post('/superadmin/newuser/ajaxform',                          'HASH\Controller\SuperAdminController::newUserAjaxPostAction');
 
 $app->get('/user/hello',                                          'HASH\Controller\AdminController::userHelloAction');
 

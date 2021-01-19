@@ -6,7 +6,11 @@
 
 <script>
 
+{% if user_id > 0 %}
 submitUrl = "/superadmin/{{user_id}}/edituser/ajaxform";
+{% else %}
+submitUrl = "/superadmin/newuser/ajaxform";
+{% endif %}
 
 $(function() {
   var validator = $("#the_form").validate({
@@ -14,11 +18,23 @@ $(function() {
       username: {
         required:true
       },
+{% if user_id < 0 %}
+      password: {
+        required:true,
+        minlength:8
+      },
+{% endif %}
     },
     messages:{
       username: {
           required: "Thou shalt provide a user name"
       },
+{% if user_id < 0 %}
+      password: {
+          required: "Thou shalt provide a password",
+          minlength: jQuery.validator.format("Enter at least {0} characters")
+      },
+{% endif %}
     },
     errorPlacement: function(error,element){
       error.appendTo(element.parent());
@@ -41,7 +57,11 @@ $(function() {
       <input type="text" class="form-control" id="username" name="username" value="{{userValue.username}}"/>
     </div>
 
+{% if user_id < 0 %}
+    <label for"password" class="col-sm-1 control-label">Password</label>
+{% else %}
     <label for"password" class="col-sm-1 control-label">New Password</label>
+{% endif %}
     <div class="col-sm-4">
       <input type="text" class="form-control" id="password" name="password" value=""/>
     </div>

@@ -230,17 +230,18 @@ $app->get('/admin/logoutaction',                                  'HASH\Controll
 $app->get('/admin/hello',                                         'HASH\Controller\AdminController::helloAction');
 
 #Superadmin section logon
-$app->get('/logonscreen/sa',                                      'HASH\Controller\SuperAdminController::logonScreenAction');
-$app->get('/superadmin/logoutaction',                             'HASH\Controller\SuperAdminController::logoutAction');
-$app->get('/superadmin/hello',                                    'HASH\Controller\SuperAdminController::helloAction');
-$app->get('/superadmin/{kennel_abbreviation}/editkennel/ajaxform', 'HASH\Controller\SuperAdminController::modifyKennelAjaxPreAction');
+$app->get('/logonscreen/sa',                                        'HASH\Controller\SuperAdminController::logonScreenAction');
+$app->get('/superadmin/logoutaction',                               'HASH\Controller\SuperAdminController::logoutAction');
+$app->get('/superadmin/hello',                                      'HASH\Controller\SuperAdminController::helloAction');
+$app->get('/superadmin/{kennel_abbreviation}/editkennel/ajaxform',  'HASH\Controller\SuperAdminController::modifyKennelAjaxPreAction');
 $app->post('/superadmin/{kennel_abbreviation}/editkennel/ajaxform', 'HASH\Controller\SuperAdminController::modifyKennelAjaxPostAction');
-$app->get('/superadmin/{hare_type}/editharetype/ajaxform', 'HASH\Controller\SuperAdminController::modifyHareTypeAjaxPreAction');
-$app->post('/superadmin/{hare_type}/editharetype/ajaxform', 'HASH\Controller\SuperAdminController::modifyHareTypeAjaxPostAction');
-$app->get('/superadmin/{hash_type}/edithashtype/ajaxform', 'HASH\Controller\SuperAdminController::modifyHashTypeAjaxPreAction');
-$app->post('/superadmin/{hash_type}/edithashtype/ajaxform', 'HASH\Controller\SuperAdminController::modifyHashTypeAjaxPostAction');
-$app->get('/superadmin/{user_id}/edituser/ajaxform', 'HASH\Controller\SuperAdminController::modifyUserAjaxPreAction');
-$app->post('/superadmin/{user_id}/edituser/ajaxform', 'HASH\Controller\SuperAdminController::modifyUserAjaxPostAction');
+$app->get('/superadmin/{hare_type}/editharetype/ajaxform',          'HASH\Controller\SuperAdminController::modifyHareTypeAjaxPreAction');
+$app->post('/superadmin/{hare_type}/editharetype/ajaxform',         'HASH\Controller\SuperAdminController::modifyHareTypeAjaxPostAction');
+$app->get('/superadmin/{hash_type}/edithashtype/ajaxform',          'HASH\Controller\SuperAdminController::modifyHashTypeAjaxPreAction');
+$app->post('/superadmin/{hash_type}/edithashtype/ajaxform',         'HASH\Controller\SuperAdminController::modifyHashTypeAjaxPostAction');
+$app->get('/superadmin/{user_id}/edituser/ajaxform',                'HASH\Controller\SuperAdminController::modifyUserAjaxPreAction');
+$app->post('/superadmin/{user_id}/edituser/ajaxform',               'HASH\Controller\SuperAdminController::modifyUserAjaxPostAction');
+$app->get('/superadmin/{user_id}/deleteuser',                       'HASH\Controller\SuperAdminController::deleteUser');
 
 $app->get('/user/hello',                                          'HASH\Controller\AdminController::userHelloAction');
 

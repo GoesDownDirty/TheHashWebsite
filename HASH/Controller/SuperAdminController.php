@@ -478,4 +478,23 @@ class SuperAdminController extends BaseController {
     $returnValue =  $app->json($returnMessage, 200);
     return $returnValue;
   }
+
+  public function deleteUser(Request $request, Application $app, int $user_id) {
+    if($user_id != $app['user'].username) {
+
+      $sql = "SELECT username FROM USERS WHERE ID = ?";
+      $username = $app['db']->fetchOne($sql, array($user_id));
+
+      $sql = "DELETE FROM USERS WHERE id = ?";
+      $app['dbs']['mysql_write']->executeUpdate($sql,array($user_id));
+
+      $actionType = "User Deletion (Ajax)";
+      $actionDescription = "Deleted user $username";
+
+      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+
+      header("Location: /superadmin/hello");
+      return $app->json("", 302);
+    }
+  }
 }

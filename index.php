@@ -191,6 +191,7 @@ $app['controllers']
   ->assert("row_limit","\d+")
   ->assert("kennel_ky","\d+")
   ->assert("kennel_abbreviation","^[A-Z0-9]+$")
+  ->assert("name","^[a-z_]+$")
   ;
 #-------------------------------------------------------------------------------
 
@@ -241,6 +242,8 @@ $app->get('/superadmin/{hash_type}/edithashtype/ajaxform',          'HASH\Contro
 $app->post('/superadmin/{hash_type}/edithashtype/ajaxform',         'HASH\Controller\SuperAdminController::modifyHashTypeAjaxPostAction');
 $app->get('/superadmin/{user_id}/edituser/ajaxform',                'HASH\Controller\SuperAdminController::modifyUserAjaxPreAction');
 $app->post('/superadmin/{user_id}/edituser/ajaxform',               'HASH\Controller\SuperAdminController::modifyUserAjaxPostAction');
+$app->get('/superadmin/{name}/editsiteconfig/ajaxform',             'HASH\Controller\SuperAdminController::modifySiteConfigAjaxPreAction');
+$app->post('/superadmin/{name}/editsiteconfig/ajaxform',            'HASH\Controller\SuperAdminController::modifySiteConfigAjaxPostAction');
 $app->get('/superadmin/{user_id}/deleteuser',                       'HASH\Controller\SuperAdminController::deleteUser');
 $app->get('/superadmin/{kennel_ky}/deletekennel',                   'HASH\Controller\SuperAdminController::deleteKennel');
 $app->get('/superadmin/{hash_type}/deletehashtype',                 'HASH\Controller\SuperAdminController::deleteHashType');

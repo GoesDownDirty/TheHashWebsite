@@ -49,6 +49,8 @@ class SuperAdminController extends BaseController {
         EXISTS(SELECT 1 FROM HASHES_TABLE WHERE HASHES_TABLE.HASH_TYPE & HASH_TYPES.HASH_TYPE = HASH_TYPES.HASH_TYPE) AS IN_USE
         FROM HASH_TYPES ORDER BY SEQ");
 
+      $siteConfig = $app['db']->fetchAll("SELECT NAME, VALUE FROM SITE_CONFIG WHERE DESCRIPTION IS NOT NULL ORDER BY NAME");
+
       #return $app->redirect('/');
       return $app['twig']->render('superadmin_landing.twig', array (
         'pageTitle' => 'This is the super admin landing screen',
@@ -56,8 +58,8 @@ class SuperAdminController extends BaseController {
         'user_list' => $userList,
         'kennel_list' => $kennelList,
         'hare_types' => $hareTypes,
-        'hash_types' => $hashTypes
-      ));
+        'hash_types' => $hashTypes,
+        'site_config' => $siteConfig));
   }
 
   #Define the action
@@ -720,6 +722,60 @@ class SuperAdminController extends BaseController {
       #Audit this activity
       $actionType = "User Modification (Ajax)";
       $actionDescription = "Modified user $theUsername";
+      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+
+      // Establish the return value message
+      $returnMessage = "Success! Great, it worked";
+    }
+
+    #Set the return value
+    $returnValue =  $app->json($returnMessage, 200);
+    return $returnValue;
+  }
+
+  #Define action
+  public function modifySiteConfigAjaxPreAction(Request $request, Application $app, string $name) {
+
+    # Declare the SQL used to retrieve this information
+    $sql = "
+      SELECT * FROM SITE_CONFIG WHERE NAME = ?";
+
+    # Make a database call to obtain the hasher information
+    $item = $app['db']->fetchAssoc($sql, array($name));
+
+    $returnValue = $app['twig']->render('edit_site_config_form_ajax.twig', array(
+      'pageTitle' => 'Modify a Configuration Variable: '.$name,
+      'item' => $item
+    ));
+
+    #Return the return value
+    return $returnValue;
+  }
+
+  public function modifySiteConfigAjaxPostAction(Request $request, Application $app, string $name) {
+
+    $theValue = trim(strip_tags($request->request->get('value')));
+
+    // Establish a "passed validation" variable
+    $passedValidation = TRUE;
+
+    // Establish the return message value as empty (at first)
+    $returnMessage = "";
+
+    if($passedValidation) {
+
+      $sql = "
+        UPDATE SITE_CONFIG
+           SET VALUE = ?
+         WHERE NAME = ?";
+
+      $app['dbs']['mysql_write']->executeUpdate($sql,array(
+        $theValue,
+        $name));
+
+      #Audit this activity
+      $actionType = "SITE CONFIG Modification (Ajax)";
+      $actionDescription = "Modified site config $name";
       AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
 
       // Establish the return value message

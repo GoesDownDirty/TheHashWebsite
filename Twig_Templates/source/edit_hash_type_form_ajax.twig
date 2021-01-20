@@ -6,7 +6,11 @@
 
 <script>
 
+{% if hash_type == -1 %}
+submitUrl = "/superadmin/newhashtype/ajaxform";
+{% else %}
 submitUrl = "/superadmin/{{hash_type}}/edithashtype/ajaxform";
+{% endif %}
 
 $(function() {
   var validator = $("#the_form").validate({

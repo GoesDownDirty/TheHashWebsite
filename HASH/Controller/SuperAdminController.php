@@ -37,13 +37,17 @@ class SuperAdminController extends BaseController {
 
       #Establish the list of kennels
       $kennelList = $app['db']->fetchAll("SELECT KENNEL_NAME, KENNEL_DESCRIPTION,
-          KENNEL_ABBREVIATION, IN_RECORD_KEEPING, SITE_ADDRESS, KENNEL_KY,
-          COALESCE((SELECT TRUE WHERE EXISTS(SELECT 1 FROM HASHES WHERE HASHES.KENNEL_KY = KENNELS.KENNEL_KY)), FALSE) AS IN_USE
-          FROM KENNELS ORDER BY IN_RECORD_KEEPING DESC, SITE_ADDRESS DESC");
+         KENNEL_ABBREVIATION, IN_RECORD_KEEPING, SITE_ADDRESS, KENNEL_KY,
+         COALESCE((SELECT TRUE WHERE EXISTS(SELECT 1 FROM HASHES WHERE HASHES.KENNEL_KY = KENNELS.KENNEL_KY)), FALSE) AS IN_USE
+         FROM KENNELS ORDER BY IN_RECORD_KEEPING DESC, SITE_ADDRESS DESC");
 
-      $hareTypes = $app['db']->fetchAll("SELECT * FROM HARE_TYPES ORDER BY SEQ");
+      $hareTypes = $app['db']->fetchAll("SELECT *,
+        COALESCE((SELECT TRUE WHERE EXISTS(SELECT 1 FROM HARINGS WHERE HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE)), FALSE) AS IN_USE
+        FROM HARE_TYPES ORDER BY SEQ");
 
-      $hashTypes = $app['db']->fetchAll("SELECT * FROM HASH_TYPES ORDER BY SEQ");
+      $hashTypes = $app['db']->fetchAll("SELECT *,
+        COALESCE((SELECT TRUE WHERE EXISTS(SELECT 1 FROM HASHES_TABLE WHERE HASHES_TABLE.HASH_TYPE & HASH_TYPES.HASH_TYPE = HASH_TYPES.HASH_TYPE)), FALSE) AS IN_USE
+        FROM HASH_TYPES ORDER BY SEQ");
 
       #return $app->redirect('/');
       return $app['twig']->render('superadmin_landing.twig', array (
@@ -402,6 +406,72 @@ class SuperAdminController extends BaseController {
   }
 
   #Define action
+  public function newHareTypeAjaxPreAction(Request $request, Application $app) {
+
+    # Declare the SQL used to retrieve this information
+    $sql = "
+      SELECT MAX(SEQ) + 10 AS SEQ, null AS HARE_TYPE_NAME, '255,0,0' AS CHART_COLOR
+        FROM HARE_TYPES";
+
+    # Make a database call to obtain the hasher information
+    $hareTypeValue = $app['db']->fetchAssoc($sql, array($hare_type));
+
+    $returnValue = $app['twig']->render('edit_hare_type_form_ajax.twig', array(
+      'pageTitle' => 'Create a Hare Type!',
+      'hareTypeValue' => $hareTypeValue,
+      'hare_type' => -1
+    ));
+
+    #Return the return value
+    return $returnValue;
+  }
+
+  public function newHareTypeAjaxPostAction(Request $request, Application $app) {
+
+    $theHareTypeName = trim(strip_tags($request->request->get('hareTypeName')));
+    $theSequence = trim(strip_tags($request->request->get('sequence')));
+    $theChartColor = trim(strip_tags($request->request->get('chartColor')));
+
+    // Establish a "passed validation" variable
+    $passedValidation = TRUE;
+
+    // Establish the return message value as empty (at first)
+    $returnMessage = "";
+
+    if($passedValidation) {
+
+      $hare_type = 1;
+      $sql = "SELECT HARE_TYPE FROM HARE_TYPES WHERE HARE_TYPE = ?";
+      while(true) {
+        if(!$app['db']->fetchOne($sql, array($hare_type))) break;
+        $hare_type *= 2;
+      }
+
+      $sql = "
+        INSERT INTO HARE_TYPES(HARE_TYPE_NAME, SEQ, CHART_COLOR, HARE_TYPE)
+         VALUES(?, ?, ?, ?)";
+
+        $app['dbs']['mysql_write']->executeUpdate($sql,array(
+          $theHareTypeName,
+          (int) $theSequence,
+          $theChartColor,
+          $hare_type));
+
+      #Audit this activity
+      $actionType = "Hare Type Creation (Ajax)";
+      $actionDescription = "Created hare type $theHareTypeName";
+      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+
+      // Establish the return value message
+      $returnMessage = "Success! Great, it worked";
+    }
+
+    #Set the return value
+    $returnValue =  $app->json($returnMessage, 200);
+    return $returnValue;
+  }
+
+  #Define action
   public function modifyHashTypeAjaxPreAction(Request $request, Application $app, int $hash_type) {
 
     # Declare the SQL used to retrieve this information
@@ -472,6 +542,84 @@ class SuperAdminController extends BaseController {
       #Audit this activity
       $actionType = "Hash Type Modification (Ajax)";
       $actionDescription = "Modified hash type $theHashTypeName";
+      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+
+      // Establish the return value message
+      $returnMessage = "Success! Great, it worked";
+    }
+
+    #Set the return value
+    $returnValue =  $app->json($returnMessage, 200);
+    return $returnValue;
+  }
+
+  #Define action
+  public function newHashTypeAjaxPreAction(Request $request, Application $app) {
+
+    $sql = "
+      SELECT MAX(SEQ)+10 AS SEQ, NULL AS HASH_TYPE_NAME
+        FROM HASH_TYPES";
+
+    # Make a database call to obtain the hasher information
+    $hashTypeValue = $app['db']->fetchAssoc($sql, array($hash_type));
+
+    $hareTypes = $app['db']->fetchAll("
+      SELECT *, false AS SELECTED
+        FROM HARE_TYPES
+       ORDER BY SEQ", array());
+
+    $returnValue = $app['twig']->render('edit_hash_type_form_ajax.twig', array(
+      'pageTitle' => 'Create a Hash Type!',
+      'hashTypeValue' => $hashTypeValue,
+      'hash_type' => -1,
+      'hare_types' => $hareTypes
+    ));
+
+    #Return the return value
+    return $returnValue;
+  }
+
+  public function newHashTypeAjaxPostAction(Request $request, Application $app) {
+
+    $theHashTypeName = trim(strip_tags($request->request->get('hashTypeName')));
+    $theSequence = trim(strip_tags($request->request->get('sequence')));
+    $theHareTypes = $request->request->get('hareTypes');
+
+    // Establish a "passed validation" variable
+    $passedValidation = TRUE;
+
+    $theHareTypeMask = $this->convertInputToMask($theHareTypes);
+
+    // Establish the return message value as empty (at first)
+    $returnMessage = "";
+
+    if($theHareTypeMask <= 0) {
+      $passedValidation = FALSE;
+      $returnMessage .= " |Failed validation on hare types";
+    }
+
+    if($passedValidation) {
+
+      $hash_type = 1;
+      $sql = "SELECT HASH_TYPE FROM HASH_TYPES WHERE HASH_TYPE = ?";
+      while(true) {
+        if(!$app['db']->fetchOne($sql, array($hash_type))) break;
+        $hash_type *= 2;
+      }
+
+      $sql = "
+        INSERT INTO HASH_TYPES(HASH_TYPE, HASH_TYPE_NAME, SEQ, HARE_TYPE_MASK)
+        VALUES(?, ?, ?, ?)";
+
+        $app['dbs']['mysql_write']->executeUpdate($sql,array(
+          $hash_type,
+          $theHashTypeName,
+          (int) $theSequence,
+          $theHareTypeMask));
+
+      #Audit this activity
+      $actionType = "Hash Type Creation (Ajax)";
+      $actionDescription = "Created hash type $theHashTypeName";
       AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
 
       // Establish the return value message
@@ -688,6 +836,50 @@ class SuperAdminController extends BaseController {
     $actionDescription = "Deleted kennel $kennel";
 
     AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+
+    header("Location: /superadmin/hello");
+    return $app->json("", 302);
+  }
+
+  public function deleteHashType(Request $request, Application $app, int $hash_type) {
+
+    $sql = "SELECT TRUE AS IN_USE WHERE EXISTS(SELECT 1 FROM HASHES_TABLE WHERE HASHES_TABLE.HASH_TYPE & ? = HASHES_TABLE.HASH_TYPE)";
+    $in_use = $app['db']->fetchOne($sql, array($kennel_ky));
+
+    if(!$in_use) {
+      $sql = "SELECT HASH_TYPE_NAME FROM HASH_TYPES WHERE HASH_TYPE = ?";
+      $hash_type_name = $app['db']->fetchOne($sql, array($hash_type));
+
+      $sql = "DELETE FROM HASH_TYPES WHERE HASH_TYPE = ?";
+      $app['dbs']['mysql_write']->executeUpdate($sql,array($hash_type));
+
+      $actionType = "Hash Type Deletion (Ajax)";
+      $actionDescription = "Deleted hash type $hash_type_name";
+
+      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+    }
+
+    header("Location: /superadmin/hello");
+    return $app->json("", 302);
+  }
+
+  public function deleteHareType(Request $request, Application $app, int $hare_type) {
+
+    $sql = "SELECT TRUE AS IN_USE WHERE EXISTS(SELECT 1 FROM HARINGS WHERE HARINGS.HARE_TYPE & ? = HARINGS.HARE_TYPE)";
+    $in_use = $app['db']->fetchOne($sql, array($kennel_ky));
+
+    if(!$in_use) {
+      $sql = "SELECT HARE_TYPE_NAME FROM HARE_TYPES WHERE HARE_TYPE = ?";
+      $hare_type_name = $app['db']->fetchOne($sql, array($hare_type));
+
+      $sql = "DELETE FROM HARE_TYPES WHERE HARE_TYPE = ?";
+      $app['dbs']['mysql_write']->executeUpdate($sql,array($hare_type));
+
+      $actionType = "Hare Type Deletion (Ajax)";
+      $actionDescription = "Deleted hare type $hare_type_name";
+
+      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+    }
 
     header("Location: /superadmin/hello");
     return $app->json("", 302);

@@ -6,7 +6,11 @@
 
 <script>
 
+{% if hare_type == -1 %}
+submitUrl = "/superadmin/newharetype/ajaxform";
+{% else %}
 submitUrl = "/superadmin/{{hare_type}}/editharetype/ajaxform";
+{% endif %}
 
 $(function() {
   var validator = $("#the_form").validate({

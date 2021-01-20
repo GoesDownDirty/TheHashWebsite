@@ -242,11 +242,17 @@ $app->post('/superadmin/{hash_type}/edithashtype/ajaxform',         'HASH\Contro
 $app->get('/superadmin/{user_id}/edituser/ajaxform',                'HASH\Controller\SuperAdminController::modifyUserAjaxPreAction');
 $app->post('/superadmin/{user_id}/edituser/ajaxform',               'HASH\Controller\SuperAdminController::modifyUserAjaxPostAction');
 $app->get('/superadmin/{user_id}/deleteuser',                       'HASH\Controller\SuperAdminController::deleteUser');
+$app->get('/superadmin/{kennel_ky}/deletekennel',                   'HASH\Controller\SuperAdminController::deleteKennel');
+$app->get('/superadmin/{hash_type}/deletehashtype',                 'HASH\Controller\SuperAdminController::deleteHashType');
+$app->get('/superadmin/{hare_type}/deleteharetype',                 'HASH\Controller\SuperAdminController::deleteHareType');
 $app->get('/superadmin/newuser/ajaxform',                           'HASH\Controller\SuperAdminController::newUserAjaxPreAction');
 $app->post('/superadmin/newuser/ajaxform',                          'HASH\Controller\SuperAdminController::newUserAjaxPostAction');
 $app->get('/superadmin/newkennel/ajaxform',                         'HASH\Controller\SuperAdminController::newKennelAjaxPreAction');
 $app->post('/superadmin/newkennel/ajaxform',                        'HASH\Controller\SuperAdminController::newKennelAjaxPostAction');
-$app->get('/superadmin/{kennel_ky}/deletekennel',                   'HASH\Controller\SuperAdminController::deleteKennel');
+$app->get('/superadmin/newhashtype/ajaxform',                       'HASH\Controller\SuperAdminController::newHashTypeAjaxPreAction');
+$app->post('/superadmin/newhashtype/ajaxform',                      'HASH\Controller\SuperAdminController::newHashTypeAjaxPostAction');
+$app->get('/superadmin/newharetype/ajaxform',                       'HASH\Controller\SuperAdminController::newHareTypeAjaxPreAction');
+$app->post('/superadmin/newharetype/ajaxform',                      'HASH\Controller\SuperAdminController::newHareTypeAjaxPostAction');
 
 $app->get('/user/hello',                                          'HASH\Controller\AdminController::userHelloAction');
 

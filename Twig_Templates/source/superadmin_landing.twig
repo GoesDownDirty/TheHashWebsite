@@ -4,17 +4,28 @@
 
 <script>
 
-function deleteUser(id) {
-  if(window.confirm("Danger! Danger! Danger!  This cannot be undone!  Click OK to permanently remove the user.")) {
-    document.location="/superadmin/" + id + "/deleteuser";
+function doDelete(id, description, urlSuffix) {
+  if(window.confirm("Danger! Danger! Danger!  This cannot be undone!  Click OK to permanently remove the " + description + ".")) {
+    document.location="/superadmin/" + id + "/delete" + urlSuffix;
   }
 }
 
-function deleteKennel(id) {
-  if(window.confirm("Danger! Danger! Danger!  This cannot be undone!  Click OK to permanently remove the kennel.")) {
-    document.location="/superadmin/" + id + "/deletekennel";
-  }
+function deleteUser(id) {
+  doDelete(id, "user", "user");
 }
+
+function deleteKennel(id) {
+  doDelete(id, "kennel", "kennel");
+}
+
+function deleteHashType(id) {
+  doDelete(id, "hash type", "hashtype");
+}
+
+function deleteHareType(id) {
+  doDelete(id, "hare type", "haretype");
+}
+
 
 </script>
 
@@ -108,7 +119,7 @@ function deleteKennel(id) {
 
         <div class="row marketing">
           <div class="col-lg-12"><div style="padding:2">
-            <h4>Hash Types (Create New Hash Type)</h4>
+            <h4>Hash Types (<a href="/superadmin/newhashtype/ajaxform">Create New Hash Type</a>)</h4>
 
               {% set headerColor = "#d3d3d3" %}
               <div class="row" >
@@ -121,7 +132,15 @@ function deleteKennel(id) {
                 <div class="row">
                   <div class="col-xs-4 col-md-1 hidden-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.SEQ}}&nbsp;</div>
                   <div class="col-xs-4 col-md-4 hidden-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.HASH_TYPE_NAME}}&nbsp;</div>
-                  <div class="col-xs-4 col-md-1 hidden-xs"    style="background-color:{{bgcolor}};"><a href="/superadmin/{{item.HASH_TYPE}}/edithashtype/ajaxform">Modify</a> | Delete</div>
+                  <div class="col-xs-4 col-md-1 hidden-xs"    style="background-color:{{bgcolor}};">
+                    <a href="/superadmin/{{item.HASH_TYPE}}/edithashtype/ajaxform">Modify</a>
+                    {% if not item.IN_USE %}
+                    |
+                    <a href="javascript:deleteHashType({{item.HASH_TYPE}})">
+                    Delete
+                    </a>
+                    {% endif %}
+                    </div>
                 </div>
               {% endfor %}
           </div></div>
@@ -129,7 +148,7 @@ function deleteKennel(id) {
 
         <div class="row marketing">
           <div class="col-lg-12"><div style="padding:2">
-            <h4>Hare Types (Create New Hare Type)</h4>
+            <h4>Hare Types (<a href="/superadmin/newharetype/ajaxform">Create New Hare Type</a>)</h4>
 
               {% set headerColor = "#d3d3d3" %}
               <div class="row" >
@@ -144,7 +163,15 @@ function deleteKennel(id) {
                   <div class="col-xs-4 col-md-1 hidden-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.SEQ}}&nbsp;</div>
                   <div class="col-xs-4 col-md-4 hidden-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.HARE_TYPE_NAME}}&nbsp;</div>
                   <div class="col-xs-4 col-md-2 hidden-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.CHART_COLOR}}&nbsp;</div>
-                  <div class="col-xs-4 col-md-1 hidden-xs"    style="background-color:{{bgcolor}};"><a href="/superadmin/{{item.HARE_TYPE}}/editharetype/ajaxform">Modify</a> | Delete</div>
+                  <div class="col-xs-4 col-md-1 hidden-xs"    style="background-color:{{bgcolor}};">
+                    <a href="/superadmin/{{item.HARE_TYPE}}/editharetype/ajaxform">Modify</a>
+                    {% if not item.IN_USE %}
+                    |
+                    <a href="javascript:deleteHareType({{item.HARE_TYPE}})">
+                    Delete
+                    </a>
+                    {% endif %}
+                    </div>
                 </div>
               {% endfor %}
           </div></div>

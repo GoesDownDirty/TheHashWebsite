@@ -38,15 +38,15 @@ class SuperAdminController extends BaseController {
       #Establish the list of kennels
       $kennelList = $app['db']->fetchAll("SELECT KENNEL_NAME, KENNEL_DESCRIPTION,
          KENNEL_ABBREVIATION, IN_RECORD_KEEPING, SITE_ADDRESS, KENNEL_KY,
-         COALESCE((SELECT TRUE WHERE EXISTS(SELECT 1 FROM HASHES WHERE HASHES.KENNEL_KY = KENNELS.KENNEL_KY)), FALSE) AS IN_USE
+         EXISTS(SELECT 1 FROM HASHES WHERE HASHES.KENNEL_KY = KENNELS.KENNEL_KY) AS IN_USE
          FROM KENNELS ORDER BY IN_RECORD_KEEPING DESC, SITE_ADDRESS DESC");
 
       $hareTypes = $app['db']->fetchAll("SELECT *,
-        COALESCE((SELECT TRUE WHERE EXISTS(SELECT 1 FROM HARINGS WHERE HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE)), FALSE) AS IN_USE
+        EXISTS(SELECT 1 FROM HARINGS WHERE HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE) AS IN_USE
         FROM HARE_TYPES ORDER BY SEQ");
 
       $hashTypes = $app['db']->fetchAll("SELECT *,
-        COALESCE((SELECT TRUE WHERE EXISTS(SELECT 1 FROM HASHES_TABLE WHERE HASHES_TABLE.HASH_TYPE & HASH_TYPES.HASH_TYPE = HASH_TYPES.HASH_TYPE)), FALSE) AS IN_USE
+        EXISTS(SELECT 1 FROM HASHES_TABLE WHERE HASHES_TABLE.HASH_TYPE & HASH_TYPES.HASH_TYPE = HASH_TYPES.HASH_TYPE) AS IN_USE
         FROM HASH_TYPES ORDER BY SEQ");
 
       #return $app->redirect('/');
@@ -843,7 +843,7 @@ class SuperAdminController extends BaseController {
 
   public function deleteHashType(Request $request, Application $app, int $hash_type) {
 
-    $sql = "SELECT TRUE AS IN_USE WHERE EXISTS(SELECT 1 FROM HASHES_TABLE WHERE HASHES_TABLE.HASH_TYPE & ? = HASHES_TABLE.HASH_TYPE)";
+    $sql = "SELECT EXISTS(SELECT 1 FROM HASHES_TABLE WHERE HASHES_TABLE.HASH_TYPE & ? = HASHES_TABLE.HASH_TYPE) AS IN_USE";
     $in_use = $app['db']->fetchOne($sql, array($kennel_ky));
 
     if(!$in_use) {
@@ -865,7 +865,7 @@ class SuperAdminController extends BaseController {
 
   public function deleteHareType(Request $request, Application $app, int $hare_type) {
 
-    $sql = "SELECT TRUE AS IN_USE WHERE EXISTS(SELECT 1 FROM HARINGS WHERE HARINGS.HARE_TYPE & ? = HARINGS.HARE_TYPE)";
+    $sql = "SELECT EXISTS(SELECT 1 FROM HARINGS WHERE HARINGS.HARE_TYPE & ? = HARINGS.HARE_TYPE) AS IN_USE";
     $in_use = $app['db']->fetchOne($sql, array($kennel_ky));
 
     if(!$in_use) {

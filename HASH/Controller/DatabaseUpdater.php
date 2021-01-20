@@ -14,7 +14,7 @@ class DatabaseUpdater {
 
     $databaseVersion = $this->getDatabaseVersion();
 
-    if($databaseVersion != 9) {
+    if($databaseVersion != 10) {
 
       $has_semaphones = true;
 
@@ -75,6 +75,9 @@ class DatabaseUpdater {
             case 8:
               $this->renameStatsConfigToSiteConfig();
               $this->setDatabaseVersion(9);
+            case 9:
+              $this->addDescriptionColumnToSiteConfig();
+              $this->setDatabaseVersion(10);
             default:
               // Overkill, but guarantees the view is up to date with the
               // current database structure.
@@ -102,6 +105,16 @@ class DatabaseUpdater {
   private function dropLockTable() {
     $sql = "DROP TABLE DATABASE_UPGRADE_IN_PROGRESS";
     $this->app['dbs']['mysql_write']->executeStatement($sql, array());
+  }
+
+  private function addDescriptionColumnToSiteConfig() {
+    $sql = "ALTER TABLE SITE_CONFIG ADD DESCRIPTION VARCHAR(4000)";
+    $this->app['dbs']['mysql_write']->executeStatement($sql, array());
+
+    // ignore error, entry may already exist in table
+    $this->executeStatementIgnoreError("INSERT INTO SITE_CONFIG(NAME, VALUE) VALUES('site_domain_name', '-none-')");
+
+    $this->executeStatement("UPDATE SITE_CONFIG SET DESCRIPTION='The base domain name of this website.  Ex: myhashstats.org' WHERE NAME='site_domain_name'", array());
   }
 
   private function renameStatsConfigToSiteConfig() {

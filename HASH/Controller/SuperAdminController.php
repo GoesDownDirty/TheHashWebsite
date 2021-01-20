@@ -767,7 +767,8 @@ class SuperAdminController extends BaseController {
       $sql = "
         UPDATE SITE_CONFIG
            SET VALUE = ?
-         WHERE NAME = ?";
+         WHERE NAME = ?
+           AND DESCRIPTION IS NOT NULL";
 
       $app['dbs']['mysql_write']->executeUpdate($sql,array(
         $theValue,

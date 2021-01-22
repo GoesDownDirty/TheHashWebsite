@@ -7,6 +7,11 @@ use Symfony\Component\HttpFoundation\Request;
 
 class BaseController {
 
+  protected function getDefaultKennel(Application $app) {
+    $sql = "SELECT value FROM SITE_CONFIG WHERE name='default_kennel'";
+    return $app['db']->fetchOne($sql, array());
+  }
+
   protected function getSiteConfigItem(Application $app, string $name, string $defaultValue) {
     $sql = "SELECT VALUE FROM SITE_CONFIG WHERE NAME = ?";
 

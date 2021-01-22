@@ -14,7 +14,7 @@ class DatabaseUpdater {
 
     $databaseVersion = $this->getDatabaseVersion();
 
-    if($databaseVersion != 10) {
+    if($databaseVersion != 11) {
 
       $has_semaphones = true;
 
@@ -78,6 +78,9 @@ class DatabaseUpdater {
             case 9:
               $this->addDescriptionColumnToSiteConfig();
               $this->setDatabaseVersion(10);
+            case 10:
+              $this->moveDefaultKennelAbbreviationToSiteConfig();
+              $this->setDatabaseVersion(11);
             default:
               // Overkill, but guarantees the view is up to date with the
               // current database structure.
@@ -107,6 +110,19 @@ class DatabaseUpdater {
     $this->app['dbs']['mysql_write']->executeStatement($sql, array());
   }
 
+  private function insertIntoSiteConfig(string $name, string $value, string $description) {
+    $this->app['dbs']['mysql_write']->executeStatement("INSERT INTO SITE_CONFIG(NAME, VALUE, DESCRIPTION) VALUES(?, ?, ?)", array($name, $value, $description));
+  }
+
+  private function moveDefaultKennelAbbreviationToSiteConfig() {
+    if(defined('DEFAULT_KENNEL_ABBREVIATION')) {
+      $dka = DEFAULT_KENNEL_ABBREVIATION;
+    } else {
+      $dka = "**NEEDS UPDATED**";
+    }
+    $this->insertIntoSiteConfig('default_kennel', $dka, 'The default kennel for this website. This value must match a kennel abbreviation in the KENNELS table.');
+  }
+
   private function addDescriptionColumnToSiteConfig() {
     $sql = "ALTER TABLE SITE_CONFIG ADD DESCRIPTION VARCHAR(4000)";
     $this->app['dbs']['mysql_write']->executeStatement($sql, array());
@@ -114,7 +130,7 @@ class DatabaseUpdater {
     // ignore error, entry may already exist in table
     $this->executeStatementIgnoreError("INSERT INTO SITE_CONFIG(NAME, VALUE) VALUES('site_domain_name', '-none-')");
 
-    $this->executeStatement("UPDATE SITE_CONFIG SET DESCRIPTION='The base domain name of this website.  Ex: myhashstats.org' WHERE NAME='site_domain_name'", array());
+    $this->executeStatement("UPDATE SITE_CONFIG SET DESCRIPTION='The base domain name of this website.  Ex: myhashstats.org' WHERE NAME='site_domain_name'");
   }
 
   private function renameStatsConfigToSiteConfig() {
@@ -123,8 +139,8 @@ class DatabaseUpdater {
   }
 
   private function fixStatsConfigKey() {
-    $this->executeStatement("DROP INDEX NAME_idx ON STATS_CONFIG", array());
-    $this->executeStatement("ALTER TABLE STATS_CONFIG ADD PRIMARY KEY (`NAME`)", array());
+    $this->executeStatement("DROP INDEX NAME_idx ON STATS_CONFIG");
+    $this->executeStatement("ALTER TABLE STATS_CONFIG ADD PRIMARY KEY (`NAME`)");
   }
 
   private function dropEmailColumn() {

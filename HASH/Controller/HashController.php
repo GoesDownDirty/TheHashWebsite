@@ -72,7 +72,7 @@ class HashController extends BaseController
   public function slashAction(Request $request, Application $app){
 
     #Set the return value
-    $returnValue = $this->slashKennelAction2($request,$app,DEFAULT_KENNEL_ABBREVIATION);
+    $returnValue = $this->slashKennelAction2($request,$app,$this->getDefaultKennel($app));
 
     #Return the return value
     return $returnValue;

@@ -19,9 +19,6 @@ define("DEFAULT_USER_PASSWORD","yourlongpasswordstring");
 define("GOOGLE_PLACES_API_WEB_SERVICE_KEY","");
 define("GOOGLE_MAPS_JAVASCRIPT_API_KEY","");
 
-// Define the default kennel abbreviation (what you go to on the "/" URL)
-define("DEFAULT_KENNEL_ABBREVIATION", "SCH4");
-
 // Establish the contact email for the local administrator
 define("ADMINISTRATOR_EMAIL","foo@gmail.com");
 

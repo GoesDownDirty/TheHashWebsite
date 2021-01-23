@@ -14,7 +14,7 @@ class DatabaseUpdater {
 
     $databaseVersion = $this->getDatabaseVersion();
 
-    if($databaseVersion != 11) {
+    if($databaseVersion != 12) {
 
       $has_semaphones = true;
 
@@ -81,6 +81,9 @@ class DatabaseUpdater {
             case 10:
               $this->moveDefaultKennelAbbreviationToSiteConfig();
               $this->setDatabaseVersion(11);
+            case 11:
+              $this->moveAdministratorEmailToSiteConfig();
+              $this->setDatabaseVersion(12);
             default:
               // Overkill, but guarantees the view is up to date with the
               // current database structure.
@@ -121,6 +124,15 @@ class DatabaseUpdater {
       $dka = "**NEEDS UPDATED**";
     }
     $this->insertIntoSiteConfig('default_kennel', $dka, 'The default kennel for this website. This value must match a kennel abbreviation in the KENNELS table.');
+  }
+
+  private function moveAdministratorEmailToSiteConfig() {
+    if(defined('ADMINISTRATOR_EMAIL')) {
+      $em = ADMINISTRATOR_EMAIL;
+    } else {
+      $em = "**NEEDS UPDATED**";
+    }
+    $this->insertIntoSiteConfig('administrator_email', $em, 'The email address for the contact person for this website.');
   }
 
   private function addDescriptionColumnToSiteConfig() {

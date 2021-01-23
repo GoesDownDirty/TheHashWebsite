@@ -7,6 +7,11 @@ use Symfony\Component\HttpFoundation\Request;
 
 class BaseController {
 
+  protected function getAdministratorEmail(Application $app) {
+    $sql = "SELECT value FROM SITE_CONFIG WHERE name='administrator_email'";
+    return $app['db']->fetchOne($sql, array());
+  }
+
   protected function getDefaultKennel(Application $app) {
     $sql = "SELECT value FROM SITE_CONFIG WHERE name='default_kennel'";
     return $app['db']->fetchOne($sql, array());

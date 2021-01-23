@@ -1953,7 +1953,7 @@ class ObscureStatisticsController extends BaseController {
       $returnValue = $app['twig']->render('about.twig', array (
         'pageTitle' => $pageTitle,
         'kennel_abbreviation' => $kennel_abbreviation,
-        'adminEmail' => ADMINISTRATOR_EMAIL
+        'adminEmail' => $this->getAdministratorEmail($app)
       ));
 
       #Return the return value

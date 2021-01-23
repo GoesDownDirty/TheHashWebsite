@@ -11,16 +11,11 @@ define("DB_READ_ONLY_PASSWORD","yourpassword");
 
 /* Define this if you want google analytics on this instance */
 define("GOOGLE_ANALYTICS_ID","");
-define("JUMBO_PERCENTAGES_MINIMUM_HASH_COUNT",10);
-define("JUMBO_COUNTS_MINIMUM_HASH_COUNT",5);
 
 define("DEFAULT_USER_PASSWORD","yourlongpasswordstring");
 
 define("GOOGLE_PLACES_API_WEB_SERVICE_KEY","");
 define("GOOGLE_MAPS_JAVASCRIPT_API_KEY","");
-
-// Establish the contact email for the local administrator
-define("ADMINISTRATOR_EMAIL","foo@gmail.com");
 
 // Set to true if you need legacy hash counts
 // Don't turn this on if you don't need it

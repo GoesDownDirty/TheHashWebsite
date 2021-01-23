@@ -14,7 +14,7 @@ class DatabaseUpdater {
 
     $databaseVersion = $this->getDatabaseVersion();
 
-    if($databaseVersion != 12) {
+    if($databaseVersion != 13) {
 
       $has_semaphones = true;
 
@@ -84,6 +84,10 @@ class DatabaseUpdater {
             case 11:
               $this->moveAdministratorEmailToSiteConfig();
               $this->setDatabaseVersion(12);
+            case 12:
+              $this->alterSiteConfigNameColumn();
+              $this->moveJumboCountsSettingsToSiteConfig();
+              $this->setDatabaseVersion(13);
             default:
               // Overkill, but guarantees the view is up to date with the
               // current database structure.
@@ -115,6 +119,25 @@ class DatabaseUpdater {
 
   private function insertIntoSiteConfig(string $name, string $value, string $description) {
     $this->app['dbs']['mysql_write']->executeStatement("INSERT INTO SITE_CONFIG(NAME, VALUE, DESCRIPTION) VALUES(?, ?, ?)", array($name, $value, $description));
+  }
+
+  private function alterSiteConfigNameColumn() {
+    $this->executeStatement("ALTER TABLE SITE_CONFIG CHANGE NAME NAME VARCHAR(100) NOT NULL");
+  }
+
+  private function moveJumboCountsSettingsToSiteConfig() {
+    if(defined('JUMBO_COUNTS_MINIMUM_HASH_COUNT')) {
+      $jc = JUMBO_COUNTS_MINIMUM_HASH_COUNT;
+    } else {
+      $jc = 5;
+    }
+    if(defined('JUMBO_PERCENTAGES_MINIMUM_HASH_COUNT')) {
+      $jp = JUMBO_PERCENTAGES_MINIMUM_HASH_COUNT;
+    } else {
+      $jp = 10;
+    }
+    $this->insertIntoSiteConfig('jumbo_counts_minimum_hash_count', $jc, 'Minimum number of hashes to appear on the jumbo counts table.');
+    $this->insertIntoSiteConfig('jumbo_percentages_minimum_hash_count', $jp, 'Minimum number of hashes to appears on the jumbo percentages table.');
   }
 
   private function moveDefaultKennelAbbreviationToSiteConfig() {

@@ -4160,7 +4160,7 @@ public function getProjectedHasherAnalversariesAction(Request $request, Applicat
 public function jumboCountsTablePreActionJson(Request $request, Application $app, string $kennel_abbreviation){
 
   #Establish the subTitle
-  $minimumHashCount = JUMBO_COUNTS_MINIMUM_HASH_COUNT;
+  $minimumHashCount = $this->getSiteConfigItemAsInt($app, 'jumbo_counts_minimum_hash_count', 10);
   $subTitle = "Minimum of $minimumHashCount hashes";
   $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
   $hareTypes = $this->getHareTypes($app, $kennelKy);
@@ -4189,7 +4189,7 @@ public function jumboCountsTablePostActionJson(Request $request, Application $ap
   #$app['monolog']->addDebug("Entering the function jumboStatsTablePostActionJson------------------------");
 
   #Establish he minimum hash count
-  $minimumHashCount = JUMBO_COUNTS_MINIMUM_HASH_COUNT;
+  $minimumHashCount = $this->getSiteConfigItemAsInt($app, 'jumbo_counts_minimum_hash_count', 10);
 
   #Obtain the kennel key
   $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
@@ -4438,7 +4438,7 @@ public function jumboCountsTablePostActionJson(Request $request, Application $ap
 public function jumboPercentagesTablePreActionJson(Request $request, Application $app, string $kennel_abbreviation){
 
   #Establish the sub title
-  $minimumHashCount = JUMBO_PERCENTAGES_MINIMUM_HASH_COUNT;
+  $minimumHashCount = $this->getSiteConfigItemAsInt($app, 'jumbo_percentages_minimum_hash_count', 10);
   $subTitle = "Minimum of $minimumHashCount hashes";
   $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
   $hareTypes = $this->getHareTypes($app, $kennelKy);
@@ -4481,7 +4481,7 @@ public function jumboPercentagesTablePostActionJson(Request $request, Applicatio
   }
 
   #Define the minimum hash count
-  $minimumHashCount = JUMBO_PERCENTAGES_MINIMUM_HASH_COUNT;
+  $minimumHashCount = $this->getSiteConfigItemAsInt($app, 'jumbo_percentages_minimum_hash_count', 10);
 
   #Obtain the post parameters
   #$inputDraw = $_POST['draw'] ;

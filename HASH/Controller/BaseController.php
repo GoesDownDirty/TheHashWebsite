@@ -17,6 +17,17 @@ class BaseController {
     return $app['db']->fetchOne($sql, array());
   }
 
+  protected function getSiteConfigItemAsInt(Application $app, string $name, int $defaultValue) {
+    $sql = "SELECT VALUE FROM SITE_CONFIG WHERE NAME = ?";
+
+    $value = (int) $app['db']->fetchOne($sql, array($name));
+    if(!$value) {
+      $value = $defaultValue;
+    }
+
+    return $value;
+  }
+
   protected function getSiteConfigItem(Application $app, string $name, string $defaultValue) {
     $sql = "SELECT VALUE FROM SITE_CONFIG WHERE NAME = ?";
 

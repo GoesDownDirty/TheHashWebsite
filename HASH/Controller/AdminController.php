@@ -127,7 +127,7 @@ class AdminController extends BaseController
                   AND
                   HASHERS.HASHER_KY NOT IN (SELECT HARINGS_HASHER_KY FROM HARINGS)";
 
-      if(HAS_LEGACY_HASH_COUNTS) {
+      if($this->hasLegacyHashCounts($app)) {
         $sql .= " AND HASHERS.HASHER_KY NOT IN (SELECT HASHER_KY FROM LEGACY_HASHINGS)";
       }
 
@@ -966,7 +966,7 @@ class AdminController extends BaseController
       "SELECT THE_KEY, NAME, VALUE,
               HASHER_AWARDS.LAST_AWARD_LEVEL_RECOGNIZED AS LAST_AWARD,".
               ($type == "pending" ? "MAX" : "MIN")."(AWARD_LEVELS.AWARD_LEVEL) AS NEXT_AWARD_LEVEL
-         FROM (".$this->getHashingCountsQuery().") HASHER_COUNTS
+         FROM (".$this->getHashingCountsQuery($app).") HASHER_COUNTS
          LEFT JOIN HASHER_AWARDS
            ON HASHER_COUNTS.THE_KEY = HASHER_AWARDS.HASHER_KY
           AND HASHER_COUNTS.KENNEL_KY = HASHER_AWARDS.KENNEL_KY

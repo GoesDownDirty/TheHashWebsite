@@ -14,7 +14,7 @@ class DatabaseUpdater {
 
     $databaseVersion = $this->getDatabaseVersion();
 
-    if($databaseVersion != 15) {
+    if($databaseVersion != 16) {
 
       $has_semaphones = true;
 
@@ -94,6 +94,9 @@ class DatabaseUpdater {
             case 14:
               $this->moveSiteBannerToSiteConfig();
               $this->setDatabaseVersion(15);
+            case 15:
+              $this->moveHasLegacyHashCountsToSiteConfig();
+              $this->setDatabaseVersion(16);
             default:
               // Overkill, but guarantees the view is up to date with the
               // current database structure.
@@ -129,6 +132,20 @@ class DatabaseUpdater {
 
   private function alterSiteConfigNameColumn() {
     $this->executeStatement("ALTER TABLE SITE_CONFIG CHANGE NAME NAME VARCHAR(100) NOT NULL");
+  }
+
+  private function moveHasLegacyHashCountsToSiteConfig() {
+    if(defined('HAS_LEGACY_HASH_COUNTS')) {
+      $hlhc = HAS_LEGACY_HASH_COUNTS;
+    } else {
+      $hlhc = false;
+    }
+    if($hlhc) {
+      $hlhc = "true";
+    } else {
+      $hlhc = "false";
+    }
+    $this->insertIntoSiteConfig('has_legacy_hash_counts', $hlhc, 'Set to "true" if the LEGACY_HASH_COUNTS table exists and is used on this site.  Leave to set to "false" if you are not using this feature.');
   }
 
   private function moveSiteBannerToSiteConfig() {

@@ -19,6 +19,11 @@ class BaseController {
     return $app['twig']->render($template, $args);
   }
 
+  protected function hasLegacyHashCounts(Application $app) {
+    $sql = "SELECT value FROM SITE_CONFIG WHERE name='has_legacy_hash_counts'";
+    return $app['db']->fetchOne($sql, array()) == "true";
+  }
+
   protected function getSiteBanner(Application $app) {
     $sql = "SELECT value FROM SITE_CONFIG WHERE name='site_banner'";
     return $app['db']->fetchOne($sql, array());
@@ -137,9 +142,9 @@ class BaseController {
     return $result['HARE_TYPE_NAME'];
   }
 
-  protected function getLegacyHashingsCountSubquery(
+  protected function getLegacyHashingsCountSubquery(Application $app,
       string $hashersTableName = "HASHERS") {
-    if(HAS_LEGACY_HASH_COUNTS) {
+    if($this->hasLegacyHashCounts($app)) {
       return "COALESCE((SELECT LEGACY_HASHINGS_COUNT
          FROM LEGACY_HASHINGS
         WHERE LEGACY_HASHINGS.HASHER_KY = $hashersTableName.HASHER_KY
@@ -148,8 +153,8 @@ class BaseController {
     return "0";
   }
 
-  protected function getHashingCountsQuery() {
-   if(HAS_LEGACY_HASH_COUNTS) {
+  protected function getHashingCountsQuery(Application $app) {
+   if($this->hasLegacyHashCounts($app)) {
      return "SELECT THE_KEY, NAME, SUM(VALUE) AS VALUE, KENNEL_KY
                FROM (
              SELECT HASHERS.HASHER_KY AS THE_KEY,
@@ -185,8 +190,8 @@ class BaseController {
             ORDER BY VALUE DESC";
   }
 
-  protected function getPersonsHashingCountQuery() {
-    if(HAS_LEGACY_HASH_COUNTS) {
+  protected function getPersonsHashingCountQuery(Application $app) {
+    if($this->hasLegacyHashCounts($app)) {
       return "SELECT SUM(THE_COUNT) AS THE_COUNT
                 FROM (
               SELECT COUNT(*) AS THE_COUNT
@@ -206,7 +211,7 @@ class BaseController {
                AND ? != -1 AND ? != -1";
   }
 
-  protected function getHaringPercentageByHareTypeQuery() {
+  protected function getHaringPercentageByHareTypeQuery(Application $app) {
     return
       "SELECT HASHERS.HASHER_NAME AS HASHER_NAME,
               HASH_COUNT_TEMP_TABLE.HASH_COUNT AS HASH_COUNT,
@@ -215,7 +220,7 @@ class BaseController {
          FROM ((HASHERS
          JOIN (SELECT HASHINGS.HASHER_KY AS HASHER_KY,
                       COUNT(HASHINGS.HASHER_KY) + ".
-                      $this->getLegacyHashingsCountSubquery("HASHINGS").
+                      $this->getLegacyHashingsCountSubquery($app, "HASHINGS").
                       " AS HASH_COUNT
                  FROM HASHINGS
                  JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
@@ -234,7 +239,7 @@ class BaseController {
         ORDER BY ((HARING_COUNT_TEMP_TABLE.HARING_COUNT / HASH_COUNT_TEMP_TABLE.HASH_COUNT) * 100) DESC";
   }
 
-  protected function getHaringPercentageAllHashesQuery() {
+  protected function getHaringPercentageAllHashesQuery(Application $app) {
     return
       "SELECT HASHERS.HASHER_NAME AS HASHER_NAME,
               HASH_COUNT_TEMP_TABLE.HASH_COUNT AS HASH_COUNT,
@@ -243,7 +248,7 @@ class BaseController {
          FROM ((HASHERS
          JOIN (SELECT HASHINGS.HASHER_KY AS HASHER_KY,
                       COUNT(HASHINGS.HASHER_KY) + ".
-                      $this->getLegacyHashingsCountSubquery("HASHINGS").
+                      $this->getLegacyHashingsCountSubquery($app, "HASHINGS").
                       " AS HASH_COUNT
                  FROM HASHINGS
                  JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
@@ -262,9 +267,9 @@ class BaseController {
         ORDER BY ((HARING_COUNT_TEMP_TABLE.HARING_COUNT / HASH_COUNT_TEMP_TABLE.HASH_COUNT) * 100) DESC";
   }
 
-  protected function getHoundAnalversariesForEvent() {
+  protected function getHoundAnalversariesForEvent(Application $app) {
     return "SELECT HASHERS.HASHER_NAME AS HASHER_NAME,
-                   (COUNT(*)) + ".$this->getLegacyHashingsCountSubquery().
+                   (COUNT(*)) + ".$this->getLegacyHashingsCountSubquery($app).
                    " AS THE_COUNT,
                    MAX(HASHES.EVENT_DATE) AS MAX_EVENT_DATE
               FROM ((HASHERS
@@ -282,10 +287,10 @@ class BaseController {
              ORDER BY THE_COUNT DESC";
   }
 
-  protected function getPendingHasherAnalversariesQuery() {
+  protected function getPendingHasherAnalversariesQuery(Application $app) {
     return
       "SELECT HASHERS.HASHER_NAME AS HASHER_NAME,
-              COUNT(0) + ? + ".$this->getLegacyHashingsCountSubquery().
+              COUNT(0) + ? + ".$this->getLegacyHashingsCountSubquery($app).
               " AS THE_COUNT_INCREMENTED,
               TIMESTAMPDIFF(YEAR, MAX(HASHES.EVENT_DATE), CURDATE()) AS YEARS_ABSENCE
          FROM ((HASHERS
@@ -302,7 +307,7 @@ class BaseController {
         ORDER BY THE_COUNT_INCREMENTED DESC";
   }
 
-  protected function getPredictedHasherAnalversariesQuery() {
+  protected function getPredictedHasherAnalversariesQuery(Application $app) {
     return
       "SELECT HASHER_NAME, HASHER_KEY, TOTAL_HASH_COUNT, NEXT_MILESTONE,
               CURDATE() + INTERVAL ROUND(DAYS_BETWEEN_HASHES * (NEXT_MILESTONE - TOTAL_HASH_COUNT)) DAY AS PREDICTED_MILESTONE_DATE
@@ -323,7 +328,7 @@ class BaseController {
                                WHERE MILESTONE > TOTAL_HASH_COUNT
                                  AND KENNEL_KY=?) AS NEXT_MILESTONE
                  FROM (SELECT HASHERS.*, HASHERS.HASHER_KY AS OUTER_HASHER_KY, (
-                              SELECT COUNT(*) + ".$this->getLegacyHashingsCountSubquery()."
+                              SELECT COUNT(*) + ".$this->getLegacyHashingsCountSubquery($app)."
                                 FROM HASHINGS
                                 JOIN HASHES
                                   ON HASHINGS.HASH_KY = HASHES.HASH_KY
@@ -351,7 +356,7 @@ class BaseController {
         ORDER BY PREDICTED_MILESTONE_DATE";
   }
 
-  protected function getPredictedCenturionsQuery() {
+  protected function getPredictedCenturionsQuery(Application $app) {
     return
       "SELECT HASHER_NAME, HASHER_KEY, TOTAL_HASH_COUNT, NEXT_MILESTONE,
               CURDATE() + INTERVAL ROUND(DAYS_BETWEEN_HASHES * (NEXT_MILESTONE - TOTAL_HASH_COUNT)) DAY AS PREDICTED_MILESTONE_DATE
@@ -369,7 +374,7 @@ class BaseController {
                                 WHERE MILESTONE > TOTAL_HASH_COUNT
                                   AND KENNEL_KY=?) AS NEXT_MILESTONE
                  FROM (SELECT HASHERS.*, HASHERS.HASHER_KY AS OUTER_HASHER_KY, (
-                              SELECT COUNT(*) + ".$this->getLegacyHashingsCountSubquery()."
+                              SELECT COUNT(*) + ".$this->getLegacyHashingsCountSubquery($app)."
                                 FROM HASHINGS JOIN HASHES
                                   ON HASHINGS.HASH_KY = HASHES.HASH_KY
                                WHERE HASHINGS.HASHER_KY = OUTER_HASHER_KY

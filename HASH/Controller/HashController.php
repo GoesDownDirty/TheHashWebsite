@@ -1760,11 +1760,21 @@ class HashController extends BaseController
 
     # Determine previous hash
     $previousHashSql = "SELECT hash_ky AS THE_COUNT FROM HASHES WHERE kennel_ky=? AND event_date < (SELECT event_date FROM HASHES WHERE hash_ky = ?) ORDER BY event_date DESC LIMIT 1";
-    $previousHashId = $app['db']->fetchAssoc($previousHashSql, array($kennelKy, $hash_id))['THE_COUNT'];
+    $result = $app['db']->fetchAssoc($previousHashSql, array($kennelKy, $hash_id));
+    if($result) {
+      $previousHashId = $result['THE_COUNT'];
+    } else {
+      $previousHashId = null;
+    }
 
     # Determine next hash
     $nextHashSql = "SELECT hash_ky AS THE_COUNT FROM HASHES WHERE kennel_ky=? AND event_date > (SELECT event_date FROM HASHES WHERE hash_ky = ?) ORDER BY event_date LIMIT 1";
-    $nextHashId = $app['db']->fetchAssoc($nextHashSql, array($kennelKy, $hash_id))['THE_COUNT'];
+    $result = $app['db']->fetchAssoc($nextHashSql, array($kennelKy, $hash_id));
+    if($result) {
+      $nextHashId = $result['THE_COUNT'];
+    } else {
+      $nextHashId = null;
+    }
 
 
     # Make a database call to obtain the hasher information

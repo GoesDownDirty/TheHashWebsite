@@ -31,7 +31,7 @@ class TagController extends BaseController
 
 
       #Establish the return value
-      $returnValue = $app['twig']->render('manage_event_tag_json.twig', array (
+      $returnValue = $this->render($app, 'manage_event_tag_json.twig', array (
         'pageTitle' => "Event Tags",
         'pageSubTitle' => 'Create Event Tags. (Add them to the events sometime later).',
         'pageHeader' => 'Why is this so complicated ?',
@@ -199,7 +199,7 @@ public function addNewEventTag(Request $request, Application $app){
       # Make a database call to obtain the hasher information
       $hashValue = $app['db']->fetchAssoc($sql, array((int) $hash_id));
 
-      $returnValue = $app['twig']->render('show_hash_for_tagging.twig', array(
+      $returnValue = $this->render($app, 'show_hash_for_tagging.twig', array(
         'pageTitle' => 'Tag this hash event!',
         'pageHeader' => '(really)',
         'hashValue' => $hashValue,
@@ -443,7 +443,7 @@ public function addNewEventTag(Request $request, Application $app){
       #$hasherName = $hasher['HASHER_NAME'];
       $tagText = $eventTag['TAG_TEXT'];
       $pageSubtitle = "Hashes with the tag: $tagText";
-      $returnValue = $app['twig']->render('hash_list.twig',array(
+      $returnValue = $this->render($app, 'hash_list.twig',array(
         'pageTitle' => 'The List of Hashes',
         'pageSubTitle' => $pageSubtitle,
         'theList' => $hashList,
@@ -612,7 +612,7 @@ public function addNewEventTag(Request $request, Application $app){
       #$longestStreakValue = $app['db']->fetchAssoc(THE_LONGEST_STREAKS_FOR_HASHER, array((int) $kennelKy , (int) $hasher_id));
 
       # Establish and set the return value
-      $returnValue = $app['twig']->render('eventtag_chart_details.twig',array(
+      $returnValue = $this->render($app, 'eventtag_chart_details.twig',array(
         'pageTitle' => 'Tag Charts and Details',
         'firstHeader' => 'Basic Details',
         'secondHeader' => 'Statistics',
@@ -633,7 +633,7 @@ public function addNewEventTag(Request $request, Application $app){
         #'city_hashings_count_list' => $cityHashingsCountList,
         #'city_hashings_max_value' => $cityHashingsCountMax,
         'the_hashes' => $theHashes,
-        'geocode_api_value' => GOOGLE_MAPS_JAVASCRIPT_API_KEY,
+        'geocode_api_value' => $this->getGoogleMapsJavascriptApiKey($app),
         'avg_lat' => $avgLat,
         'avg_lng' => $avgLng,
         #'longest_streak' => $longestStreakValue['MAX_STREAK']

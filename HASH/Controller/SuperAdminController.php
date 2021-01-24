@@ -52,7 +52,7 @@ class SuperAdminController extends BaseController {
       $siteConfig = $app['db']->fetchAll("SELECT NAME, VALUE FROM SITE_CONFIG WHERE DESCRIPTION IS NOT NULL ORDER BY NAME");
 
       #return $app->redirect('/');
-      return $app['twig']->render('superadmin_landing.twig', array (
+      return $this->render($app, 'superadmin_landing.twig', array (
         'pageTitle' => 'This is the super admin landing screen',
         'subTitle1' => 'This is the super admin landing screen',
         'user_list' => $userList,
@@ -75,7 +75,7 @@ class SuperAdminController extends BaseController {
     #$app['monolog']->addDebug($lastUserName);
 
     # Establish the return value
-    $returnValue =  $app['twig']->render('superadmin_logon_screen.twig', array (
+    $returnValue =  $this->render($app, 'superadmin_logon_screen.twig', array (
       'pageTitle' => 'Super Admin Logon',
       'pageHeader' => 'Please log on!',
       'error' => $lastError,
@@ -136,7 +136,7 @@ class SuperAdminController extends BaseController {
         FROM HASH_TYPES
        ORDER BY SEQ", array($kennel_abbreviation));
 
-    $returnValue = $app['twig']->render('edit_kennel_form_ajax.twig', array(
+    $returnValue = $this->render($app, 'edit_kennel_form_ajax.twig', array(
       'pageTitle' => 'Modify a Kennel!',
       'kennel_abbreviation' => $kennel_abbreviation,
       'kennelValue' => $kennelValue,
@@ -260,7 +260,7 @@ class SuperAdminController extends BaseController {
         FROM HASH_TYPES
        ORDER BY SEQ", array());
 
-    $returnValue = $app['twig']->render('edit_kennel_form_ajax.twig', array(
+    $returnValue = $this->render($app, 'edit_kennel_form_ajax.twig', array(
       'pageTitle' => 'Add a Kennel!',
       'kennel_abbreviation' => '_none',
       'kennelValue' => $kennelValue,
@@ -354,7 +354,7 @@ class SuperAdminController extends BaseController {
     # Make a database call to obtain the hasher information
     $hareTypeValue = $app['db']->fetchAssoc($sql, array($hare_type));
 
-    $returnValue = $app['twig']->render('edit_hare_type_form_ajax.twig', array(
+    $returnValue = $this->render($app, 'edit_hare_type_form_ajax.twig', array(
       'pageTitle' => 'Modify a Hare Type!',
       'hareTypeValue' => $hareTypeValue,
       'hare_type' => $hare_type
@@ -418,7 +418,7 @@ class SuperAdminController extends BaseController {
     # Make a database call to obtain the hasher information
     $hareTypeValue = $app['db']->fetchAssoc($sql, array($hare_type));
 
-    $returnValue = $app['twig']->render('edit_hare_type_form_ajax.twig', array(
+    $returnValue = $this->render($app, 'edit_hare_type_form_ajax.twig', array(
       'pageTitle' => 'Create a Hare Type!',
       'hareTypeValue' => $hareTypeValue,
       'hare_type' => -1
@@ -494,7 +494,7 @@ class SuperAdminController extends BaseController {
         FROM HARE_TYPES
        ORDER BY SEQ", array($hash_type));
 
-    $returnValue = $app['twig']->render('edit_hash_type_form_ajax.twig', array(
+    $returnValue = $this->render($app, 'edit_hash_type_form_ajax.twig', array(
       'pageTitle' => 'Modify a Hash Type!',
       'hashTypeValue' => $hashTypeValue,
       'hash_type' => $hash_type,
@@ -570,7 +570,7 @@ class SuperAdminController extends BaseController {
         FROM HARE_TYPES
        ORDER BY SEQ", array());
 
-    $returnValue = $app['twig']->render('edit_hash_type_form_ajax.twig', array(
+    $returnValue = $this->render($app, 'edit_hash_type_form_ajax.twig', array(
       'pageTitle' => 'Create a Hash Type!',
       'hashTypeValue' => $hashTypeValue,
       'hash_type' => -1,
@@ -645,7 +645,7 @@ class SuperAdminController extends BaseController {
     # Make a database call to obtain the hasher information
     $userValue = $app['db']->fetchAssoc($sql, array($user_id));
 
-    $returnValue = $app['twig']->render('edit_user_form_ajax.twig', array(
+    $returnValue = $this->render($app, 'edit_user_form_ajax.twig', array(
       'pageTitle' => 'Modify a User!',
       'userValue' => $userValue,
       'user_id' => $user_id
@@ -743,7 +743,7 @@ class SuperAdminController extends BaseController {
     # Make a database call to obtain the hasher information
     $item = $app['db']->fetchAssoc($sql, array($name));
 
-    $returnValue = $app['twig']->render('edit_site_config_form_ajax.twig', array(
+    $returnValue = $this->render($app, 'edit_site_config_form_ajax.twig', array(
       'pageTitle' => 'Modify a Configuration Variable: '.$name,
       'item' => $item
     ));
@@ -794,7 +794,7 @@ class SuperAdminController extends BaseController {
     $userValue['username']='';
     $userValue['SUPERADMIN']=false;
 
-    $returnValue = $app['twig']->render('edit_user_form_ajax.twig', array(
+    $returnValue = $this->render($app, 'edit_user_form_ajax.twig', array(
       'pageTitle' => 'Add a User!',
       'userValue' => $userValue,
       'user_id' => -1

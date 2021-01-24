@@ -9,13 +9,7 @@ define("DB_PASSWORD","yourpassword");
 define("DB_READ_ONLY_USER","yourusername");
 define("DB_READ_ONLY_PASSWORD","yourpassword");
 
-/* Define this if you want google analytics on this instance */
-define("GOOGLE_ANALYTICS_ID","");
-
 define("DEFAULT_USER_PASSWORD","yourlongpasswordstring");
-
-define("GOOGLE_PLACES_API_WEB_SERVICE_KEY","");
-define("GOOGLE_MAPS_JAVASCRIPT_API_KEY","");
 
 // Set to true if you need legacy hash counts
 // Don't turn this on if you don't need it

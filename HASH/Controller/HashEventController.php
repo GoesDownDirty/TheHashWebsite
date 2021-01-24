@@ -112,12 +112,12 @@ class HashEventController extends BaseController {
 
     $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
-    $returnValue = $app['twig']->render('new_hash_form_ajax.twig', array(
+    $returnValue = $this->render($app, 'new_hash_form_ajax.twig', array(
       'pageTitle' => 'Create an Event!',
       'pageHeader' => 'Page Header',
       'kennel_abbreviation' => $kennel_abbreviation,
       'hashTypes' => $this->getHashTypes($app, $kennelKy, 0),
-      'geocode_api_value' => GOOGLE_PLACES_API_WEB_SERVICE_KEY
+      'geocode_api_value' => $this->getGooglePlacesApiWebServiceKey($app)
     ));
 
     #Return the return value
@@ -295,11 +295,11 @@ class HashEventController extends BaseController {
       # Make a database call to obtain the hasher information
       $hashValue = $app['db']->fetchAssoc($sql, array((int) $hash_id));
 
-      $returnValue = $app['twig']->render('edit_hash_form_ajax.twig', array(
+      $returnValue = $this->render($app, 'edit_hash_form_ajax.twig', array(
         'pageTitle' => 'Modify an Event!',
         'pageHeader' => 'Page Header',
         'hashTypes' => $this->getHashTypes($app, $hashValue['KENNEL_KY'], 0),
-        'geocode_api_value' => GOOGLE_PLACES_API_WEB_SERVICE_KEY,
+        'geocode_api_value' => $this->getGooglePlacesApiWebServiceKey($app),
         'hashValue' => $hashValue,
         'hashKey' => $hash_id
       ));
@@ -484,7 +484,7 @@ class HashEventController extends BaseController {
       $pageTitle = "Participation: $kennelAbbreviation # $kennelEventNumber ($eventDate)";
 
       #Establish the return value
-      $returnValue = $app['twig']->render('event_participation_json.twig', array (
+      $returnValue = $this->render($app, 'event_participation_json.twig', array (
         'pageTitle' => $pageTitle,
         'pageSubTitle' => 'Not Sure',
         'pageHeader' => 'Why is this so complicated ?',
@@ -839,7 +839,7 @@ class HashEventController extends BaseController {
     public function listHashesPreActionJson(Request $request, Application $app, string $kennel_abbreviation) {
 
       # Establish and set the return value
-      $returnValue = $app['twig']->render('hash_list_json.twig',array(
+      $returnValue = $this->render($app, 'hash_list_json.twig',array(
         'pageTitle' => 'The List of Hashes',
         'pageSubTitle' => '',
         #'theList' => $hasherList,

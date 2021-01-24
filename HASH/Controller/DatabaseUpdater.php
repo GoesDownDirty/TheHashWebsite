@@ -14,7 +14,7 @@ class DatabaseUpdater {
 
     $databaseVersion = $this->getDatabaseVersion();
 
-    if($databaseVersion != 13) {
+    if($databaseVersion != 14) {
 
       $has_semaphones = true;
 
@@ -88,6 +88,9 @@ class DatabaseUpdater {
               $this->alterSiteConfigNameColumn();
               $this->moveJumboCountsSettingsToSiteConfig();
               $this->setDatabaseVersion(13);
+            case 13:
+              $this->moveGoogleKeysToSiteConfig();
+              $this->setDatabaseVersion(14);
             default:
               // Overkill, but guarantees the view is up to date with the
               // current database structure.
@@ -123,6 +126,34 @@ class DatabaseUpdater {
 
   private function alterSiteConfigNameColumn() {
     $this->executeStatement("ALTER TABLE SITE_CONFIG CHANGE NAME NAME VARCHAR(100) NOT NULL");
+  }
+
+  private function moveGoogleKeysToSiteConfig() {
+
+    if(defined('GOOGLE_ANALYTICS_ID')) {
+      $gai = GOOGLE_ANALYTICS_ID;
+    } else {
+      $gai = "none";
+    }
+    if(strlen($gai) == 0) {
+      $gai = "none";
+    }
+
+    if(defined('GOOGLE_PLACES_API_WEB_SERVICE_KEY')) {
+      $gpawsk = GOOGLE_PLACES_API_WEB_SERVICE_KEY;
+    } else {
+      $gpawsk = "you need to put the google places api web service key here";
+    }
+
+    if(defined('GOOGLE_MAPS_JAVASCRIPT_API_KEY')) {
+      $gmjak = GOOGLE_MAPS_JAVASCRIPT_API_KEY;
+    } else {
+      $gmjak = "you need to put the google maps javascript api key here";
+    }
+
+    $this->insertIntoSiteConfig('google_analytics_id', $gai, 'If you wish to use google analytics on this site, put your google analytics id here.  Set to "none" if you do not want to use google analytics.  Ha ha, ANALytics.');
+    $this->insertIntoSiteConfig('google_places_api_web_service_key', $gpawsk, 'Put your google places api web service key here.  Without this key the site will not operate correctly.');
+    $this->insertIntoSiteConfig('google_maps_javascript_api_key', $gmjak, 'Put your google maps javascript api key here.  Without this key the site will not operate correctly.');
   }
 
   private function moveJumboCountsSettingsToSiteConfig() {

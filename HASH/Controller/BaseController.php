@@ -7,6 +7,16 @@ use Symfony\Component\HttpFoundation\Request;
 
 class BaseController {
 
+  // Add common page arguments, then dispatch to twig to render page
+  protected function render(Application $app, string $template, array $args) {
+
+    $google_analytics_id = $this->getGoogleAnalyticsId($app);
+
+    $args['google_analytics_id'] = $google_analytics_id;
+
+    return $app['twig']->render($template, $args);
+  }
+
   protected function getAdministratorEmail(Application $app) {
     $sql = "SELECT value FROM SITE_CONFIG WHERE name='administrator_email'";
     return $app['db']->fetchOne($sql, array());
@@ -14,6 +24,21 @@ class BaseController {
 
   protected function getDefaultKennel(Application $app) {
     $sql = "SELECT value FROM SITE_CONFIG WHERE name='default_kennel'";
+    return $app['db']->fetchOne($sql, array());
+  }
+
+  protected function getGoogleAnalyticsId(Application $app) {
+    $sql = "SELECT value FROM SITE_CONFIG WHERE name='google_analytics_id'";
+    return $app['db']->fetchOne($sql, array());
+  }
+
+  protected function getGooglePlacesApiWebServiceKey(Application $app) {
+    $sql = "SELECT value FROM SITE_CONFIG WHERE name='google_places_api_web_service_key'";
+    return $app['db']->fetchOne($sql, array());
+  }
+
+  protected function getGoogleMapsJavascriptApiKey(Application $app) {
+    $sql = "SELECT value FROM SITE_CONFIG WHERE name='google_maps_javascript_api_key'";
     return $app['db']->fetchOne($sql, array());
   }
 

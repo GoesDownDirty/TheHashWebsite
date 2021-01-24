@@ -27,7 +27,7 @@ class HashController extends BaseController
     #$app['monolog']->addDebug($lastUserName);
 
     # Establish the return value
-    $returnValue =  $app['twig']->render('logon_screen.twig', array (
+    $returnValue =  $this->render($app, 'logon_screen.twig', array (
       'pageTitle' => 'Stats Logon',
       'pageHeader' => 'Please log on!',
       'error' => $lastError,
@@ -54,7 +54,7 @@ class HashController extends BaseController
   public function helloAction(Request $request, Application $app){
 
       #return $app->redirect('/');
-      return $app['twig']->render('admin_landing.twig', array (
+      return $this->render($app, 'admin_landing.twig', array (
         'pageTitle' => 'This is the admin landing screen',
         'subTitle1' => 'This is the admin landing screen'));
   }
@@ -63,7 +63,7 @@ class HashController extends BaseController
   public function adminHelloAction(Request $request, Application $app){
 
       #return $app->redirect('/');
-      return $app['twig']->render('admin_landing.twig', array (
+      return $this->render($app, 'admin_landing.twig', array (
         'pageTitle' => 'This is the admin hello landing screen (page title)',
         'subTitle1' => 'This is the admin hello landing screen (sub title 1)'));
   }
@@ -183,7 +183,7 @@ class HashController extends BaseController
     $eventTagSummaries = $app['db']->fetchAll($eventTagSql, array((int) $kennelKy));
 
     #Set the return value
-    $returnValue = $app['twig']->render('slash2.twig',array(
+    $returnValue = $this->render($app, 'slash2.twig',array(
       'pageTitle' => $pageTitle,
       'pageCaption' => "Provide page caption",
       'subTitle1' => 'Standard Statistics',
@@ -234,7 +234,7 @@ class HashController extends BaseController
     $theHashValue = $app['db']->fetchAssoc($sql_for_hash_event, array((int) $hash_id));
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('streaker_results.twig',array(
+    $returnValue = $this->render($app, 'streaker_results.twig',array(
       'pageTitle' => 'The Streakers!',
       'pageSubTitle' => '...',
       'theList' => $theList,
@@ -254,7 +254,7 @@ class HashController extends BaseController
   public function listHashersPreActionJson(Request $request, Application $app, string $kennel_abbreviation){
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('hasher_list_json.twig',array(
+    $returnValue = $this->render($app, 'hasher_list_json.twig',array(
       'pageTitle' => 'The List of Hashers',
       'pageSubTitle' => '',
       #'theList' => $hasherList,
@@ -274,7 +274,7 @@ class HashController extends BaseController
     $hareTypeName = $this->getHareTypeName($app, $hare_type);
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('virgin_haring_list_json.twig',array(
+    $returnValue = $this->render($app, 'virgin_haring_list_json.twig',array(
       'pageTitle' => 'The List of Virgin ('.$hareTypeName.') Harings',
       'pageSubTitle' => '',
       'kennel_abbreviation' => $kennel_abbreviation,
@@ -291,7 +291,7 @@ class HashController extends BaseController
   public function cohareCountsPreActionJson(Request $request, Application $app, string $kennel_abbreviation, string $hare_type){
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('cohare_list_json.twig',array(
+    $returnValue = $this->render($app, 'cohare_list_json.twig',array(
       'pageTitle' => ($hare_type == "all" ? "Overall" : $this->getHareTypeName($app, $hare_type)).' Co-Hare Counts',
       'pageSubTitle' => 'Total number of events where two hashers have hared together.',
       'kennel_abbreviation' => $kennel_abbreviation,
@@ -484,7 +484,7 @@ class HashController extends BaseController
   public function listLocationCountsPreActionJson(Request $request, Application $app, string $kennel_abbreviation){
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('location_counts_json.twig',array(
+    $returnValue = $this->render($app, 'location_counts_json.twig',array(
       'pageTitle' => 'The List of Event Locations',
       'pageSubTitle' => '',
       'kennel_abbreviation' => $kennel_abbreviation,
@@ -500,7 +500,7 @@ class HashController extends BaseController
   public function miaPreActionJson(Request $request, Application $app, string $kennel_abbreviation){
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('hasher_mia.twig',array(
+    $returnValue = $this->render($app, 'hasher_mia.twig',array(
       'pageTitle' => 'Hashers Missing In Action',
       'pageSubTitle' => '',
       #'theList' => $hasherList,
@@ -517,7 +517,7 @@ class HashController extends BaseController
   public function attendancePercentagesPreActionJson(Request $request, Application $app, string $kennel_abbreviation){
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('attendance_percentages_list_json.twig',array(
+    $returnValue = $this->render($app, 'attendance_percentages_list_json.twig',array(
       'pageTitle' => 'Attendance Percentages',
       'kennel_abbreviation' => $kennel_abbreviation
     ));
@@ -550,7 +550,7 @@ class HashController extends BaseController
     $theSubTitle = "Hashers at Hash Number $theHashEventNumber ($theHashEventLocation) ";
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('hasher_list.twig',array(
+    $returnValue = $this->render($app, 'hasher_list.twig',array(
       'pageTitle' => 'The List of Hashers',
       'pageSubTitle' => $theSubTitle,
       'theList' => $hasherList,
@@ -599,7 +599,7 @@ class HashController extends BaseController
     $theSubTitle = "Hares at Hash Number $theHashEventNumber ($theHashEventLocation) ";
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('hare_list.twig',array(
+    $returnValue = $this->render($app, 'hare_list.twig',array(
       'pageTitle' => 'The List of Hares',
       'pageSubTitle' => $theSubTitle,
       'theList' => $hasherList,
@@ -1409,7 +1409,7 @@ class HashController extends BaseController
     # Establish and set the return value
     $hasherName = $hasher['HASHER_NAME'];
     $pageSubtitle = "The hashes $hasherName has done";
-    $returnValue = $app['twig']->render('hash_list.twig',array(
+    $returnValue = $this->render($app, 'hash_list.twig',array(
       'pageTitle' => 'The List of Hashes',
       'pageSubTitle' => $pageSubtitle,
       'theList' => $hashList,
@@ -1438,7 +1438,7 @@ class HashController extends BaseController
     # Establish and set the return value
     $hasherName = $hasher['HASHER_NAME'];
     $pageSubtitle = "The hashes attended by  $hasherName";
-    $returnValue = $app['twig']->render('hasher_attendance_list.twig',array(
+    $returnValue = $this->render($app, 'hasher_attendance_list.twig',array(
       'pageTitle' => 'Attendance Record',
       'pageSubTitle' => $pageSubtitle,
       'theList' => $hashList,
@@ -1488,7 +1488,7 @@ class HashController extends BaseController
     # Establish and set the return value
     $hasherName = $hasher['HASHER_NAME'];
     $pageSubtitle = "The hashes $hasherName has hared";
-    $returnValue = $app['twig']->render('hash_list.twig',array(
+    $returnValue = $this->render($app, 'hash_list.twig',array(
       'pageTitle' => 'The List of Hashes',
       'pageSubTitle' => $pageSubtitle,
       'theList' => $hashList,
@@ -1538,7 +1538,7 @@ class HashController extends BaseController
     $pageTitle = "Hashers that have hashed with $hasherName";
 
     #Set the return value
-    $returnValue = $app['twig']->render('name_number_list.twig',array(
+    $returnValue = $this->render($app, 'name_number_list.twig',array(
       'pageTitle' => $pageTitle,
       'tableCaption' => '',
       'columnOneName' => 'Hasher Name',
@@ -1707,7 +1707,7 @@ class HashController extends BaseController
     $hareTypes = $this->getHareTypes($app, $kennelKy);
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('hasher_chart_details.twig',array(
+    $returnValue = $this->render($app, 'hasher_chart_details.twig',array(
       'hare_types' => count($hareTypes) > 1 ? $hareTypes : array(),
       'overall_hare_details' => (count($hareTypes) > 1 ? "Overall " : "").
         "Hare Details",
@@ -1731,7 +1731,7 @@ class HashController extends BaseController
       'city_hashings_count_list' => $cityHashingsCountList,
       'city_hashings_max_value' => $cityHashingsCountMax,
       'the_hashes' => $theHashes,
-      'geocode_api_value' => GOOGLE_MAPS_JAVASCRIPT_API_KEY,
+      'geocode_api_value' => $this->getGoogleMapsJavascriptApiKey($app),
       'avg_lat' => $avgLat,
       'avg_lng' => $avgLng,
       'longest_streak' => $longestStreakValue['MAX_STREAK'],
@@ -1808,13 +1808,13 @@ class HashController extends BaseController
     }
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('hash_details.twig',array(
+    $returnValue = $this->render($app, 'hash_details.twig',array(
       'pageTitle' => 'Hash Details',
       'firstHeader' => 'Basic Details',
       'secondHeader' => 'Statistics',
       'hashValue' => $theHashValue,
       'kennel_abbreviation' => $kennel_abbreviation,
-      'geocode_api_value' => GOOGLE_MAPS_JAVASCRIPT_API_KEY,
+      'geocode_api_value' => $this->getGoogleMapsJavascriptApiKey($app),
       'showStateCountList' => $showState,
       'showCountyCountList' => $showCounty,
       'showCityCountList' => $showCity,
@@ -1980,7 +1980,7 @@ class HashController extends BaseController
       $pageSubtitle = "Analversaries at the $hashNumber ($hashLocation) Hash";
 
       # Establish the return value
-      $returnValue = $app['twig']->render('consolidated_event_analversaries.twig',array(
+      $returnValue = $this->render($app, 'consolidated_event_analversaries.twig',array(
         'pageTitle' => 'Consolidated Analversaries',
         'pageSubTitle' => $pageSubtitle,
         'houndAnalversaryList' => $houndAnalversaryList,
@@ -2199,7 +2199,7 @@ class HashController extends BaseController
     $pageSubtitle = "All Analversaries at the $hashNumber ($hashLocation) Hash";
 
     # Establish the return value
-    $returnValue = $app['twig']->render('omni_analversary_list.twig',array(
+    $returnValue = $this->render($app, 'omni_analversary_list.twig',array(
       'pageTitle' => 'All Analversaries for this Hash',
       'pageSubTitle' => $pageSubtitle,
       'theHoundListOverall' => $analversaryListHounds,
@@ -2284,7 +2284,7 @@ class HashController extends BaseController
     $pageSubtitle = "Hasher Counts at the $hashNumber ($hashLocation) Hash";
 
     # Establish the return value
-    $returnValue = $app['twig']->render('analversary_list.twig',array(
+    $returnValue = $this->render($app, 'analversary_list.twig',array(
       'pageTitle' => 'Hasher Counts',
       'pageSubTitle' => $pageSubtitle,
       'theList' => $analversaryList,
@@ -2343,7 +2343,7 @@ class HashController extends BaseController
     $pageSubtitle = "Hasher Counts in $theHashEventCounty at the $hashNumber ($hashLocation) Hash";
 
     # Establish the return value
-    $returnValue = $app['twig']->render('analversary_list.twig',array(
+    $returnValue = $this->render($app, 'analversary_list.twig',array(
       'pageTitle' => $pageTitle,
       'pageSubTitle' => $pageSubtitle,
       'theList' => $analversaryList,
@@ -2401,7 +2401,7 @@ class HashController extends BaseController
     $pageSubtitle = "Hasher Counts in $theHashEventPostalCode postal code at the $hashNumber ($hashLocation) Hash";
 
     # Establish the return value
-    $returnValue = $app['twig']->render('analversary_list.twig',array(
+    $returnValue = $this->render($app, 'analversary_list.twig',array(
       'pageTitle' => $pageTitle,
       'pageSubTitle' => $pageSubtitle,
       'theList' => $analversaryList,
@@ -2460,7 +2460,7 @@ class HashController extends BaseController
     $pageSubtitle = "Hasher Counts in $theHashEventState state at the $hashNumber ($hashLocation) Hash";
 
     # Establish the return value
-    $returnValue = $app['twig']->render('analversary_list.twig',array(
+    $returnValue = $this->render($app, 'analversary_list.twig',array(
       'pageTitle' => $pageTitle,
       'pageSubTitle' => $pageSubtitle,
       'theList' => $analversaryList,
@@ -2519,7 +2519,7 @@ class HashController extends BaseController
     $pageSubtitle = "Hasher Counts in $theHashEventNeighborhood neighborhood at the $hashNumber ($hashLocation) Hash";
 
     # Establish the return value
-    $returnValue = $app['twig']->render('analversary_list.twig',array(
+    $returnValue = $this->render($app, 'analversary_list.twig',array(
       'pageTitle' => $pageTitle,
       'pageSubTitle' => $pageSubtitle,
       'theList' => $analversaryList,
@@ -2574,7 +2574,7 @@ class HashController extends BaseController
     $pageSubtitle = "Hasher Counts in $theHashEventCity city at the $hashNumber ($hashLocation) Hash";
 
     # Establish the return value
-    $returnValue = $app['twig']->render('analversary_list.twig',array(
+    $returnValue = $this->render($app, 'analversary_list.twig',array(
       'pageTitle' => $pageTitle,
       'pageSubTitle' => $pageSubtitle,
       'theList' => $analversaryList,
@@ -2608,7 +2608,7 @@ class HashController extends BaseController
         $pageSubtitle = "Back Sliders at the $hashNumber ($hashLocation) Hash";
 
         # Establish the return value
-        $returnValue = $app['twig']->render('backslider_fluid_list.twig',array(
+        $returnValue = $this->render($app, 'backslider_fluid_list.twig',array(
           'pageTitle' => 'Back Sliders',
           'pageSubTitle' => $pageSubtitle,
           'theList' => $backSliderList,
@@ -2653,7 +2653,7 @@ public function pendingHasherAnalversariesAction(Request $request, Application $
   at $theMostRecentHashValue[EVENT_LOCATION]";
 
   # Establish the return value
-  $returnValue = $app['twig']->render('pending_analversary_list.twig',array(
+  $returnValue = $this->render($app, 'pending_analversary_list.twig',array(
     'pageTitle' => 'Pending Hasher Analversaries',
     'pageSubTitle' => 'The analversaries at their *next* hashes',
     'theList' => $hasherList,
@@ -2685,7 +2685,7 @@ public function predictedHasherAnalversariesAction(Request $request, Application
   $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy, (int) $kennelKy, (int) $kennelKy, $runrate, (int) $kennelKy, $runrate));
 
   # Establish the return value
-  $returnValue = $app['twig']->render('predicted_analversary_list.twig',array(
+  $returnValue = $this->render($app, 'predicted_analversary_list.twig',array(
     'pageTitle' => 'Predicted Hasher Analversaries (experimental)',
     'pageSubTitle' => 'Upcoming analversary predictions based on recent run rate (last '.$runrate.' days).',
     'theList' => $hasherList,
@@ -2716,7 +2716,7 @@ public function predictedCenturionsAction(Request $request, Application $app, st
   $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy, (int) $kennelKy, (int) $kennelKy, $runrate, (int) $kennelKy, $runrate));
 
   # Establish the return value
-  $returnValue = $app['twig']->render('predicted_analversary_list.twig',array(
+  $returnValue = $this->render($app, 'predicted_analversary_list.twig',array(
     'pageTitle' => 'Predicted Centurions (experimental)',
     'pageSubTitle' => 'Upcoming centurion predictions based on recent run rate (last '.$runrate.' days).',
     'theList' => $hasherList,
@@ -2766,7 +2766,7 @@ public function pendingHareAnalversariesAction(Request $request, Application $ap
   at $theMostRecentHashValue[EVENT_LOCATION]";
 
   # Establish the return value
-  $returnValue = $app['twig']->render('pending_analversary_list.twig',array(
+  $returnValue = $this->render($app, 'pending_analversary_list.twig',array(
     'pageTitle' => 'Pending Hare Analversaries',
     'pageSubTitle' => 'The analversaries at their *next* harings',
     'theList' => $hasherList,
@@ -2797,7 +2797,7 @@ public function haringPercentageAllHashesAction(Request $request, Application $a
   $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy,(int) $kennelKy,(int) $minHashCount));
 
   # Establish the return value
-  $returnValue = $app['twig']->render('percentage_list.twig',array(
+  $returnValue = $this->render($app, 'percentage_list.twig',array(
     'pageTitle' => 'Haring Percentage List',
     'tableCaption' => 'Percentage of harings per hashings for each hasher',
     'columnOneName' => 'Hasher Name',
@@ -2831,7 +2831,7 @@ public function haringPercentageAction(Request $request, Application $app, int $
   $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy,(int) $kennelKy, $hare_type, (int) $minHashCount));
 
   # Establish the return value
-  $returnValue = $app['twig']->render('percentage_list.twig',array(
+  $returnValue = $this->render($app, 'percentage_list.twig',array(
     'pageTitle' => $hare_type_name . ' Haring Percentage List',
     'tableCaption' => 'Percentage Of ' . $hare_type_name . ' Harings Per Hashings For Each Hasher',
     'columnOneName' => 'Hasher Name',
@@ -2899,7 +2899,7 @@ public function percentageHarings(Request $request, Application $app, string $ke
   $hasherList = $app['db']->fetchAll($sql, $args);
 
   # Establish the return value
-  $returnValue = $app['twig']->render('percentage_list_multiple_values.twig',array(
+  $returnValue = $this->render($app, 'percentage_list_multiple_values.twig',array(
     'pageTitle' => 'Haring Percentages',
     'tableCaption' => 'This shows the percentage of haring types for each hasher.',
     'columnNames' => $columnNames,
@@ -2936,7 +2936,7 @@ public function hashingCountsAction(Request $request, Application $app, string $
   $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy, (int) $kennelKy));
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('name_number_rank_list.twig',array(
+  $returnValue = $this->render($app, 'name_number_rank_list.twig',array(
     'pageTitle' => 'Hasher Counts',
     'columnOneName' => 'Hasher Name',
     'columnTwoName' => 'Hash Count',
@@ -2964,7 +2964,7 @@ public function haringCountsAction(Request $request, Application $app, string $k
   $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy));
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('name_number_rank_list.twig',array(
+  $returnValue = $this->render($app, 'name_number_rank_list.twig',array(
     'pageTitle' => 'Haring Counts',
     'columnOneName' => 'Hasher Name',
     'columnTwoName' => 'Haring Count',
@@ -2993,7 +2993,7 @@ public function haringTypeCountsAction(Request $request, Application $app, strin
   $hasherList = $app['db']->fetchAll($sql, array((int) $hare_type, (int) $kennelKy));
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('name_number_rank_list.twig',array(
+  $returnValue = $this->render($app, 'name_number_rank_list.twig',array(
     'pageTitle' => $hare_type_name.' Haring Counts',
     'columnOneName' => 'Hare Name',
     'columnTwoName' => 'Hash Count',
@@ -3049,7 +3049,7 @@ public function haringTypeCountsAction(Request $request, Application $app, strin
     # Establish and set the return value
     $hasherName = $hasher['HASHER_NAME'];
     $captionValue = "The hares who've had the shame of haring with $hasherName";
-    $returnValue = $app['twig']->render('cohare_list.twig',array(
+    $returnValue = $this->render($app, 'cohare_list.twig',array(
       'pageTitle' => 'Cohare List (All Hashes)',
       'pageSubTitle' => 'All Hashes',
       'tableCaption' => $captionValue,
@@ -3109,7 +3109,7 @@ public function haringTypeCountsAction(Request $request, Application $app, strin
     # Establish and set the return value
     $hasherName = $hasher['HASHER_NAME'];
     $captionValue = "The hares who've had the shame of haring with $hasherName";
-    $returnValue = $app['twig']->render('cohare_list.twig',array(
+    $returnValue = $this->render($app, 'cohare_list.twig',array(
       'pageTitle' => $hare_type_name . ' Cohare List',
       'pageSubTitle' => '',
       'tableCaption' => $captionValue,
@@ -3165,7 +3165,7 @@ public function haringTypeCountsAction(Request $request, Application $app, strin
     # Establish and set the return value
     $hasherName = $hasher['HASHER_NAME'];
     $captionValue = "The hares who've hared with  $hasherName";
-    $returnValue = $app['twig']->render('name_number_list.twig',array(
+    $returnValue = $this->render($app, 'name_number_list.twig',array(
       'pageTitle' => 'Hare Counts (All Hashes)',
       'columnOneName' => 'Hare Name',
       'columnTwoName' => 'Hare Count',
@@ -3224,7 +3224,7 @@ public function haringTypeCountsAction(Request $request, Application $app, strin
     # Establish and set the return value
     $hasherName = $hasher['HASHER_NAME'];
     $captionValue = "The hares who've hared with  $hasherName";
-    $returnValue = $app['twig']->render('name_number_list.twig',array(
+    $returnValue = $this->render($app, 'name_number_list.twig',array(
       'pageTitle' => $hare_type_name.' Hare Counts',
       'columnOneName' => 'Hare Name',
       'columnTwoName' => 'Hare Count',
@@ -3250,7 +3250,7 @@ public function haringTypeCountsAction(Request $request, Application $app, strin
     $hashList = $app['db']->fetchAll($sql,array((int) $kennelKy));
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('name_number_list.twig',array(
+    $returnValue = $this->render($app, 'name_number_list.twig',array(
       'pageTitle' => 'Lowest hash attendance by hare',
       'columnOneName' => 'Hare Name',
       'columnTwoName' => 'Hasher Count',
@@ -3278,7 +3278,7 @@ public function hashAttendanceByHareHighestAction(Request $request, Application 
   $hashList = $app['db']->fetchAll($sql,array((int) $kennelKy));
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('name_number_list.twig',array(
+  $returnValue = $this->render($app, 'name_number_list.twig',array(
     'pageTitle' => 'Highest attended hashes by hare',
     'columnOneName' => 'Hare Name',
     'columnTwoName' => 'Hasher Count',
@@ -3306,7 +3306,7 @@ public function hashAttendanceByHareHighestAction(Request $request, Application 
     $hashList = $app['db']->fetchAll($sql,array((int) $kennelKy));
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('name_number_list.twig',array(
+    $returnValue = $this->render($app, 'name_number_list.twig',array(
       'pageTitle' => 'Average hash attendance by hare',
       'columnOneName' => 'Hare Name',
       'columnTwoName' => 'Hasher Count',
@@ -3333,7 +3333,7 @@ public function hashAttendanceByHareHighestAction(Request $request, Application 
     $hashList = $app['db']->fetchAll($sql,array((int) $kennelKy));
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('name_number_list.twig',array(
+    $returnValue = $this->render($app, 'name_number_list.twig',array(
       'pageTitle' => 'Total (non distinct) hashers at their hashes',
       'columnOneName' => 'Hare Name',
       'columnTwoName' => 'Hash Count',
@@ -3359,7 +3359,7 @@ public function hashAttendanceByHareGrandTotalDistinctHashersAction(Request $req
   $hashList = $app['db']->fetchAll($sql,array((int) $kennelKy));
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('name_number_list.twig',array(
+  $returnValue = $this->render($app, 'name_number_list.twig',array(
     'pageTitle' => 'Total distinct hashers at their hashes',
     'columnOneName' => 'Hare Name',
     'columnTwoName' => 'Hash Count',
@@ -3412,7 +3412,7 @@ public function hasherCountsByHareAction(Request $request, Application $app, int
   # Establish and set the return value
   $hasherName = $hasher['HASHER_NAME'];
   $captionValue = "The hashers who've hashed under the " . $hare_type_name . " hare, $hasherName";
-  $returnValue = $app['twig']->render('name_number_list.twig',array(
+  $returnValue = $this->render($app, 'name_number_list.twig',array(
     'pageTitle' => 'Hasher Counts',
     'columnOneName' => 'Hasher Name',
     'columnTwoName' => 'Hash Count',
@@ -3457,7 +3457,7 @@ public function basicStatsAction(Request $request, Application $app, string $ken
   $mostRecentHashValue = $app['db']->fetchAssoc($mostRecentHashSQL, array((int) $kennelKy));
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('basic_stats.twig',array(
+  $returnValue = $this->render($app, 'basic_stats.twig',array(
     'pageTitle' => 'Basic Information and Statistics',
     'kennel_abbreviation' => $kennel_abbreviation,
     'first_hash' => $firstHashValue,
@@ -3481,7 +3481,7 @@ public function peopleStatsAction(Request $request, Application $app, string $ke
   $hareTypes = $this->getHareTypes($app, $kennelKy);
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('section_people.twig',array(
+  $returnValue = $this->render($app, 'section_people.twig',array(
     'pageTitle' => 'People Stats',
     'hare_types' => count($hareTypes) > 1 ? $hareTypes : "",
     'overall' => count($hareTypes) > 1 ? "Overall " : "",
@@ -3506,7 +3506,7 @@ public function analversariesStatsAction(Request $request, Application $app, str
   $theCount2 = $theCount2['VALUE'];
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('section_analversaries.twig',array(
+  $returnValue = $this->render($app, 'section_analversaries.twig',array(
     'pageTitle' => 'Analversary Stats',
     'kennel_abbreviation' => $kennel_abbreviation,
     'the_count' => $theCount2
@@ -3536,7 +3536,7 @@ public function yearByYearStatsAction(Request $request, Application $app, string
   $hareTypes = $this->getHareTypes($app, $kennelKy);
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('section_year_by_year.twig',array(
+  $returnValue = $this->render($app, 'section_year_by_year.twig',array(
     'pageTitle' => 'Year Summary Stats',
     'kennel_abbreviation' => $kennel_abbreviation,
     'year_values' => $yearValues,
@@ -3557,7 +3557,7 @@ public function kennelRecordsStatsAction(Request $request, Application $app, str
   $hareTypes = $this->getHareTypes($app, $kennelKy);
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('section_kennel_records.twig',array(
+  $returnValue = $this->render($app, 'section_kennel_records.twig',array(
     'pageTitle' => 'Kennel Records',
     'kennel_abbreviation' => $kennel_abbreviation,
     "hare_types" => count($hareTypes) > 1 ? $hareTypes : array()
@@ -3585,7 +3585,7 @@ public function kennelGeneralInfoStatsAction(Request $request, Application $app,
   $mostRecentHashValue = $app['db']->fetchAssoc($mostRecentHashSQL, array((int) $kennelKy));
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('section_kennel_general_info.twig',array(
+  $returnValue = $this->render($app, 'section_kennel_general_info.twig',array(
     'pageTitle' => 'Kennel General Info',
     'kennel_abbreviation' => $kennel_abbreviation,
     'first_hash' => $firstHashValue,
@@ -3602,7 +3602,7 @@ public function kennelGeneralInfoStatsAction(Request $request, Application $app,
 public function analversaryStatsAction(Request $request, Application $app, string $kennel_abbreviation){
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('analversary_stats.twig',array(
+  $returnValue = $this->render($app, 'analversary_stats.twig',array(
     'pageTitle' => 'Analversary Statistics',
     'kennel_abbreviation' => $kennel_abbreviation
   ));
@@ -3654,7 +3654,7 @@ public function cautionaryStatsAction(Request $request, Application $app, string
   $randomKeysForRidiculousStats = array_rand($arrayOfRidiculousness, 5);
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('cautionary_stats.twig',array(
+  $returnValue = $this->render($app, 'cautionary_stats.twig',array(
     'listOfRidiculousness' => $arrayOfRidiculousness,
     'randomKeysForRidiculousStats' => $randomKeysForRidiculousStats,
     'pageTitle' => 'Cautionary Statistics',
@@ -3685,7 +3685,7 @@ public function miscellaneousStatsAction(Request $request, Application $app, str
   $kennelValues = $app['db']->fetchAll($listOfKennelsSQL, array($siteNamePattern));
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('switch_kennel_screen.twig',array(
+  $returnValue = $this->render($app, 'switch_kennel_screen.twig',array(
     'pageTitle' => 'Switch Kennel',
     'kennel_abbreviation' => $kennel_abbreviation,
     'kennelValues' => $kennelValues
@@ -3711,7 +3711,7 @@ public function highestAttendedHashesAction(Request $request, Application $app, 
   $theList = $app['db']->fetchAll($theSql,array((int) $kennelKy));
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('hash_events_with_participation_counts.twig',array(
+  $returnValue = $this->render($app, 'hash_events_with_participation_counts.twig',array(
     'theList' => $theList,
     'pageTitle' => 'The Hashes',
     'pageSubTitle' => '...with the best attendances',
@@ -3739,7 +3739,7 @@ public function lowestAttendedHashesAction(Request $request, Application $app, s
   $theList = $app['db']->fetchAll($theSql,array((int) $kennelKy));
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('hash_events_with_participation_counts.twig',array(
+  $returnValue = $this->render($app, 'hash_events_with_participation_counts.twig',array(
     'theList' => $theList,
     'pageTitle' => 'The Hashes',
     'pageSubTitle' => '...with the worst attendances',
@@ -3814,7 +3814,7 @@ public function hashersOfTheYearsAction(Request $request, Application $app, stri
 
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('top_hashers_by_years.twig',array(
+  $returnValue = $this->render($app, 'top_hashers_by_years.twig',array(
     'theListOfLists' => $array,
     #'tempList' => $tempResult,
     'pageTitle' => 'Top Hashers Per Year',
@@ -3915,7 +3915,7 @@ public function HaresOfTheYearsAction(Request $request, Application $app, int $h
   }
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('top_hares_by_years.twig',array(
+  $returnValue = $this->render($app, 'top_hares_by_years.twig',array(
     'theListOfLists' => $array,
     'pageTitle' => $hare_type == 0 ? 'Top Hares Per Year (All harings)' : 'Top '.$hare_type_name.' Hares Per Year',
     'pageSubTitle' => $hare_type == 0 ? '(All hashes included)' : '',
@@ -3972,7 +3972,7 @@ public function getHasherAnalversariesAction(Request $request, Application $app,
   # Establish and set the return value
   $hasherName = $theInitialListOfHashes[0]['HASHER_NAME'];
   $pageTitle = "Hashing Analversaries: $hasherName";
-  $returnValue = $app['twig']->render('hasher_analversary_list.twig',array(
+  $returnValue = $this->render($app, 'hasher_analversary_list.twig',array(
     'theList' => $destinationArray,
     'pageTitle' => $pageTitle,
     'pageSubTitle' => '',
@@ -4129,7 +4129,7 @@ public function getProjectedHasherAnalversariesAction(Request $request, Applicat
   # Establish and set the return value
   $hasherName = $hasher['HASHER_NAME'];
   $pageTitle = "Projected Hashing Analversaries";
-  $returnValue = $app['twig']->render('projected_hasher_analversary_list.twig',array(
+  $returnValue = $this->render($app, 'projected_hasher_analversary_list.twig',array(
     'theList' => $destinationArray,
     'pageTitle' => $pageTitle,
     'pageSubTitle' => $hasherName,
@@ -4167,7 +4167,7 @@ public function jumboCountsTablePreActionJson(Request $request, Application $app
   $hashTypes = $this->getHashTypes($app, $kennelKy, 0);
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('jumbo_counts_list_json.twig',array(
+  $returnValue = $this->render($app, 'jumbo_counts_list_json.twig',array(
     'pageTitle' => 'The Jumbo List of Counts (Experimental Page)',
     'pageSubTitle' => $subTitle,
     #'theList' => $hasherList,
@@ -4445,7 +4445,7 @@ public function jumboPercentagesTablePreActionJson(Request $request, Application
   $hashTypes = $this->getHashTypes($app, $kennelKy, 0);
 
   # Establish and set the return value
-  $returnValue = $app['twig']->render('jumbo_percentages_list_json.twig',array(
+  $returnValue = $this->render($app, 'jumbo_percentages_list_json.twig',array(
     'pageTitle' => 'The Jumbo List of Percentages (Experimental Page)',
     'pageSubTitle' => $subTitle,
     #'theList' => $hasherList,
@@ -4961,12 +4961,12 @@ public function viewOverallHareChartsAction(Request $request, Application $app, 
     'cohare_count_list' =>$cohareCountList,
     'cohare_count_max' => $cohareCountMax,
     'the_hashes' => $theHashes,
-    'geocode_api_value' => GOOGLE_MAPS_JAVASCRIPT_API_KEY,
+    'geocode_api_value' => $this->getGoogleMapsJavascriptApiKey($app),
     'avg_lat' => $avgLat,
     'avg_lng' => $avgLng
   );
   $finalArray = array_merge($commonValues,$customValues);
-  $returnValue = $app['twig']->render('hare_chart_overall_details.twig',$finalArray);
+  $returnValue = $this->render($app, 'hare_chart_overall_details.twig',$finalArray);
 
   # Return the return value
   return $returnValue;
@@ -5055,7 +5055,7 @@ public function viewHareChartsAction(Request $request, Application $app, int $ha
     'cohare_count_list' =>$cohareCountList,
     'cohare_count_max' => $cohareCountMax,
     'the_hashes' => $theHashes,
-    'geocode_api_value' => GOOGLE_MAPS_JAVASCRIPT_API_KEY,
+    'geocode_api_value' => $this->getGoogleMapsJavascriptApiKey($app),
     'avg_lat' => $avgLat,
     'avg_lng' => $avgLng,
     'hare_type' => $hare_type,
@@ -5063,7 +5063,7 @@ public function viewHareChartsAction(Request $request, Application $app, int $ha
     'chart_color' => $chart_color
   );
   $finalArray = array_merge($commonValues,$customValues);
-  $returnValue = $app['twig']->render('hare_chart_details.twig',$finalArray);
+  $returnValue = $this->render($app, 'hare_chart_details.twig',$finalArray);
 
   # Return the return value
   return $returnValue;
@@ -5074,7 +5074,7 @@ public function twoPersonComparisonPreAction(Request $request, Application $app,
   $pageTitle = "Two Person Comparison";
 
   #Establish the return value
-  $returnValue = $app['twig']->render('hasher_comparison_selection_screen.twig', array (
+  $returnValue = $this->render($app, 'hasher_comparison_selection_screen.twig', array (
     'pageTitle' => $pageTitle,
     'playerOneDefault' => 'Selection Required',
     'playerTwoDefault' => 'Selection Required',
@@ -5309,7 +5309,7 @@ public function twoPersonComparisonAction(Request $request, Application $app, st
 
 
   #Establish the return value
-  $returnValue = $app['twig']->render('hasher_comparison_fluid_results.twig', array (
+  $returnValue = $this->render($app, 'hasher_comparison_fluid_results.twig', array (
     'pageTitle' => $pageTitle,
     'pageSubTitle' => $pageSubtitle,
     'pageHeader' => 'Why is this so complicated ?',

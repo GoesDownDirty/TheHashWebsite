@@ -48,7 +48,7 @@ class HashPersonController
     # $newOverallHaresCount = count($newOverallHares);
 
     # Establish the return value
-    $returnValue = $app['twig']->render('admin_delete_hasher.twig',array(
+    $returnValue = $this->render($app, 'admin_delete_hasher.twig',array(
       'pageTitle' => 'Hasher Deletion',
       'pageSubTitle' => $pageSubTitle,
       'theirHashings' => $allHashings,
@@ -256,7 +256,7 @@ class HashPersonController
 
     }
 
-    $returnValue = $app['twig']->render('edit_hasher_form.twig', array (
+    $returnValue = $this->render($app, 'edit_hasher_form.twig', array (
       'pageTitle' => 'Hasher Person Modification',
       'pageHeader' => 'Why is this so complicated ?',
       'form' => $form->createView(),
@@ -345,7 +345,7 @@ class HashPersonController
 
     }
 
-    $returnValue = $app['twig']->render('new_hasher_form.twig', array (
+    $returnValue = $this->render($app, 'new_hasher_form.twig', array (
       'pageTitle' => 'Hasher Person Creation',
       'pageHeader' => 'Why is this so complicated ?',
       'form' => $form->createView(),

@@ -89,7 +89,7 @@ class AdminController extends BaseController
   public function helloAction(Request $request, Application $app){
 
       #return $app->redirect('/');
-      return $app['twig']->render('admin_landing.twig', array (
+      return $this->render($app, 'admin_landing.twig', array (
         'pageTitle' => 'This is the admin landing screen',
         'subTitle1' => 'This is the admin landing screen',
     ));
@@ -99,7 +99,7 @@ class AdminController extends BaseController
   public function adminHelloAction(Request $request, Application $app){
 
       #return $app->redirect('/');
-      return $app['twig']->render('admin_landing.twig', array (
+      return $this->render($app, 'admin_landing.twig', array (
         'pageTitle' => 'Site Administration',
         'subTitle1' => 'This is the admin hello landing screen (sub title 1)',
       ));
@@ -110,7 +110,7 @@ class AdminController extends BaseController
   public function userHelloAction(Request $request, Application $app){
 
       #return $app->redirect('/');
-      return $app['twig']->render('admin_landing.twig', array (
+      return $this->render($app, 'admin_landing.twig', array (
         'pageTitle' => 'This is the user hello landing screen (page title)',
         'subTitle1' => 'This is the user hello landing screen (sub title 1)',
       ));
@@ -135,7 +135,7 @@ class AdminController extends BaseController
       $theList = $app['db']->fetchAll($sql);
 
       # Establish and set the return value
-      $returnValue = $app['twig']->render('admin_orphaned_hashers.twig',array(
+      $returnValue = $this->render($app, 'admin_orphaned_hashers.twig',array(
         'pageTitle' => 'The List of Orphaned Hashers',
         'pageSubTitle' => 'Hashers who have never hashed or hared',
         'theList' => $theList,
@@ -169,7 +169,7 @@ class AdminController extends BaseController
     $theHareCount = $theHareCountValue['THE_COUNT'];
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('event_budget.twig',array(
+    $returnValue = $this->render($app, 'event_budget.twig',array(
       'pageTitle' => 'Event Budget',
       'pageSubTitle' => 'Online Calculator',
       'pageCaption' => 'Event Budget Test Page Caption',
@@ -307,7 +307,7 @@ class AdminController extends BaseController
       $userid = $token->getUser();
     }
 
-    $returnValue = $app['twig']->render('admin_change_password_form.twig', array (
+    $returnValue = $this->render($app, 'admin_change_password_form.twig', array (
       'pageTitle' => 'Password change',
       'pageHeader' => 'Your new password must contain letters, numbers, an odd number of prime numbers.',
       'form' => $form->createView(),
@@ -326,7 +326,7 @@ class AdminController extends BaseController
   public function viewAuditRecordsPreActionJson(Request $request, Application $app){
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('audit_records_json.twig',array(
+    $returnValue = $this->render($app, 'audit_records_json.twig',array(
       'pageTitle' => 'The audit records',
       'pageSubTitle' => 'Stuff that the admins have done',
     ));
@@ -529,7 +529,7 @@ class AdminController extends BaseController
         $kennelKy = (int) $kennels[0]['KENNEL_KY'];
         $kennel_abbreviation = $kennels[0]['KENNEL_ABBREVIATION'];
       } else {
-        return $app['twig']->render('admin_select_kennel.twig',array(
+        return $this->render($app, 'admin_select_kennel.twig',array(
           'kennels' => $kennels,
           'pageTracking' => 'AdminSelectKennel',
           'pageTitle' => 'Select Kennel',
@@ -550,7 +550,7 @@ class AdminController extends BaseController
     $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array($kennelKy)))['THE_COUNT'];
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('admin_hash_list_json.twig',array(
+    $returnValue = $this->render($app, 'admin_hash_list_json.twig',array(
       'pageTitle' => 'The List of Hashes',
       'pageSubTitle' => 'The List of *ALL* Hashes',
       'pageCaption' => "",
@@ -705,7 +705,7 @@ class AdminController extends BaseController
   public function listHashersPreActionJson(Request $request, Application $app){
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('admin_hasher_list_json.twig',array(
+    $returnValue = $this->render($app, 'admin_hasher_list_json.twig',array(
       'pageTitle' => 'The List of Hashers',
       'pageSubTitle' => '',
       'pageCaption' => "",
@@ -865,7 +865,7 @@ class AdminController extends BaseController
     $hasherName = $hasher['HASHER_NAME'];
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('hasher_details_select_kennel.twig',array(
+    $returnValue = $this->render($app, 'hasher_details_select_kennel.twig',array(
       'pageTitle' => 'Hasher Details: Select Kennel',
       'kennelValues' => $kennelValues,
       'hasherId' => $hasher_id,
@@ -887,7 +887,7 @@ class AdminController extends BaseController
       if(count($kennels) == 1) {
         $kennelKy = $kennels[0]['KENNEL_KY'];
       } else {
-        return $app['twig']->render('admin_select_kennel.twig',array(
+        return $this->render($app, 'admin_select_kennel.twig',array(
           'kennels' => $kennels,
           'pageTracking' => 'AdminSelectKennel',
           'pageTitle' => 'Select Kennel',
@@ -925,7 +925,7 @@ class AdminController extends BaseController
     }
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('admin_roster.twig',array(
+    $returnValue = $this->render($app, 'admin_roster.twig',array(
       'theList' => $theList
     ));
     #Return the return value
@@ -953,7 +953,7 @@ class AdminController extends BaseController
         $kennelKy = $kennels[0]['KENNEL_KY'];
         $kennel_abbreviation = $kennels[0]['KENNEL_ABBREVIATION'];
       } else {
-        return $app['twig']->render('admin_select_kennel.twig',array(
+        return $this->render($app, 'admin_select_kennel.twig',array(
           'kennels' => $kennels,
           'pageTracking' => 'AdminSelectKennel',
           'pageTitle' => 'Select Kennel',
@@ -984,7 +984,7 @@ class AdminController extends BaseController
     $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy, (int) $kennelKy));
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('admin_awards.twig',array(
+    $returnValue = $this->render($app, 'admin_awards.twig',array(
       'pageTitle' => 'Hasher Awards',
       'tableCaption' => 'Hashers, awards due, and last awards given.  Click the checkbox when a hasher receives their next award.',
       'theList' => $hasherList,

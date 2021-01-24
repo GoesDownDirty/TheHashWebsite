@@ -31,12 +31,12 @@ class ObscureStatisticsController extends BaseController {
     $avgLng = $theAverageLatLong['THE_LNG'];
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('generic_heat_map_page.twig',array(
+    $returnValue = $this->render($app, 'generic_heat_map_page.twig',array(
       'pageTitle' => 'The Kennel Heat Map',
       'pageSubTitle' => 'Location of all the hashes',
       'kennel_abbreviation' => $kennel_abbreviation,
       'the_hashes' => $theHashes,
-      'geocode_api_value' => GOOGLE_MAPS_JAVASCRIPT_API_KEY,
+      'geocode_api_value' => $this->getGoogleMapsJavascriptApiKey($app),
       'avg_lat' => $avgLat,
       'avg_lng' => $avgLng
     ));
@@ -65,12 +65,12 @@ class ObscureStatisticsController extends BaseController {
     $avgLng = $theAverageLatLong['THE_LNG'];
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('generic_cluster_map_page.twig',array(
+    $returnValue = $this->render($app, 'generic_cluster_map_page.twig',array(
       'pageTitle' => 'The Kennel Cluster Map',
       'pageSubTitle' => 'Location of all the hashes',
       'kennel_abbreviation' => $kennel_abbreviation,
       'the_hashes' => $theHashes,
-      'geocode_api_value' => GOOGLE_MAPS_JAVASCRIPT_API_KEY,
+      'geocode_api_value' => $this->getGoogleMapsJavascriptApiKey($app),
       'avg_lat' => $avgLat,
       'avg_lng' => $avgLng
     ));
@@ -99,12 +99,12 @@ class ObscureStatisticsController extends BaseController {
     $avgLng = $theAverageLatLong['THE_LNG'];
 
     # Establish and set the return value
-    $returnValue = $app['twig']->render('generic_marker_map_page.twig',array(
+    $returnValue = $this->render($app, 'generic_marker_map_page.twig',array(
       'pageTitle' => 'The Kennel Marker Map',
       'pageSubTitle' => 'Location of all the hashes',
       'kennel_abbreviation' => $kennel_abbreviation,
       'the_hashes' => $theHashes,
-      'geocode_api_value' => GOOGLE_MAPS_JAVASCRIPT_API_KEY,
+      'geocode_api_value' => $this->getGoogleMapsJavascriptApiKey($app),
       'avg_lat' => $avgLat,
       'avg_lng' => $avgLng
     ));
@@ -161,7 +161,7 @@ class ObscureStatisticsController extends BaseController {
       $newOverallHaresCount = count($newOverallHares);
 
       #Establish the return value
-      $returnValue = $app['twig']->render('year_in_review.twig', array (
+      $returnValue = $this->render($app, 'year_in_review.twig', array (
         'pageTitle' => $pageTitle,
         'yearValue' => $year_value,
         'kennel_abbreviation' => $kennel_abbreviation,
@@ -881,7 +881,7 @@ class ObscureStatisticsController extends BaseController {
             $pageTitle = "Quickest to reach $analversary_number hashes";
 
             #Set the return value
-            $returnValue = $app['twig']->render('analversaries_achievements_non_json.twig',array(
+            $returnValue = $this->render($app, 'analversaries_achievements_non_json.twig',array(
               'pageTitle' => $pageTitle,
               'tableCaption' => 'Faster is better',
               'pageSubTitle' => 'Measured in days',
@@ -919,7 +919,7 @@ class ObscureStatisticsController extends BaseController {
                   $pageSubTitle = "($analversary_number hashes)";
 
                   #Set the return value
-                  $returnValue = $app['twig']->render('analversaries_achievements_chronological.twig',array(
+                  $returnValue = $this->render($app, 'analversaries_achievements_chronological.twig',array(
                     'pageTitle' => $pageTitle,
                     'tableCaption' => '',
                     'pageSubTitle' => $pageSubTitle,
@@ -958,7 +958,7 @@ class ObscureStatisticsController extends BaseController {
       $pageTitle = "Slowest to reach $analversary_number hashes";
 
       #Set the return value
-      $returnValue = $app['twig']->render('analversaries_achievements_non_json.twig',array(
+      $returnValue = $this->render($app, 'analversaries_achievements_non_json.twig',array(
         'pageTitle' => $pageTitle,
         'tableCaption' => 'Faster is better',
         'pageSubTitle' => 'Measured in days',
@@ -992,7 +992,7 @@ class ObscureStatisticsController extends BaseController {
       $pageTitle = "The longest streaks";
 
       #Set the return value
-      $returnValue = $app['twig']->render('name_number_list.twig',array(
+      $returnValue = $this->render($app, 'name_number_list.twig',array(
         'pageTitle' => $pageTitle,
         'tableCaption' => 'Longest streak per hasher',
 
@@ -1036,7 +1036,7 @@ class ObscureStatisticsController extends BaseController {
       $tableCaption = "Minimum hashing count: $minHashingCount";
 
       #Add the results into the twig template
-      $returnValue = $app['twig']->render('career_length_by_day.twig',array(
+      $returnValue = $this->render($app, 'career_length_by_day.twig',array(
         'pageTitle' => "Longest Hashing Career (By Days)",
         'pageSubTitle' => $pageSubTitle,
         'tableCaption' => $tableCaption,
@@ -1085,7 +1085,7 @@ class ObscureStatisticsController extends BaseController {
       $tableCaption = "Minimum hashing count: $min_hash_count";
 
       #Add the results into the twig template
-      $returnValue = $app['twig']->render('career_length_by_day.twig',array(
+      $returnValue = $this->render($app, 'career_length_by_day.twig',array(
         'pageTitle' => $pageSubTitle,
         'pageSubTitle' => "",
         'tableCaption' => $tableCaption,
@@ -1132,7 +1132,7 @@ class ObscureStatisticsController extends BaseController {
       $tableCaption = "Minimum hashing count: $min_hash_count";
 
       #Add the results into the twig template
-      $returnValue = $app['twig']->render('career_length_by_day.twig',array(
+      $returnValue = $this->render($app, 'career_length_by_day.twig',array(
         'pageTitle' => $pageSubTitle,
         'pageSubTitle' => "",
         'tableCaption' => $tableCaption,
@@ -1182,7 +1182,7 @@ class ObscureStatisticsController extends BaseController {
       $tableCaption = "Minimum hashing count: $minHashingCount";
 
       #Add the results into the twig template
-      $returnValue = $app['twig']->render('career_length_by_day.twig',array(
+      $returnValue = $this->render($app, 'career_length_by_day.twig',array(
         'pageTitle' => "Average days between hashing",
         'pageSubTitle' => $pageSubTitle,
         'tableCaption' => $tableCaption,
@@ -1233,7 +1233,7 @@ class ObscureStatisticsController extends BaseController {
       $tableCaption = "Minimum hashing count: $minHashingCount";
 
       #Add the results into the twig template
-      $returnValue = $app['twig']->render('career_length_by_day.twig',array(
+      $returnValue = $this->render($app, 'career_length_by_day.twig',array(
         'pageTitle' => "Average days between hashing",
         'pageSubTitle' => $pageSubTitle,
         'tableCaption' => $tableCaption,
@@ -1285,7 +1285,7 @@ class ObscureStatisticsController extends BaseController {
       $tableCaption = "Minimum haring count: $minHaringCount";
 
       #Add the results into the twig template
-      $returnValue = $app['twig']->render('haring_career_length_by_day.twig',array(
+      $returnValue = $this->render($app, 'haring_career_length_by_day.twig',array(
         'pageTitle' => "Average days between harings",
         'pageSubTitle' => $pageSubTitle,
         'tableCaption' => $tableCaption,
@@ -1328,7 +1328,7 @@ class ObscureStatisticsController extends BaseController {
       $tableCaption = "Minimum haring count: $minHaringCount";
 
       #Add the results into the twig template
-      $returnValue = $app['twig']->render('haring_career_length_by_day.twig',array(
+      $returnValue = $this->render($app, 'haring_career_length_by_day.twig',array(
         'pageTitle' => "Average days between harings",
         'pageSubTitle' => $pageSubTitle,
         'tableCaption' => $tableCaption,
@@ -1378,7 +1378,7 @@ class ObscureStatisticsController extends BaseController {
       $tableCaption = "Minimum haring count: $minHaringCount";
 
       #Add the results into the twig template
-      $returnValue = $app['twig']->render('haring_career_length_by_day.twig',array(
+      $returnValue = $this->render($app, 'haring_career_length_by_day.twig',array(
         'pageTitle' => "Average days between harings",
         'pageSubTitle' => $pageSubTitle,
         'tableCaption' => $tableCaption,
@@ -1428,7 +1428,7 @@ class ObscureStatisticsController extends BaseController {
       $tableCaption = "Minimum haring count: $minHaringCount";
 
       #Add the results into the twig template
-      $returnValue = $app['twig']->render('haring_career_length_by_day.twig',array(
+      $returnValue = $this->render($app, 'haring_career_length_by_day.twig',array(
         'pageTitle' => "Average days between harings",
         'pageSubTitle' => $pageSubTitle,
         'tableCaption' => $tableCaption,
@@ -1517,7 +1517,7 @@ class ObscureStatisticsController extends BaseController {
       $avgEvtParticipationByMonth = $app['db']->fetchAll($sqlAvgEvtParticipationByMonth, array((int) $kennelKy));
 
       # Establish and set the return value
-      $returnValue = $app['twig']->render('event_participation_charts.twig',array(
+      $returnValue = $this->render($app, 'event_participation_charts.twig',array(
         'pageTitle' => 'Event Participation Statistics',
         'firstHeader' => 'FIRST HEADER',
         'secondHeader' => 'SECOND HEADER',
@@ -1557,7 +1557,7 @@ class ObscureStatisticsController extends BaseController {
       $newComersByMonth = $app['db']->fetchAll($sqlNewComersByMonth, array((int) $kennelKy,(int) $kennelKy, $min_hash_count));
 
       # Establish and set the return value
-      $returnValue = $app['twig']->render('newcomers_charts.twig',array(
+      $returnValue = $this->render($app, 'newcomers_charts.twig',array(
         'pageTitle' => 'First Timers / New Comers Statistics',
         'firstHeader' => 'FIRST HEADER',
         'secondHeader' => 'SECOND HEADER',
@@ -1601,7 +1601,7 @@ class ObscureStatisticsController extends BaseController {
           $listByMonth = $app['db']->fetchAll($sqlByMonth, array((int) $kennelKy,$hare_type));
 
           # Establish and set the return value
-          $returnValue = $app['twig']->render('generic_charts_template.twig',array(
+          $returnValue = $this->render($app, 'generic_charts_template.twig',array(
             'pageTitle' => 'Virgin ('.$hareTypeName.') Harings Statistics',
             'kennel_abbreviation' => $kennel_abbreviation,
             'List_By_Year_List' => $listByYear,
@@ -1648,7 +1648,7 @@ class ObscureStatisticsController extends BaseController {
       $listByMonth = $app['db']->fetchAll($sqlByMonth, array((int) $kennelKy));
 
       # Establish and set the return value
-      $returnValue = $app['twig']->render('generic_charts_template.twig',array(
+      $returnValue = $this->render($app, 'generic_charts_template.twig',array(
         'pageTitle' => 'Distinct Hashers Statistics',
         'firstHeader' => 'FIRST HEADER',
         'secondHeader' => 'SECOND HEADER',
@@ -1697,7 +1697,7 @@ class ObscureStatisticsController extends BaseController {
           $listByMonth = $app['db']->fetchAll($sqlByMonth, array((int) $kennelKy,$hare_type));
 
           # Establish and set the return value
-          $returnValue = $app['twig']->render('generic_charts_template.twig',array(
+          $returnValue = $this->render($app, 'generic_charts_template.twig',array(
             'pageTitle' => 'Distinct '.$hareTypeName.' Hare Statistics',
             'kennel_abbreviation' => $kennel_abbreviation,
             'List_By_Year_List' => $listByYear,
@@ -1743,7 +1743,7 @@ class ObscureStatisticsController extends BaseController {
       $lastComersByMonth = $app['db']->fetchAll($sqlLastComersByMonth, array((int) $kennelKy,(int) $kennelKy, $min_hash_count, $month_count));
 
       # Establish and set the return value
-      $returnValue = $app['twig']->render('lastcomers_charts.twig',array(
+      $returnValue = $this->render($app, 'lastcomers_charts.twig',array(
         'pageTitle' => 'Last Comers Statistics',
         'firstHeader' => 'FIRST HEADER',
         'secondHeader' => 'SECOND HEADER',
@@ -1788,7 +1788,7 @@ class ObscureStatisticsController extends BaseController {
       $trendingHashersList = $app['db']->fetchAll($sqlTrendingHashers, array((int) $kennelKy, (int) $day_count));
 
       # Establish and set the return value
-      $returnValue = $app['twig']->render('trending_hashers_charts.twig',array(
+      $returnValue = $this->render($app, 'trending_hashers_charts.twig',array(
         'pageTitle' => 'Trending Hashers',
         'firstHeader' => 'FIRST HEADER',
         'secondHeader' => 'SECOND HEADER',
@@ -1828,7 +1828,7 @@ class ObscureStatisticsController extends BaseController {
       $trendingTrueHaresList = $app['db']->fetchAll($sqlTrendingTrueHares, array((int) $kennelKy, $hare_type, (int) $day_count));
 
       # Establish and set the return value
-      $returnValue = $app['twig']->render('trending_true_hares_charts.twig',array(
+      $returnValue = $this->render($app, 'trending_true_hares_charts.twig',array(
         'pageTitle' => 'Trending '.$hareTypeName.' Hares',
         'kennel_abbreviation' => $kennel_abbreviation,
         'trending_true_hares_list' => $trendingTrueHaresList,
@@ -1854,7 +1854,7 @@ class ObscureStatisticsController extends BaseController {
       $hareTypeName = $this->getHareTypeName($app, $hare_type);
 
       # Establish and set the return value
-      $returnValue = $app['twig']->render('un_trending_true_hares_charts_json.twig',array(
+      $returnValue = $this->render($app, 'un_trending_true_hares_charts_json.twig',array(
         'pageTitle' => 'Un-Trending True Hares',
         'pageSubTitle' => 'The List of *ALL* Hashers',
         'kennel_abbreviation' => $kennel_abbreviation,
@@ -1950,7 +1950,7 @@ class ObscureStatisticsController extends BaseController {
       $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
 
       #Establish the return value
-      $returnValue = $app['twig']->render('about.twig', array (
+      $returnValue = $this->render($app, 'about.twig', array (
         'pageTitle' => $pageTitle,
         'kennel_abbreviation' => $kennel_abbreviation,
         'adminEmail' => $this->getAdministratorEmail($app)
@@ -2037,7 +2037,7 @@ class ObscureStatisticsController extends BaseController {
       #}
 
       #Establish the return value
-      $returnValue = $app['twig']->render('hasher_name_substring_analysis.twig', array (
+      $returnValue = $this->render($app, 'hasher_name_substring_analysis.twig', array (
         'pageTitle' => $pageTitle,
         'kennel_abbreviation' => $kennel_abbreviation,
         #'theList' => $hasherNameList,
@@ -2193,7 +2193,7 @@ class ObscureStatisticsController extends BaseController {
 
 
         # Establish and set the return value
-        $returnValue = $app['twig']->render('kennel_chart_details.twig',array(
+        $returnValue = $this->render($app, 'kennel_chart_details.twig',array(
           'pageTitle' => 'Kennel Charts and Details',
           'firstHeader' => 'Basic Details',
           'secondHeader' => 'Statistics',
@@ -2214,7 +2214,7 @@ class ObscureStatisticsController extends BaseController {
           'city_hashings_count_list' => $cityHashingsCountList,
           'city_hashings_max_value' => $cityHashingsCountMax,
           'the_hashes' => $theHashes,
-          'geocode_api_value' => GOOGLE_MAPS_JAVASCRIPT_API_KEY,
+          'geocode_api_value' => $this->getGoogleMapsJavascriptApiKey($app),
           'avg_lat' => $avgLat,
           'avg_lng' => $avgLng,
           'hash_count' => $hashCountForKennel,
@@ -2309,7 +2309,7 @@ class ObscureStatisticsController extends BaseController {
 
 
       #Establish the return value
-      $returnValue = $app['twig']->render('hasher_name_substring_analysis2.twig', array (
+      $returnValue = $this->render($app, 'hasher_name_substring_analysis2.twig', array (
         'pageTitle' => $pageTitle,
         'kennel_abbreviation' => $kennel_abbreviation,
         #'theList' => $hasherNameList,
@@ -2403,7 +2403,7 @@ class ObscureStatisticsController extends BaseController {
 
 
       #Establish the return value
-      $returnValue = $app['twig']->render('wordcloud_hashername_analysis.twig', array (
+      $returnValue = $this->render($app, 'wordcloud_hashername_analysis.twig', array (
         'pageTitle' => $pageTitle,
         'kennel_abbreviation' => $kennel_abbreviation,
         'subStringArray' => $subStringCounts,

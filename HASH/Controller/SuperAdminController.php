@@ -901,7 +901,7 @@ class SuperAdminController extends BaseController {
   public function deleteHashType(Request $request, Application $app, int $hash_type) {
 
     $sql = "SELECT EXISTS(SELECT 1 FROM HASHES_TABLE WHERE HASHES_TABLE.HASH_TYPE & ? = HASHES_TABLE.HASH_TYPE) AS IN_USE";
-    $in_use = $app['db']->fetchOne($sql, array($kennel_ky));
+    $in_use = $app['db']->fetchOne($sql, array($hash_type));
 
     if(!$in_use) {
       $sql = "SELECT HASH_TYPE_NAME FROM HASH_TYPES WHERE HASH_TYPE = ?";
@@ -923,7 +923,7 @@ class SuperAdminController extends BaseController {
   public function deleteHareType(Request $request, Application $app, int $hare_type) {
 
     $sql = "SELECT EXISTS(SELECT 1 FROM HARINGS WHERE HARINGS.HARE_TYPE & ? = HARINGS.HARE_TYPE) AS IN_USE";
-    $in_use = $app['db']->fetchOne($sql, array($kennel_ky));
+    $in_use = $app['db']->fetchOne($sql, array($hare_type));
 
     if(!$in_use) {
       $sql = "SELECT HARE_TYPE_NAME FROM HARE_TYPES WHERE HARE_TYPE = ?";

@@ -3417,7 +3417,11 @@ public function hasherCountsByHareAction(Request $request, Application $app, int
   # Make a database call to obtain the hasher information
   $hasher = $app['db']->fetchAssoc($sql_for_hasher_lookup, array((int) $hare_id));
 
-  $hare_type_name = $this->getHareTypeName($app, $hare_type);
+  if($hare_type != 0) {
+    $hare_type_name = $this->getHareTypeName($app, $hare_type);
+  } else {
+    $hare_type_name = "";
+  }
 
   # Establish and set the return value
   $hasherName = $hasher['HASHER_NAME'];

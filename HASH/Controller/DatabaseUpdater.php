@@ -14,7 +14,7 @@ class DatabaseUpdater {
 
     $databaseVersion = $this->getDatabaseVersion();
 
-    if($databaseVersion != 14) {
+    if($databaseVersion != 15) {
 
       $has_semaphones = true;
 
@@ -91,6 +91,9 @@ class DatabaseUpdater {
             case 13:
               $this->moveGoogleKeysToSiteConfig();
               $this->setDatabaseVersion(14);
+            case 14:
+              $this->moveSiteBannerToSiteConfig();
+              $this->setDatabaseVersion(15);
             default:
               // Overkill, but guarantees the view is up to date with the
               // current database structure.
@@ -126,6 +129,18 @@ class DatabaseUpdater {
 
   private function alterSiteConfigNameColumn() {
     $this->executeStatement("ALTER TABLE SITE_CONFIG CHANGE NAME NAME VARCHAR(100) NOT NULL");
+  }
+
+  private function moveSiteBannerToSiteConfig() {
+    if(defined('SITE_BANNER')) {
+      $sb = SITE_BANNER;
+    } else {
+      $sb = "none";
+    }
+    if(strlen($sb) == 0) {
+      $sb = "none";
+    }
+    $this->insertIntoSiteConfig('site_banner', $sb, 'Optional header that is displayed on each page.  Set to "none" to leave blank.');
   }
 
   private function moveGoogleKeysToSiteConfig() {

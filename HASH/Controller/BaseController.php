@@ -11,10 +11,17 @@ class BaseController {
   protected function render(Application $app, string $template, array $args) {
 
     $google_analytics_id = $this->getGoogleAnalyticsId($app);
+    $site_banner = $this->getSiteBanner($app);
 
     $args['google_analytics_id'] = $google_analytics_id;
+    $args['site_banner'] = $site_banner;
 
     return $app['twig']->render($template, $args);
+  }
+
+  protected function getSiteBanner(Application $app) {
+    $sql = "SELECT value FROM SITE_CONFIG WHERE name='site_banner'";
+    return $app['db']->fetchOne($sql, array());
   }
 
   protected function getAdministratorEmail(Application $app) {

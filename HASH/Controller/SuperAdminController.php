@@ -754,7 +754,7 @@ class SuperAdminController extends BaseController {
 
   public function modifySiteConfigAjaxPostAction(Request $request, Application $app, string $name) {
 
-    $theValue = trim(strip_tags($request->request->get('value')));
+    $theValue = trim($request->request->get('value'));
 
     // Establish a "passed validation" variable
     $passedValidation = TRUE;

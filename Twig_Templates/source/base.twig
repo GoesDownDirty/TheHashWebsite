@@ -48,8 +48,8 @@
   </head>
 
   <body>
-    {% if(constant("SITE_BANNER") is defined) %}
-        {{constant("SITE_BANNER") | raw}}
+    {% if site_banner != 'none' %}
+        {{ site_banner | raw}}
     {% endif %}
     {% if google_analytics_id != 'none' %}
       <script>

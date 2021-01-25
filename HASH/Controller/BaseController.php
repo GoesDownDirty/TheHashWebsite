@@ -7,6 +7,19 @@ use Symfony\Component\HttpFoundation\Request;
 
 class BaseController {
 
+  // fetch all - ignore query errors
+  // used in slashaction2 to allow the home page to render even if there
+  // are integrity issues in the database (currently having duplicate event
+  // date/times causes issues)
+  protected function fetchAllIgnoreErrors(Application $app, string $sql, array $args) {
+    try {
+      return $app['db']->fetchAll($sql, $args);
+    } catch(\Exception $e) {
+      // ignore
+    }
+    return [];
+  }
+
   // Add common page arguments, then dispatch to twig to render page
   protected function render(Application $app, string $template, array $args) {
 

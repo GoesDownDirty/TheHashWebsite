@@ -125,12 +125,12 @@ class HashController extends BaseController
     }
 
     #Execute the SQL statement; create an array of rows
-    $topHashersList = $app['db']->fetchAll($sql, array((int) $kennelKy, (int) $kennelKy));
-    $topOverallHareList = $app['db']->fetchAll($sql4, array((int) $kennelKy));
-    $topHashersThisYear = $app['db']->fetchAll($sql5, array((int) $kennelKy));
-    $topHashersLastYear = $app['db']->fetchAll($sql6, array((int) $kennelKy));
-    $topHaresThisYear = $app['db']->fetchAll($sql7, array((int) $kennelKy));
-    $topHaresLastYear = $app['db']->fetchAll($sql8, array((int) $kennelKy));
+    $topHashersList = $this->fetchAllIgnoreErrors($app, $sql, array((int) $kennelKy, (int) $kennelKy));
+    $topOverallHareList = $this->fetchAllIgnoreErrors($app, $sql4, array((int) $kennelKy));
+    $topHashersThisYear = $this->fetchAllIgnoreErrors($app, $sql5, array((int) $kennelKy));
+    $topHashersLastYear = $this->fetchAllIgnoreErrors($app, $sql6, array((int) $kennelKy));
+    $topHaresThisYear = $this->fetchAllIgnoreErrors($app, $sql7, array((int) $kennelKy));
+    $topHaresLastYear = $this->fetchAllIgnoreErrors($app, $sql8, array((int) $kennelKy));
 
     #Get the quickest to 5 hashes
     $theQuickestToXNumber = 5;
@@ -138,7 +138,7 @@ class HashController extends BaseController
     $theSql = str_replace("XORDERX","ASC",$theSql);
     $theSql = str_replace("XORDERCOLUMNX","DAYS_TO_REACH_ANALVERSARY",$theSql);
     $theSql = "$theSql LIMIT 10";
-    $theQuickestToXResults = $app['db']->fetchAll($theSql, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy));
+    $theQuickestToXResults = $this->fetchAllIgnoreErrors($app, $theSql, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy));
 
     #Get the quickest to 100 hashes
     $theQuickestToYNumber = 100;
@@ -146,7 +146,7 @@ class HashController extends BaseController
     $theSql = str_replace("XORDERX","ASC",$theSql);
     $theSql = str_replace("XORDERCOLUMNX","DAYS_TO_REACH_ANALVERSARY",$theSql);
     $theSql = "$theSql LIMIT 10";
-    $theQuickestToYResults = $app['db']->fetchAll($theSql, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy));
+    $theQuickestToYResults = $this->fetchAllIgnoreErrors($app, $theSql, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy));
 
     #Get the slowest to 5 hashes
     $theSlowestToXNumber = 5;
@@ -154,7 +154,7 @@ class HashController extends BaseController
     $theSql = str_replace("XORDERX","DESC",$theSql);
     $theSql = str_replace("XORDERCOLUMNX","DAYS_TO_REACH_ANALVERSARY",$theSql);
     $theSql = "$theSql LIMIT 10";
-    $theSlowestToXResults = $app['db']->fetchAll($theSql, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy));
+    $theSlowestToXResults = $this->fetchAllIgnoreErrors($app, $theSql, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy));
 
     $quickest_hares = array();
     $theQuickestToXHaringsNumber = 5;
@@ -165,7 +165,7 @@ class HashController extends BaseController
 
     foreach ($hareTypes as &$hareType) {
     #Get the quickest to 5 true harings
-      $theQuickestToXHaringsResults = $app['db']->fetchAll($theSql, array((int) $kennelKy, (int) $kennelKy, $hareType['HARE_TYPE'],(int) $kennelKy, $hareType['HARE_TYPE']));
+      $theQuickestToXHaringsResults = $this->fetchAllIgnoreErrors($app, $theSql, array((int) $kennelKy, (int) $kennelKy, $hareType['HARE_TYPE'],(int) $kennelKy, $hareType['HARE_TYPE']));
       array_push($quickest_hares,
         array('data' => $theQuickestToXHaringsResults, 'label' => $hareType['HARE_TYPE_NAME'], 'hare_type' => $hareType['HARE_TYPE']));
     }

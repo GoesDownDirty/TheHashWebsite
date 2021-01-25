@@ -222,13 +222,14 @@ $app->register(new Silex\Provider\MonologServiceProvider(), array(
 
 # Register the URls
 $app->get('/',                                                    'HASH\Controller\HashController::slashAction')->bind('homepage');
-$app->get('/{kennel_abbreviation}',                               'HASH\Controller\HashController::slashKennelAction2');
-
 
 #Admin section logon
 $app->get('/logonscreen',                                         'HASH\Controller\HashController::logonScreenAction');
 $app->get('/admin/logoutaction',                                  'HASH\Controller\AdminController::logoutAction');
 $app->get('/admin/hello',                                         'HASH\Controller\AdminController::helloAction');
+
+# kennel home page
+$app->get('/{kennel_abbreviation}',                               'HASH\Controller\HashController::slashKennelAction2');
 
 #Superadmin section logon
 $app->get('/logonscreen/sa',                                        'HASH\Controller\SuperAdminController::logonScreenAction');

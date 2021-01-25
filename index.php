@@ -233,6 +233,7 @@ $app->get('/admin/hello',                                         'HASH\Controll
 $app->get('/logonscreen/sa',                                        'HASH\Controller\SuperAdminController::logonScreenAction');
 $app->get('/superadmin/logoutaction',                               'HASH\Controller\SuperAdminController::logoutAction');
 $app->get('/superadmin/hello',                                      'HASH\Controller\SuperAdminController::helloAction');
+$app->get('/superadmin/integrity',                                  'HASH\Controller\SuperAdminController::integrityChecks');
 $app->get('/superadmin/{kennel_abbreviation}/editkennel/ajaxform',  'HASH\Controller\SuperAdminController::modifyKennelAjaxPreAction');
 $app->post('/superadmin/{kennel_abbreviation}/editkennel/ajaxform', 'HASH\Controller\SuperAdminController::modifyKennelAjaxPostAction');
 $app->get('/superadmin/{hare_type}/editharetype/ajaxform',          'HASH\Controller\SuperAdminController::modifyHareTypeAjaxPreAction');

@@ -941,4 +941,35 @@ class SuperAdminController extends BaseController {
     header("Location: /superadmin/hello");
     return $app->json("", 302);
   }
+
+  public function integrityChecks(Request $request, Application $app) {
+
+    $sql = "SELECT KENNEL_NAME, KENNEL_KY FROM KENNELS WHERE IN_RECORD_KEEPING = 1 ORDER BY KENNEL_NAME";
+    $reports = $app['db']->fetchAll($sql, array());
+
+    foreach($reports as &$report) {
+      $messages = [];
+      $sql = "SELECT EVENT_DATE FROM HASHES_TABLE WHERE KENNEL_KY = ? GROUP BY EVENT_DATE HAVING COUNT(*) > 1 ORDER BY EVENT_DATE";
+      $event_dates = $app['db']->fetchAll($sql, array($report['KENNEL_KY']));
+      foreach($event_dates as &$event_date) {
+        $sql = "SELECT KENNEL_EVENT_NUMBER, SPECIAL_EVENT_DESCRIPTION AS EVENT_NAME FROM HASHES_TABLE WHERE KENNEL_KY = ? AND EVENT_DATE = ? ORDER BY KENNEL_EVENT_NUMBER";
+        $results = $app['db']->fetchAll($sql, array($report['KENNEL_KY'], $event_date['EVENT_DATE']));
+        foreach($results as $result) {
+          array_push($messages, 'Event number '.$result['KENNEL_EVENT_NUMBER'].' ('.$result['EVENT_NAME'].') has duplicate event date: '.$event_date['EVENT_DATE'].'.');
+        }
+      }
+      $report['MESSAGES'] = $messages;
+    }
+
+    foreach($reports as &$report) {
+      if(count($report['MESSAGES']) == 0) {
+        array_push($report['MESSAGES'], 'No database issues were found.');
+      }
+    }
+
+    return $this->render($app, 'superadmin_integrity_checks.twig', array(
+      'pageTitle' => 'Database Integrity Checks: Results',
+      'reports' => $reports
+    ));
+  }
 }

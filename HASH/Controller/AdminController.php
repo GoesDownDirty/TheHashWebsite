@@ -1039,7 +1039,7 @@ class AdminController extends BaseController
         $app['dbs']['mysql_write']->executeUpdate($sql, array((int) $awardLevel, (int) $hasherKey, (int) $kennelKey));
 
         $returnMessage = "Success!";
-      } catch (PDOException $theException) {
+      } catch (\Exception $theException) {
 
         $tempActionType = "Update Hasher Award";
         $tempActionDescription = "Failed to update hasher award for $hasherKey";

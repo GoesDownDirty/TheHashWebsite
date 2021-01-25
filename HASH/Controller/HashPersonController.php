@@ -140,7 +140,7 @@ class HashPersonController extends BaseController
 
             #Define the return message
             $returnMessage = "Success! They are gonzo!";
-          } catch (PDOException $theException){
+          } catch (\Exception $theException){
 
             $tempActionType = "Delete Person";
             $tempActionDescription = "Failed to delete $hasherName";

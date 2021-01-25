@@ -190,7 +190,7 @@ $app['controllers']
   ->assert("analversary_number","\d+")
   ->assert("row_limit","\d+")
   ->assert("kennel_ky","\d+")
-  ->assert("kennel_abbreviation","^[A-Z0-9]+$")
+  ->assert("kennel_abbreviation","^[A-Za-z0-9]+$")
   ->assert("name","^[a-z_]+$")
   ;
 #-------------------------------------------------------------------------------

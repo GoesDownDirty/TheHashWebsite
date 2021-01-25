@@ -228,8 +228,6 @@ $app->get('/logonscreen',                                         'HASH\Controll
 $app->get('/admin/logoutaction',                                  'HASH\Controller\AdminController::logoutAction');
 $app->get('/admin/hello',                                         'HASH\Controller\AdminController::helloAction');
 
-# kennel home page
-$app->get('/{kennel_abbreviation}',                               'HASH\Controller\HashController::slashKennelAction2');
 
 #Superadmin section logon
 $app->get('/logonscreen/sa',                                        'HASH\Controller\SuperAdminController::logonScreenAction');
@@ -257,6 +255,80 @@ $app->get('/superadmin/newhashtype/ajaxform',                       'HASH\Contro
 $app->post('/superadmin/newhashtype/ajaxform',                      'HASH\Controller\SuperAdminController::newHashTypeAjaxPostAction');
 $app->get('/superadmin/newharetype/ajaxform',                       'HASH\Controller\SuperAdminController::newHareTypeAjaxPreAction');
 $app->post('/superadmin/newharetype/ajaxform',                      'HASH\Controller\SuperAdminController::newHareTypeAjaxPostAction');
+
+$app->get('/admin/{kennel_abbreviation}/newhash/ajaxform', 'HASH\Controller\HashEventController::adminCreateHashAjaxPreAction');
+$app->post('/admin/{kennel_abbreviation}/newhash/ajaxform', 'HASH\Controller\HashEventController::adminCreateHashAjaxPostAction');
+
+# Hash event modification (ajaxified)
+$app->get('/admin/edithash/ajaxform/{hash_id}', 'HASH\Controller\HashEventController::adminModifyHashAjaxPreAction');
+$app->post('/admin/edithash/ajaxform/{hash_id}', 'HASH\Controller\HashEventController::adminModifyHashAjaxPostAction');
+
+# Hash person modification
+$app->get('/admin/modifyhasher/form/{hasher_id}',                 'HASH\Controller\HashPersonController::modifyHashPersonAction');
+$app->post('/admin/modifyhasher/form/{hasher_id}',                'HASH\Controller\HashPersonController::modifyHashPersonAction');
+
+# Hash person deletion
+$app->get('/admin/deleteHasher/{hasher_id}',                      'HASH\Controller\HashPersonController::deleteHashPersonPreAction');
+$app->post('/admin/deleteHasherPost',                      'HASH\Controller\HashPersonController::deleteHashPersonAjaxAction');
+
+# Hash person creation
+$app->get('/admin/newhasher/form',                                'HASH\Controller\HashPersonController::createHashPersonAction');
+$app->post('/admin/newhasher/form',                               'HASH\Controller\HashPersonController::createHashPersonAction');
+
+# Change admin password
+$app->get('/admin/newPassword/form',                                'HASH\Controller\AdminController::newPasswordAction');
+$app->post('/admin/newPassword/form',                               'HASH\Controller\AdminController::newPasswordAction');
+
+# View audit records
+$app->get('/admin/viewAuditRecords',                                  'HASH\Controller\AdminController::viewAuditRecordsPreActionJson');
+$app->post('/admin/viewAuditRecords',                                 'HASH\Controller\AdminController::viewAuditRecordsJson');
+
+# Modify the participation for an event
+$app->get('/admin/event/manageparticipation2/{hash_id}',            'HASH\Controller\HashEventController::hashParticipationJsonPreAction');
+$app->post('/admin/event/manageparticipation2/{hash_id}',           'HASH\Controller\HashEventController::hashParticipationJsonPostAction');
+
+# Page to manage the event tags
+$app->get('/admin/tags/manageeventtags',                            'HASH\Controller\TagController::manageEventTagsPreAction');
+$app->get('/admin/tags/geteventtagswithcounts',                     'HASH\Controller\TagController::getEventTagsWithCountsJsonAction');
+$app->get('/admin/tags/getalleventtags',                            'HASH\Controller\TagController::getAllEventTagsJsonAction');
+$app->get('/admin/tags/getmatchingeventtags',                       'HASH\Controller\TagController::getMatchingEventTagsJsonAction');
+#$app->post('/admin/tags/manageeventtags',                           'HASH\Controller\TagController::manageEventTagsJsonPostAction');
+$app->post('/admin/tags/addneweventtag',                            'HASH\Controller\TagController::addNewEventTag');
+
+# Add or remove tags to events
+$app->post('/admin/tags/addtagtoevent',                             'HASH\Controller\TagController::addTagToEventJsonAction');
+$app->post('/admin/tags/removetagfromevent',                        'HASH\Controller\TagController::removeTagFromEventJsonAction');
+$app->get('/admin/tags/eventscreen/{hash_id}',                      'HASH\Controller\TagController::showEventForTaggingPreAction');
+
+# Functions to add and delete hounds and hares to the hashes
+$app->post('/admin/event/addHasherToHash',                         'HASH\Controller\HashEventController::addHashParticipant');
+$app->post('/admin/event/addHareToHash',                           'HASH\Controller\HashEventController::addHashOrganizer');
+$app->post('/admin/event/deleteHasherFromHash',                    'HASH\Controller\HashEventController::deleteHashParticipant');
+$app->post('/admin/event/deleteHareFromHash',                      'HASH\Controller\HashEventController::deleteHashOrganizer');
+
+$app->post('/admin/event/getHaresForEvent',                        'HASH\Controller\HashEventController::getHaresForEvent');
+$app->post('/admin/event/getHashersForEvent',                      'HASH\Controller\HashEventController::getHashersForEvent');
+
+$app->get('/admin/listOrphanedHashers',                             'HASH\Controller\AdminController::listOrphanedHashersAction');
+
+$app->get('/admin/roster',                                          'HASH\Controller\AdminController::roster');
+$app->get('/admin/{kennel_abbreviation}/roster',                    'HASH\Controller\AdminController::roster');
+$app->get('/admin/awards/{type}',                                   'HASH\Controller\AdminController::awards');
+$app->get('/admin/{kennel_abbreviation}/awards/{type}',             'HASH\Controller\AdminController::awards');
+$app->post('/admin/updateHasherAward',                              'HASH\Controller\AdminController::updateHasherAwardAjaxAction');
+
+$app->get('/admin/listhashes2',                                    'HASH\Controller\AdminController::listHashesPreActionJson');
+$app->get('/admin/{kennel_abbreviation}/listhashes2',              'HASH\Controller\AdminController::listHashesPreActionJson');
+$app->post('/admin/{kennel_abbreviation}/listhashes2',             'HASH\Controller\AdminController::getHashListJson');
+
+$app->get('/admin/listhashers2',                                    'HASH\Controller\AdminController::listHashersPreActionJson');
+$app->post('/admin/listhashers2',                                   'HASH\Controller\AdminController::getHashersListJson');
+
+$app->get('/admin/hasherDetailsKennelSelection/{hasher_id}',        'HASH\Controller\AdminController::hasherDetailsKennelSelection');
+
+#The per event budget screen
+$app->get('/admin/eventBudget/{hash_id}','HASH\Controller\AdminController::eventBudgetPreAction');
+
 
 $app->get('/user/hello',                                          'HASH\Controller\AdminController::userHelloAction');
 
@@ -341,8 +413,6 @@ $app->get('/{kennel_abbreviation}/trendingHares/{hare_type}/{day_count}',       
 $app->get('/{kennel_abbreviation}/unTrendingHaresJsonPre/{hare_type}/{day_count}/{min_hash_count}/{max_percentage}/{row_limit}',                       'HASH\Controller\ObscureStatisticsController::unTrendingHaresJsonPreAction');
 $app->get('/{kennel_abbreviation}/unTrendingHaresJsonPost/{hare_type}/{day_count}/{min_hash_count}/{max_percentage}/{row_limit}',                       'HASH\Controller\ObscureStatisticsController::unTrendingHaresJsonPostAction');
 
-
-
 $app->get('/{kennel_abbreviation}/pendingHasherAnalversaries',                          'HASH\Controller\HashController::pendingHasherAnalversariesAction');
 $app->get('/{kennel_abbreviation}/predictedHasherAnalversaries',                        'HASH\Controller\HashController::predictedHasherAnalversariesAction');
 $app->get('/{kennel_abbreviation}/predictedCenturions',                                 'HASH\Controller\HashController::predictedCenturionsAction');
@@ -375,34 +445,6 @@ $app->get('/{kennel_abbreviation}/hasherNameAnalysis',            'HASH\Controll
 $app->get('/{kennel_abbreviation}/hasherNameAnalysis2',            'HASH\Controller\ObscureStatisticsController::hasherNameAnalysisAction2');
 $app->get('/{kennel_abbreviation}/hasherNameAnalysisWordCloud',            'HASH\Controller\ObscureStatisticsController::hasherNameAnalysisWordCloudAction');
 
-# Hash event creation (ajaxified)
-$app->get('/admin/{kennel_abbreviation}/newhash/ajaxform', 'HASH\Controller\HashEventController::adminCreateHashAjaxPreAction');
-$app->post('/admin/{kennel_abbreviation}/newhash/ajaxform', 'HASH\Controller\HashEventController::adminCreateHashAjaxPostAction');
-
-# Hash event modification (ajaxified)
-$app->get('/admin/edithash/ajaxform/{hash_id}', 'HASH\Controller\HashEventController::adminModifyHashAjaxPreAction');
-$app->post('/admin/edithash/ajaxform/{hash_id}', 'HASH\Controller\HashEventController::adminModifyHashAjaxPostAction');
-
-# Hash person modification
-$app->get('/admin/modifyhasher/form/{hasher_id}',                 'HASH\Controller\HashPersonController::modifyHashPersonAction');
-$app->post('/admin/modifyhasher/form/{hasher_id}',                'HASH\Controller\HashPersonController::modifyHashPersonAction');
-
-# Hash person deletion
-$app->get('/admin/deleteHasher/{hasher_id}',                      'HASH\Controller\HashPersonController::deleteHashPersonPreAction');
-$app->post('/admin/deleteHasherPost',                      'HASH\Controller\HashPersonController::deleteHashPersonAjaxAction');
-
-# Hash person creation
-$app->get('/admin/newhasher/form',                                'HASH\Controller\HashPersonController::createHashPersonAction');
-$app->post('/admin/newhasher/form',                               'HASH\Controller\HashPersonController::createHashPersonAction');
-
-# Change admin password
-#XXXXXXX
-$app->get('/admin/newPassword/form',                                'HASH\Controller\AdminController::newPasswordAction');
-$app->post('/admin/newPassword/form',                               'HASH\Controller\AdminController::newPasswordAction');
-
-# View audit records
-$app->get('/admin/viewAuditRecords',                                  'HASH\Controller\AdminController::viewAuditRecordsPreActionJson');
-$app->post('/admin/viewAuditRecords',                                 'HASH\Controller\AdminController::viewAuditRecordsJson');
 
 
 # View the jumbo counts table
@@ -413,56 +455,11 @@ $app->post('/{kennel_abbreviation}/jumboCountsTable',                'HASH\Contr
 $app->get('/{kennel_abbreviation}/jumboPercentagesTable',                 'HASH\Controller\HashController::jumboPercentagesTablePreActionJson');
 $app->post('/{kennel_abbreviation}/jumboPercentagesTable',                'HASH\Controller\HashController::jumboPercentagesTablePostActionJson');
 
-# Modify the participation for an event
-$app->get('/admin/event/manageparticipation2/{hash_id}',            'HASH\Controller\HashEventController::hashParticipationJsonPreAction');
-$app->post('/admin/event/manageparticipation2/{hash_id}',           'HASH\Controller\HashEventController::hashParticipationJsonPostAction');
-
-# Page to manage the event tags
-$app->get('/admin/tags/manageeventtags',                            'HASH\Controller\TagController::manageEventTagsPreAction');
-$app->get('/admin/tags/geteventtagswithcounts',                     'HASH\Controller\TagController::getEventTagsWithCountsJsonAction');
-$app->get('/admin/tags/getalleventtags',                            'HASH\Controller\TagController::getAllEventTagsJsonAction');
-$app->get('/admin/tags/getmatchingeventtags',                       'HASH\Controller\TagController::getMatchingEventTagsJsonAction');
-#$app->post('/admin/tags/manageeventtags',                           'HASH\Controller\TagController::manageEventTagsJsonPostAction');
-$app->post('/admin/tags/addneweventtag',                            'HASH\Controller\TagController::addNewEventTag');
-
-# Add or remove tags to events
-$app->post('/admin/tags/addtagtoevent',                             'HASH\Controller\TagController::addTagToEventJsonAction');
-$app->post('/admin/tags/removetagfromevent',                        'HASH\Controller\TagController::removeTagFromEventJsonAction');
-$app->get('/admin/tags/eventscreen/{hash_id}',                      'HASH\Controller\TagController::showEventForTaggingPreAction');
 
 #Show events by event tag
 $app->get('/{kennel_abbreviation}/listhashes/byeventtag/{event_tag_ky}', 'HASH\Controller\TagController::listHashesByEventTagAction');
 $app->get('/{kennel_abbreviation}/chartsGraphs/byeventtag/{event_tag_ky}', 'HASH\Controller\TagController::chartsGraphsByEventTagAction');
 
-
-# Functions to add and delete hounds and hares to the hashes
-$app->post('/admin/event/addHasherToHash',                         'HASH\Controller\HashEventController::addHashParticipant');
-$app->post('/admin/event/addHareToHash',                           'HASH\Controller\HashEventController::addHashOrganizer');
-$app->post('/admin/event/deleteHasherFromHash',                    'HASH\Controller\HashEventController::deleteHashParticipant');
-$app->post('/admin/event/deleteHareFromHash',                      'HASH\Controller\HashEventController::deleteHashOrganizer');
-
-$app->post('/admin/event/getHaresForEvent',                        'HASH\Controller\HashEventController::getHaresForEvent');
-$app->post('/admin/event/getHashersForEvent',                      'HASH\Controller\HashEventController::getHashersForEvent');
-
-$app->get('/admin/listOrphanedHashers',                             'HASH\Controller\AdminController::listOrphanedHashersAction');
-
-$app->get('/admin/roster',                                          'HASH\Controller\AdminController::roster');
-$app->get('/admin/{kennel_abbreviation}/roster',                    'HASH\Controller\AdminController::roster');
-$app->get('/admin/awards/{type}',                                   'HASH\Controller\AdminController::awards');
-$app->get('/admin/{kennel_abbreviation}/awards/{type}',             'HASH\Controller\AdminController::awards');
-$app->post('/admin/updateHasherAward',                              'HASH\Controller\AdminController::updateHasherAwardAjaxAction');
-
-$app->get('/admin/listhashes2',                                    'HASH\Controller\AdminController::listHashesPreActionJson');
-$app->get('/admin/{kennel_abbreviation}/listhashes2',              'HASH\Controller\AdminController::listHashesPreActionJson');
-$app->post('/admin/{kennel_abbreviation}/listhashes2',             'HASH\Controller\AdminController::getHashListJson');
-
-$app->get('/admin/listhashers2',                                    'HASH\Controller\AdminController::listHashersPreActionJson');
-$app->post('/admin/listhashers2',                                   'HASH\Controller\AdminController::getHashersListJson');
-
-$app->get('/admin/hasherDetailsKennelSelection/{hasher_id}',        'HASH\Controller\AdminController::hasherDetailsKennelSelection');
-
-#The per event budget screen
-$app->get('/admin/eventBudget/{hash_id}','HASH\Controller\AdminController::eventBudgetPreAction');
 
 # Functions for the "by year" statistics
 $app->get('/{kennel_abbreviation}/statistics/getYearInReview/{year_value}',               'HASH\Controller\ObscureStatisticsController::getYearInReviewAction');
@@ -555,6 +552,9 @@ $app->get('/{kennel_abbreviation}/hares/{hare_type}/of/the/years','HASH\Controll
 $app->get('/{kennel_abbreviation}/hashers/twoHasherComparison',            'HASH\Controller\HashController::twoPersonComparisonPreAction');
 $app->get('/{kennel_abbreviation}/hashers/comparison/{hasher_id}/{hasher_id2}/',     'HASH\Controller\HashController::twoPersonComparisonAction');
 $app->post('/{kennel_abbreviation}/hashers/retrieve',                         'HASH\Controller\HashPersonController::retrieveHasherAction');
+
+# kennel home page
+$app->get('/{kennel_abbreviation}',                               'HASH\Controller\HashController::slashKennelAction2');
 
 #Do magic on the json traffic
 $app->before(function (Request $request, Application $app) {

@@ -16,7 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
 
 
-class HashPersonController
+class HashPersonController extends BaseController
 {
 
 

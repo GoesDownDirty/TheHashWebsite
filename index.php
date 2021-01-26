@@ -192,6 +192,7 @@ $app['controllers']
   ->assert("kennel_ky","\d+")
   ->assert("kennel_abbreviation","^[A-Za-z0-9]+$")
   ->assert("name","^[a-z_]+$")
+  ->assert("ridiculous","^ridiculous\d+$")
   ;
 #-------------------------------------------------------------------------------
 
@@ -244,10 +245,15 @@ $app->get('/superadmin/{user_id}/edituser/ajaxform',                'HASH\Contro
 $app->post('/superadmin/{user_id}/edituser/ajaxform',               'HASH\Controller\SuperAdminController::modifyUserAjaxPostAction');
 $app->get('/superadmin/{name}/editsiteconfig/ajaxform',             'HASH\Controller\SuperAdminController::modifySiteConfigAjaxPreAction');
 $app->post('/superadmin/{name}/editsiteconfig/ajaxform',            'HASH\Controller\SuperAdminController::modifySiteConfigAjaxPostAction');
+$app->get('/superadmin/{ridiculous}/editridiculous/ajaxform',       'HASH\Controller\SuperAdminController::modifyRidiculousAjaxPreAction');
+$app->post('/superadmin/{ridiculous}/editridiculous/ajaxform',      'HASH\Controller\SuperAdminController::modifyRidiculousAjaxPostAction');
+$app->get('/superadmin/{ridiculous}/deleteridiculous',              'HASH\Controller\SuperAdminController::deleteRidiculous');
 $app->get('/superadmin/{user_id}/deleteuser',                       'HASH\Controller\SuperAdminController::deleteUser');
 $app->get('/superadmin/{kennel_ky}/deletekennel',                   'HASH\Controller\SuperAdminController::deleteKennel');
 $app->get('/superadmin/{hash_type}/deletehashtype',                 'HASH\Controller\SuperAdminController::deleteHashType');
 $app->get('/superadmin/{hare_type}/deleteharetype',                 'HASH\Controller\SuperAdminController::deleteHareType');
+$app->get('/superadmin/newridiculous/ajaxform',                     'HASH\Controller\SuperAdminController::newRidiculousAjaxPreAction');
+$app->post('/superadmin/newridiculous/ajaxform',                    'HASH\Controller\SuperAdminController::newRidiculousAjaxPostAction');
 $app->get('/superadmin/newuser/ajaxform',                           'HASH\Controller\SuperAdminController::newUserAjaxPreAction');
 $app->post('/superadmin/newuser/ajaxform',                          'HASH\Controller\SuperAdminController::newUserAjaxPostAction');
 $app->get('/superadmin/newkennel/ajaxform',                         'HASH\Controller\SuperAdminController::newKennelAjaxPreAction');

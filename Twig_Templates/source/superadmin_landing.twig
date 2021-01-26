@@ -10,6 +10,10 @@ function doDelete(id, description, urlSuffix) {
   }
 }
 
+function deleteRidiculous(id) {
+  doDelete(id, "ridiculous stat", "ridiculous");
+}
+
 function deleteUser(id) {
   doDelete(id, "user", "user");
 }
@@ -196,6 +200,31 @@ function deleteHareType(id) {
                   <div class="col-xs-4 col-md-2 hidden-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.VALUE}}&nbsp;</div>
                   <div class="col-xs-4 col-md-1 hidden-xs"    style="background-color:{{bgcolor}};">
                     <a href="/superadmin/{{item.NAME}}/editsiteconfig/ajaxform">Modify</a>
+                  </div>
+                </div>
+              {% endfor %}
+          </div></div>
+        </div>
+
+        <div class="row marketing">
+          <div class="col-lg-12"><div style="padding:2">
+            <h4>Ridiculous Stats (<a href="/superadmin/newridiculous/ajaxform">Create New Ridiculous Stat</a>)</h4>
+
+              {% set headerColor = "#d3d3d3" %}
+              <div class="row" >
+                <div class="col-xs-4 col-md-4 hidden-xs"  style="background-color:{{headerColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Value</div>
+                <div class="col-xs-4 col-md-1 hidden-xs"  style="background-color:{{headerColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Actions</div>
+              </div>
+
+              {% for item in ridiculous %}
+                <div class="row">
+                  <div class="col-xs-4 col-md-4 hidden-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{item.VALUE}}&nbsp;</div>
+                  <div class="col-xs-4 col-md-1 hidden-xs"    style="background-color:{{bgcolor}};">
+                    <a href="/superadmin/{{item.NAME}}/editridiculous/ajaxform">Modify</a>
+                    |
+                    <a href="javascript:deleteRidiculous('{{item.NAME}}')">
+                    Delete
+                    </a>
                   </div>
                 </div>
               {% endfor %}

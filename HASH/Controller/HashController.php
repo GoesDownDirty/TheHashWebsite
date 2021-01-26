@@ -3641,28 +3641,8 @@ public function cautionaryStatsAction(Request $request, Application $app, string
   $hareKeys = $app['db']->fetchAll($hareKeysSQL,array( (int) $kennelKy));
 
   #Establish an array of ridiculous statistics
-  $arrayOfRidiculousness = array(
-    "Hashes where VD was contracted",
-    "Hashes where someone got pregnant",
-    "Hashes where someone coveted their neighbor's wife",
-    "Hashes where hashers were mocked for their Kentucky heritage",
-    "Hashes where hashers were mocked for their Michigan heritage",
-    "Hashes where people did it on trail",
-    "Hashes where a hasher was arrested",
-    "Hashes where the police showed up",
-    "Hashes where the streams were crossed",
-    "Hashes where no harriettes showed up",
-    "Hashes that could have used better beer",
-    "Hashes that could have used a better trail",
-    "Hashes that could have used better hares",
-    "Hashes that caused somebody to move away",
-    "Hashes where someone shat on trail",
-    "Hashes where someone shat themselves",
-    "Hashes where someone called the police on us",
-    "Hashes that brought great shame to everyone involved",
-    "Hashes where dogs did it on trail"
-
-  );
+  $sql = "SELECT VALUE FROM SITE_CONFIG WHERE NAME LIKE 'ridiculous%'";
+  $arrayOfRidiculousness = $app['db']->fetchAll($sql,array());
 
   #Establish the keys of the random values to display
   $randomKeysForRidiculousStats = array_rand($arrayOfRidiculousness, 5);

@@ -51,6 +51,8 @@ class SuperAdminController extends BaseController {
 
       $siteConfig = $app['db']->fetchAll("SELECT NAME, VALUE FROM SITE_CONFIG WHERE DESCRIPTION IS NOT NULL ORDER BY NAME");
 
+      $ridiculous = $app['db']->fetchAll("SELECT NAME, VALUE FROM SITE_CONFIG WHERE NAME LIKE 'ridiculous%' ORDER BY NAME");
+
       #return $app->redirect('/');
       return $this->render($app, 'superadmin_landing.twig', array (
         'pageTitle' => 'This is the super admin landing screen',
@@ -59,7 +61,8 @@ class SuperAdminController extends BaseController {
         'kennel_list' => $kennelList,
         'hare_types' => $hareTypes,
         'hash_types' => $hashTypes,
-        'site_config' => $siteConfig));
+        'site_config' => $siteConfig,
+        'ridiculous' => $ridiculous));
   }
 
   #Define the action
@@ -789,6 +792,118 @@ class SuperAdminController extends BaseController {
   }
 
   #Define action
+  public function modifyRidiculousAjaxPreAction(Request $request, Application $app, string $ridiculous) {
+
+    # Declare the SQL used to retrieve this information
+    $sql = "SELECT NAME, VALUE FROM SITE_CONFIG WHERE NAME = ?";
+
+    # Make a database call to obtain the hasher information
+    $item = $app['db']->fetchAssoc($sql, array($ridiculous));
+
+    $returnValue = $this->render($app, 'edit_ridiculous_form_ajax.twig', array(
+      'pageTitle' => 'Edit Ridiculous Stat',
+      'item' => $item
+    ));
+
+    #Return the return value
+    return $returnValue;
+  }
+
+  public function modifyRidiculousAjaxPostAction(Request $request, Application $app, string $ridiculous) {
+
+    $theValue = trim($request->request->get('value'));
+
+    // Establish a "passed validation" variable
+    $passedValidation = TRUE;
+
+    // Establish the return message value as empty (at first)
+    $returnMessage = "";
+
+    if(substr($ridiculous, 0, strlen("ridiculous")) != "ridiculous") {
+      $passedValidation = FALSE;
+      $returnMessage .= " |Failed validation on key name";
+    }
+
+    if($passedValidation) {
+
+      $sql = "
+        UPDATE SITE_CONFIG
+           SET VALUE = ?
+         WHERE NAME = ?
+           AND DESCRIPTION IS NULL";
+
+      $app['dbs']['mysql_write']->executeUpdate($sql,array(
+        $theValue,
+        $ridiculous));
+
+      #Audit this activity
+      $actionType = "SITE CONFIG Modification (Ajax)";
+      $actionDescription = "Modified site config $name";
+      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+
+      // Establish the return value message
+      $returnMessage = "Success! Great, it worked";
+    }
+
+    #Set the return value
+    $returnValue =  $app->json($returnMessage, 200);
+    return $returnValue;
+  }
+
+  #Define action
+  public function newRidiculousAjaxPreAction(Request $request, Application $app) {
+
+    $item['NAME']='new';
+    $item['VALUE']="";
+
+    $returnValue = $this->render($app, 'edit_ridiculous_form_ajax.twig', array(
+      'pageTitle' => 'Create New Ridiculous Stat',
+      'item' => $item
+    ));
+
+    #Return the return value
+    return $returnValue;
+  }
+
+  public function newRidiculousAjaxPostAction(Request $request, Application $app) {
+
+    $theValue = trim($request->request->get('value'));
+
+    // Establish a "passed validation" variable
+    $passedValidation = TRUE;
+
+    // Establish the return message value as empty (at first)
+    $returnMessage = "";
+
+    if($passedValidation) {
+
+      $sql = "INSERT INTO SITE_CONFIG(NAME, VALUE) VALUES(?, ?)";
+
+      for($i=0; $i<999; $i++) {
+        try {
+          $name = "ridiculous".$i;
+          $app['dbs']['mysql_write']->executeUpdate($sql,array($name, $theValue));
+        } catch(\Exception $e) {
+          continue;
+        }
+        break;
+      }
+
+      #Audit this activity
+      $actionType = "SITE CONFIG Modification (Ajax)";
+      $actionDescription = "New site config $name";
+      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+
+      // Establish the return value message
+      $returnMessage = "Success! Great, it worked";
+    }
+
+    #Set the return value
+    $returnValue =  $app->json($returnMessage, 200);
+    return $returnValue;
+  }
+
+  #Define action
   public function newUserAjaxPreAction(Request $request, Application $app) {
 
     $userValue['username']='';
@@ -862,6 +977,22 @@ class SuperAdminController extends BaseController {
     return $returnValue;
   }
 
+  public function deleteRidiculous(Request $request, Application $app, string $ridiculous) {
+    if(substr($ridiculous, 0, strlen("ridiculous")) == "ridiculous") {
+
+      $sql = "DELETE FROM SITE_CONFIG WHERE NAME = ?";
+      $app['dbs']['mysql_write']->executeUpdate($sql,array($ridiculous));
+
+      $actionType = "Site Config Deletion (Ajax)";
+      $actionDescription = "Deleted site config key $ridiculous";
+
+      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+    }
+
+    header("Location: /superadmin/hello");
+    return $app->json("", 302);
+  }
+
   public function deleteUser(Request $request, Application $app, int $user_id) {
     if($user_id != $app['user'].username) {
 
@@ -875,10 +1006,10 @@ class SuperAdminController extends BaseController {
       $actionDescription = "Deleted user $username";
 
       AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
-
-      header("Location: /superadmin/hello");
-      return $app->json("", 302);
     }
+
+    header("Location: /superadmin/hello");
+    return $app->json("", 302);
   }
 
   public function deleteKennel(Request $request, Application $app, int $kennel_ky) {

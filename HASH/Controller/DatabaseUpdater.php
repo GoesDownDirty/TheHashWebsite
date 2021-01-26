@@ -14,7 +14,7 @@ class DatabaseUpdater {
 
     $databaseVersion = $this->getDatabaseVersion();
 
-    if($databaseVersion != 16) {
+    if($databaseVersion != 17) {
 
       $has_semaphones = true;
 
@@ -97,6 +97,9 @@ class DatabaseUpdater {
             case 15:
               $this->moveHasLegacyHashCountsToSiteConfig();
               $this->setDatabaseVersion(16);
+            case 16:
+              $this->loadRidiculousStatistics();
+              $this->setDatabaseVersion(17);
             default:
               // Overkill, but guarantees the view is up to date with the
               // current database structure.
@@ -127,7 +130,39 @@ class DatabaseUpdater {
   }
 
   private function insertIntoSiteConfig(string $name, string $value, string $description) {
-    $this->app['dbs']['mysql_write']->executeStatement("INSERT INTO SITE_CONFIG(NAME, VALUE, DESCRIPTION) VALUES(?, ?, ?)", array($name, $value, $description));
+    if ($description == "") {
+      $this->app['dbs']['mysql_write']->executeStatement("INSERT INTO SITE_CONFIG(NAME, VALUE) VALUES(?, ?)", array($name, $value));
+    } else {
+      $this->app['dbs']['mysql_write']->executeStatement("INSERT INTO SITE_CONFIG(NAME, VALUE, DESCRIPTION) VALUES(?, ?, ?)", array($name, $value, $description));
+    }
+  }
+
+  private function loadRidiculousStatistics() {
+    $stats = array(
+      "Hashes where VD was contracted",
+      "Hashes where someone got pregnant",
+      "Hashes where someone coveted their neighbor's wife",
+      "Hashes where hashers were mocked for their Kentucky heritage",
+      "Hashes where hashers were mocked for their Michigan heritage",
+      "Hashes where people did it on trail",
+      "Hashes where a hasher was arrested",
+      "Hashes where the police showed up",
+      "Hashes where the streams were crossed",
+      "Hashes where no harriettes showed up",
+      "Hashes that could have used better beer",
+      "Hashes that could have used a better trail",
+      "Hashes that could have used better hares",
+      "Hashes that caused somebody to move away",
+      "Hashes where someone shat on trail",
+      "Hashes where someone shat themselves",
+      "Hashes where someone called the police on us",
+      "Hashes that brought great shame to everyone involved",
+      "Hashes where dogs did it on trail");
+
+    for($i=0; $i<count($stats); $i++) {
+      $name="ridiculous".$i;
+      $this->insertIntoSiteConfig($name, $stats[$i], "");
+    }
   }
 
   private function alterSiteConfigNameColumn() {

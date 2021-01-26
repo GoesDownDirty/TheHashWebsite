@@ -143,13 +143,6 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
             'users' => function () use ($app) {return new UserProvider($app['db']);},
             'logout' => array('logout_path' => '/admin/logoutaction', 'invalidate_session' => true),
         ),
-        #'secured' => array(
-        #    'pattern' => '^/superadmin|/admin',
-        #    'form' => array('login_path' => '/logonscreen', 'check_path' => '/admin/login_check'),
-        #    'logout' => array('logout_path' => '/logoutaction'),
-        #    'users' => function () use ($app) {return new UserProvider($app['db']);},
-        #    'logout' => array('logout_path' => '/admin/logoutaction', 'invalidate_session' => true),
-        #),
         'unsecured' => array(
           'pattern' => '^.*$',
         )
@@ -578,12 +571,5 @@ $app->after(function (Request $request, Response $response) {
    $response->headers->set('X-XSS-Protection','1; mode=block');
    $response->headers->set('x-frame-options','SAMEORIGIN');
 });
-
-
-/*$app['security.access_rules'] = array(
-    array('^/superadmin',   'ROLE_SUPERADMIN',),
-    array('^/admin',        'ROLE_ADMIN',),
-);
-*/
 
 $app->run();

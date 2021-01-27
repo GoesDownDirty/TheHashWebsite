@@ -337,7 +337,7 @@ class SuperAdminController extends BaseController {
 
       #Audit this activity
       $actionType = "Kennel Modification (Ajax)";
-      $actionDescription = "Modified kennel $kennel_abbreviation";
+      $actionDescription = "Modified kennel $theKennelAbbreviation";
       $this->auditTheThings($request, $actionType, $actionDescription);
 
       // Establish the return value message
@@ -423,7 +423,7 @@ class SuperAdminController extends BaseController {
         FROM HARE_TYPES";
 
     # Make a database call to obtain the hasher information
-    $hareTypeValue = $this->app['db']->fetchAssoc($sql, array($hare_type));
+    $hareTypeValue = $this->app['db']->fetchAssoc($sql, array());
 
     $returnValue = $this->render('edit_hare_type_form_ajax.twig', array(
       'pageTitle' => 'Create a Hare Type!',
@@ -570,7 +570,7 @@ class SuperAdminController extends BaseController {
         FROM HASH_TYPES";
 
     # Make a database call to obtain the hasher information
-    $hashTypeValue = $this->app['db']->fetchAssoc($sql, array($hash_type));
+    $hashTypeValue = $this->app['db']->fetchAssoc($sql, array());
 
     $hareTypes = $this->app['db']->fetchAll("
       SELECT *, false AS SELECTED
@@ -842,7 +842,7 @@ class SuperAdminController extends BaseController {
 
       #Audit this activity
       $actionType = "SITE CONFIG Modification (Ajax)";
-      $actionDescription = "Modified site config $name";
+      $actionDescription = "Modified site config $ridiculous";
       $this->auditTheThings($request, $actionType, $actionDescription);
 
       // Establish the return value message

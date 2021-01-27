@@ -1084,15 +1084,37 @@ class SuperAdminController extends BaseController {
 
     foreach($reports as &$report) {
       $messages = [];
+
       $sql = "SELECT EVENT_DATE FROM HASHES_TABLE WHERE KENNEL_KY = ? GROUP BY EVENT_DATE HAVING COUNT(*) > 1 ORDER BY EVENT_DATE";
-      $event_dates = $this->app['db']->fetchAll($sql, array($report['KENNEL_KY']));
-      foreach($event_dates as &$event_date) {
+      $dup_items = $this->app['db']->fetchAll($sql, array($report['KENNEL_KY']));
+      foreach($dup_items as &$dup_item) {
         $sql = "SELECT KENNEL_EVENT_NUMBER, SPECIAL_EVENT_DESCRIPTION AS EVENT_NAME FROM HASHES_TABLE WHERE KENNEL_KY = ? AND EVENT_DATE = ? ORDER BY KENNEL_EVENT_NUMBER";
-        $results = $this->app['db']->fetchAll($sql, array($report['KENNEL_KY'], $event_date['EVENT_DATE']));
+        $results = $this->app['db']->fetchAll($sql, array($report['KENNEL_KY'], $dup_item['EVENT_DATE']));
         foreach($results as $result) {
-          array_push($messages, 'Event number '.$result['KENNEL_EVENT_NUMBER'].' ('.$result['EVENT_NAME'].') has duplicate event date: '.$event_date['EVENT_DATE'].'.');
+          array_push($messages, 'Event number '.$result['KENNEL_EVENT_NUMBER'].' ('.$result['EVENT_NAME'].') has duplicate event date: '.$dup_item['EVENT_DATE'].'.');
         }
       }
+
+      $sql = "SELECT KENNEL_EVENT_NUMBER FROM HASHES_TABLE WHERE KENNEL_KY = ? GROUP BY KENNEL_EVENT_NUMBER HAVING COUNT(*) > 1 ORDER BY KENNEL_EVENT_NUMBER";
+      $dup_items = $this->app['db']->fetchAll($sql, array($report['KENNEL_KY']));
+      foreach($dup_items as &$dup_item) {
+        $sql = "SELECT KENNEL_EVENT_NUMBER, SPECIAL_EVENT_DESCRIPTION AS EVENT_NAME FROM HASHES_TABLE WHERE KENNEL_KY = ? AND KENNEL_EVENT_NUMBER = ? ORDER BY KENNEL_EVENT_NUMBER";
+        $results = $this->app['db']->fetchAll($sql, array($report['KENNEL_KY'], $dup_item['KENNEL_EVENT_NUMBER']));
+        foreach($results as $result) {
+          array_push($messages, 'Event number '.$result['KENNEL_EVENT_NUMBER'].' ('.$result['EVENT_NAME'].') has duplicate event number: '.$dup_item['KENNEL_EVENT_NUMBER'].'.');
+        }
+      }
+
+      $sql = "SELECT SPECIAL_EVENT_DESCRIPTION FROM HASHES_TABLE WHERE KENNEL_KY = ? GROUP BY SPECIAL_EVENT_DESCRIPTION HAVING COUNT(*) > 1 ORDER BY SPECIAL_EVENT_DESCRIPTION";
+      $dup_items = $this->app['db']->fetchAll($sql, array($report['KENNEL_KY']));
+      foreach($dup_items as &$dup_item) {
+        $sql = "SELECT KENNEL_EVENT_NUMBER, SPECIAL_EVENT_DESCRIPTION AS EVENT_NAME FROM HASHES_TABLE WHERE KENNEL_KY = ? AND SPECIAL_EVENT_DESCRIPTION = ? ORDER BY KENNEL_EVENT_NUMBER";
+        $results = $this->app['db']->fetchAll($sql, array($report['KENNEL_KY'], $dup_item['SPECIAL_EVENT_DESCRIPTION']));
+        foreach($results as $result) {
+          array_push($messages, 'Event number '.$result['KENNEL_EVENT_NUMBER'].' ('.$result['EVENT_NAME'].') has duplicate event name: '.$dup_item['SPECIAL_EVENT_DESCRIPTION'].'.');
+        }
+      }
+
       $report['MESSAGES'] = $messages;
     }
 

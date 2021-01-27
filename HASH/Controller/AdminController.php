@@ -20,32 +20,33 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
 class AdminController extends BaseController
 {
+  public function __construct(Application $app) {
+    parent::__construct($app);
+  }
 
-  public function logoutAction(Request $request, Application $app){
+  public function logoutAction(Request $request){
 
     # Invalidate the session
-    $app['session']->invalidate();
+    $this->app['session']->invalidate();
 
     # Redirect the user to the root url
-    return $app->redirect('/');
+    return $this->app->redirect('/');
 
   }
 
   #Define the action
-  public function helloAction(Request $request, Application $app){
+  public function helloAction(Request $request){
 
-      #return $app->redirect('/');
-      return $this->render($app, 'admin_landing.twig', array (
+      return $this->render('admin_landing.twig', array (
         'pageTitle' => 'This is the admin landing screen',
         'subTitle1' => 'This is the admin landing screen',
     ));
   }
 
   #Define the action
-  public function adminHelloAction(Request $request, Application $app){
+  public function adminHelloAction(Request $request){
 
-      #return $app->redirect('/');
-      return $this->render($app, 'admin_landing.twig', array (
+      return $this->render('admin_landing.twig', array (
         'pageTitle' => 'Site Administration',
         'subTitle1' => 'This is the admin hello landing screen (sub title 1)',
       ));
@@ -53,16 +54,15 @@ class AdminController extends BaseController
 
 
   #Define the action
-  public function userHelloAction(Request $request, Application $app){
+  public function userHelloAction(Request $request){
 
-      #return $app->redirect('/');
-      return $this->render($app, 'admin_landing.twig', array (
+      return $this->render('admin_landing.twig', array (
         'pageTitle' => 'This is the user hello landing screen (page title)',
         'subTitle1' => 'This is the user hello landing screen (sub title 1)',
       ));
   }
 
-    public function listOrphanedHashersAction(Request $request, Application $app){
+    public function listOrphanedHashersAction(Request $request){
 
       #Define the SQL to execute
       $sql = "SELECT *
@@ -73,15 +73,15 @@ class AdminController extends BaseController
                   AND
                   HASHERS.HASHER_KY NOT IN (SELECT HARINGS_HASHER_KY FROM HARINGS)";
 
-      if($this->hasLegacyHashCounts($app)) {
+      if($this->hasLegacyHashCounts()) {
         $sql .= " AND HASHERS.HASHER_KY NOT IN (SELECT HASHER_KY FROM LEGACY_HASHINGS)";
       }
 
       #Execute the SQL statement; create an array of rows
-      $theList = $app['db']->fetchAll($sql);
+      $theList = $this->app['db']->fetchAll($sql);
 
       # Establish and set the return value
-      $returnValue = $this->render($app, 'admin_orphaned_hashers.twig',array(
+      $returnValue = $this->render('admin_orphaned_hashers.twig',array(
         'pageTitle' => 'The List of Orphaned Hashers',
         'pageSubTitle' => 'Hashers who have never hashed or hared',
         'theList' => $theList,
@@ -95,7 +95,7 @@ class AdminController extends BaseController
     }
 
   #Define the action
-  public function eventBudgetPreAction(Request $request, Application $app, int $hash_id){
+  public function eventBudgetPreAction(Request $request, int $hash_id){
 
     #Obtain the hash event information
 
@@ -106,16 +106,16 @@ class AdminController extends BaseController
 
     #Obtain the number of hounds
     $houndCountSQL = HOUND_COUNT_BY_HASH_KEY;
-    $theHoundCountValue = $app['db']->fetchAssoc($houndCountSQL, array((int) $hash_id));
+    $theHoundCountValue = $this->app['db']->fetchAssoc($houndCountSQL, array((int) $hash_id));
     $theHoundCount = $theHoundCountValue['THE_COUNT'];
 
     #Obtain the number of hares
     $hareCountSQL = HARE_COUNT_BY_HASH_KEY;
-    $theHareCountValue = $app['db']->fetchAssoc($hareCountSQL, array((int) $hash_id));
+    $theHareCountValue = $this->app['db']->fetchAssoc($hareCountSQL, array((int) $hash_id));
     $theHareCount = $theHareCountValue['THE_COUNT'];
 
     # Establish and set the return value
-    $returnValue = $this->render($app, 'event_budget.twig',array(
+    $returnValue = $this->render('event_budget.twig',array(
       'pageTitle' => 'Event Budget',
       'pageSubTitle' => 'Online Calculator',
       'pageCaption' => 'Event Budget Test Page Caption',
@@ -141,10 +141,10 @@ class AdminController extends BaseController
   }
 
 
-  public function newPasswordAction(Request $request, Application $app){
+  public function newPasswordAction(Request $request){
 
 
-    $formFactoryThing = $app['form.factory']->createBuilder(FormType::class, $data)
+    $formFactoryThing = $this->app['form.factory']->createBuilder(FormType::class, $data)
 
       ->add('Current_Password', TextType::class, array('constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 3)))))
       ->add('New_Password_Initial', TextType::class, array('constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 8)))))
@@ -171,13 +171,13 @@ class AdminController extends BaseController
           $tempNewPasswordConfirmation = $data['New_Password_Confirmation'];
 
           #Establish the userid value
-          $token = $app['security.token_storage']->getToken();
+          $token = $this->app['security.token_storage']->getToken();
           if (null !== $token) {
             $userid = $token->getUser();
           }
 
           // find the encoder for a UserInterface instance
-          $encoder = $app['security.encoder_factory']->getEncoder($userid);
+          $encoder = $this->app['security.encoder_factory']->getEncoder($userid);
 
           // compute the encoded password for the new password
           $encodedNewPassword = $encoder->encodePassword($tempNewPasswordInitial, $userid->getSalt());
@@ -192,7 +192,7 @@ class AdminController extends BaseController
           $sql = "SELECT * FROM USERS WHERE USERNAME = ? AND PASSWORD = ?";
 
           # Make a database call to obtain the hasher information
-          $retrievedUserValue = $app['db']->fetchAssoc($sql, array((string) $userid, (string) $encodedCurrentPassword));
+          $retrievedUserValue = $this->app['db']->fetchAssoc($sql, array((string) $userid, (string) $encodedCurrentPassword));
           $sizeOfRetrievedUserValueArray = sizeof($retrievedUserValue);
 
 
@@ -202,7 +202,7 @@ class AdminController extends BaseController
           if($sizeOfRetrievedUserValueArray > 1){
             $validCurrentPassword = TRUE;
           }else{
-            $app['session']->getFlashBag()->add('danger', 'Wrong! You screwed up your current password.');
+            $this->app['session']->getFlashBag()->add('danger', 'Wrong! You screwed up your current password.');
             $foundValidationError=TRUE;
           }
 
@@ -211,7 +211,7 @@ class AdminController extends BaseController
           if($tempNewPasswordInitial == $tempNewPasswordConfirmation){
             $validNewPasswordsMatch = TRUE;
           }else{
-            $app['session']->getFlashBag()->add('danger', 'Wrong! The new passwords do not match.');
+            $this->app['session']->getFlashBag()->add('danger', 'Wrong! The new passwords do not match.');
             $foundValidationError=TRUE;
           }
 
@@ -221,7 +221,7 @@ class AdminController extends BaseController
           if (preg_match_all('$\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])(?=\S*[\W])\S*$', $tempNewPasswordInitial)){
             $validPasswordComplexity = TRUE;
           }else{
-            $app['session']->getFlashBag()->add('danger', 'Wrong! Your proposed password is too simple. It must be 8 characters long, contain a lower case letter, an upper case letter, a digit, and a special character!');
+            $this->app['session']->getFlashBag()->add('danger', 'Wrong! Your proposed password is too simple. It must be 8 characters long, contain a lower case letter, an upper case letter, a digit, and a special character!');
             $foundValidationError=TRUE;
           }
 
@@ -230,30 +230,30 @@ class AdminController extends BaseController
             $updateSql = "UPDATE USERS SET PASSWORD = ? WHERE USERNAME = ?";
 
             #Run the update SQL
-            $app['dbs']['mysql_write']->executeUpdate($updateSql,array($encodedNewPassword,$userid));
+            $this->app['dbs']['mysql_write']->executeUpdate($updateSql,array($encodedNewPassword,$userid));
 
             #Audit this activity
             $actionType = "Password Change";
             $actionDescription = "Changed their password";
-            $this->auditTheThings($request, $app, $actionType, $actionDescription);
+            $this->auditTheThings($request, $actionType, $actionDescription);
 
             #Show the confirmation message
-            $app['session']->getFlashBag()->add('success', 'Success! You updated your password. Probably.');
+            $this->app['session']->getFlashBag()->add('success', 'Success! You updated your password. Probably.');
           }
 
       } else{
-        $app['session']->getFlashBag()->add('danger', 'Wrong! You screwed up.');
+        $this->app['session']->getFlashBag()->add('danger', 'Wrong! You screwed up.');
       }
 
     }
 
     #Establish the userid value
-    $token = $app['security.token_storage']->getToken();
+    $token = $this->app['security.token_storage']->getToken();
     if (null !== $token) {
       $userid = $token->getUser();
     }
 
-    $returnValue = $this->render($app, 'admin_change_password_form.twig', array (
+    $returnValue = $this->render('admin_change_password_form.twig', array (
       'pageTitle' => 'Password change',
       'pageHeader' => 'Your new password must contain letters, numbers, an odd number of prime numbers.',
       'form' => $form->createView(),
@@ -269,10 +269,10 @@ class AdminController extends BaseController
 
 
   #Define the action
-  public function viewAuditRecordsPreActionJson(Request $request, Application $app){
+  public function viewAuditRecordsPreActionJson(Request $request){
 
     # Establish and set the return value
-    $returnValue = $this->render($app, 'audit_records_json.twig',array(
+    $returnValue = $this->render('audit_records_json.twig',array(
       'pageTitle' => 'The audit records',
       'pageSubTitle' => 'Stuff that the admins have done',
     ));
@@ -283,9 +283,9 @@ class AdminController extends BaseController
   }
 
 
-  public function viewAuditRecordsJson(Request $request, Application $app){
+  public function viewAuditRecordsJson(Request $request){
 
-    #$app['monolog']->addDebug("Entering the function viewAuditRecordsJson");
+    #$this->app['monolog']->addDebug("Entering the function viewAuditRecordsJson");
 
     #Obtain the post parameters
     #$inputDraw = $_POST['draw'] ;
@@ -298,17 +298,17 @@ class AdminController extends BaseController
     #-------------- Begin: Validate the post parameters ------------------------
     #Validate input start
     if(!is_numeric($inputStart)){
-      #$app['monolog']->addDebug("input start is not numeric: $inputStart");
+      #$this->app['monolog']->addDebug("input start is not numeric: $inputStart");
       $inputStart = 0;
     }
 
     #Validate input length
     if(!is_numeric($inputLength)){
-      #$app['monolog']->addDebug("input length is not numeric");
+      #$this->app['monolog']->addDebug("input length is not numeric");
       $inputStart = "0";
       $inputLength = "50";
     } else if($inputLength == "-1"){
-      #$app['monolog']->addDebug("input length is negative one (all rows selected)");
+      #$this->app['monolog']->addDebug("input length is negative one (all rows selected)");
       $inputStart = "0";
       $inputLength = "1000000000";
     }
@@ -328,12 +328,12 @@ class AdminController extends BaseController
     $inputOrderColumnIncremented = "1";
     $inputOrderDirectionExtracted = "asc";
     if(!is_null($inputOrderRaw)){
-      #$app['monolog']->addDebug("inside inputOrderRaw not null");
+      #$this->app['monolog']->addDebug("inside inputOrderRaw not null");
       $inputOrderColumnExtracted = $inputOrderRaw[0]['column'];
       $inputOrderColumnIncremented = $inputOrderColumnExtracted + 1;
       $inputOrderDirectionExtracted = $inputOrderRaw[0]['dir'];
     }else{
-      #$app['monolog']->addDebug("inside inputOrderRaw is null");
+      #$this->app['monolog']->addDebug("inside inputOrderRaw is null");
       $inputOrderColumnIncremented =2;
       $inputOrderDirectionExtracted = "desc";
     }
@@ -362,7 +362,7 @@ class AdminController extends BaseController
           IP_ADDR LIKE ?)
       ORDER BY $inputOrderColumnIncremented $inputOrderDirectionExtracted
       LIMIT $inputStart,$inputLength";
-      #$app['monolog']->addDebug("sql: $sql");
+      #$this->app['monolog']->addDebug("sql: $sql");
 
     #Define the SQL that gets the count for the filtered results
     $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT
@@ -373,17 +373,17 @@ class AdminController extends BaseController
           ACTION_TYPE LIKE ? OR
           ACTION_DESCRIPTION LIKE ? OR
           IP_ADDR LIKE ?";
-    #$app['monolog']->addDebug("sqlFilteredCount: $sqlFilteredCount");
+    #$this->app['monolog']->addDebug("sqlFilteredCount: $sqlFilteredCount");
 
     #Define the sql that gets the overall counts
     $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM AUDIT";
-    #$app['monolog']->addDebug("sqlUnfilteredCount: $sqlUnfilteredCount");
+    #$this->app['monolog']->addDebug("sqlUnfilteredCount: $sqlUnfilteredCount");
 
     #-------------- End: Define the SQL used here   ----------------------------
 
     #-------------- Begin: Query the database   --------------------------------
     #Perform the filtered search
-    $theResults = $app['db']->fetchAll($sql,array(
+    $theResults = $this->app['db']->fetchAll($sql,array(
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
@@ -391,17 +391,17 @@ class AdminController extends BaseController
       (string) $inputSearchValueModified));
 
     #Perform the untiltered count
-    $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
-    #$app['monolog']->addDebug("theUnfilteredCount: $theUnfilteredCount");
+    $theUnfilteredCount = ($this->app['db']->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
+    #$this->app['monolog']->addDebug("theUnfilteredCount: $theUnfilteredCount");
 
     #Perform the filtered count
-    $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
+    $theFilteredCount = ($this->app['db']->fetchAssoc($sqlFilteredCount,array(
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified)))['THE_COUNT'];
-    #$app['monolog']->addDebug("theFilteredCount: $theFilteredCount");
+    #$this->app['monolog']->addDebug("theFilteredCount: $theFilteredCount");
     #-------------- End: Query the database   --------------------------------
 
     #Establish the output
@@ -413,69 +413,26 @@ class AdminController extends BaseController
     );
 
     #Set the return value
-    $returnValue = $app->json($output,200);
-    #$app['monolog']->addDebug("returnValue: $returnValue");
+    $returnValue = $this->app->json($output,200);
+    #$this->app['monolog']->addDebug("returnValue: $returnValue");
 
     #Return the return value
     return $returnValue;
   }
 
-
-  public static function auditTheThings(Request $request, Application $app, string $actionType, string $actionDescription){
-
-    #Define the client ip address
-    $theClientIP = $request->getClientIp();
-
-    #Establish the datetime representation of "now"
-    date_default_timezone_set('US/Eastern');
-    $nowDateTime = date("Y-m-d H:i:s");
-
-    #Define the username (default to UNKNOWN)
-    $user = "UNKNOWN";
-
-    #Determine the username
-    $token = $app['security.token_storage']->getToken();
-    if (null !== $token) {
-      $user = $token->getUser();
-    }
-
-    #Define the sql insert statement
-    $sql = "
-      INSERT INTO AUDIT (
-        USERNAME,
-        AUDIT_TIME,
-        ACTION_TYPE,
-        ACTION_DESCRIPTION,
-        IP_ADDR
-      ) VALUES (?, ?, ?, ?, ?)";
-
-    #Execute the insert statement
-    $app['dbs']['mysql_write']->executeUpdate($sql,array(
-      $user,
-      $nowDateTime,
-      $actionType,
-      $actionDescription,
-      $theClientIP
-    ));
-
-  }
-
-
-
-
   #Define the action
-  public function listHashesPreActionJson(Request $request, Application $app, string $kennel_abbreviation = null) {
+  public function listHashesPreActionJson(Request $request, string $kennel_abbreviation = null) {
 
     if($kennel_abbreviation) {
-      $kennelKy = (int) $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = (int) $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
     } else {
-      $kennels = $this->getKennels($app);
+      $kennels = $this->getKennels();
 
       if(count($kennels) == 1) {
         $kennelKy = (int) $kennels[0]['KENNEL_KY'];
         $kennel_abbreviation = $kennels[0]['KENNEL_ABBREVIATION'];
       } else {
-        return $this->render($app, 'admin_select_kennel.twig',array(
+        return $this->render('admin_select_kennel.twig',array(
           'kennels' => $kennels,
           'pageTracking' => 'AdminSelectKennel',
           'pageTitle' => 'Select Kennel',
@@ -487,16 +444,16 @@ class AdminController extends BaseController
     $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHES_TABLE WHERE KENNEL_KY = ?";
 
     #Perform the untiltered count
-    $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array($kennelKy)))['THE_COUNT'];
+    $theUnfilteredCount = ($this->app['db']->fetchAssoc($sqlUnfilteredCount,array($kennelKy)))['THE_COUNT'];
 
     #Define the sql that gets the overall counts
     $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHES_TABLE WHERE PLACE_ID is null AND KENNEL_KY = ?";
 
     #Perform the untiltered count
-    $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array($kennelKy)))['THE_COUNT'];
+    $theFilteredCount = ($this->app['db']->fetchAssoc($sqlFilteredCount,array($kennelKy)))['THE_COUNT'];
 
     # Establish and set the return value
-    $returnValue = $this->render($app, 'admin_hash_list_json.twig',array(
+    $returnValue = $this->render('admin_hash_list_json.twig',array(
       'pageTitle' => 'The List of Hashes',
       'pageSubTitle' => 'The List of *ALL* Hashes',
       'pageCaption' => "",
@@ -510,11 +467,11 @@ class AdminController extends BaseController
     return $returnValue;
   }
 
-  public function getHashListJson(Request $request, Application $app, string $kennel_abbreviation){
+  public function getHashListJson(Request $request, string $kennel_abbreviation){
 
-    $kennelKy = (int) $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+    $kennelKy = (int) $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
-    #$app['monolog']->addDebug("Entering the function------------------------");
+    #$this->app['monolog']->addDebug("Entering the function------------------------");
 
     #Obtain the post parameters
     #$inputDraw = $_POST['draw'] ;
@@ -527,17 +484,17 @@ class AdminController extends BaseController
     #-------------- Begin: Validate the post parameters ------------------------
     #Validate input start
     if(!is_numeric($inputStart)){
-      #$app['monolog']->addDebug("input start is not numeric: $inputStart");
+      #$this->app['monolog']->addDebug("input start is not numeric: $inputStart");
       $inputStart = 0;
     }
 
     #Validate input length
     if(!is_numeric($inputLength)){
-      #$app['monolog']->addDebug("input length is not numeric");
+      #$this->app['monolog']->addDebug("input length is not numeric");
       $inputStart = "0";
       $inputLength = "50";
     } else if($inputLength == "-1"){
-      #$app['monolog']->addDebug("input length is negative one (all rows selected)");
+      #$this->app['monolog']->addDebug("input length is negative one (all rows selected)");
       $inputStart = "0";
       $inputLength = "1000000000";
     }
@@ -557,15 +514,15 @@ class AdminController extends BaseController
     $inputOrderColumnIncremented = "3";
     $inputOrderDirectionExtracted = "desc";
     if(!is_null($inputOrderRaw)){
-      #$app['monolog']->addDebug("inside inputOrderRaw not null");
+      #$this->app['monolog']->addDebug("inside inputOrderRaw not null");
       $inputOrderColumnExtracted = $inputOrderRaw[0]['column'];
       $inputOrderColumnIncremented = $inputOrderColumnExtracted + 1;
       $inputOrderDirectionExtracted = $inputOrderRaw[0]['dir'];
-      #$app['monolog']->addDebug("inputOrderColumnExtracted $inputOrderColumnExtracted");
-      #$app['monolog']->addDebug("inputOrderColumnIncremented $inputOrderColumnIncremented");
-      #$app['monolog']->addDebug("inputOrderDirectionExtracted $inputOrderDirectionExtracted");
+      #$this->app['monolog']->addDebug("inputOrderColumnExtracted $inputOrderColumnExtracted");
+      #$this->app['monolog']->addDebug("inputOrderColumnIncremented $inputOrderColumnIncremented");
+      #$this->app['monolog']->addDebug("inputOrderDirectionExtracted $inputOrderDirectionExtracted");
     }else{
-      #$app['monolog']->addDebug("inside inputOrderRaw is null");
+      #$this->app['monolog']->addDebug("inside inputOrderRaw is null");
     }
 
     #-------------- End: Modify the input parameters  --------------------------
@@ -592,7 +549,7 @@ class AdminController extends BaseController
         AND KENNEL_KY = ?
       ORDER BY $inputOrderColumnIncremented $inputOrderDirectionExtracted
       LIMIT $inputStart,$inputLength";
-      #$app['monolog']->addDebug("sql: $sql");
+      #$this->app['monolog']->addDebug("sql: $sql");
 
     #Define the SQL that gets the count for the filtered results
     $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT
@@ -612,7 +569,7 @@ class AdminController extends BaseController
 
     #-------------- Begin: Query the database   --------------------------------
     #Perform the filtered search
-    $theResults = $app['db']->fetchAll($sql,array(
+    $theResults = $this->app['db']->fetchAll($sql,array(
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
@@ -620,10 +577,10 @@ class AdminController extends BaseController
       $kennelKy));
 
     #Perform the untiltered count
-    $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array($kennelKy)))['THE_COUNT'];
+    $theUnfilteredCount = ($this->app['db']->fetchAssoc($sqlUnfilteredCount,array($kennelKy)))['THE_COUNT'];
 
     #Perform the filtered count
-    $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
+    $theFilteredCount = ($this->app['db']->fetchAssoc($sqlFilteredCount,array(
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
@@ -640,7 +597,7 @@ class AdminController extends BaseController
     );
 
     #Set the return value
-    $returnValue = $app->json($output,200);
+    $returnValue = $this->app->json($output,200);
 
     #Return the return value
     return $returnValue;
@@ -648,10 +605,10 @@ class AdminController extends BaseController
 
 
   #Define the action
-  public function listHashersPreActionJson(Request $request, Application $app){
+  public function listHashersPreActionJson(Request $request){
 
     # Establish and set the return value
-    $returnValue = $this->render($app, 'admin_hasher_list_json.twig',array(
+    $returnValue = $this->render('admin_hasher_list_json.twig',array(
       'pageTitle' => 'The List of Hashers',
       'pageSubTitle' => '',
       'pageCaption' => "",
@@ -663,9 +620,9 @@ class AdminController extends BaseController
 
   }
 
-  public function getHashersListJson(Request $request, Application $app){
+  public function getHashersListJson(Request $request){
 
-    #$app['monolog']->addDebug("Entering the function------------------------");
+    #$this->app['monolog']->addDebug("Entering the function------------------------");
 
     #Obtain the post parameters
     #$inputDraw = $_POST['draw'] ;
@@ -678,17 +635,17 @@ class AdminController extends BaseController
     #-------------- Begin: Validate the post parameters ------------------------
     #Validate input start
     if(!is_numeric($inputStart)){
-      #$app['monolog']->addDebug("input start is not numeric: $inputStart");
+      #$this->app['monolog']->addDebug("input start is not numeric: $inputStart");
       $inputStart = 0;
     }
 
     #Validate input length
     if(!is_numeric($inputLength)){
-      #$app['monolog']->addDebug("input length is not numeric");
+      #$this->app['monolog']->addDebug("input length is not numeric");
       $inputStart = "0";
       $inputLength = "50";
     } else if($inputLength == "-1"){
-      #$app['monolog']->addDebug("input length is negative one (all rows selected)");
+      #$this->app['monolog']->addDebug("input length is negative one (all rows selected)");
       $inputStart = "0";
       $inputLength = "1000000000";
     }
@@ -708,15 +665,15 @@ class AdminController extends BaseController
     $inputOrderColumnIncremented = "2";
     $inputOrderDirectionExtracted = "desc";
     if(!is_null($inputOrderRaw)){
-      #$app['monolog']->addDebug("inside inputOrderRaw not null");
+      #$this->app['monolog']->addDebug("inside inputOrderRaw not null");
       $inputOrderColumnExtracted = $inputOrderRaw[0]['column'];
       $inputOrderColumnIncremented = $inputOrderColumnExtracted + 1;
       $inputOrderDirectionExtracted = $inputOrderRaw[0]['dir'];
-      #$app['monolog']->addDebug("inputOrderColumnExtracted $inputOrderColumnExtracted");
-      #$app['monolog']->addDebug("inputOrderColumnIncremented $inputOrderColumnIncremented");
-      #$app['monolog']->addDebug("inputOrderDirectionExtracted $inputOrderDirectionExtracted");
+      #$this->app['monolog']->addDebug("inputOrderColumnExtracted $inputOrderColumnExtracted");
+      #$this->app['monolog']->addDebug("inputOrderColumnIncremented $inputOrderColumnIncremented");
+      #$this->app['monolog']->addDebug("inputOrderDirectionExtracted $inputOrderDirectionExtracted");
     }else{
-      #$app['monolog']->addDebug("inside inputOrderRaw is null");
+      #$this->app['monolog']->addDebug("inside inputOrderRaw is null");
     }
 
     #-------------- End: Modify the input parameters  --------------------------
@@ -740,7 +697,7 @@ class AdminController extends BaseController
           HASHER_ABBREVIATION LIKE ?)
       ORDER BY $inputOrderColumnIncremented $inputOrderDirectionExtracted
       LIMIT $inputStart,$inputLength";
-      #$app['monolog']->addDebug("sql: $sql");
+      #$this->app['monolog']->addDebug("sql: $sql");
 
     #Define the SQL that gets the count for the filtered results
     $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT
@@ -759,17 +716,17 @@ class AdminController extends BaseController
 
     #-------------- Begin: Query the database   --------------------------------
     #Perform the filtered search
-    $theResults = $app['db']->fetchAll($sql,array(
+    $theResults = $this->app['db']->fetchAll($sql,array(
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified));
 
     #Perform the untiltered count
-    $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
+    $theUnfilteredCount = ($this->app['db']->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
 
     #Perform the filtered count
-    $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
+    $theFilteredCount = ($this->app['db']->fetchAssoc($sqlFilteredCount,array(
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
@@ -785,7 +742,7 @@ class AdminController extends BaseController
     );
 
     #Set the return value
-    $returnValue = $app->json($output,200);
+    $returnValue = $this->app->json($output,200);
 
     #Return the return value
     return $returnValue;
@@ -794,24 +751,24 @@ class AdminController extends BaseController
 
 
 
-  public function hasherDetailsKennelSelection(Request $request, Application $app, int $hasher_id){
+  public function hasherDetailsKennelSelection(Request $request, int $hasher_id){
 
 
     #Obtain the kennels that are being tracked in this website instance
     $listOfKennelsSQL = "SELECT * FROM KENNELS WHERE IN_RECORD_KEEPING = 1";
-    $kennelValues = $app['db']->fetchAll($listOfKennelsSQL);
+    $kennelValues = $this->app['db']->fetchAll($listOfKennelsSQL);
 
     # Declare the SQL used to retrieve this information
     $sql_for_hasher_lookup = "SELECT HASHER_NAME FROM HASHERS WHERE HASHER_KY = ?";
 
     # Make a database call to obtain the hasher information
-    $hasher = $app['db']->fetchAssoc($sql_for_hasher_lookup, array((int) $hasher_id));
+    $hasher = $this->app['db']->fetchAssoc($sql_for_hasher_lookup, array((int) $hasher_id));
 
     # Derive the hasher name
     $hasherName = $hasher['HASHER_NAME'];
 
     # Establish and set the return value
-    $returnValue = $this->render($app, 'hasher_details_select_kennel.twig',array(
+    $returnValue = $this->render('hasher_details_select_kennel.twig',array(
       'pageTitle' => 'Hasher Details: Select Kennel',
       'kennelValues' => $kennelValues,
       'hasherId' => $hasher_id,
@@ -823,17 +780,17 @@ class AdminController extends BaseController
 
   }
 
-  public function roster(Request $request, Application $app, string $kennel_abbreviation = null) {
+  public function roster(Request $request, string $kennel_abbreviation = null) {
 
     if($kennel_abbreviation) {
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
     } else {
-      $kennels = $this->getKennels($app);
+      $kennels = $this->getKennels();
 
       if(count($kennels) == 1) {
         $kennelKy = $kennels[0]['KENNEL_KY'];
       } else {
-        return $this->render($app, 'admin_select_kennel.twig',array(
+        return $this->render('admin_select_kennel.twig',array(
           'kennels' => $kennels,
           'pageTracking' => 'AdminSelectKennel',
           'pageTitle' => 'Select Kennel',
@@ -863,7 +820,7 @@ class AdminController extends BaseController
            ORDER BY HASHER_NAME";
 
         #Execute the SQL statement; create an array of rows
-        $theList = $app['db']->fetchAll($sql, array($i * 6, (int) $kennelKy, $j));
+        $theList = $this->app['db']->fetchAll($sql, array($i * 6, (int) $kennelKy, $j));
 
         if(count($theList) > 15) break;
       }
@@ -871,35 +828,35 @@ class AdminController extends BaseController
     }
 
     # Establish and set the return value
-    $returnValue = $this->render($app, 'admin_roster.twig',array(
+    $returnValue = $this->render('admin_roster.twig',array(
       'theList' => $theList
     ));
     #Return the return value
     return $returnValue;
   }
 
-  private function getKennels(Application $app) {
+  private function getKennels() {
     $sql = "
       SELECT KENNEL_KY, KENNEL_ABBREVIATION
         FROM KENNELS
        WHERE IN_RECORD_KEEPING = 1
        ORDER BY KENNEL_ABBREVIATION";
 
-    return $app['db']->fetchAll($sql, array());
+    return $this->app['db']->fetchAll($sql, array());
   }
 
-  public function awards(Request $request, Application $app, string $kennel_abbreviation = null, string $type) {
+  public function awards(Request $request, string $kennel_abbreviation = null, string $type) {
 
     if($kennel_abbreviation) {
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
     } else {
-      $kennels = $this->getKennels($app);
+      $kennels = $this->getKennels();
 
       if(count($kennels) == 1) {
         $kennelKy = $kennels[0]['KENNEL_KY'];
         $kennel_abbreviation = $kennels[0]['KENNEL_ABBREVIATION'];
       } else {
-        return $this->render($app, 'admin_select_kennel.twig',array(
+        return $this->render('admin_select_kennel.twig',array(
           'kennels' => $kennels,
           'pageTracking' => 'AdminSelectKennel',
           'pageTitle' => 'Select Kennel',
@@ -912,7 +869,7 @@ class AdminController extends BaseController
       "SELECT THE_KEY, NAME, VALUE,
               HASHER_AWARDS.LAST_AWARD_LEVEL_RECOGNIZED AS LAST_AWARD,".
               ($type == "pending" ? "MAX" : "MIN")."(AWARD_LEVELS.AWARD_LEVEL) AS NEXT_AWARD_LEVEL
-         FROM (".$this->getHashingCountsQuery($app).") HASHER_COUNTS
+         FROM (".$this->getHashingCountsQuery().") HASHER_COUNTS
          LEFT JOIN HASHER_AWARDS
            ON HASHER_COUNTS.THE_KEY = HASHER_AWARDS.HASHER_KY
           AND HASHER_COUNTS.KENNEL_KY = HASHER_AWARDS.KENNEL_KY
@@ -927,10 +884,10 @@ class AdminController extends BaseController
         ORDER BY VALUE DESC, NAME";
 
     #Execute the SQL statement; create an array of rows
-    $hasherList = $app['db']->fetchAll($sql, array((int) $kennelKy, (int) $kennelKy));
+    $hasherList = $this->app['db']->fetchAll($sql, array((int) $kennelKy, (int) $kennelKy));
 
     # Establish and set the return value
-    $returnValue = $this->render($app, 'admin_awards.twig',array(
+    $returnValue = $this->render('admin_awards.twig',array(
       'pageTitle' => 'Hasher Awards',
       'tableCaption' => 'Hashers, awards due, and last awards given.  Click the checkbox when a hasher receives their next award.',
       'theList' => $hasherList,
@@ -944,7 +901,7 @@ class AdminController extends BaseController
     return $returnValue;
   }
 
-  public function updateHasherAwardAjaxAction(Request $request, Application $app) {
+  public function updateHasherAwardAjaxAction(Request $request) {
 
     #Establish the return message
     $returnMessage = "This has not been set yet...";
@@ -960,10 +917,10 @@ class AdminController extends BaseController
     #Check if the csrf token is valid
     /*
     if($this->isCsrfTokenValid('delete',$csrfToken)){
-      $returnValue =  $app->json("valid", 200);
+      $returnValue =  $this->app->json("valid", 200);
       return $returnValue;
     }else{
-      $returnValue =  $app->json("not valid", 200);
+      $returnValue =  $this->app->json("not valid", 200);
       return $returnValue;
     }
     */
@@ -973,7 +930,7 @@ class AdminController extends BaseController
 
       $sql = "SELECT 1 FROM HASHER_AWARDS WHERE HASHER_KY = ? AND KENNEL_KY = ?";
 
-      $exists = $app['db']->fetchAssoc($sql, array((int) $hasherKey, (int) $kennelKey));
+      $exists = $this->app['db']->fetchAssoc($sql, array((int) $hasherKey, (int) $kennelKey));
 
       if($exists) {
         $sql = "UPDATE HASHER_AWARDS SET LAST_AWARD_LEVEL_RECOGNIZED = ? WHERE HASHER_KY = ? AND KENNEL_KY = ?";
@@ -982,14 +939,14 @@ class AdminController extends BaseController
       }
 
       try {
-        $app['dbs']['mysql_write']->executeUpdate($sql, array((int) $awardLevel, (int) $hasherKey, (int) $kennelKey));
+        $this->app['dbs']['mysql_write']->executeUpdate($sql, array((int) $awardLevel, (int) $hasherKey, (int) $kennelKey));
 
         $returnMessage = "Success!";
       } catch (\Exception $theException) {
 
         $tempActionType = "Update Hasher Award";
         $tempActionDescription = "Failed to update hasher award for $hasherKey";
-        AdminController::auditTheThings($request, $app, $tempActionType, $tempActionDescription);
+        $this->auditTheThings($request, $tempActionType, $tempActionDescription);
 
         #Define the return message
         $returnMessage = "Oh crap. Something bad happened.";
@@ -997,7 +954,7 @@ class AdminController extends BaseController
     }
 
     #Set the return value
-    $returnValue =  $app->json($returnMessage, 200);
+    $returnValue =  $this->app->json($returnMessage, 200);
     return $returnValue;
   }
 }

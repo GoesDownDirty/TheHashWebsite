@@ -19,7 +19,11 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
 class HashEventController extends BaseController {
 
-  protected function getHareTypesForHashType($app, $kennelKy, $hashType) {
+  public function __construct(Application $app) {
+    parent::__construct($app);
+  }
+
+  protected function getHareTypesForHashType($kennelKy, $hashType) {
 
     #Define the SQL to RuntimeException
     $sql = "SELECT HARE_TYPE, HARE_TYPE_NAME, CHART_COLOR
@@ -33,13 +37,13 @@ class HashEventController extends BaseController {
              ORDER BY HARE_TYPES.SEQ";
 
     #Query the database
-    $hareTypes = $app['db']->fetchAll($sql, array((int) $kennelKy, (int) $hashType));
+    $hareTypes = $this->app['db']->fetchAll($sql, array((int) $kennelKy, (int) $hashType));
 
     #return the return value
     return $hareTypes;
   }
 
-  protected function getAllHashTypes($app) {
+  protected function getAllHashTypes() {
 
     #Define the SQL to RuntimeException
     $sql = "SELECT HASH_TYPE, HASH_TYPE_NAME 
@@ -47,23 +51,23 @@ class HashEventController extends BaseController {
              ORDER BY SEQ";
 
     #Query the database
-    $hashTypes = $app['db']->fetchAll($sql);
+    $hashTypes = $this->app['db']->fetchAll($sql);
 
     #return the return value
     return $hashTypes;
   }
 
   #Define action
-  public function adminCreateHashAjaxPreAction(Request $request, Application $app, string $kennel_abbreviation) {
+  public function adminCreateHashAjaxPreAction(Request $request, string $kennel_abbreviation) {
 
-    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
-    $returnValue = $this->render($app, 'new_hash_form_ajax.twig', array(
+    $returnValue = $this->render('new_hash_form_ajax.twig', array(
       'pageTitle' => 'Create an Event!',
       'pageHeader' => 'Page Header',
       'kennel_abbreviation' => $kennel_abbreviation,
-      'hashTypes' => $this->getHashTypes($app, $kennelKy, 0),
-      'geocode_api_value' => $this->getGooglePlacesApiWebServiceKey($app)
+      'hashTypes' => $this->getHashTypes($kennelKy, 0),
+      'geocode_api_value' => $this->getGooglePlacesApiWebServiceKey()
     ));
 
     #Return the return value
@@ -71,9 +75,9 @@ class HashEventController extends BaseController {
 
   }
 
-    public function adminCreateHashAjaxPostAction(Request $request, Application $app, $kennel_abbreviation) {
+    public function adminCreateHashAjaxPostAction(Request $request, $kennel_abbreviation) {
 
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Establish the return message
       $returnMessage = "This has not been set yet...";
@@ -107,19 +111,19 @@ class HashEventController extends BaseController {
       if(!(is_numeric($theLat)||empty($theLat))){
         $passedValidation = FALSE;
         $returnMessage .= " |Failed validation on the lat";
-        //$app['monolog']->addDebug("--- theLat failed validation: $theLat");
+        //$this->app['monolog']->addDebug("--- theLat failed validation: $theLat");
       }
 
       if(!(is_numeric($theLng)||empty($theLng))){
         $passedValidation = FALSE;
         $returnMessage .= " |Failed validation on the lng";
-        //$app['monolog']->addDebug("--- theLng failed validation: $theLng");
+        //$this->app['monolog']->addDebug("--- theLng failed validation: $theLng");
       }
 
       if(!(is_numeric($thePostal_code)||empty($thePostal_code))){
         $passedValidation = FALSE;
         $returnMessage .= " |Failed validation on the postal code";
-        //$app['monolog']->addDebug("--- thePostal_code failed validation: $thePostal_code");
+        //$this->app['monolog']->addDebug("--- thePostal_code failed validation: $thePostal_code");
       }
 
       if(!is_numeric($theLat)){
@@ -135,7 +139,7 @@ class HashEventController extends BaseController {
       if (!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$theEventDate)){
         $passedValidation = FALSE;
         $returnMessage .= " |Failed validation on the event date";
-        //$app['monolog']->addDebug("--- the date failed validation $theEventDate");
+        //$this->app['monolog']->addDebug("--- the date failed validation $theEventDate");
       }
 
 
@@ -144,7 +148,7 @@ class HashEventController extends BaseController {
       if (!preg_match("/^([01]\d|2[0-3]):([0-5][0-9]):([0-5][0-9])$/",$theEventTime)){
         $passedValidation = FALSE;
         $returnMessage .= " |Failed validation on the event time";
-        //$app['monolog']->addDebug("--- the time failed validation $theEventTime");
+        //$this->app['monolog']->addDebug("--- the time failed validation $theEventTime");
 
       }
 
@@ -173,7 +177,7 @@ class HashEventController extends BaseController {
             LNG
           ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-          $app['dbs']['mysql_write']->executeUpdate($sql,array(
+          $this->app['dbs']['mysql_write']->executeUpdate($sql,array(
             $kennelKy,
             $theHashEventNumber,
             $theEventDateAndTime,
@@ -199,7 +203,7 @@ class HashEventController extends BaseController {
         #Audit this activity
         $actionType = "Event Creation (Ajax)";
         $actionDescription = "Created event ($kennel_abbreviation # $theHashEventNumber)";
-        AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+        $this->auditTheThings($request, $actionType, $actionDescription);
 
 
         // Establish the return value message
@@ -208,7 +212,7 @@ class HashEventController extends BaseController {
       }
 
       #Set the return value
-      $returnValue =  $app->json($returnMessage, 200);
+      $returnValue =  $this->app->json($returnMessage, 200);
       return $returnValue;
     }
 
@@ -225,7 +229,7 @@ class HashEventController extends BaseController {
 
 
     #Define action
-    public function adminModifyHashAjaxPreAction(Request $request, Application $app, int $hash_id){
+    public function adminModifyHashAjaxPreAction(Request $request, int $hash_id){
 
       # Declare the SQL used to retrieve this information
       $sql = "
@@ -239,13 +243,13 @@ class HashEventController extends BaseController {
          WHERE HASH_KY = ?";
 
       # Make a database call to obtain the hasher information
-      $hashValue = $app['db']->fetchAssoc($sql, array((int) $hash_id));
+      $hashValue = $this->app['db']->fetchAssoc($sql, array((int) $hash_id));
 
-      $returnValue = $this->render($app, 'edit_hash_form_ajax.twig', array(
+      $returnValue = $this->render('edit_hash_form_ajax.twig', array(
         'pageTitle' => 'Modify an Event!',
         'pageHeader' => 'Page Header',
-        'hashTypes' => $this->getHashTypes($app, $hashValue['KENNEL_KY'], 0),
-        'geocode_api_value' => $this->getGooglePlacesApiWebServiceKey($app),
+        'hashTypes' => $this->getHashTypes($hashValue['KENNEL_KY'], 0),
+        'geocode_api_value' => $this->getGooglePlacesApiWebServiceKey(),
         'hashValue' => $hashValue,
         'hashKey' => $hash_id
       ));
@@ -256,7 +260,7 @@ class HashEventController extends BaseController {
     }
 
 
-    public function adminModifyHashAjaxPostAction(Request $request, Application $app, int $hash_id){
+    public function adminModifyHashAjaxPostAction(Request $request, int $hash_id){
 
       #Establish the return message
       $returnMessage = "This has not been set yet...";
@@ -280,7 +284,7 @@ class HashEventController extends BaseController {
       $theLng= trim(strip_tags($request->request->get('lng')));
       $theFormatted_address= trim(strip_tags($request->request->get('formatted_address')));
       $thePlace_id= trim(strip_tags($request->request->get('place_id')));
-      //$app['monolog']->addDebug("--- thePlace_id: $thePlace_id");
+      //$this->app['monolog']->addDebug("--- thePlace_id: $thePlace_id");
 
       // Establish a "passed validation" variable
       $passedValidation = TRUE;
@@ -291,19 +295,19 @@ class HashEventController extends BaseController {
       if(!(is_numeric($theLat)||empty($theLat))){
         $passedValidation = FALSE;
         $returnMessage .= " |Failed validation on the lat";
-        //$app['monolog']->addDebug("--- theLat failed validation: $theLat");
+        //$this->app['monolog']->addDebug("--- theLat failed validation: $theLat");
       }
 
       if(!(is_numeric($theLng)||empty($theLng))){
         $passedValidation = FALSE;
         $returnMessage .= " |Failed validation on the lng";
-        //$app['monolog']->addDebug("--- theLng failed validation: $theLng");
+        //$this->app['monolog']->addDebug("--- theLng failed validation: $theLng");
       }
 
       if(!(is_numeric($thePostal_code)||empty($thePostal_code))){
         $passedValidation = FALSE;
         $returnMessage .= " |Failed validation on the postal code";
-        //$app['monolog']->addDebug("--- thePostal_code failed validation: $thePostal_code");
+        //$this->app['monolog']->addDebug("--- thePostal_code failed validation: $thePostal_code");
       }
 
       if(!is_numeric($theLat)){
@@ -319,7 +323,7 @@ class HashEventController extends BaseController {
       if (!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$theEventDate)){
         $passedValidation = FALSE;
         $returnMessage .= " |Failed validation on the event date";
-        //$app['monolog']->addDebug("--- the date failed validation $theEventDate");
+        //$this->app['monolog']->addDebug("--- the date failed validation $theEventDate");
       }
 
 
@@ -328,7 +332,7 @@ class HashEventController extends BaseController {
       if (!preg_match("/^([01]\d|2[0-3]):([0-5][0-9]):([0-5][0-9])$/",$theEventTime)){
         $passedValidation = FALSE;
         $returnMessage .= " |Failed validation on the event time";
-        //$app['monolog']->addDebug("--- the time failed validation $theEventTime");
+        //$this->app['monolog']->addDebug("--- the time failed validation $theEventTime");
 
       }
 
@@ -357,7 +361,7 @@ class HashEventController extends BaseController {
               LNG = ?
            WHERE HASH_KY = ?";
 
-          $app['dbs']['mysql_write']->executeUpdate($sql,array(
+          $this->app['dbs']['mysql_write']->executeUpdate($sql,array(
             $theHashEventNumber,
             $theEventDateAndTime,
             $theLocationDescription,
@@ -382,25 +386,25 @@ class HashEventController extends BaseController {
           $sqlOriginal = "SELECT * FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
           # Make a database call to obtain the hasher information
-          $hashValue = $app['db']->fetchAssoc($sqlOriginal, array((int) $hash_id));
+          $hashValue = $this->app['db']->fetchAssoc($sqlOriginal, array((int) $hash_id));
 
         #Audit this activity
         $tempEventNumber = $hashValue['KENNEL_EVENT_NUMBER'];
         $actionType = "Event Modification (Ajax)";
         $tempKennelAbbreviation2 = $hashValue['KENNEL_ABBREVIATION'];
         $actionDescription = "Modified event ($tempKennelAbbreviation2 # $tempEventNumber)";
-        AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+        $this->auditTheThings($request, $actionType, $actionDescription);
 
         // Establish the return value message
         $returnMessage = "Success! Great, it worked";
       }
 
       #Set the return value
-      $returnValue =  $app->json($returnMessage, 200);
+      $returnValue =  $this->app->json($returnMessage, 200);
       return $returnValue;
     }
 
-    public function hashParticipationJsonPreAction(Request $request, Application $app, int $hash_id){
+    public function hashParticipationJsonPreAction(Request $request, int $hash_id){
 
 
       #Define the SQL to execute
@@ -419,24 +423,24 @@ class HashEventController extends BaseController {
       $hashEventInfoSQL = "SELECT *, EVENT_DATE < NOW() AS SHOW_EVENT_LINK FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
       #Execute the SQL statement; create an array of rows
-      $hasherList = $app['db']->fetchAll($hasherListSQL,array((int)$hash_id));
-      $hareList = $app['db']->fetchAll($hareListSQL,array((int)$hash_id));
-      $hashEvent = $app['db']->fetchAssoc($hashEventInfoSQL,array((int)$hash_id));
+      $hasherList = $this->app['db']->fetchAll($hasherListSQL,array((int)$hash_id));
+      $hareList = $this->app['db']->fetchAll($hareListSQL,array((int)$hash_id));
+      $hashEvent = $this->app['db']->fetchAssoc($hashEventInfoSQL,array((int)$hash_id));
 
       $kennelAbbreviation = $hashEvent['KENNEL_ABBREVIATION'];
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennelAbbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennelAbbreviation);
       $kennelEventNumber = $hashEvent['KENNEL_EVENT_NUMBER'];
       $eventDate = $hashEvent['EVENT_DATE'];
       $pageTitle = "Participation: $kennelAbbreviation # $kennelEventNumber ($eventDate)";
 
       #Establish the return value
-      $returnValue = $this->render($app, 'event_participation_json.twig', array (
+      $returnValue = $this->render('event_participation_json.twig', array (
         'pageTitle' => $pageTitle,
         'pageSubTitle' => 'Not Sure',
         'pageHeader' => 'Why is this so complicated ?',
         'hasherList' => $hasherList,
         'hareList' => $hareList,
-        'hareTypes' => $this->getHareTypesForHashType($app, $kennelKy, $hashEvent['HASH_TYPE']),
+        'hareTypes' => $this->getHareTypesForHashType($kennelKy, $hashEvent['HASH_TYPE']),
         'hash_key'=> $hash_id,
         'kennel_abbreviation' => $kennelAbbreviation,
         'kennel_event_number' => $kennelEventNumber,
@@ -449,7 +453,7 @@ class HashEventController extends BaseController {
     }
 
     #Test function
-    public function addHashParticipant (Request $request, Application $app){
+    public function addHashParticipant (Request $request){
 
       #Establish the return message
       $returnMessage = "This has not been set yet...";
@@ -465,7 +469,7 @@ class HashEventController extends BaseController {
         $hasherIdentitySql = "SELECT * FROM HASHERS WHERE HASHERS.HASHER_KY = ? ;";
 
         # Make a database call to obtain the hasher information
-        $hasherValue = $app['db']->fetchAssoc($hasherIdentitySql, array((int) $hasherKey));
+        $hasherValue = $this->app['db']->fetchAssoc($hasherIdentitySql, array((int) $hasherKey));
 
         #Obtain the object from the database results
         $data = array(
@@ -489,14 +493,14 @@ class HashEventController extends BaseController {
           WHERE HASHERS.HASHER_KY = ? AND HASH_KY = ?;";
 
         #Retrieve the existing record
-        $hasherToAdd = $app['db']->fetchAll($existsSql,array((int)$hasherKey,(int)$hashKey));
+        $hasherToAdd = $this->app['db']->fetchAll($existsSql,array((int)$hasherKey,(int)$hashKey));
         if(count($hasherToAdd) < 1){
 
           #Define the sql insert statement
           $sql = "INSERT INTO HASHINGS (HASHER_KY, HASH_KY) VALUES (?, ?);";
 
           #Execute the sql insert statement
-          $app['dbs']['mysql_write']->executeUpdate($sql,array($hasherKey,$hashKey));
+          $this->app['dbs']['mysql_write']->executeUpdate($sql,array($hasherKey,$hashKey));
 
           #Audit the activity
 
@@ -504,13 +508,13 @@ class HashEventController extends BaseController {
           $sql = "SELECT * FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
           # Make a database call to obtain the hasher information
-          $hashValue = $app['db']->fetchAssoc($sql, array((int) $hashKey));
+          $hashValue = $this->app['db']->fetchAssoc($sql, array((int) $hashKey));
           $tempKennelEventNumber = $hashValue['KENNEL_EVENT_NUMBER'];
           $tempKennelAbbreviation = $hashValue['KENNEL_ABBREVIATION'];
 
           $tempActionType = "Add Hound to Hash";
           $tempActionDescription = "Added $tempHasherName to $tempKennelAbbreviation # $tempKennelEventNumber";
-          AdminController::auditTheThings($request, $app, $tempActionType, $tempActionDescription);
+          $this->auditTheThings($request, $tempActionType, $tempActionDescription);
 
           #Set the return message
           $returnMessage = "Success! $tempHasherName has been added as a hound.";
@@ -525,12 +529,12 @@ class HashEventController extends BaseController {
       }
 
       #Set the return value
-      $returnValue =  $app->json($returnMessage, 200);
+      $returnValue =  $this->app->json($returnMessage, 200);
       return $returnValue;
     }
 
     #Test function
-    public function addHashOrganizer (Request $request, Application $app){
+    public function addHashOrganizer (Request $request){
 
       #Establish the return message
       $returnMessage = "This has not been set yet...";
@@ -547,7 +551,7 @@ class HashEventController extends BaseController {
         $hasherIdentitySql = "SELECT * FROM HASHERS WHERE HASHERS.HASHER_KY = ? ;";
 
         # Make a database call to obtain the hasher information
-        $hasherValue = $app['db']->fetchAssoc($hasherIdentitySql, array((int) $hasherKey));
+        $hasherValue = $this->app['db']->fetchAssoc($hasherIdentitySql, array((int) $hasherKey));
 
         #Obtain the object from the database results
         $data = array(
@@ -571,27 +575,27 @@ class HashEventController extends BaseController {
           WHERE HASHERS.HASHER_KY = ? AND HARINGS.HARINGS_HASH_KY = ? AND HARINGS.HARE_TYPE = ?;";
 
         #Retrieve the existing record
-        $hareToAdd = $app['db']->fetchAll($existsSql,array((int)$hasherKey, (int)$hashKey, (int)$hareType));
+        $hareToAdd = $this->app['db']->fetchAll($existsSql,array((int)$hasherKey, (int)$hashKey, (int)$hareType));
         if(count($hareToAdd) < 1){
 
           #Define the sql insert statement
           $sql = "INSERT INTO HARINGS (HARINGS_HASHER_KY, HARINGS_HASH_KY, HARE_TYPE) VALUES (?, ?, ?);";
 
           #Execute the sql insert statement
-          $app['dbs']['mysql_write']->executeUpdate($sql,array($hasherKey,$hashKey,$hareType));
+          $this->app['dbs']['mysql_write']->executeUpdate($sql,array($hasherKey,$hashKey,$hareType));
 
           #Add the audit statement
           # Declare the SQL used to retrieve this information
           $sql = "SELECT * FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
           # Make a database call to obtain the hasher information
-          $hashValue = $app['db']->fetchAssoc($sql, array((int) $hashKey));
+          $hashValue = $this->app['db']->fetchAssoc($sql, array((int) $hashKey));
           $tempKennelEventNumber = $hashValue['KENNEL_EVENT_NUMBER'];
           $tempKennelAbbreviation = $hashValue['KENNEL_ABBREVIATION'];
 
           $tempActionType = "Add Hare to Hash";
           $tempActionDescription = "Added $tempHasherName to $tempKennelAbbreviation # $tempKennelEventNumber";
-          AdminController::auditTheThings($request, $app, $tempActionType, $tempActionDescription);
+          $this->auditTheThings($request, $tempActionType, $tempActionDescription);
 
           #Set the return message
           $returnMessage = "Success! $tempHasherName has been added as a hare.";
@@ -608,13 +612,13 @@ class HashEventController extends BaseController {
       }
 
       #Set the return value
-      $returnValue =  $app->json($returnMessage, 200);
+      $returnValue =  $this->app->json($returnMessage, 200);
       return $returnValue;
     }
 
 
     #Delete a participant from a hash
-    public function deleteHashParticipant (Request $request, Application $app){
+    public function deleteHashParticipant (Request $request){
 
       #Establish the return message
       $returnMessage = "This has not been set yet...";
@@ -633,7 +637,7 @@ class HashEventController extends BaseController {
           WHERE HASHERS.HASHER_KY = ? AND HASH_KY = ?;";
 
         #Retrieve the existing record
-        $hasherToDelete = $app['db']->fetchAll($existsSql,array((int)$hasherKey,(int)$hashKey));
+        $hasherToDelete = $this->app['db']->fetchAll($existsSql,array((int)$hasherKey,(int)$hashKey));
         if(count($hasherToDelete) > 0){
 
           #Obtain the name of the person being deleted
@@ -645,20 +649,20 @@ class HashEventController extends BaseController {
           $sql = "DELETE FROM HASHINGS WHERE HASHER_KY = ? AND HASH_KY = ?;";
 
           #Execute the sql insert statement
-          $app['dbs']['mysql_write']->executeUpdate($sql,array($hasherKey,$hashKey));
+          $this->app['dbs']['mysql_write']->executeUpdate($sql,array($hasherKey,$hashKey));
 
           #Add the audit statement
           # Declare the SQL used to retrieve this information
           $sql = "SELECT * FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
           # Make a database call to obtain the hasher information
-          $hashValue = $app['db']->fetchAssoc($sql, array((int) $hashKey));
+          $hashValue = $this->app['db']->fetchAssoc($sql, array((int) $hashKey));
           $tempKennelEventNumber = $hashValue['KENNEL_EVENT_NUMBER'];
           $tempKennelAbbreviation = $hashValue['KENNEL_ABBREVIATION'];
 
           $tempActionType = "Delete Hound From Event";
           $tempActionDescription = "Deleted $tempHasherName from $tempKennelAbbreviation # $tempKennelEventNumber";
-          AdminController::auditTheThings($request, $app, $tempActionType, $tempActionDescription);
+          $this->auditTheThings($request, $tempActionType, $tempActionDescription);
 
         }  else{
           $returnMessage = "Record cannot be deleted; doesn't exist!";
@@ -668,14 +672,14 @@ class HashEventController extends BaseController {
       }
 
       #Set the return value
-      $returnValue =  $app->json($returnMessage, 200);
+      $returnValue =  $this->app->json($returnMessage, 200);
       return $returnValue;
 
     }
 
 
     #Delete a participant from a hash
-    public function deleteHashOrganizer (Request $request, Application $app){
+    public function deleteHashOrganizer (Request $request){
 
       #Establish the return message
       $returnMessage = "This has not been set yet...";
@@ -694,7 +698,7 @@ class HashEventController extends BaseController {
           WHERE HARINGS.HARINGS_HASHER_KY = ? AND HARINGS.HARINGS_HASH_KY = ?;";
 
         #Retrieve the existing record
-        $hareToDelete = $app['db']->fetchAll($existsSql,array((int)$hasherKey,(int)$hashKey));
+        $hareToDelete = $this->app['db']->fetchAll($existsSql,array((int)$hasherKey,(int)$hashKey));
         if(count($hareToDelete) > 0){
 
           #Obtain the name of the person being deleted
@@ -706,20 +710,20 @@ class HashEventController extends BaseController {
           $sql = "DELETE FROM HARINGS WHERE HARINGS_HASHER_KY = ? AND HARINGS_HASH_KY = ?;";
 
           #Execute the sql insert statement
-          $app['dbs']['mysql_write']->executeUpdate($sql,array($hasherKey,$hashKey));
+          $this->app['dbs']['mysql_write']->executeUpdate($sql,array($hasherKey,$hashKey));
 
           #Add the audit statement
           # Declare the SQL used to retrieve this information
           $sql = "SELECT * FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
           # Make a database call to obtain the hasher information
-          $hashValue = $app['db']->fetchAssoc($sql, array((int) $hashKey));
+          $hashValue = $this->app['db']->fetchAssoc($sql, array((int) $hashKey));
           $tempKennelEventNumber = $hashValue['KENNEL_EVENT_NUMBER'];
           $tempKennelAbbreviation = $hashValue['KENNEL_ABBREVIATION'];
 
           $tempActionType = "Delete Hare From Event";
           $tempActionDescription = "Deleted $tempHasherName from $tempKennelAbbreviation # $tempKennelEventNumber";
-          AdminController::auditTheThings($request, $app, $tempActionType, $tempActionDescription);
+          $this->auditTheThings($request, $tempActionType, $tempActionDescription);
 
         }  else{
           $returnMessage = "Record cannot be deleted; doesn't exist!";
@@ -729,13 +733,13 @@ class HashEventController extends BaseController {
       }
 
       #Set the return value
-      $returnValue =  $app->json($returnMessage, 200);
+      $returnValue =  $this->app->json($returnMessage, 200);
       return $returnValue;
 
     }
 
     #Obtain hashers for an event
-    public function getHaresForEvent(Request $request, Application $app){
+    public function getHaresForEvent(Request $request){
 
       #Obtain the post values
       $hashKey = $request->request->get('hash_key');
@@ -752,15 +756,15 @@ class HashEventController extends BaseController {
        WHERE HARINGS.HARINGS_HASH_KY = ? ";
 
       #Obtain the hare list
-      $hareList = $app['db']->fetchAll($hareListSQL,array((int)$hashKey));
+      $hareList = $this->app['db']->fetchAll($hareListSQL,array((int)$hashKey));
 
       #Set the return value
-      $returnValue =  $app->json($hareList, 200);
+      $returnValue =  $this->app->json($hareList, 200);
       return $returnValue;
     }
 
     #Obtain hashers for an event
-    public function getHashersForEvent(Request $request, Application $app){
+    public function getHashersForEvent(Request $request){
 
       #Obtain the post values
       $hashKey = $request->request->get('hash_key');
@@ -772,20 +776,20 @@ class HashEventController extends BaseController {
         WHERE HASHINGS.HASH_KY = ? ";
 
       #Obtain the hare list
-      $hareList = $app['db']->fetchAll($hareListSQL,array((int)$hashKey));
+      $hareList = $this->app['db']->fetchAll($hareListSQL,array((int)$hashKey));
 
       #Set the return value
-      $returnValue =  $app->json($hareList, 200);
+      $returnValue =  $this->app->json($hareList, 200);
       return $returnValue;
     }
 
 
 
     #Define the action
-    public function listHashesPreActionJson(Request $request, Application $app, string $kennel_abbreviation) {
+    public function listHashesPreActionJson(Request $request, string $kennel_abbreviation) {
 
       # Establish and set the return value
-      $returnValue = $this->render($app, 'hash_list_json.twig',array(
+      $returnValue = $this->render('hash_list_json.twig',array(
         'pageTitle' => 'The List of Hashes',
         'pageSubTitle' => '',
         #'theList' => $hasherList,
@@ -803,12 +807,12 @@ class HashEventController extends BaseController {
 
 
 
-    public function listHashesPostActionJson(Request $request, Application $app, string $kennel_abbreviation){
+    public function listHashesPostActionJson(Request $request, string $kennel_abbreviation){
 
-      #$app['monolog']->addDebug("Entering the function------------------------");
+      #$this->app['monolog']->addDebug("Entering the function------------------------");
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
 
       #Obtain the post parameters
@@ -822,17 +826,17 @@ class HashEventController extends BaseController {
       #-------------- Begin: Validate the post parameters ------------------------
       #Validate input start
       if(!is_numeric($inputStart)){
-        #$app['monolog']->addDebug("input start is not numeric: $inputStart");
+        #$this->app['monolog']->addDebug("input start is not numeric: $inputStart");
         $inputStart = 0;
       }
 
       #Validate input length
       if(!is_numeric($inputLength)){
-        #$app['monolog']->addDebug("input length is not numeric");
+        #$this->app['monolog']->addDebug("input length is not numeric");
         $inputStart = "0";
         $inputLength = "50";
       } else if($inputLength == "-1"){
-        #$app['monolog']->addDebug("input length is negative one (all rows selected)");
+        #$this->app['monolog']->addDebug("input length is negative one (all rows selected)");
         $inputStart = "0";
         $inputLength = "1000000000";
       }
@@ -852,12 +856,12 @@ class HashEventController extends BaseController {
       $inputOrderColumnIncremented = "13";
       $inputOrderDirectionExtracted = "desc";
       if(!is_null($inputOrderRaw)){
-        #$app['monolog']->addDebug("inside inputOrderRaw not null");
+        #$this->app['monolog']->addDebug("inside inputOrderRaw not null");
         $inputOrderColumnExtracted = $inputOrderRaw[0]['column'];
         $inputOrderColumnIncremented = $inputOrderColumnExtracted + 1;
         $inputOrderDirectionExtracted = $inputOrderRaw[0]['dir'];
       }else{
-        #$app['monolog']->addDebug("inside inputOrderRaw is null");
+        #$this->app['monolog']->addDebug("inside inputOrderRaw is null");
       }
 
       #-------------- End: Modify the input parameters  --------------------------
@@ -915,7 +919,7 @@ class HashEventController extends BaseController {
 
       #-------------- Begin: Query the database   --------------------------------
       #Perform the filtered search
-      $theResults = $app['db']->fetchAll($sql,array(
+      $theResults = $this->app['db']->fetchAll($sql,array(
         (string) $inputSearchValueModified,
         (string) $inputSearchValueModified,
         (string) $inputSearchValueModified,
@@ -923,10 +927,10 @@ class HashEventController extends BaseController {
         (string) $inputSearchValueModified));
 
       #Perform the untiltered count
-      $theUnfilteredCount = ($app['db']->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
+      $theUnfilteredCount = ($this->app['db']->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
 
       #Perform the filtered count
-      $theFilteredCount = ($app['db']->fetchAssoc($sqlFilteredCount,array(
+      $theFilteredCount = ($this->app['db']->fetchAssoc($sqlFilteredCount,array(
         (string) $inputSearchValueModified,
         (string) $inputSearchValueModified,
         (string) $inputSearchValueModified,
@@ -943,7 +947,7 @@ class HashEventController extends BaseController {
       );
 
       #Set the return value
-      $returnValue = $app->json($output,200);
+      $returnValue = $this->app->json($output,200);
 
       #Return the return value
       return $returnValue;

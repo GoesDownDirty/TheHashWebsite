@@ -19,15 +19,15 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 class HashPersonController extends BaseController
 {
 
+  public function __construct(Application $app) {
+    parent::__construct($app);
+  }
 
-
-
-
-  public function deleteHashPersonPreAction(Request $request, Application $app, int $hasher_id){
+  public function deleteHashPersonPreAction(Request $request, int $hasher_id){
 
     # Make a database call to obtain the hasher information
     $sql = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
-    $hasherValue = $app['db']->fetchAssoc($sql, array((int) $hasher_id));
+    $hasherValue = $this->app['db']->fetchAssoc($sql, array((int) $hasher_id));
 
     #Determine if the hasher exists
     if(!$hasherValue){
@@ -39,16 +39,16 @@ class HashPersonController extends BaseController
     }
 
     # Obtain all of their hashings (all kennels)
-    $allHashings = $app['db']->fetchAll(ALL_HASHINGS_IN_ALL_KENNELS_FOR_HASHER, array((int)$hasher_id));
+    $allHashings = $this->app['db']->fetchAll(ALL_HASHINGS_IN_ALL_KENNELS_FOR_HASHER, array((int)$hasher_id));
 
     # Obtain all of their harings (all kennels)
-    $allHarings = $app['db']->fetchAll(ALL_HARINGS_IN_ALL_KENNELS_FOR_HASHER, array((int)$hasher_id));
+    $allHarings = $this->app['db']->fetchAll(ALL_HARINGS_IN_ALL_KENNELS_FOR_HASHER, array((int)$hasher_id));
 
     # Obtain the number of newbie hyper hares
     # $newOverallHaresCount = count($newOverallHares);
 
     # Establish the return value
-    $returnValue = $this->render($app, 'admin_delete_hasher.twig',array(
+    $returnValue = $this->render('admin_delete_hasher.twig',array(
       'pageTitle' => 'Hasher Deletion',
       'pageSubTitle' => $pageSubTitle,
       'theirHashings' => $allHashings,
@@ -66,7 +66,7 @@ class HashPersonController extends BaseController
 
 
 
-  public function deleteHashPersonAjaxAction (Request $request, Application $app){
+  public function deleteHashPersonAjaxAction (Request $request){
 
     #Establish the return message
     $returnMessage = "This has not been set yet...";
@@ -80,10 +80,10 @@ class HashPersonController extends BaseController
     #Check if the csrf token is valid
     /*
     if($this->isCsrfTokenValid('delete',$csrfToken)){
-      $returnValue =  $app->json("valid", 200);
+      $returnValue =  $this->app->json("valid", 200);
       return $returnValue;
     }else{
-      $returnValue =  $app->json("not valid", 200);
+      $returnValue =  $this->app->json("not valid", 200);
       return $returnValue;
     }
     */
@@ -96,17 +96,17 @@ class HashPersonController extends BaseController
       $hasherIdentitySql = "SELECT * FROM HASHERS WHERE HASHERS.HASHER_KY = ? ;";
 
       # Make a database call to obtain the hasher information
-      $hasherValue = $app['db']->fetchAssoc($hasherIdentitySql, array((int) $hasherKey));
+      $hasherValue = $this->app['db']->fetchAssoc($hasherIdentitySql, array((int) $hasherKey));
 
       #2. Ensure they have no hashings
       $hasHashingsSQL = "SELECT * FROM HASHINGS JOIN HASHERS ON HASHINGS.HASHER_KY = HASHERS.HASHER_KY WHERE HASHERS.HASHER_KY = ?";
-      $hashingsList = $app['db']->fetchAll($hasHashingsSQL,array((int)$hasherKey));
+      $hashingsList = $this->app['db']->fetchAll($hasHashingsSQL,array((int)$hasherKey));
       $hashingCount = count($hashingsList);
 
 
       #3. Ensure they have no harings
       $hasHaringsSQL = "SELECT * FROM HARINGS JOIN HASHERS ON HARINGS.HARINGS_HASHER_KY = HASHERS.HASHER_KY WHERE HASHERS.HASHER_KY = ?";
-      $haringsList = $app['db']->fetchAll($hasHaringsSQL,array((int)$hasherKey));
+      $haringsList = $this->app['db']->fetchAll($hasHaringsSQL,array((int)$hasherKey));
       $haringCount = count($haringsList);
 
       #If the hasher exists
@@ -126,7 +126,7 @@ class HashPersonController extends BaseController
 
           try{
             #Execute the query
-            $app['dbs']['mysql_write']->executeUpdate($deletionSQL,array((int) $hasherKey));
+            $this->app['dbs']['mysql_write']->executeUpdate($deletionSQL,array((int) $hasherKey));
 
             #Audit the action
             $hasherNickname = $hasherValue['HASHER_ABBREVIATION'];
@@ -136,7 +136,7 @@ class HashPersonController extends BaseController
             $hasherDeceased = $hasherValue['DECEASED'];
             $tempActionType = "Delete Person";
             $tempActionDescription = "Deleted ($hasherName|$hasherNickname|$hasherFirstName|$hasherLastName|$hasherHomeKennel|$hasherDeceased)";
-            AdminController::auditTheThings($request, $app, $tempActionType, $tempActionDescription);
+            $this->auditTheThings($request, $tempActionType, $tempActionDescription);
 
             #Define the return message
             $returnMessage = "Success! They are gonzo!";
@@ -144,7 +144,7 @@ class HashPersonController extends BaseController
 
             $tempActionType = "Delete Person";
             $tempActionDescription = "Failed to delete $hasherName";
-            AdminController::auditTheThings($request, $app, $tempActionType, $tempActionDescription);
+            $this->auditTheThings($request, $tempActionType, $tempActionDescription);
 
             #Define the return message
             $returnMessage = "Oh crap. Something bad happened.";
@@ -165,19 +165,19 @@ class HashPersonController extends BaseController
     }
 
     #Set the return value
-    $returnValue =  $app->json($returnMessage, 200);
+    $returnValue =  $this->app->json($returnMessage, 200);
     return $returnValue;
 
   }
 
 
-  public function modifyHashPersonAction(Request $request, Application $app, int $hasher_id){
+  public function modifyHashPersonAction(Request $request, int $hasher_id){
 
     # Declare the SQL used to retrieve this information
     $sql = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
 
     # Make a database call to obtain the hasher information
-    $hasherValue = $app['db']->fetchAssoc($sql, array((int) $hasher_id));
+    $hasherValue = $this->app['db']->fetchAssoc($sql, array((int) $hasher_id));
 
     $data = array(
         'HASHER_KY' => $hasherValue['HASHER_KY'],
@@ -190,7 +190,7 @@ class HashPersonController extends BaseController
         'DECEASED' => $hasherValue['DECEASED'],
     );
 
-    $formFactoryThing = $app['form.factory']->createBuilder(FormType::class, $data)
+    $formFactoryThing = $this->app['form.factory']->createBuilder(FormType::class, $data)
       ->add('HASHER_NAME')
       ->add('HASHER_ABBREVIATION')
       ->add('LAST_NAME')
@@ -231,7 +231,7 @@ class HashPersonController extends BaseController
             SET
               HASHER_NAME= ?, HASHER_ABBREVIATION= ?, LAST_NAME= ?, FIRST_NAME=?, HOME_KENNEL=?, HOME_KENNEL_KY=?, DECEASED=?
             WHERE HASHER_KY=?";
-          $app['dbs']['mysql_write']->executeUpdate($sql,array(
+          $this->app['dbs']['mysql_write']->executeUpdate($sql,array(
             $tempHasherName,
             $tempHasherAbbreviation,
             $tempLastName,
@@ -243,20 +243,20 @@ class HashPersonController extends BaseController
           ));
 
           #Add a confirmation that everything worked
-          $app['session']->getFlashBag()->add('success', 'Success! You modified the person. They were not good enough as they were, so you made them better.');
+          $this->app['session']->getFlashBag()->add('success', 'Success! You modified the person. They were not good enough as they were, so you made them better.');
 
           #Audit the action
           $tempActionType = "Modify Person";
           $tempActionDescription = "Modified $tempHasherName";
-          AdminController::auditTheThings($request, $app, $tempActionType, $tempActionDescription);
+          $this->auditTheThings($request, $tempActionType, $tempActionDescription);
 
       } else{
-        $app['session']->getFlashBag()->add('danger', 'Wrong! You broke it.');
+        $this->app['session']->getFlashBag()->add('danger', 'Wrong! You broke it.');
       }
 
     }
 
-    $returnValue = $this->render($app, 'edit_hasher_form.twig', array (
+    $returnValue = $this->render('edit_hasher_form.twig', array (
       'pageTitle' => 'Hasher Person Modification',
       'pageHeader' => 'Why is this so complicated ?',
       'form' => $form->createView(),
@@ -269,9 +269,9 @@ class HashPersonController extends BaseController
   }
 
   #Define the action
-  public function createHashPersonAction(Request $request, Application $app){
+  public function createHashPersonAction(Request $request){
 
-    $formFactoryThing = $app['form.factory']->createBuilder(FormType::class)
+    $formFactoryThing = $this->app['form.factory']->createBuilder(FormType::class)
       ->add('HASHER_NAME')
       ->add('HASHER_ABBREVIATION')
       ->add('LAST_NAME')
@@ -319,7 +319,7 @@ class HashPersonController extends BaseController
             ) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 
-          $app['dbs']['mysql_write']->executeUpdate($sql,array(
+          $this->app['dbs']['mysql_write']->executeUpdate($sql,array(
             $tempHasherName,
             $tempHasherAbbreviation,
             $tempLastName,
@@ -332,20 +332,20 @@ class HashPersonController extends BaseController
 
           #Add a confirmation that everything worked
           $theSuccessMessage = "Success! You created a person. (Hasher $tempHasherName)";
-          $app['session']->getFlashBag()->add('success', $theSuccessMessage);
+          $this->app['session']->getFlashBag()->add('success', $theSuccessMessage);
 
           #Audit the action
           $tempActionType = "Create Person";
           $tempActionDescription = "Created $tempHasherName";
-          AdminController::auditTheThings($request, $app, $tempActionType, $tempActionDescription);
+          $this->auditTheThings($request, $tempActionType, $tempActionDescription);
 
       } else{
-        $app['session']->getFlashBag()->add('danger', 'Wrong! You broke it.');
+        $this->app['session']->getFlashBag()->add('danger', 'Wrong! You broke it.');
       }
 
     }
 
-    $returnValue = $this->render($app, 'new_hasher_form.twig', array (
+    $returnValue = $this->render('new_hasher_form.twig', array (
       'pageTitle' => 'Hasher Person Creation',
       'pageHeader' => 'Why is this so complicated ?',
       'form' => $form->createView(),
@@ -357,7 +357,7 @@ class HashPersonController extends BaseController
   }
 
 
-    public function retrieveHasherAction (Request $request, Application $app){
+    public function retrieveHasherAction (Request $request){
 
       #Establish the return message
       $returnMessage = "This has not been set yet...";
@@ -373,7 +373,7 @@ class HashPersonController extends BaseController
         $hasherIdentitySql = "SELECT * FROM HASHERS WHERE HASHERS.HASHER_KY = ? ;";
 
         # Make a database call to obtain the hasher information
-        $hasherValue = $app['db']->fetchAssoc($hasherIdentitySql, array((int) $hasherKey));
+        $hasherValue = $this->app['db']->fetchAssoc($hasherIdentitySql, array((int) $hasherKey));
 
         #Obtain the hasher name from the object
         $tempHasherName = $hasherValue['HASHER_NAME'];
@@ -387,7 +387,7 @@ class HashPersonController extends BaseController
       }
 
       #Set the return value
-      $returnValue =  $app->json($returnMessage, 200);
+      $returnValue =  $this->app->json($returnMessage, 200);
       return $returnValue;
     }
 

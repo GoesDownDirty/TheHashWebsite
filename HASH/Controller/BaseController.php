@@ -7,13 +7,19 @@ use Symfony\Component\HttpFoundation\Request;
 
 class BaseController {
 
+  protected Application $app;
+
+  protected function __construct(Application $app) {
+    $this->app = $app;
+  }
+
   // fetch all - ignore query errors
   // used in slashaction2 to allow the home page to render even if there
   // are integrity issues in the database (currently having duplicate event
   // date/times causes issues)
-  protected function fetchAllIgnoreErrors(Application $app, string $sql, array $args) {
+  protected function fetchAllIgnoreErrors(string $sql, array $args) {
     try {
-      return $app['db']->fetchAll($sql, $args);
+      return $this->app['db']->fetchAll($sql, $args);
     } catch(\Exception $e) {
       // ignore
     }
@@ -21,56 +27,56 @@ class BaseController {
   }
 
   // Add common page arguments, then dispatch to twig to render page
-  protected function render(Application $app, string $template, array $args) {
+  protected function render(string $template, array $args) {
 
-    $google_analytics_id = $this->getGoogleAnalyticsId($app);
-    $site_banner = $this->getSiteBanner($app);
+    $google_analytics_id = $this->getGoogleAnalyticsId();
+    $site_banner = $this->getSiteBanner();
 
     $args['google_analytics_id'] = $google_analytics_id;
     $args['site_banner'] = $site_banner;
 
-    return $app['twig']->render($template, $args);
+    return $this->app['twig']->render($template, $args);
   }
 
-  protected function hasLegacyHashCounts(Application $app) {
+  protected function hasLegacyHashCounts() {
     $sql = "SELECT value FROM SITE_CONFIG WHERE name='has_legacy_hash_counts'";
-    return $app['db']->fetchOne($sql, array()) == "true";
+    return $this->app['db']->fetchOne($sql, array()) == "true";
   }
 
-  protected function getSiteBanner(Application $app) {
+  protected function getSiteBanner() {
     $sql = "SELECT value FROM SITE_CONFIG WHERE name='site_banner'";
-    return $app['db']->fetchOne($sql, array());
+    return $this->app['db']->fetchOne($sql, array());
   }
 
-  protected function getAdministratorEmail(Application $app) {
+  protected function getAdministratorEmail() {
     $sql = "SELECT value FROM SITE_CONFIG WHERE name='administrator_email'";
-    return $app['db']->fetchOne($sql, array());
+    return $this->app['db']->fetchOne($sql, array());
   }
 
-  protected function getDefaultKennel(Application $app) {
+  protected function getDefaultKennel() {
     $sql = "SELECT value FROM SITE_CONFIG WHERE name='default_kennel'";
-    return $app['db']->fetchOne($sql, array());
+    return $this->app['db']->fetchOne($sql, array());
   }
 
-  protected function getGoogleAnalyticsId(Application $app) {
+  protected function getGoogleAnalyticsId() {
     $sql = "SELECT value FROM SITE_CONFIG WHERE name='google_analytics_id'";
-    return $app['db']->fetchOne($sql, array());
+    return $this->app['db']->fetchOne($sql, array());
   }
 
-  protected function getGooglePlacesApiWebServiceKey(Application $app) {
+  protected function getGooglePlacesApiWebServiceKey() {
     $sql = "SELECT value FROM SITE_CONFIG WHERE name='google_places_api_web_service_key'";
-    return $app['db']->fetchOne($sql, array());
+    return $this->app['db']->fetchOne($sql, array());
   }
 
-  protected function getGoogleMapsJavascriptApiKey(Application $app) {
+  protected function getGoogleMapsJavascriptApiKey() {
     $sql = "SELECT value FROM SITE_CONFIG WHERE name='google_maps_javascript_api_key'";
-    return $app['db']->fetchOne($sql, array());
+    return $this->app['db']->fetchOne($sql, array());
   }
 
-  protected function getSiteConfigItemAsInt(Application $app, string $name, int $defaultValue) {
+  protected function getSiteConfigItemAsInt(string $name, int $defaultValue) {
     $sql = "SELECT VALUE FROM SITE_CONFIG WHERE NAME = ?";
 
-    $value = (int) $app['db']->fetchOne($sql, array($name));
+    $value = (int) $this->app['db']->fetchOne($sql, array($name));
     if(!$value) {
       $value = $defaultValue;
     }
@@ -78,10 +84,10 @@ class BaseController {
     return $value;
   }
 
-  protected function getSiteConfigItem(Application $app, string $name, string $defaultValue) {
+  protected function getSiteConfigItem(string $name, string $defaultValue) {
     $sql = "SELECT VALUE FROM SITE_CONFIG WHERE NAME = ?";
 
-    $value = $app['db']->fetchOne($sql, array($name));
+    $value = $this->app['db']->fetchOne($sql, array($name));
     if(!$value) {
       $value = $defaultValue;
     }
@@ -90,13 +96,13 @@ class BaseController {
   }
 
   protected function obtainKennelKeyFromKennelAbbreviation(
-      Request $request, Application $app, string $kennel_abbreviation) {
+      string $kennel_abbreviation) {
 
     #Define the SQL to RuntimeException
     $sql = "SELECT KENNEL_KY FROM KENNELS WHERE KENNEL_ABBREVIATION = ?";
 
     #Query the database
-    $kennelValue = $app['db']->fetchAssoc($sql,
+    $kennelValue = $this->app['db']->fetchAssoc($sql,
       array((string) $kennel_abbreviation));
 
     #Obtain the kennel ky from the returned object
@@ -106,7 +112,7 @@ class BaseController {
     return $returnValue;
   }
 
-  protected function getHareTypes($app, $kennelKy) {
+  protected function getHareTypes($kennelKy) {
 
     #Define the SQL to RuntimeException
     $sql = "SELECT HARE_TYPE, HARE_TYPE_NAME, CHART_COLOR
@@ -117,13 +123,13 @@ class BaseController {
              ORDER BY HARE_TYPES.SEQ";
 
     #Query the database
-    $hareTypes = $app['db']->fetchAll($sql, array((int) $kennelKy));
+    $hareTypes = $this->app['db']->fetchAll($sql, array((int) $kennelKy));
 
     #return the return value
     return $hareTypes;
   }
 
-  protected function getHashTypes($app, $kennelKy, $hare_type) {
+  protected function getHashTypes($kennelKy, $hare_type) {
 
     #Define the SQL to RuntimeException
     $sql = "SELECT HASH_TYPES.HASH_TYPE, HASH_TYPES.HASH_TYPE_NAME
@@ -137,27 +143,27 @@ class BaseController {
     #Query the database
     $args = array((int) $kennelKy);
     if($hare_type != 0) array_push($args, $hare_type);
-    $hashTypes = $app['db']->fetchAll($sql, $args);
+    $hashTypes = $this->app['db']->fetchAll($sql, $args);
 
     #return the return value
     return $hashTypes;
   }
 
-  protected function getHareTypeName($app, $hare_type) {
+  protected function getHareTypeName($hare_type) {
     $sql = "SELECT HARE_TYPE_NAME
               FROM HARE_TYPES
              WHERE HARE_TYPES.HARE_TYPE = ?";
 
     #Query the database
-    $result = $app['db']->fetchAssoc($sql, array((int) $hare_type));
+    $result = $this->app['db']->fetchAssoc($sql, array((int) $hare_type));
 
     #return the return value
     return $result['HARE_TYPE_NAME'];
   }
 
-  protected function getLegacyHashingsCountSubquery(Application $app,
+  protected function getLegacyHashingsCountSubquery(
       string $hashersTableName = "HASHERS") {
-    if($this->hasLegacyHashCounts($app)) {
+    if($this->hasLegacyHashCounts()) {
       return "COALESCE((SELECT LEGACY_HASHINGS_COUNT
          FROM LEGACY_HASHINGS
         WHERE LEGACY_HASHINGS.HASHER_KY = $hashersTableName.HASHER_KY
@@ -166,8 +172,8 @@ class BaseController {
     return "0";
   }
 
-  protected function getHashingCountsQuery(Application $app) {
-   if($this->hasLegacyHashCounts($app)) {
+  protected function getHashingCountsQuery() {
+   if($this->hasLegacyHashCounts()) {
      return "SELECT THE_KEY, NAME, SUM(VALUE) AS VALUE, KENNEL_KY
                FROM (
              SELECT HASHERS.HASHER_KY AS THE_KEY,
@@ -203,8 +209,8 @@ class BaseController {
             ORDER BY VALUE DESC";
   }
 
-  protected function getPersonsHashingCountQuery(Application $app) {
-    if($this->hasLegacyHashCounts($app)) {
+  protected function getPersonsHashingCountQuery() {
+    if($this->hasLegacyHashCounts()) {
       return "SELECT SUM(THE_COUNT) AS THE_COUNT
                 FROM (
               SELECT COUNT(*) AS THE_COUNT
@@ -224,7 +230,7 @@ class BaseController {
                AND ? != -1 AND ? != -1";
   }
 
-  protected function getHaringPercentageByHareTypeQuery(Application $app) {
+  protected function getHaringPercentageByHareTypeQuery() {
     return
       "SELECT HASHERS.HASHER_NAME AS HASHER_NAME,
               HASH_COUNT_TEMP_TABLE.HASH_COUNT AS HASH_COUNT,
@@ -233,7 +239,7 @@ class BaseController {
          FROM ((HASHERS
          JOIN (SELECT HASHINGS.HASHER_KY AS HASHER_KY,
                       COUNT(HASHINGS.HASHER_KY) + ".
-                      $this->getLegacyHashingsCountSubquery($app, "HASHINGS").
+                      $this->getLegacyHashingsCountSubquery("HASHINGS").
                       " AS HASH_COUNT
                  FROM HASHINGS
                  JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
@@ -252,7 +258,7 @@ class BaseController {
         ORDER BY ((HARING_COUNT_TEMP_TABLE.HARING_COUNT / HASH_COUNT_TEMP_TABLE.HASH_COUNT) * 100) DESC";
   }
 
-  protected function getHaringPercentageAllHashesQuery(Application $app) {
+  protected function getHaringPercentageAllHashesQuery() {
     return
       "SELECT HASHERS.HASHER_NAME AS HASHER_NAME,
               HASH_COUNT_TEMP_TABLE.HASH_COUNT AS HASH_COUNT,
@@ -261,7 +267,7 @@ class BaseController {
          FROM ((HASHERS
          JOIN (SELECT HASHINGS.HASHER_KY AS HASHER_KY,
                       COUNT(HASHINGS.HASHER_KY) + ".
-                      $this->getLegacyHashingsCountSubquery($app, "HASHINGS").
+                      $this->getLegacyHashingsCountSubquery("HASHINGS").
                       " AS HASH_COUNT
                  FROM HASHINGS
                  JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
@@ -280,9 +286,9 @@ class BaseController {
         ORDER BY ((HARING_COUNT_TEMP_TABLE.HARING_COUNT / HASH_COUNT_TEMP_TABLE.HASH_COUNT) * 100) DESC";
   }
 
-  protected function getHoundAnalversariesForEvent(Application $app) {
+  protected function getHoundAnalversariesForEvent() {
     return "SELECT HASHERS.HASHER_NAME AS HASHER_NAME,
-                   (COUNT(*)) + ".$this->getLegacyHashingsCountSubquery($app).
+                   (COUNT(*)) + ".$this->getLegacyHashingsCountSubquery().
                    " AS THE_COUNT,
                    MAX(HASHES.EVENT_DATE) AS MAX_EVENT_DATE
               FROM ((HASHERS
@@ -300,10 +306,10 @@ class BaseController {
              ORDER BY THE_COUNT DESC";
   }
 
-  protected function getPendingHasherAnalversariesQuery(Application $app) {
+  protected function getPendingHasherAnalversariesQuery() {
     return
       "SELECT HASHERS.HASHER_NAME AS HASHER_NAME,
-              COUNT(0) + ? + ".$this->getLegacyHashingsCountSubquery($app).
+              COUNT(0) + ? + ".$this->getLegacyHashingsCountSubquery().
               " AS THE_COUNT_INCREMENTED,
               TIMESTAMPDIFF(YEAR, MAX(HASHES.EVENT_DATE), CURDATE()) AS YEARS_ABSENCE
          FROM ((HASHERS
@@ -320,7 +326,7 @@ class BaseController {
         ORDER BY THE_COUNT_INCREMENTED DESC";
   }
 
-  protected function getPredictedHasherAnalversariesQuery(Application $app) {
+  protected function getPredictedHasherAnalversariesQuery() {
     return
       "SELECT HASHER_NAME, HASHER_KEY, TOTAL_HASH_COUNT, NEXT_MILESTONE,
               CURDATE() + INTERVAL ROUND(DAYS_BETWEEN_HASHES * (NEXT_MILESTONE - TOTAL_HASH_COUNT)) DAY AS PREDICTED_MILESTONE_DATE
@@ -341,7 +347,7 @@ class BaseController {
                                WHERE MILESTONE > TOTAL_HASH_COUNT
                                  AND KENNEL_KY=?) AS NEXT_MILESTONE
                  FROM (SELECT HASHERS.*, HASHERS.HASHER_KY AS OUTER_HASHER_KY, (
-                              SELECT COUNT(*) + ".$this->getLegacyHashingsCountSubquery($app)."
+                              SELECT COUNT(*) + ".$this->getLegacyHashingsCountSubquery()."
                                 FROM HASHINGS
                                 JOIN HASHES
                                   ON HASHINGS.HASH_KY = HASHES.HASH_KY
@@ -369,7 +375,7 @@ class BaseController {
         ORDER BY PREDICTED_MILESTONE_DATE";
   }
 
-  protected function getPredictedCenturionsQuery(Application $app) {
+  protected function getPredictedCenturionsQuery() {
     return
       "SELECT HASHER_NAME, HASHER_KEY, TOTAL_HASH_COUNT, NEXT_MILESTONE,
               CURDATE() + INTERVAL ROUND(DAYS_BETWEEN_HASHES * (NEXT_MILESTONE - TOTAL_HASH_COUNT)) DAY AS PREDICTED_MILESTONE_DATE
@@ -387,7 +393,7 @@ class BaseController {
                                 WHERE MILESTONE > TOTAL_HASH_COUNT
                                   AND KENNEL_KY=?) AS NEXT_MILESTONE
                  FROM (SELECT HASHERS.*, HASHERS.HASHER_KY AS OUTER_HASHER_KY, (
-                              SELECT COUNT(*) + ".$this->getLegacyHashingsCountSubquery($app)."
+                              SELECT COUNT(*) + ".$this->getLegacyHashingsCountSubquery()."
                                 FROM HASHINGS JOIN HASHES
                                   ON HASHINGS.HASH_KY = HASHES.HASH_KY
                                WHERE HASHINGS.HASHER_KY = OUTER_HASHER_KY
@@ -412,5 +418,44 @@ class BaseController {
                    ON RECENT_FIRST_HASH.HASH_KY = RECENT_FIRST_HASH_KEY
                 WHERE RECENT_HASH_COUNT > 1) AS OUTER1
         ORDER BY PREDICTED_MILESTONE_DATE";
+  }
+
+  protected function auditTheThings(Request $request, string $actionType, string $actionDescription) {
+
+    #Define the client ip address
+    $theClientIP = $request->getClientIp();
+
+    #Establish the datetime representation of "now"
+    date_default_timezone_set('US/Eastern');
+    $nowDateTime = date("Y-m-d H:i:s");
+
+    #Define the username (default to UNKNOWN)
+    $user = "UNKNOWN";
+
+    #Determine the username
+    $token = $this->app['security.token_storage']->getToken();
+    if (null !== $token) {
+      $user = $token->getUser();
+    }
+
+    #Define the sql insert statement
+    $sql = "
+      INSERT INTO AUDIT (
+        USERNAME,
+        AUDIT_TIME,
+        ACTION_TYPE,
+        ACTION_DESCRIPTION,
+        IP_ADDR
+      ) VALUES (?, ?, ?, ?, ?)";
+
+    #Execute the insert statement
+    $this->app['dbs']['mysql_write']->executeUpdate($sql,array(
+      $user,
+      $nowDateTime,
+      $actionType,
+      $actionDescription,
+      $theClientIP
+    ));
+
   }
 }

@@ -13,30 +13,34 @@ use Wamania\Snowball\English;
 
 class ObscureStatisticsController extends BaseController {
 
-  public function kennelEventsHeatMap(Request $request, Application $app, string $kennel_abbreviation){
+  public function __construct(Application $app) {
+    parent::__construct($app);
+  }
+
+  public function kennelEventsHeatMap(Request $request, string $kennel_abbreviation){
 
     #Obtain the kennel key
-    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
     # Obtain the hashes
     $sqlTheHashes = "SELECT HASHES.* FROM HASHES
     WHERE KENNEL_KY = ? and LAT is not null and LNG is not null";
-    $theHashes = $app['db']->fetchAll($sqlTheHashes, array((int) $kennelKy));
+    $theHashes = $this->app['db']->fetchAll($sqlTheHashes, array((int) $kennelKy));
 
     #Obtain the average lat
     $sqlTheAverageLatLong = "SELECT AVG(LAT) AS THE_LAT, AVG(LNG) AS THE_LNG FROM HASHES
     WHERE KENNEL_KY = ? and LAT is not null and LNG is not null";
-    $theAverageLatLong = $app['db']->fetchAssoc($sqlTheAverageLatLong, array((int) $kennelKy));
+    $theAverageLatLong = $this->app['db']->fetchAssoc($sqlTheAverageLatLong, array((int) $kennelKy));
     $avgLat = $theAverageLatLong['THE_LAT'];
     $avgLng = $theAverageLatLong['THE_LNG'];
 
     # Establish and set the return value
-    $returnValue = $this->render($app, 'generic_heat_map_page.twig',array(
+    $returnValue = $this->render('generic_heat_map_page.twig',array(
       'pageTitle' => 'The Kennel Heat Map',
       'pageSubTitle' => 'Location of all the hashes',
       'kennel_abbreviation' => $kennel_abbreviation,
       'the_hashes' => $theHashes,
-      'geocode_api_value' => $this->getGoogleMapsJavascriptApiKey($app),
+      'geocode_api_value' => $this->getGoogleMapsJavascriptApiKey(),
       'avg_lat' => $avgLat,
       'avg_lng' => $avgLng
     ));
@@ -47,30 +51,30 @@ class ObscureStatisticsController extends BaseController {
 
   }
 
-  public function kennelEventsClusterMap(Request $request, Application $app, string $kennel_abbreviation){
+  public function kennelEventsClusterMap(Request $request, string $kennel_abbreviation){
 
     #Obtain the kennel key
-    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
     # Obtain the hashes
     $sqlTheHashes = "SELECT HASHES.* FROM HASHES
     WHERE KENNEL_KY = ? and LAT is not null and LNG is not null";
-    $theHashes = $app['db']->fetchAll($sqlTheHashes, array((int) $kennelKy));
+    $theHashes = $this->app['db']->fetchAll($sqlTheHashes, array((int) $kennelKy));
 
     #Obtain the average lat
     $sqlTheAverageLatLong = "SELECT AVG(LAT) AS THE_LAT, AVG(LNG) AS THE_LNG FROM HASHES
     WHERE KENNEL_KY = ? and LAT is not null and LNG is not null";
-    $theAverageLatLong = $app['db']->fetchAssoc($sqlTheAverageLatLong, array((int) $kennelKy));
+    $theAverageLatLong = $this->app['db']->fetchAssoc($sqlTheAverageLatLong, array((int) $kennelKy));
     $avgLat = $theAverageLatLong['THE_LAT'];
     $avgLng = $theAverageLatLong['THE_LNG'];
 
     # Establish and set the return value
-    $returnValue = $this->render($app, 'generic_cluster_map_page.twig',array(
+    $returnValue = $this->render('generic_cluster_map_page.twig',array(
       'pageTitle' => 'The Kennel Cluster Map',
       'pageSubTitle' => 'Location of all the hashes',
       'kennel_abbreviation' => $kennel_abbreviation,
       'the_hashes' => $theHashes,
-      'geocode_api_value' => $this->getGoogleMapsJavascriptApiKey($app),
+      'geocode_api_value' => $this->getGoogleMapsJavascriptApiKey(),
       'avg_lat' => $avgLat,
       'avg_lng' => $avgLng
     ));
@@ -81,30 +85,30 @@ class ObscureStatisticsController extends BaseController {
 
   }
 
-  public function kennelEventsMarkerMap(Request $request, Application $app, string $kennel_abbreviation){
+  public function kennelEventsMarkerMap(Request $request, string $kennel_abbreviation){
 
     #Obtain the kennel key
-    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
     # Obtain the hashes
     $sqlTheHashes = "SELECT HASHES.* FROM HASHES
     WHERE KENNEL_KY = ? and LAT is not null and LNG is not null";
-    $theHashes = $app['db']->fetchAll($sqlTheHashes, array((int) $kennelKy));
+    $theHashes = $this->app['db']->fetchAll($sqlTheHashes, array((int) $kennelKy));
 
     #Obtain the average lat
     $sqlTheAverageLatLong = "SELECT AVG(LAT) AS THE_LAT, AVG(LNG) AS THE_LNG FROM HASHES
     WHERE KENNEL_KY = ? and LAT is not null and LNG is not null";
-    $theAverageLatLong = $app['db']->fetchAssoc($sqlTheAverageLatLong, array((int) $kennelKy));
+    $theAverageLatLong = $this->app['db']->fetchAssoc($sqlTheAverageLatLong, array((int) $kennelKy));
     $avgLat = $theAverageLatLong['THE_LAT'];
     $avgLng = $theAverageLatLong['THE_LNG'];
 
     # Establish and set the return value
-    $returnValue = $this->render($app, 'generic_marker_map_page.twig',array(
+    $returnValue = $this->render('generic_marker_map_page.twig',array(
       'pageTitle' => 'The Kennel Marker Map',
       'pageSubTitle' => 'Location of all the hashes',
       'kennel_abbreviation' => $kennel_abbreviation,
       'the_hashes' => $theHashes,
-      'geocode_api_value' => $this->getGoogleMapsJavascriptApiKey($app),
+      'geocode_api_value' => $this->getGoogleMapsJavascriptApiKey(),
       'avg_lat' => $avgLat,
       'avg_lng' => $avgLng
     ));
@@ -116,52 +120,52 @@ class ObscureStatisticsController extends BaseController {
   }
 
     #Landing screen for year in review
-    public function getYearInReviewAction(Request $request, Application $app, int $year_value, string $kennel_abbreviation){
+    public function getYearInReviewAction(Request $request, int $year_value, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
-      $hashTypes = $this->getHashTypes($app, $kennelKy, 0);
-      $hareTypes = $this->getHareTypes($app, $kennelKy);
+      $hashTypes = $this->getHashTypes($kennelKy, 0);
+      $hareTypes = $this->getHareTypes($kennelKy);
 
       #Establish the page title
       $pageTitle = "$year_value: Year in review";
 
       #Obtain number of hashes
-      $hashCount = ($app['db']->fetchAssoc(PER_KENNEL_HASH_COUNTS_BY_YEAR,array((int)$year_value, (int) $kennelKy)))['THE_COUNT'];
+      $hashCount = ($this->app['db']->fetchAssoc(PER_KENNEL_HASH_COUNTS_BY_YEAR,array((int)$year_value, (int) $kennelKy)))['THE_COUNT'];
 
       foreach($hashTypes as &$hashType) {
         #Obtain number of hashtype hashes
-        $hashCounts[$hashType['HASH_TYPE_NAME']] = ($app['db']->fetchAssoc(PER_KENNEL_HASH_COUNTS_BY_YEAR . " AND HASHES.HASH_TYPE = ?",
+        $hashCounts[$hashType['HASH_TYPE_NAME']] = ($this->app['db']->fetchAssoc(PER_KENNEL_HASH_COUNTS_BY_YEAR . " AND HASHES.HASH_TYPE = ?",
           array((int)$year_value, (int) $kennelKy, $hashType['HASH_TYPE'])))['THE_COUNT'];
       }
 
       #Obtain number of hashers
-      $hasherCount = ($app['db']->fetchAssoc(PER_KENNEL_HASHERS_COUNT_BY_YEAR,array((int)$year_value, (int) $kennelKy)))['THE_COUNT'];
+      $hasherCount = ($this->app['db']->fetchAssoc(PER_KENNEL_HASHERS_COUNT_BY_YEAR,array((int)$year_value, (int) $kennelKy)))['THE_COUNT'];
 
       #Obtain number of overall hares
-      $overallHareCount = ($app['db']->fetchAssoc(PER_KENNEL_HARES_COUNT_BY_YEAR,array((int)$year_value, (int) $kennelKy)))['THE_COUNT'];
+      $overallHareCount = ($this->app['db']->fetchAssoc(PER_KENNEL_HARES_COUNT_BY_YEAR,array((int)$year_value, (int) $kennelKy)))['THE_COUNT'];
 
       foreach($hareTypes as &$hareType) {
-        $hareCounts[$hareType['HARE_TYPE_NAME']] = ($app['db']->fetchAssoc(PER_KENNEL_HARES_COUNT_BY_YEAR . "AND HARINGS.HARE_TYPE & ? != 0",
+        $hareCounts[$hareType['HARE_TYPE_NAME']] = ($this->app['db']->fetchAssoc(PER_KENNEL_HARES_COUNT_BY_YEAR . "AND HARINGS.HARE_TYPE & ? != 0",
           array((int)$year_value, (int) $kennelKy, $hareType['HARE_TYPE'])))['THE_COUNT'];
       }
 
       # Obtain the number of newbie hashers
-      $newHashers = $app['db']->fetchAll(NEW_HASHERS_FOR_THIS_YEAR, array((int) $kennelKy,(int) $kennelKy, (int)$year_value));
+      $newHashers = $this->app['db']->fetchAll(NEW_HASHERS_FOR_THIS_YEAR, array((int) $kennelKy,(int) $kennelKy, (int)$year_value));
       $newHashersCount = count($newHashers);
 
       foreach($hareTypes as &$hareType) {
-        $newHareCounts[$hareType['HARE_TYPE_NAME']] = count($app['db']->fetchAll(NEW_HARES_FOR_THIS_YEAR_BY_HARE_TYPE,
+        $newHareCounts[$hareType['HARE_TYPE_NAME']] = count($this->app['db']->fetchAll(NEW_HARES_FOR_THIS_YEAR_BY_HARE_TYPE,
           array($hareType['HARE_TYPE'],(int) $kennelKy,$hareType['HARE_TYPE'],(int) $kennelKy, $hareType['HARE_TYPE'],(int)$year_value)));
       }
 
       # Obtain the number of new overall hares
-      $newOverallHares = $app['db']->fetchAll(NEW_HARES_FOR_THIS_YEAR, array((int) $kennelKy,(int) $kennelKy,(int)$year_value));
+      $newOverallHares = $this->app['db']->fetchAll(NEW_HARES_FOR_THIS_YEAR, array((int) $kennelKy,(int) $kennelKy,(int)$year_value));
       $newOverallHaresCount = count($newOverallHares);
 
       #Establish the return value
-      $returnValue = $this->render($app, 'year_in_review.twig', array (
+      $returnValue = $this->render('year_in_review.twig', array (
         'pageTitle' => $pageTitle,
         'yearValue' => $year_value,
         'kennel_abbreviation' => $kennel_abbreviation,
@@ -182,10 +186,10 @@ class ObscureStatisticsController extends BaseController {
     }
 
     #Obtain hashers for an event
-    public function getHasherCountsByYear(Request $request, Application $app, string $kennel_abbreviation){
+    public function getHasherCountsByYear(Request $request, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Obtain the post values
       $theYear = $request->request->get('year_value');
@@ -194,18 +198,18 @@ class ObscureStatisticsController extends BaseController {
       $hasherCountSQL = HASHER_COUNTS_BY_YEAR;
 
       #Obtain the hare list
-      $hasherCountList = $app['db']->fetchAll($hasherCountSQL,array((int)$theYear, (int) $kennelKy));
+      $hasherCountList = $this->app['db']->fetchAll($hasherCountSQL,array((int)$theYear, (int) $kennelKy));
 
       #Set the return value
-      $returnValue =  $app->json($hasherCountList, 200);
+      $returnValue =  $this->app->json($hasherCountList, 200);
       return $returnValue;
     }
 
     #Obtain total hare counts per year
-    public function getTotalHareCountsByYear(Request $request, Application $app, string $kennel_abbreviation){
+    public function getTotalHareCountsByYear(Request $request, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Obtain the post values
       $theYear = $request->request->get('year_value');
@@ -214,19 +218,19 @@ class ObscureStatisticsController extends BaseController {
       $hareCountSQL = TOTAL_HARE_COUNTS_BY_YEAR;
 
       #Obtain the hare list
-      $hareCountList = $app['db']->fetchAll($hareCountSQL,array((int)$theYear, (int) $kennelKy));
+      $hareCountList = $this->app['db']->fetchAll($hareCountSQL,array((int)$theYear, (int) $kennelKy));
 
       #Set the return value
-      $returnValue =  $app->json($hareCountList, 200);
+      $returnValue =  $this->app->json($hareCountList, 200);
       return $returnValue;
 
     }
 
     #Obtain hare counts per year
-    public function getHareCountsByYear(Request $request, Application $app, int $hare_type, string $kennel_abbreviation){
+    public function getHareCountsByYear(Request $request, int $hare_type, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Obtain the post values
       $theYear = $request->request->get('year_value');
@@ -235,19 +239,19 @@ class ObscureStatisticsController extends BaseController {
       $hareCountSQL = HARE_COUNTS_BY_YEAR_BY_HARE_TYPE;
 
       #Obtain the hare list
-      $hareCountList = $app['db']->fetchAll($hareCountSQL,array((int)$theYear, $hare_type, (int) $kennelKy));
+      $hareCountList = $this->app['db']->fetchAll($hareCountSQL,array((int)$theYear, $hare_type, (int) $kennelKy));
 
       #Set the return value
-      $returnValue =  $app->json($hareCountList, 200);
+      $returnValue =  $this->app->json($hareCountList, 200);
       return $returnValue;
 
     }
 
     #Obtain total hare counts per year
-    public function getNewbieHasherListByYear(Request $request, Application $app, string $kennel_abbreviation){
+    public function getNewbieHasherListByYear(Request $request, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Obtain the post values
       $theYear = $request->request->get('year_value');
@@ -256,18 +260,18 @@ class ObscureStatisticsController extends BaseController {
       $hareCountSQL = NEW_HASHERS_FOR_THIS_YEAR;
 
       #Obtain the hare list
-      $hareCountList = $app['db']->fetchAll($hareCountSQL,array((int) $kennelKy,(int) $kennelKy,(int)$theYear));
+      $hareCountList = $this->app['db']->fetchAll($hareCountSQL,array((int) $kennelKy,(int) $kennelKy,(int)$theYear));
 
       #Set the return value
-      $returnValue =  $app->json($hareCountList, 200);
+      $returnValue =  $this->app->json($hareCountList, 200);
       return $returnValue;
 
     }
 
-    public function getNewbieHareListByYear(Request $request, Application $app, int $hare_type, string $kennel_abbreviation){
+    public function getNewbieHareListByYear(Request $request, int $hare_type, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Obtain the post values
       $theYear = $request->request->get('year_value');
@@ -276,18 +280,18 @@ class ObscureStatisticsController extends BaseController {
       $hareCountSQL = NEW_HARES_FOR_THIS_YEAR_BY_HARE_TYPE;
 
       #Obtain the hare list
-      $hareCountList = $app['db']->fetchAll($hareCountSQL,array(
+      $hareCountList = $this->app['db']->fetchAll($hareCountSQL,array(
         $hare_type, (int) $kennelKy, $hare_type, (int) $kennelKy, $hare_type, (int)$theYear));
 
       #Set the return value
-      $returnValue =  $app->json($hareCountList, 200);
+      $returnValue =  $this->app->json($hareCountList, 200);
       return $returnValue;
     }
 
-    public function getNewbieOverallHareListByYear(Request $request, Application $app, string $kennel_abbreviation){
+    public function getNewbieOverallHareListByYear(Request $request, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Obtain the post values
       $theYear = $request->request->get('year_value');
@@ -296,22 +300,22 @@ class ObscureStatisticsController extends BaseController {
       $hareCountSQL = NEW_HARES_FOR_THIS_YEAR;
 
       #Obtain the hare list
-      $hareCountList = $app['db']->fetchAll($hareCountSQL,array(
+      $hareCountList = $this->app['db']->fetchAll($hareCountSQL,array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $theYear));
 
       #Set the return value
-      $returnValue =  $app->json($hareCountList, 200);
+      $returnValue =  $this->app->json($hareCountList, 200);
       return $returnValue;
 
     }
 
     #Obtain the first hash of a given hasher
-    public function getHashersVirginHash(Request $request, Application $app, string $kennel_abbreviation){
+    public function getHashersVirginHash(Request $request, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
@@ -320,537 +324,537 @@ class ObscureStatisticsController extends BaseController {
       $theSql = SELECT_HASHERS_VIRGIN_HASH;
 
       #Query the database
-      $theirVirginHash = $app['db']->fetchAssoc($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theirVirginHash = $this->app['db']->fetchAssoc($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
-      $returnValue = $app->json($theirVirginHash,200);
+      $returnValue = $this->app->json($theirVirginHash,200);
       return $returnValue;
 
     }
 
-    public function getKennelsVirginHash(Request $request, Application $app, string $kennel_abbreviation){
+    public function getKennelsVirginHash(Request $request, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = SELECT_KENNELS_VIRGIN_HASH;
 
       #Query the database
-      $theirVirginHash = $app['db']->fetchAssoc($theSql, array((int) $kennelKy));
+      $theirVirginHash = $this->app['db']->fetchAssoc($theSql, array((int) $kennelKy));
 
       #Set the return value
-      $returnValue = $app->json($theirVirginHash,200);
+      $returnValue = $this->app->json($theirVirginHash,200);
       return $returnValue;
 
     }
 
     #Obtain the latest hash of a given hasher
-    public function getHashersLatestHash(Request $request, Application $app, string $kennel_abbreviation){
+    public function getHashersLatestHash(Request $request, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = SELECT_HASHERS_MOST_RECENT_HASH;
 
       #Query the database
-      $theirLatestHash = $app['db']->fetchAssoc($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theirLatestHash = $this->app['db']->fetchAssoc($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
-      $returnValue = $app->json($theirLatestHash,200);
+      $returnValue = $this->app->json($theirLatestHash,200);
       return $returnValue;
 
     }
 
-    public function getKennelsLatestHash(Request $request, Application $app, string $kennel_abbreviation){
+    public function getKennelsLatestHash(Request $request, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = SELECT_KENNELS_MOST_RECENT_HASH;
 
       #Query the database
-      $theirLatestHash = $app['db']->fetchAssoc($theSql, array((int) $kennelKy));
+      $theirLatestHash = $this->app['db']->fetchAssoc($theSql, array((int) $kennelKy));
 
       #Set the return value
-      $returnValue = $app->json($theirLatestHash,200);
+      $returnValue = $this->app->json($theirLatestHash,200);
       return $returnValue;
 
     }
 
 
     #Obtain the hasher hashes attended by year
-    public function getHasherHashesByYear(Request $request, Application $app, string $kennel_abbreviation){
+    public function getHasherHashesByYear(Request $request, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = HASHER_HASH_COUNTS_BY_YEAR;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
     #Obtain the hasher hashes attended by quarter
-    public function getHasherHashesByQuarter(Request $request, Application $app, string $kennel_abbreviation){
+    public function getHasherHashesByQuarter(Request $request, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = HASHER_HASH_COUNTS_BY_QUARTER;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
 
     #Obtain the hasher hashes attended by quarter
-    public function getHasherHashesByMonth(Request $request, Application $app, string $kennel_abbreviation){
+    public function getHasherHashesByMonth(Request $request, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = HASHER_HASH_COUNTS_BY_MONTH;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
 
     #Obtain the hasher hashes attended by day name
-    public function getHasherHashesByDayName(Request $request, Application $app, string $kennel_abbreviation){
+    public function getHasherHashesByDayName(Request $request, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = HASHER_HASH_COUNTS_BY_DAYNAME;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
     #Obtain the hasher hashes attended by state
-    public function getHasherHashesByState(Request $request, Application $app, string $kennel_abbreviation){
+    public function getHasherHashesByState(Request $request, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = HASHER_HASH_COUNTS_BY_STATE;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
     #Obtain the hasher hashes attended by city
-    public function getHasherHashesByCity(Request $request, Application $app, string $kennel_abbreviation){
+    public function getHasherHashesByCity(Request $request, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = HASHER_HASH_COUNTS_BY_CITY;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
-    public function getKennelHashesByCity(Request $request, Application $app, string $kennel_abbreviation){
+    public function getKennelHashesByCity(Request $request, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = KENNEL_HASH_COUNTS_BY_CITY;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $kennelKy));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $kennelKy));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
-    public function getKennelHashesByCounty(Request $request, Application $app, string $kennel_abbreviation){
+    public function getKennelHashesByCounty(Request $request, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = KENNEL_HASH_COUNTS_BY_COUNTY;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $kennelKy));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $kennelKy));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
-    public function getKennelHashesByPostalcode(Request $request, Application $app, string $kennel_abbreviation){
+    public function getKennelHashesByPostalcode(Request $request, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = KENNEL_HASH_COUNTS_BY_POSTAL_CODE;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $kennelKy));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $kennelKy));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
 
-    public function getHasherAllHaringsByYear(Request $request, Application $app, string $kennel_abbreviation){
+    public function getHasherAllHaringsByYear(Request $request, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = HASHER_ALL_HARING_COUNTS_BY_YEAR;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
-    public function getHasherAllHaringsByQuarter(Request $request, Application $app, string $kennel_abbreviation){
+    public function getHasherAllHaringsByQuarter(Request $request, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = HASHER_ALL_HARING_COUNTS_BY_QUARTER;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
-    public function getHasherAllHaringsByMonth(Request $request, Application $app, string $kennel_abbreviation){
+    public function getHasherAllHaringsByMonth(Request $request, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = HASHER_ALL_HARING_COUNTS_BY_MONTH;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
-    public function getHasherAllHaringsByDayName(Request $request, Application $app, string $kennel_abbreviation){
+    public function getHasherAllHaringsByDayName(Request $request, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = HASHER_ALL_HARING_COUNTS_BY_DAYNAME;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
-    public function getHasherAllHaringsByState(Request $request, Application $app, string $kennel_abbreviation){
+    public function getHasherAllHaringsByState(Request $request, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = HASHER_ALL_HARING_COUNTS_BY_STATE;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
-    public function getHasherAllHaringsByCity(Request $request, Application $app, string $kennel_abbreviation){
+    public function getHasherAllHaringsByCity(Request $request, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = HASHER_ALL_HARING_COUNTS_BY_CITY;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
 
     # Mappings for hasher (non hyper) harings by (year/month/state/etc)
-    public function getHasherHaringsByYear(Request $request, Application $app, string $kennel_abbreviation, int $hare_type) {
+    public function getHasherHaringsByYear(Request $request, string $kennel_abbreviation, int $hare_type) {
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = HASHER_HARING_COUNTS_BY_YEAR;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
-    public function getHasherHaringsByQuarter(Request $request, Application $app, string $kennel_abbreviation, int $hare_type){
+    public function getHasherHaringsByQuarter(Request $request, string $kennel_abbreviation, int $hare_type){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = HASHER_HARING_COUNTS_BY_QUARTER;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
-    public function getHasherHaringsByMonth(Request $request, Application $app, string $kennel_abbreviation, $hare_type) {
+    public function getHasherHaringsByMonth(Request $request, string $kennel_abbreviation, $hare_type) {
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = HASHER_HARING_COUNTS_BY_MONTH;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
-    public function getHasherHaringsByDayName(Request $request, Application $app, string $kennel_abbreviation, $hare_type) {
+    public function getHasherHaringsByDayName(Request $request, string $kennel_abbreviation, $hare_type) {
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = HASHER_HARING_COUNTS_BY_DAYNAME;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
-    public function getHasherHaringsByState(Request $request, Application $app, string $kennel_abbreviation, $hare_type) {
+    public function getHasherHaringsByState(Request $request, string $kennel_abbreviation, $hare_type) {
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = HASHER_HARING_COUNTS_BY_STATE;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
 
-    public function getHasherHaringsByCity(Request $request, Application $app, string $kennel_abbreviation, $hare_type) {
+    public function getHasherHaringsByCity(Request $request, string $kennel_abbreviation, $hare_type) {
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = HASHER_HARING_COUNTS_BY_CITY;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
-    public function getCohareCountByHare(Request $request, Application $app, string $kennel_abbreviation, int $hare_type){
+    public function getCohareCountByHare(Request $request, string $kennel_abbreviation, int $hare_type){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = COHARE_COUNT_BY_HARE;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array(
+      $theResults = $this->app['db']->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $theHasherKey,
         (int) $theHasherKey,
         (int) $hare_type));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
 
 
-    public function getCohareCountByHareAllHashes(Request $request, Application $app, string $kennel_abbreviation){
+    public function getCohareCountByHareAllHashes(Request $request, string $kennel_abbreviation){
 
       #Obtain the post values
       $theHasherKey = $request->request->get('hasher_id');
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = OVERALL_COHARE_COUNT_BY_HARE;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array(
+      $theResults = $this->app['db']->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $theHasherKey,
         (int) $theHasherKey));
 
       #Set the return value
-      $returnValue = $app->json($theResults,200);
+      $returnValue = $this->app->json($theResults,200);
       return $returnValue;
 
     }
@@ -858,13 +862,13 @@ class ObscureStatisticsController extends BaseController {
 
 
 
-    public function quickestToReachAnalversaryByDaysAction(Request $request, Application $app, string $kennel_abbreviation, int $analversary_number){
+    public function quickestToReachAnalversaryByDaysAction(Request $request, string $kennel_abbreviation, int $analversary_number){
 
 
 
 
             #Obtain the kennel key
-            $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+            $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
             #Obtain the analversary number, then subtract one (for the query requires it)
             $modifiedAnalversaryNumber = $analversary_number -1;
@@ -875,13 +879,13 @@ class ObscureStatisticsController extends BaseController {
             $theSql = str_replace("XORDERCOLUMNX","DAYS_TO_REACH_ANALVERSARY",$theSql);
 
             #Query the database
-            $theResults = $app['db']->fetchAll($theSql, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy));
+            $theResults = $this->app['db']->fetchAll($theSql, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy));
 
             #Define the page title
             $pageTitle = "Quickest to reach $analversary_number hashes";
 
             #Set the return value
-            $returnValue = $this->render($app, 'analversaries_achievements_non_json.twig',array(
+            $returnValue = $this->render('analversaries_achievements_non_json.twig',array(
               'pageTitle' => $pageTitle,
               'tableCaption' => 'Faster is better',
               'pageSubTitle' => 'Measured in days',
@@ -898,10 +902,10 @@ class ObscureStatisticsController extends BaseController {
             return $returnValue;
           }
 
-          public function quickestToReachAnalversaryByDate(Request $request, Application $app, string $kennel_abbreviation, int $analversary_number){
+          public function quickestToReachAnalversaryByDate(Request $request, string $kennel_abbreviation, int $analversary_number){
 
                   #Obtain the kennel key
-                  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+                  $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
                   #Obtain the analversary number, then subtract one (for the query requires it)
                   $modifiedAnalversaryNumber = $analversary_number -1;
@@ -912,14 +916,14 @@ class ObscureStatisticsController extends BaseController {
                   $theSql = str_replace("XORDERCOLUMNX","ANALVERSARY_DATE",$theSql);
 
                   #Query the database
-                  $theResults = $app['db']->fetchAll($theSql, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy));
+                  $theResults = $this->app['db']->fetchAll($theSql, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy));
 
                   #Define the page title
                   $pageTitle = "Chronological order of analversaries";
                   $pageSubTitle = "($analversary_number hashes)";
 
                   #Set the return value
-                  $returnValue = $this->render($app, 'analversaries_achievements_chronological.twig',array(
+                  $returnValue = $this->render('analversaries_achievements_chronological.twig',array(
                     'pageTitle' => $pageTitle,
                     'tableCaption' => '',
                     'pageSubTitle' => $pageSubTitle,
@@ -937,11 +941,11 @@ class ObscureStatisticsController extends BaseController {
                 }
 
 
-    public function slowestToReachAnalversaryByDaysAction(Request $request, Application $app, string $kennel_abbreviation, int $analversary_number){
+    public function slowestToReachAnalversaryByDaysAction(Request $request, string $kennel_abbreviation, int $analversary_number){
 
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Obtain the analversary number, then subtract one (for the query requires it)
       $modifiedAnalversaryNumber = $analversary_number -1;
@@ -952,13 +956,13 @@ class ObscureStatisticsController extends BaseController {
       $theSql = str_replace("XORDERCOLUMNX","DAYS_TO_REACH_ANALVERSARY",$theSql);
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy));
 
       #Define the page title
       $pageTitle = "Slowest to reach $analversary_number hashes";
 
       #Set the return value
-      $returnValue = $this->render($app, 'analversaries_achievements_non_json.twig',array(
+      $returnValue = $this->render('analversaries_achievements_non_json.twig',array(
         'pageTitle' => $pageTitle,
         'tableCaption' => 'Faster is better',
         'pageSubTitle' => 'Measured in days',
@@ -976,23 +980,23 @@ class ObscureStatisticsController extends BaseController {
     }
 
 
-    public function getLongestStreaksAction(Request $request, Application $app, string $kennel_abbreviation){
+    public function getLongestStreaksAction(Request $request, string $kennel_abbreviation){
 
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
       $theSql = THE_LONGEST_STREAKS;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array((int) $kennelKy));
+      $theResults = $this->app['db']->fetchAll($theSql, array((int) $kennelKy));
 
       #Define the page title
       $pageTitle = "The longest streaks";
 
       #Set the return value
-      $returnValue = $this->render($app, 'name_number_list.twig',array(
+      $returnValue = $this->render('name_number_list.twig',array(
         'pageTitle' => $pageTitle,
         'tableCaption' => 'Longest streak per hasher',
 
@@ -1006,10 +1010,10 @@ class ObscureStatisticsController extends BaseController {
       return $returnValue;
     }
 
-    public function longestCareerAction(Request $request, Application $app, string $kennel_abbreviation){
+    public function longestCareerAction(Request $request, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql
       $theSql = LONGEST_HASHING_CAREER_IN_DAYS;
@@ -1020,7 +1024,7 @@ class ObscureStatisticsController extends BaseController {
       $minHashingCount = 4;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array(
+      $theResults = $this->app['db']->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $kennelKy,
@@ -1036,7 +1040,7 @@ class ObscureStatisticsController extends BaseController {
       $tableCaption = "Minimum hashing count: $minHashingCount";
 
       #Add the results into the twig template
-      $returnValue = $this->render($app, 'career_length_by_day.twig',array(
+      $returnValue = $this->render('career_length_by_day.twig',array(
         'pageTitle' => "Longest Hashing Career (By Days)",
         'pageSubTitle' => $pageSubTitle,
         'tableCaption' => $tableCaption,
@@ -1058,10 +1062,10 @@ class ObscureStatisticsController extends BaseController {
 
 
 
-    public function everyonesLatestHashesAction(Request $request, Application $app, string $kennel_abbreviation, int $min_hash_count){
+    public function everyonesLatestHashesAction(Request $request, string $kennel_abbreviation, int $min_hash_count){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql
       $theSql = LONGEST_HASHING_CAREER_IN_DAYS;
@@ -1069,7 +1073,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = str_replace("XUPORDOWNX","DESC",$theSql);
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array(
+      $theResults = $this->app['db']->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $kennelKy,
@@ -1085,7 +1089,7 @@ class ObscureStatisticsController extends BaseController {
       $tableCaption = "Minimum hashing count: $min_hash_count";
 
       #Add the results into the twig template
-      $returnValue = $this->render($app, 'career_length_by_day.twig',array(
+      $returnValue = $this->render('career_length_by_day.twig',array(
         'pageTitle' => $pageSubTitle,
         'pageSubTitle' => "",
         'tableCaption' => $tableCaption,
@@ -1105,10 +1109,10 @@ class ObscureStatisticsController extends BaseController {
 
     }
 
-    public function everyonesFirstHashesAction(Request $request, Application $app, string $kennel_abbreviation, int $min_hash_count){
+    public function everyonesFirstHashesAction(Request $request, string $kennel_abbreviation, int $min_hash_count){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql
       $theSql = LONGEST_HASHING_CAREER_IN_DAYS;
@@ -1116,7 +1120,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = str_replace("XUPORDOWNX","DESC",$theSql);
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array(
+      $theResults = $this->app['db']->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $kennelKy,
@@ -1132,7 +1136,7 @@ class ObscureStatisticsController extends BaseController {
       $tableCaption = "Minimum hashing count: $min_hash_count";
 
       #Add the results into the twig template
-      $returnValue = $this->render($app, 'career_length_by_day.twig',array(
+      $returnValue = $this->render('career_length_by_day.twig',array(
         'pageTitle' => $pageSubTitle,
         'pageSubTitle' => "",
         'tableCaption' => $tableCaption,
@@ -1152,10 +1156,10 @@ class ObscureStatisticsController extends BaseController {
 
     }
 
-    public function highestAverageDaysBetweenHashesAction(Request $request, Application $app, string $kennel_abbreviation){
+    public function highestAverageDaysBetweenHashesAction(Request $request, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql
       $theSql = LONGEST_HASHING_CAREER_IN_DAYS;
@@ -1166,7 +1170,7 @@ class ObscureStatisticsController extends BaseController {
       $minHashingCount = 2;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array(
+      $theResults = $this->app['db']->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $kennelKy,
@@ -1182,7 +1186,7 @@ class ObscureStatisticsController extends BaseController {
       $tableCaption = "Minimum hashing count: $minHashingCount";
 
       #Add the results into the twig template
-      $returnValue = $this->render($app, 'career_length_by_day.twig',array(
+      $returnValue = $this->render('career_length_by_day.twig',array(
         'pageTitle' => "Average days between hashing",
         'pageSubTitle' => $pageSubTitle,
         'tableCaption' => $tableCaption,
@@ -1203,10 +1207,10 @@ class ObscureStatisticsController extends BaseController {
     }
 
 
-    public function lowestAverageDaysBetweenHashesAction(Request $request, Application $app, string $kennel_abbreviation){
+    public function lowestAverageDaysBetweenHashesAction(Request $request, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql
       $theSql = LONGEST_HASHING_CAREER_IN_DAYS;
@@ -1217,7 +1221,7 @@ class ObscureStatisticsController extends BaseController {
       $minHashingCount = 6;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array(
+      $theResults = $this->app['db']->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $kennelKy,
@@ -1233,7 +1237,7 @@ class ObscureStatisticsController extends BaseController {
       $tableCaption = "Minimum hashing count: $minHashingCount";
 
       #Add the results into the twig template
-      $returnValue = $this->render($app, 'career_length_by_day.twig',array(
+      $returnValue = $this->render('career_length_by_day.twig',array(
         'pageTitle' => "Average days between hashing",
         'pageSubTitle' => $pageSubTitle,
         'tableCaption' => $tableCaption,
@@ -1255,10 +1259,10 @@ class ObscureStatisticsController extends BaseController {
 
 
 
-    public function lowestAverageDaysBetweenAllHaringsAction(Request $request, Application $app, string $kennel_abbreviation){
+    public function lowestAverageDaysBetweenAllHaringsAction(Request $request, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql
       $theSql = LOWEST_NUMBER_OF_DAYS_BETWEEN_HARINGS;
@@ -1269,7 +1273,7 @@ class ObscureStatisticsController extends BaseController {
       $minHaringCount = 2;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array(
+      $theResults = $this->app['db']->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $kennelKy,
@@ -1285,7 +1289,7 @@ class ObscureStatisticsController extends BaseController {
       $tableCaption = "Minimum haring count: $minHaringCount";
 
       #Add the results into the twig template
-      $returnValue = $this->render($app, 'haring_career_length_by_day.twig',array(
+      $returnValue = $this->render('haring_career_length_by_day.twig',array(
         'pageTitle' => "Average days between harings",
         'pageSubTitle' => $pageSubTitle,
         'tableCaption' => $tableCaption,
@@ -1298,10 +1302,10 @@ class ObscureStatisticsController extends BaseController {
 
     }
 
-    public function highestAverageDaysBetweenAllHaringsAction(Request $request, Application $app, string $kennel_abbreviation){
+    public function highestAverageDaysBetweenAllHaringsAction(Request $request, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql
       $theSql = LOWEST_NUMBER_OF_DAYS_BETWEEN_HARINGS;
@@ -1312,7 +1316,7 @@ class ObscureStatisticsController extends BaseController {
       $minHaringCount = 2;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array(
+      $theResults = $this->app['db']->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $kennelKy,
@@ -1328,7 +1332,7 @@ class ObscureStatisticsController extends BaseController {
       $tableCaption = "Minimum haring count: $minHaringCount";
 
       #Add the results into the twig template
-      $returnValue = $this->render($app, 'haring_career_length_by_day.twig',array(
+      $returnValue = $this->render('haring_career_length_by_day.twig',array(
         'pageTitle' => "Average days between harings",
         'pageSubTitle' => $pageSubTitle,
         'tableCaption' => $tableCaption,
@@ -1343,12 +1347,12 @@ class ObscureStatisticsController extends BaseController {
 
 
 
-    public function lowestAverageDaysBetweenHaringsAction(Request $request, Application $app, int $hare_type, string $kennel_abbreviation){
+    public function lowestAverageDaysBetweenHaringsAction(Request $request, int $hare_type, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
-      $hareTypeName = $this->getHareTypeName($app, $hare_type);
+      $hareTypeName = $this->getHareTypeName($hare_type);
 
       #Define the sql
       $theSql = LOWEST_NUMBER_OF_DAYS_BETWEEN_HARINGS_BY_TYPE;
@@ -1359,7 +1363,7 @@ class ObscureStatisticsController extends BaseController {
       $minHaringCount = 5;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array(
+      $theResults = $this->app['db']->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $kennelKy,
@@ -1378,7 +1382,7 @@ class ObscureStatisticsController extends BaseController {
       $tableCaption = "Minimum haring count: $minHaringCount";
 
       #Add the results into the twig template
-      $returnValue = $this->render($app, 'haring_career_length_by_day.twig',array(
+      $returnValue = $this->render('haring_career_length_by_day.twig',array(
         'pageTitle' => "Average days between harings",
         'pageSubTitle' => $pageSubTitle,
         'tableCaption' => $tableCaption,
@@ -1393,12 +1397,12 @@ class ObscureStatisticsController extends BaseController {
     }
 
 
-    public function highestAverageDaysBetweenHaringsAction(Request $request, Application $app, int $hare_type, string $kennel_abbreviation){
+    public function highestAverageDaysBetweenHaringsAction(Request $request, int $hare_type, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
-      $hareTypeName = $this->getHareTypeName($app, $hare_type);
+      $hareTypeName = $this->getHareTypeName($hare_type);
 
       #Define the sql
       $theSql = LOWEST_NUMBER_OF_DAYS_BETWEEN_HARINGS_BY_TYPE;
@@ -1409,7 +1413,7 @@ class ObscureStatisticsController extends BaseController {
       $minHaringCount = 2;
 
       #Query the database
-      $theResults = $app['db']->fetchAll($theSql, array(
+      $theResults = $this->app['db']->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $kennelKy,
@@ -1428,7 +1432,7 @@ class ObscureStatisticsController extends BaseController {
       $tableCaption = "Minimum haring count: $minHaringCount";
 
       #Add the results into the twig template
-      $returnValue = $this->render($app, 'haring_career_length_by_day.twig',array(
+      $returnValue = $this->render('haring_career_length_by_day.twig',array(
         'pageTitle' => "Average days between harings",
         'pageSubTitle' => $pageSubTitle,
         'tableCaption' => $tableCaption,
@@ -1445,10 +1449,10 @@ class ObscureStatisticsController extends BaseController {
 
 
 
-    public function viewAttendanceChartsAction(Request $request, Application $app, string $kennel_abbreviation){
+    public function viewAttendanceChartsAction(Request $request, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       # Obtain the average and total event attendance per year
       $sqlAvgTotalEvtParticipationByYear = "SELECT
@@ -1465,7 +1469,7 @@ class ObscureStatisticsController extends BaseController {
         		GROUP BY HASHES.HASH_KY
             ) TEMPORARY_TABLE
         GROUP BY YEAR(THE_DATE)";
-      $avgTotalEvtParticipationByYear = $app['db']->fetchAll($sqlAvgTotalEvtParticipationByYear, array((int) $kennelKy));
+      $avgTotalEvtParticipationByYear = $this->app['db']->fetchAll($sqlAvgTotalEvtParticipationByYear, array((int) $kennelKy));
 
       # Obtain the average event attendance per (year/month)
       $sqlAvgEvtParticipationByYearMonth = "SELECT
@@ -1481,7 +1485,7 @@ class ObscureStatisticsController extends BaseController {
             GROUP BY HASHES.HASH_KY
             ) TEMPORARY_TABLE
         GROUP BY DATE_FORMAT(THE_DATE,'%Y/%m')";
-      $avgEvtParticipationByYearMonth = $app['db']->fetchAll($sqlAvgEvtParticipationByYearMonth, array((int) $kennelKy));
+      $avgEvtParticipationByYearMonth = $this->app['db']->fetchAll($sqlAvgEvtParticipationByYearMonth, array((int) $kennelKy));
 
       # Obtain the average event attendance per (year/quarter)
       $sqlAvgEvtParticipationByYearQuarter = "SELECT
@@ -1497,7 +1501,7 @@ class ObscureStatisticsController extends BaseController {
             GROUP BY HASHES.HASH_KY
             ) TEMPORARY_TABLE
         GROUP BY CONCAT_WS('/',YEAR(THE_DATE),QUARTER(THE_DATE))";
-      $avgEvtParticipationByYearQuarter = $app['db']->fetchAll($sqlAvgEvtParticipationByYearQuarter, array((int) $kennelKy));
+      $avgEvtParticipationByYearQuarter = $this->app['db']->fetchAll($sqlAvgEvtParticipationByYearQuarter, array((int) $kennelKy));
 
 
       # Obtain the average event attendance per (year/month)
@@ -1514,10 +1518,10 @@ class ObscureStatisticsController extends BaseController {
             GROUP BY HASHES.HASH_KY
             ) TEMPORARY_TABLE
         GROUP BY DATE_FORMAT(THE_DATE,'%m')";
-      $avgEvtParticipationByMonth = $app['db']->fetchAll($sqlAvgEvtParticipationByMonth, array((int) $kennelKy));
+      $avgEvtParticipationByMonth = $this->app['db']->fetchAll($sqlAvgEvtParticipationByMonth, array((int) $kennelKy));
 
       # Establish and set the return value
-      $returnValue = $this->render($app, 'event_participation_charts.twig',array(
+      $returnValue = $this->render('event_participation_charts.twig',array(
         'pageTitle' => 'Event Participation Statistics',
         'firstHeader' => 'FIRST HEADER',
         'secondHeader' => 'SECOND HEADER',
@@ -1534,30 +1538,30 @@ class ObscureStatisticsController extends BaseController {
     }
 
 
-    public function viewFirstTimersChartsAction(Request $request, Application $app, string $kennel_abbreviation, int $min_hash_count){
+    public function viewFirstTimersChartsAction(Request $request, string $kennel_abbreviation, int $min_hash_count){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       # Obtain the average event attendance per year
       $sqlNewComersByYear = NEWCOMERS_BY_YEAR;
-      $newComersByYear = $app['db']->fetchAll($sqlNewComersByYear, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy, $min_hash_count));
+      $newComersByYear = $this->app['db']->fetchAll($sqlNewComersByYear, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy, $min_hash_count));
 
       # Obtain the average event attendance per (year/month)
       $sqlNewComersByYearQuarter = NEWCOMERS_BY_YEAR_QUARTER;
-      $newComersByYearQuarter = $app['db']->fetchAll($sqlNewComersByYearQuarter, array((int) $kennelKy, (int) $kennelKy, $min_hash_count));
+      $newComersByYearQuarter = $this->app['db']->fetchAll($sqlNewComersByYearQuarter, array((int) $kennelKy, (int) $kennelKy, $min_hash_count));
 
       # Obtain the average event attendance per (year/quarter)
       $sqlNewComersByYearMonth = NEWCOMERS_BY_YEAR_MONTH;
-      $newComersByYearMonth = $app['db']->fetchAll($sqlNewComersByYearMonth, array((int) $kennelKy, (int) $kennelKy, $min_hash_count));
+      $newComersByYearMonth = $this->app['db']->fetchAll($sqlNewComersByYearMonth, array((int) $kennelKy, (int) $kennelKy, $min_hash_count));
 
 
       # Obtain the average event attendance per (year/month)
       $sqlNewComersByMonth = NEWCOMERS_BY_MONTH;
-      $newComersByMonth = $app['db']->fetchAll($sqlNewComersByMonth, array((int) $kennelKy,(int) $kennelKy, $min_hash_count));
+      $newComersByMonth = $this->app['db']->fetchAll($sqlNewComersByMonth, array((int) $kennelKy,(int) $kennelKy, $min_hash_count));
 
       # Establish and set the return value
-      $returnValue = $this->render($app, 'newcomers_charts.twig',array(
+      $returnValue = $this->render('newcomers_charts.twig',array(
         'pageTitle' => 'First Timers / New Comers Statistics',
         'firstHeader' => 'FIRST HEADER',
         'secondHeader' => 'SECOND HEADER',
@@ -1577,31 +1581,31 @@ class ObscureStatisticsController extends BaseController {
 
 
 
-        public function virginHaringsChartsAction(Request $request, Application $app, int $hare_type, string $kennel_abbreviation){
+        public function virginHaringsChartsAction(Request $request, int $hare_type, string $kennel_abbreviation){
 
           #Obtain the kennel key
-          $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+          $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
-          $hareTypeName = $this->getHareTypeName($app, $hare_type);
+          $hareTypeName = $this->getHareTypeName($hare_type);
 
           # Obtain the average event attendance per year
           $sqlByYear = VIRGIN_HARINGS_BY_YEAR;
-          $listByYear = $app['db']->fetchAll($sqlByYear, array((int) $kennelKy, (int) $kennelKy,$hare_type));
+          $listByYear = $this->app['db']->fetchAll($sqlByYear, array((int) $kennelKy, (int) $kennelKy,$hare_type));
 
           # Obtain the average event attendance per (year/month)
           $sqlByYearQuarter = VIRGIN_HARINGS_BY_YEAR_QUARTER;
-          $listByYearQuarter = $app['db']->fetchAll($sqlByYearQuarter, array((int) $kennelKy,$hare_type));
+          $listByYearQuarter = $this->app['db']->fetchAll($sqlByYearQuarter, array((int) $kennelKy,$hare_type));
 
           # Obtain the average event attendance per (year/quarter)
           $sqlByYearMonth = VIRGIN_HARINGS_BY_YEAR_MONTH;
-          $listByYearMonth = $app['db']->fetchAll($sqlByYearMonth, array((int) $kennelKy,$hare_type));
+          $listByYearMonth = $this->app['db']->fetchAll($sqlByYearMonth, array((int) $kennelKy,$hare_type));
 
           # Obtain the average event attendance per (year/month)
           $sqlByMonth = VIRGIN_HARINGS_BY_MONTH;
-          $listByMonth = $app['db']->fetchAll($sqlByMonth, array((int) $kennelKy,$hare_type));
+          $listByMonth = $this->app['db']->fetchAll($sqlByMonth, array((int) $kennelKy,$hare_type));
 
           # Establish and set the return value
-          $returnValue = $this->render($app, 'generic_charts_template.twig',array(
+          $returnValue = $this->render('generic_charts_template.twig',array(
             'pageTitle' => 'Virgin ('.$hareTypeName.') Harings Statistics',
             'kennel_abbreviation' => $kennel_abbreviation,
             'List_By_Year_List' => $listByYear,
@@ -1625,30 +1629,30 @@ class ObscureStatisticsController extends BaseController {
 
 
 
-    public function distinctHasherChartsAction(Request $request, Application $app, string $kennel_abbreviation){
+    public function distinctHasherChartsAction(Request $request, string $kennel_abbreviation){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       # Obtain the average event attendance per year
       $sqlByYear = DISTINCT_HASHERS_BY_YEAR;
-      $listByYear = $app['db']->fetchAll($sqlByYear, array((int) $kennelKy));
+      $listByYear = $this->app['db']->fetchAll($sqlByYear, array((int) $kennelKy));
 
       # Obtain the average event attendance per (year/month)
       $sqlByYearQuarter = DISTINCT_HASHERS_BY_YEAR_QUARTER;
-      $listByYearQuarter = $app['db']->fetchAll($sqlByYearQuarter, array((int) $kennelKy));
+      $listByYearQuarter = $this->app['db']->fetchAll($sqlByYearQuarter, array((int) $kennelKy));
 
       # Obtain the average event attendance per (year/quarter)
       $sqlByYearMonth = DISTINCT_HASHERS_BY_YEAR_MONTH;
-      $listByYearMonth = $app['db']->fetchAll($sqlByYearMonth, array((int) $kennelKy));
+      $listByYearMonth = $this->app['db']->fetchAll($sqlByYearMonth, array((int) $kennelKy));
 
 
       # Obtain the average event attendance per (year/month)
       $sqlByMonth = DISTINCT_HASHERS_BY_MONTH;
-      $listByMonth = $app['db']->fetchAll($sqlByMonth, array((int) $kennelKy));
+      $listByMonth = $this->app['db']->fetchAll($sqlByMonth, array((int) $kennelKy));
 
       # Establish and set the return value
-      $returnValue = $this->render($app, 'generic_charts_template.twig',array(
+      $returnValue = $this->render('generic_charts_template.twig',array(
         'pageTitle' => 'Distinct Hashers Statistics',
         'firstHeader' => 'FIRST HEADER',
         'secondHeader' => 'SECOND HEADER',
@@ -1673,31 +1677,31 @@ class ObscureStatisticsController extends BaseController {
     }
 
 
-        public function distinctHaresChartsAction(Request $request, Application $app, int $hare_type, string $kennel_abbreviation){
+        public function distinctHaresChartsAction(Request $request, int $hare_type, string $kennel_abbreviation){
 
           #Obtain the kennel key
-          $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+          $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
-          $hareTypeName = $this->getHareTypeName($app, $hare_type);
+          $hareTypeName = $this->getHareTypeName($hare_type);
 
           # Obtain the average event attendance per year
           $sqlByYear = DISTINCT_HARES_BY_YEAR;
-          $listByYear = $app['db']->fetchAll($sqlByYear, array((int) $kennelKy,$hare_type));
+          $listByYear = $this->app['db']->fetchAll($sqlByYear, array((int) $kennelKy,$hare_type));
 
           # Obtain the average event attendance per (year/month)
           $sqlByYearQuarter = DISTINCT_HARES_BY_YEAR_QUARTER;
-          $listByYearQuarter = $app['db']->fetchAll($sqlByYearQuarter, array((int) $kennelKy,$hare_type));
+          $listByYearQuarter = $this->app['db']->fetchAll($sqlByYearQuarter, array((int) $kennelKy,$hare_type));
 
           # Obtain the average event attendance per (year/quarter)
           $sqlByYearMonth = DISTINCT_HARES_BY_YEAR_MONTH;
-          $listByYearMonth = $app['db']->fetchAll($sqlByYearMonth, array((int) $kennelKy,$hare_type));
+          $listByYearMonth = $this->app['db']->fetchAll($sqlByYearMonth, array((int) $kennelKy,$hare_type));
 
           # Obtain the average event attendance per (year/month)
           $sqlByMonth = DISTINCT_HARES_BY_MONTH;
-          $listByMonth = $app['db']->fetchAll($sqlByMonth, array((int) $kennelKy,$hare_type));
+          $listByMonth = $this->app['db']->fetchAll($sqlByMonth, array((int) $kennelKy,$hare_type));
 
           # Establish and set the return value
-          $returnValue = $this->render($app, 'generic_charts_template.twig',array(
+          $returnValue = $this->render('generic_charts_template.twig',array(
             'pageTitle' => 'Distinct '.$hareTypeName.' Hare Statistics',
             'kennel_abbreviation' => $kennel_abbreviation,
             'List_By_Year_List' => $listByYear,
@@ -1720,30 +1724,30 @@ class ObscureStatisticsController extends BaseController {
         }
 
 
-    public function viewLastTimersChartsAction(Request $request, Application $app, string $kennel_abbreviation, int $min_hash_count, int $month_count){
+    public function viewLastTimersChartsAction(Request $request, string $kennel_abbreviation, int $min_hash_count, int $month_count){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       # Obtain the average event attendance per year
       $sqlLastComersByYear = DEPARTERS_BY_YEAR;
-      $lastComersByYear = $app['db']->fetchAll($sqlLastComersByYear, array((int) $kennelKy,(int) $kennelKy, $min_hash_count, $month_count));
+      $lastComersByYear = $this->app['db']->fetchAll($sqlLastComersByYear, array((int) $kennelKy,(int) $kennelKy, $min_hash_count, $month_count));
 
       # Obtain the average event attendance per (year/month)
       $sqlLastComersByYearQuarter = DEPARTERS_BY_YEAR_QUARTER;
-      $lastComersByYearQuarter = $app['db']->fetchAll($sqlLastComersByYearQuarter, array((int) $kennelKy, (int) $kennelKy, $min_hash_count, $month_count));
+      $lastComersByYearQuarter = $this->app['db']->fetchAll($sqlLastComersByYearQuarter, array((int) $kennelKy, (int) $kennelKy, $min_hash_count, $month_count));
 
       # Obtain the average event attendance per (year/quarter)
       $sqlLastComersByYearMonth = DEPARTERS_BY_YEAR_MONTH;
-      $lastComersByYearMonth = $app['db']->fetchAll($sqlLastComersByYearMonth, array((int) $kennelKy, (int) $kennelKy, $min_hash_count, $month_count));
+      $lastComersByYearMonth = $this->app['db']->fetchAll($sqlLastComersByYearMonth, array((int) $kennelKy, (int) $kennelKy, $min_hash_count, $month_count));
 
 
       # Obtain the average event attendance per (year/month)
       $sqlLastComersByMonth = DEPARTERS_BY_MONTH;
-      $lastComersByMonth = $app['db']->fetchAll($sqlLastComersByMonth, array((int) $kennelKy,(int) $kennelKy, $min_hash_count, $month_count));
+      $lastComersByMonth = $this->app['db']->fetchAll($sqlLastComersByMonth, array((int) $kennelKy,(int) $kennelKy, $min_hash_count, $month_count));
 
       # Establish and set the return value
-      $returnValue = $this->render($app, 'lastcomers_charts.twig',array(
+      $returnValue = $this->render('lastcomers_charts.twig',array(
         'pageTitle' => 'Last Comers Statistics',
         'firstHeader' => 'FIRST HEADER',
         'secondHeader' => 'SECOND HEADER',
@@ -1764,10 +1768,10 @@ class ObscureStatisticsController extends BaseController {
 
 
 
-    public function trendingHashersAction(Request $request, Application $app, string $kennel_abbreviation, int $day_count){
+    public function trendingHashersAction(Request $request, string $kennel_abbreviation, int $day_count){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Establish the row limit
       $rowLimit = 15;
@@ -1785,10 +1789,10 @@ class ObscureStatisticsController extends BaseController {
         GROUP BY HASHERS.HASHER_NAME
         ORDER BY THE_COUNT DESC
         LIMIT $rowLimit";
-      $trendingHashersList = $app['db']->fetchAll($sqlTrendingHashers, array((int) $kennelKy, (int) $day_count));
+      $trendingHashersList = $this->app['db']->fetchAll($sqlTrendingHashers, array((int) $kennelKy, (int) $day_count));
 
       # Establish and set the return value
-      $returnValue = $this->render($app, 'trending_hashers_charts.twig',array(
+      $returnValue = $this->render('trending_hashers_charts.twig',array(
         'pageTitle' => 'Trending Hashers',
         'firstHeader' => 'FIRST HEADER',
         'secondHeader' => 'SECOND HEADER',
@@ -1803,12 +1807,12 @@ class ObscureStatisticsController extends BaseController {
 
     }
 
-    public function trendingHaresAction(Request $request, Application $app, int $hare_type, string $kennel_abbreviation, int $day_count){
+    public function trendingHaresAction(Request $request, int $hare_type, string $kennel_abbreviation, int $day_count){
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
-      $hareTypeName = $this->getHareTypeName($app, $hare_type);
+      $hareTypeName = $this->getHareTypeName($hare_type);
 
       #Establish the row limit
       $rowLimit = 15;
@@ -1825,10 +1829,10 @@ class ObscureStatisticsController extends BaseController {
          GROUP BY HASHERS.HASHER_NAME
          ORDER BY THE_COUNT DESC
          LIMIT $rowLimit";
-      $trendingTrueHaresList = $app['db']->fetchAll($sqlTrendingTrueHares, array((int) $kennelKy, $hare_type, (int) $day_count));
+      $trendingTrueHaresList = $this->app['db']->fetchAll($sqlTrendingTrueHares, array((int) $kennelKy, $hare_type, (int) $day_count));
 
       # Establish and set the return value
-      $returnValue = $this->render($app, 'trending_true_hares_charts.twig',array(
+      $returnValue = $this->render('trending_true_hares_charts.twig',array(
         'pageTitle' => 'Trending '.$hareTypeName.' Hares',
         'kennel_abbreviation' => $kennel_abbreviation,
         'trending_true_hares_list' => $trendingTrueHaresList,
@@ -1843,7 +1847,6 @@ class ObscureStatisticsController extends BaseController {
 
     #Define the action
     public function unTrendingHaresJsonPreAction(Request $request,
-          Application $app,
           string $kennel_abbreviation,
           int $hare_type,
           int $day_count,
@@ -1851,10 +1854,10 @@ class ObscureStatisticsController extends BaseController {
           int $max_percentage,
           int $row_limit){
 
-      $hareTypeName = $this->getHareTypeName($app, $hare_type);
+      $hareTypeName = $this->getHareTypeName($hare_type);
 
       # Establish and set the return value
-      $returnValue = $this->render($app, 'un_trending_true_hares_charts_json.twig',array(
+      $returnValue = $this->render('un_trending_true_hares_charts_json.twig',array(
         'pageTitle' => 'Un-Trending True Hares',
         'pageSubTitle' => 'The List of *ALL* Hashers',
         'kennel_abbreviation' => $kennel_abbreviation,
@@ -1874,7 +1877,6 @@ class ObscureStatisticsController extends BaseController {
 
     public function unTrendingHaresJsonPostAction(
       Request $request,
-      Application $app,
       string $kennel_abbreviation,
       int $hare_type,
       int $day_count,
@@ -1883,7 +1885,7 @@ class ObscureStatisticsController extends BaseController {
       int $row_limit) {
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       # Obtain the average event attendance per year
       $sqlUnTrendingTrueHares = "
@@ -1912,7 +1914,7 @@ class ObscureStatisticsController extends BaseController {
          ORDER BY HARING_TO_HASHING_PERCENTAGE, HASH_COUNT DESC
          LIMIT $row_limit";
 
-      $unTrendingTrueHaresList = $app['db']->fetchAll(
+      $unTrendingTrueHaresList = $this->app['db']->fetchAll(
         $sqlUnTrendingTrueHares,
         array(
           (int) $kennelKy,
@@ -1934,26 +1936,26 @@ class ObscureStatisticsController extends BaseController {
         );
 
         #Set the return value
-        $returnValue = $app->json($output,200);
+        $returnValue = $this->app->json($output,200);
 
         #Return the return value
         return $returnValue;
     }
 
     #Landing screen for year in review
-    public function aboutContactAction(Request $request, Application $app, string $kennel_abbreviation){
+    public function aboutContactAction(Request $request, string $kennel_abbreviation){
 
       #Establish the page title
       $pageTitle = "About this application";
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Establish the return value
-      $returnValue = $this->render($app, 'about.twig', array (
+      $returnValue = $this->render('about.twig', array (
         'pageTitle' => $pageTitle,
         'kennel_abbreviation' => $kennel_abbreviation,
-        'adminEmail' => $this->getAdministratorEmail($app)
+        'adminEmail' => $this->getAdministratorEmail()
       ));
 
       #Return the return value
@@ -1962,7 +1964,7 @@ class ObscureStatisticsController extends BaseController {
     }
 
     #Landing screen for year in review
-    public function hasherNameAnalysisAction(Request $request, Application $app, string $kennel_abbreviation){
+    public function hasherNameAnalysisAction(Request $request, string $kennel_abbreviation){
 
       #Establish the page title
       $pageTitle = "Hasher Nickname Substring Frequency Analsis";
@@ -1970,7 +1972,7 @@ class ObscureStatisticsController extends BaseController {
       $pageTableCaption = "page table caption";
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the SQL to execute
       $SQL = "SELECT HASHER_NAME, HASHER_KY
@@ -1979,7 +1981,7 @@ class ObscureStatisticsController extends BaseController {
           HASHER_NAME NOT LIKE '%NHN%' AND HASHER_NAME NOT LIKE 'JUST %'";
 
       #Obtain the hare list
-      $hasherNameList = $app['db']->fetchAll($SQL,array((int) $kennelKy));
+      $hasherNameList = $this->app['db']->fetchAll($SQL,array((int) $kennelKy));
       $tokenizerString = " -\'&,!?().";
 
       #Create an array that will be used to store the sub strings
@@ -1989,7 +1991,7 @@ class ObscureStatisticsController extends BaseController {
       foreach($hasherNameList as $hasherName){
         $tempName = $hasherName['HASHER_NAME'];
         $tempKey = $hasherName['HASHER_KY'];
-        #$app['monolog']->addDebug("Item = $temp");
+        #$this->app['monolog']->addDebug("Item = $temp");
         $token = strtok($tempName, $tokenizerString);
         while($token !== false){
 
@@ -2030,14 +2032,14 @@ class ObscureStatisticsController extends BaseController {
 
 
       #foreach($theArrayOfSubstrings as $key => $value){
-      #  $app['monolog']->addDebug("key:$key");
+      #  $this->app['monolog']->addDebug("key:$key");
       #  foreach($value as $individualEntry){
-      #    $app['monolog']->addDebug("   entry:$individualEntry");
+      #    $this->app['monolog']->addDebug("   entry:$individualEntry");
       #  }
       #}
 
       #Establish the return value
-      $returnValue = $this->render($app, 'hasher_name_substring_analysis.twig', array (
+      $returnValue = $this->render('hasher_name_substring_analysis.twig', array (
         'pageTitle' => $pageTitle,
         'kennel_abbreviation' => $kennel_abbreviation,
         #'theList' => $hasherNameList,
@@ -2078,69 +2080,69 @@ class ObscureStatisticsController extends BaseController {
       return $returnValue;
     }
 
-    public function viewKennelChartsAction(Request $request, Application $app, string $kennel_abbreviation){
+    public function viewKennelChartsAction(Request $request, string $kennel_abbreviation){
 
         #Obtain the kennel key
-        $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+        $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
-        $hareTypes = $this->getHareTypes($app, $kennelKy);
+        $hareTypes = $this->getHareTypes($kennelKy);
 
         #Obtain the kennel value
         $kennelValueSql = "SELECT KENNELS.* FROM KENNELS WHERE KENNEL_KY = ?";
-        $kennelValue = $app['db']->fetchAssoc($kennelValueSql, array((int) $kennelKy));
+        $kennelValue = $this->app['db']->fetchAssoc($kennelValueSql, array((int) $kennelKy));
 
         # Obtain their hashes
         $sqlTheHashes = "SELECT HASHES.* FROM HASHES
         WHERE KENNEL_KY = ? and LAT is not null and LNG is not null";
-        $theHashes = $app['db']->fetchAll($sqlTheHashes, array((int) $kennelKy));
+        $theHashes = $this->app['db']->fetchAll($sqlTheHashes, array((int) $kennelKy));
 
         #Obtain the average lat
         $sqlTheAverageLatLong = "SELECT AVG(LAT) AS THE_LAT, AVG(LNG) AS THE_LNG FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
         WHERE KENNEL_KY = ? and LAT is not null and LNG is not null";
-        $theAverageLatLong = $app['db']->fetchAssoc($sqlTheAverageLatLong, array((int) $kennelKy));
+        $theAverageLatLong = $this->app['db']->fetchAssoc($sqlTheAverageLatLong, array((int) $kennelKy));
         $avgLat = $theAverageLatLong['THE_LAT'];
         $avgLng = $theAverageLatLong['THE_LNG'];
 
         #Obtain the number of hashes for this kennel
         $sqlHashCountForKennel = "SELECT COUNT(*) AS THE_COUNT FROM HASHES WHERE KENNEL_KY = ?";
-        $hashCountValueForKennel = $app['db']->fetchAssoc($sqlHashCountForKennel, array((int) $kennelKy));
+        $hashCountValueForKennel = $this->app['db']->fetchAssoc($sqlHashCountForKennel, array((int) $kennelKy));
         $hashCountForKennel = $hashCountValueForKennel['THE_COUNT'];
 
         #Obtain the number of distinct hashers
-        $distinctHasherCountValueForKennel = $app['db']->fetchAssoc(KENNEL_NUM_OF_DISTINCT_HASHERS, array((int) $kennelKy));
+        $distinctHasherCountValueForKennel = $this->app['db']->fetchAssoc(KENNEL_NUM_OF_DISTINCT_HASHERS, array((int) $kennelKy));
         $distinctHasherCountForKennel = $distinctHasherCountValueForKennel['THE_COUNT'];
 
         #Obtain the number of distinct overall hares
-        $distinctOverallHareCountValueForKennel = $app['db']->fetchAssoc(KENNEL_NUM_OF_DISTINCT_OVERALL_HARES, array((int) $kennelKy));
+        $distinctOverallHareCountValueForKennel = $this->app['db']->fetchAssoc(KENNEL_NUM_OF_DISTINCT_OVERALL_HARES, array((int) $kennelKy));
         $distinctOverallHareCountForKennel = $distinctOverallHareCountValueForKennel['THE_COUNT'];
 
         #Obtain the number of distinct hares by type
         $distinctHareCounts = array();
         foreach($hareTypes as &$hareType) {
-          $distinctHareCountValueForKennel = $app['db']->fetchAssoc(KENNEL_NUM_OF_DISTINCT_HARES, array((int) $kennelKy, $hareType['HARE_TYPE']));
+          $distinctHareCountValueForKennel = $this->app['db']->fetchAssoc(KENNEL_NUM_OF_DISTINCT_HARES, array((int) $kennelKy, $hareType['HARE_TYPE']));
           $distinctHareCounts[$hareType['HARE_TYPE_NAME']] = $distinctHareCountValueForKennel['THE_COUNT'];
         }
 
         # Obtain the number of hashings
-        #$hashCountValue = $app['db']->fetchAssoc($this->getPersonsHashingCountQuery($app), array((int) $hasher_id, (int) $kennelKy));
+        #$hashCountValue = $this->app['db']->fetchAssoc($this->getPersonsHashingCountQuery(), array((int) $hasher_id, (int) $kennelKy));
 
         # Obtain the hashes by month (name)
-        $theHashesByMonthNameList = $app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_MONTH_NAME, array((int) $kennelKy));
+        $theHashesByMonthNameList = $this->app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_MONTH_NAME, array((int) $kennelKy));
 
         # Obtain the hashes by quarter
-        $theHashesByQuarterList = $app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_QUARTER, array((int) $kennelKy));
+        $theHashesByQuarterList = $this->app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_QUARTER, array((int) $kennelKy));
 
         # Obtain the hashes by quarter
-        $theHashesByStateList = $app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_STATE, array((int) $kennelKy));
+        $theHashesByStateList = $this->app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_STATE, array((int) $kennelKy));
 
         # Obtain the hashes by county
-        $theHashesByCountyList = $app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_COUNTY, array((int) $kennelKy));
+        $theHashesByCountyList = $this->app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_COUNTY, array((int) $kennelKy));
 
         # Obtain the hashes by postal code
-        $theHashesByPostalCodeList = $app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_POSTAL_CODE, array((int) $kennelKy));
+        $theHashesByPostalCodeList = $this->app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_POSTAL_CODE, array((int) $kennelKy));
 
         # Obtain the hashes by day name
-        $theHashesByDayNameList = $app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_DAYNAME, array((int) $kennelKy));
+        $theHashesByDayNameList = $this->app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_DAYNAME, array((int) $kennelKy));
 
         #Obtain the hashes by year
         $sqlHashesByYear = "SELECT YEAR(EVENT_DATE) AS THE_VALUE, COUNT(*) AS THE_COUNT
@@ -2150,10 +2152,10 @@ class ObscureStatisticsController extends BaseController {
             HASHES.KENNEL_KY = ?
         GROUP BY YEAR(EVENT_DATE)
         ORDER BY YEAR(EVENT_DATE)";
-        $hashesByYearList = $app['db']->fetchAll($sqlHashesByYear, array((int) $kennelKy));
+        $hashesByYearList = $this->app['db']->fetchAll($sqlHashesByYear, array((int) $kennelKy));
 
         #Query the database
-        $cityHashingsCountList = $app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_CITY, array((int) $kennelKy));
+        $cityHashingsCountList = $this->app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_CITY, array((int) $kennelKy));
 
         #Obtain largest entry from the list
         $cityHashingsCountMax = 1;
@@ -2187,13 +2189,13 @@ class ObscureStatisticsController extends BaseController {
         ORDER BY THE_COUNT DESC";
 
         #1. Query the db
-        $locationBreakdownValues = $app['db']->fetchAll($locationBreakdownSql, array((int) $kennelKy));
+        $locationBreakdownValues = $this->app['db']->fetchAll($locationBreakdownSql, array((int) $kennelKy));
         #4. Create the formatted data for the sunburst graph
         $locationBreakdownFormattedData = convertToFormattedHiarchyV2($locationBreakdownValues);
 
 
         # Establish and set the return value
-        $returnValue = $this->render($app, 'kennel_chart_details.twig',array(
+        $returnValue = $this->render('kennel_chart_details.twig',array(
           'pageTitle' => 'Kennel Charts and Details',
           'firstHeader' => 'Basic Details',
           'secondHeader' => 'Statistics',
@@ -2214,7 +2216,7 @@ class ObscureStatisticsController extends BaseController {
           'city_hashings_count_list' => $cityHashingsCountList,
           'city_hashings_max_value' => $cityHashingsCountMax,
           'the_hashes' => $theHashes,
-          'geocode_api_value' => $this->getGoogleMapsJavascriptApiKey($app),
+          'geocode_api_value' => $this->getGoogleMapsJavascriptApiKey(),
           'avg_lat' => $avgLat,
           'avg_lng' => $avgLng,
           'hash_count' => $hashCountForKennel,
@@ -2229,7 +2231,7 @@ class ObscureStatisticsController extends BaseController {
     }
 
     #Landing screen for year in review
-    public function hasherNameAnalysisAction2(Request $request, Application $app, string $kennel_abbreviation){
+    public function hasherNameAnalysisAction2(Request $request, string $kennel_abbreviation){
 
       #Establish the page title
       $pageTitle = "Hasher Nickname Stemmed Substring Frequency Analysis";
@@ -2237,13 +2239,13 @@ class ObscureStatisticsController extends BaseController {
       $pageTableCaption = "page table caption";
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the SQL to execute
       $SQL = "SELECT HASHER_NAME, HASHER_KY FROM HASHERS WHERE HASHER_NAME NOT LIKE '%NHN%' AND HASHER_NAME NOT LIKE 'JUST %'";
 
       #Obtain the hare list
-      $hasherNameList = $app['db']->fetchAll($SQL,array((int) $kennelKy));
+      $hasherNameList = $this->app['db']->fetchAll($SQL,array((int) $kennelKy));
       $tokenizerString = " -\'&,!?().";
 
       #Create an array that will be used to store the sub strings
@@ -2253,7 +2255,7 @@ class ObscureStatisticsController extends BaseController {
       foreach($hasherNameList as $hasherName){
         $tempName = $hasherName['HASHER_NAME'];
         $tempKey = $hasherName['HASHER_KY'];
-        #$app['monolog']->addDebug("Item = $temp");
+        #$this->app['monolog']->addDebug("Item = $temp");
         $token = strtok($tempName, $tokenizerString);
         while($token !== false){
 
@@ -2262,7 +2264,7 @@ class ObscureStatisticsController extends BaseController {
 
           #test function call to stemmer function
           $stemmedLowerToken = $this->extractRootWordFromToken($lowerToken);
-          #$app['monolog']->addDebug("tokenValue:$token|stem:$stemmedLowerToken");
+          #$this->app['monolog']->addDebug("tokenValue:$token|stem:$stemmedLowerToken");
           $lowerToken = $stemmedLowerToken;
 
           #Create a hasher name and hasher key pair
@@ -2299,9 +2301,9 @@ class ObscureStatisticsController extends BaseController {
 
 
       #foreach($theArrayOfSubstrings as $key => $value){
-      #  $app['monolog']->addDebug("key:$key");
+      #  $this->app['monolog']->addDebug("key:$key");
       #  foreach($value as $individualEntry){
-      #    $app['monolog']->addDebug("   entry:$individualEntry");
+      #    $this->app['monolog']->addDebug("   entry:$individualEntry");
       #  }
       #}
 
@@ -2309,7 +2311,7 @@ class ObscureStatisticsController extends BaseController {
 
 
       #Establish the return value
-      $returnValue = $this->render($app, 'hasher_name_substring_analysis2.twig', array (
+      $returnValue = $this->render('hasher_name_substring_analysis2.twig', array (
         'pageTitle' => $pageTitle,
         'kennel_abbreviation' => $kennel_abbreviation,
         #'theList' => $hasherNameList,
@@ -2326,7 +2328,7 @@ class ObscureStatisticsController extends BaseController {
 
 
     #Landing screen for year in review
-    public function hasherNameAnalysisWordCloudAction(Request $request, Application $app, string $kennel_abbreviation){
+    public function hasherNameAnalysisWordCloudAction(Request $request, string $kennel_abbreviation){
 
       #Establish the page title
       $pageTitle = "Hasher Nickname Stemmed Substring Frequency Analysis";
@@ -2334,13 +2336,13 @@ class ObscureStatisticsController extends BaseController {
       $pageTableCaption = "page table caption";
 
       #Obtain the kennel key
-      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($request, $app, $kennel_abbreviation);
+      $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the SQL to execute
       $SQL = "SELECT HASHER_NAME, HASHER_KY FROM HASHERS WHERE HASHER_NAME NOT LIKE '%NHN%' AND HASHER_NAME NOT LIKE 'JUST %'";
 
       #Obtain the hare list
-      $hasherNameList = $app['db']->fetchAll($SQL,array((int) $kennelKy));
+      $hasherNameList = $this->app['db']->fetchAll($SQL,array((int) $kennelKy));
       $tokenizerString = " -\'&,!?().";
 
       #Create an array that will be used to store the sub strings
@@ -2350,7 +2352,7 @@ class ObscureStatisticsController extends BaseController {
       foreach($hasherNameList as $hasherName){
         $tempName = $hasherName['HASHER_NAME'];
         $tempKey = $hasherName['HASHER_KY'];
-        #$app['monolog']->addDebug("Item = $temp");
+        #$this->app['monolog']->addDebug("Item = $temp");
         $token = strtok($tempName, $tokenizerString);
         while($token !== false){
 
@@ -2403,7 +2405,7 @@ class ObscureStatisticsController extends BaseController {
 
 
       #Establish the return value
-      $returnValue = $this->render($app, 'wordcloud_hashername_analysis.twig', array (
+      $returnValue = $this->render('wordcloud_hashername_analysis.twig', array (
         'pageTitle' => $pageTitle,
         'kennel_abbreviation' => $kennel_abbreviation,
         'subStringArray' => $subStringCounts,

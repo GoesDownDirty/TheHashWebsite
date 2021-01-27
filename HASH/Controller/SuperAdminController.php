@@ -17,6 +17,10 @@ use Symfony\Component\Security\Core\User\User;
 
 class SuperAdminController extends BaseController {
 
+  public function __construct(Application $app) {
+    parent::__construct($app);
+  }
+
   private function convertInputToMask($input) {
     if(is_array($input)) {
       $mask = 0;
@@ -30,31 +34,31 @@ class SuperAdminController extends BaseController {
   }
 
   #Define the action
-  public function helloAction(Request $request, Application $app){
+  public function helloAction(Request $request){
 
       #Establish the list of admin users
-      $userList = $app['db']->fetchAll("SELECT id, username, roles FROM USERS ORDER BY username ASC");
+      $userList = $this->app['db']->fetchAll("SELECT id, username, roles FROM USERS ORDER BY username ASC");
 
       #Establish the list of kennels
-      $kennelList = $app['db']->fetchAll("SELECT KENNEL_NAME, KENNEL_DESCRIPTION,
+      $kennelList = $this->app['db']->fetchAll("SELECT KENNEL_NAME, KENNEL_DESCRIPTION,
          KENNEL_ABBREVIATION, IN_RECORD_KEEPING, SITE_ADDRESS, KENNEL_KY,
          EXISTS(SELECT 1 FROM HASHES WHERE HASHES.KENNEL_KY = KENNELS.KENNEL_KY) AS IN_USE
          FROM KENNELS ORDER BY IN_RECORD_KEEPING DESC, SITE_ADDRESS DESC");
 
-      $hareTypes = $app['db']->fetchAll("SELECT *,
+      $hareTypes = $this->app['db']->fetchAll("SELECT *,
         EXISTS(SELECT 1 FROM HARINGS WHERE HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE) AS IN_USE
         FROM HARE_TYPES ORDER BY SEQ");
 
-      $hashTypes = $app['db']->fetchAll("SELECT *,
+      $hashTypes = $this->app['db']->fetchAll("SELECT *,
         EXISTS(SELECT 1 FROM HASHES_TABLE WHERE HASHES_TABLE.HASH_TYPE & HASH_TYPES.HASH_TYPE = HASH_TYPES.HASH_TYPE) AS IN_USE
         FROM HASH_TYPES ORDER BY SEQ");
 
-      $siteConfig = $app['db']->fetchAll("SELECT NAME, VALUE FROM SITE_CONFIG WHERE DESCRIPTION IS NOT NULL ORDER BY NAME");
+      $siteConfig = $this->app['db']->fetchAll("SELECT NAME, VALUE FROM SITE_CONFIG WHERE DESCRIPTION IS NOT NULL ORDER BY NAME");
 
-      $ridiculous = $app['db']->fetchAll("SELECT NAME, VALUE FROM SITE_CONFIG WHERE NAME LIKE 'ridiculous%' ORDER BY NAME");
+      $ridiculous = $this->app['db']->fetchAll("SELECT NAME, VALUE FROM SITE_CONFIG WHERE NAME LIKE 'ridiculous%' ORDER BY NAME");
 
-      #return $app->redirect('/');
-      return $this->render($app, 'superadmin_landing.twig', array (
+      #return $this->app->redirect('/');
+      return $this->render('superadmin_landing.twig', array (
         'pageTitle' => 'This is the super admin landing screen',
         'subTitle1' => 'This is the super admin landing screen',
         'user_list' => $userList,
@@ -66,19 +70,19 @@ class SuperAdminController extends BaseController {
   }
 
   #Define the action
-  public function logonScreenAction(Request $request, Application $app){
+  public function logonScreenAction(Request $request){
 
     # Establisht the last error
-    $lastError = $app['security.last_error']($request);
-    #$app['monolog']->addDebug($lastError);
+    $lastError = $this->app['security.last_error']($request);
+    #$this->app['monolog']->addDebug($lastError);
 
     # Establish the last username
-    $lastUserName = $app['session']->get('_security.last_username');
-    #$lastUserName = $app['session']->get('_security.last_username');
-    #$app['monolog']->addDebug($lastUserName);
+    $lastUserName = $this->app['session']->get('_security.last_username');
+    #$lastUserName = $this->app['session']->get('_security.last_username');
+    #$this->app['monolog']->addDebug($lastUserName);
 
     # Establish the return value
-    $returnValue =  $this->render($app, 'superadmin_logon_screen.twig', array (
+    $returnValue =  $this->render('superadmin_logon_screen.twig', array (
       'pageTitle' => 'Super Admin Logon',
       'pageHeader' => 'Please log on!',
       'error' => $lastError,
@@ -89,18 +93,18 @@ class SuperAdminController extends BaseController {
     return $returnValue;
   }
 
-  public function logoutAction(Request $request, Application $app){
+  public function logoutAction(Request $request){
 
     # Invalidate the session
-    $app['session']->invalidate();
+    $this->app['session']->invalidate();
 
     # Redirect the user to the root url
-    return $app->redirect('/');
+    return $this->app->redirect('/');
 
   }
 
   #Define action
-  public function modifyKennelAjaxPreAction(Request $request, Application $app, string $kennel_abbreviation) {
+  public function modifyKennelAjaxPreAction(Request $request, string $kennel_abbreviation) {
 
     # Declare the SQL used to retrieve this information
     $sql = "
@@ -109,7 +113,7 @@ class SuperAdminController extends BaseController {
        WHERE KENNEL_ABBREVIATION = ?";
 
     # Make a database call to obtain the hasher information
-    $kennelValue = $app['db']->fetchAssoc($sql, array($kennel_abbreviation));
+    $kennelValue = $this->app['db']->fetchAssoc($sql, array($kennel_abbreviation));
 
     $sql = "
       SELECT GROUP_CONCAT(AWARD_LEVEL ORDER BY AWARD_LEVEL)
@@ -119,9 +123,9 @@ class SuperAdminController extends BaseController {
                             FROM KENNELS
                            WHERE KENNEL_ABBREVIATION = ?)";
 
-    $awardLevels = $app['db']->fetchOne($sql, array($kennel_abbreviation));
+    $awardLevels = $this->app['db']->fetchOne($sql, array($kennel_abbreviation));
 
-    $hareTypes = $app['db']->fetchAll("
+    $hareTypes = $this->app['db']->fetchAll("
       SELECT *, (
         COALESCE((SELECT true
           FROM KENNELS
@@ -130,7 +134,7 @@ class SuperAdminController extends BaseController {
         FROM HARE_TYPES
        ORDER BY SEQ", array($kennel_abbreviation));
 
-    $hashTypes = $app['db']->fetchAll("
+    $hashTypes = $this->app['db']->fetchAll("
       SELECT *, (
         COALESCE((SELECT true
           FROM KENNELS
@@ -139,7 +143,7 @@ class SuperAdminController extends BaseController {
         FROM HASH_TYPES
        ORDER BY SEQ", array($kennel_abbreviation));
 
-    $returnValue = $this->render($app, 'edit_kennel_form_ajax.twig', array(
+    $returnValue = $this->render('edit_kennel_form_ajax.twig', array(
       'pageTitle' => 'Modify a Kennel!',
       'kennel_abbreviation' => $kennel_abbreviation,
       'kennelValue' => $kennelValue,
@@ -152,7 +156,7 @@ class SuperAdminController extends BaseController {
     return $returnValue;
   }
 
-  public function modifyKennelAjaxPostAction(Request $request, Application $app, string $kennel_abbreviation) {
+  public function modifyKennelAjaxPostAction(Request $request, string $kennel_abbreviation) {
 
     $theKennelName = trim(strip_tags($request->request->get('kennelName')));
     $theKennelAbbreviation = trim(strip_tags($request->request->get('kennelAbbreviation')));
@@ -196,7 +200,7 @@ class SuperAdminController extends BaseController {
             HARE_TYPE_MASK = ?
          WHERE KENNEL_ABBREVIATION = ?";
 
-        $app['dbs']['mysql_write']->executeUpdate($sql,array(
+        $this->app['dbs']['mysql_write']->executeUpdate($sql,array(
           $theKennelName,
           $theKennelAbbreviation,
           $theKennelDescription,
@@ -215,7 +219,7 @@ class SuperAdminController extends BaseController {
             FROM KENNELS
            WHERE KENNEL_ABBREVIATION = ?)";
 
-        $app['dbs']['mysql_write']->executeUpdate($sql,array($kennel_abbreviation));
+        $this->app['dbs']['mysql_write']->executeUpdate($sql,array($kennel_abbreviation));
 
         $sql = "
           INSERT INTO AWARD_LEVELS(KENNEL_KY, AWARD_LEVEL)
@@ -224,26 +228,26 @@ class SuperAdminController extends BaseController {
         $kennelAwards = preg_split("/,/", $theAwardLevels);
 
         foreach($kennelAwards as $kennelAward) {
-          $app['dbs']['mysql_write']->executeUpdate($sql,array($kennel_abbreviation, (int) $kennelAward));
+          $this->app['dbs']['mysql_write']->executeUpdate($sql,array($kennel_abbreviation, (int) $kennelAward));
         }
       }
 
       #Audit this activity
       $actionType = "Kennel Modification (Ajax)";
       $actionDescription = "Modified kennel $kennel_abbreviation";
-      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+      $this->auditTheThings($request, $actionType, $actionDescription);
 
       // Establish the return value message
       $returnMessage = "Success! Great, it worked";
     }
 
     #Set the return value
-    $returnValue =  $app->json($returnMessage, 200);
+    $returnValue =  $this->app->json($returnMessage, 200);
     return $returnValue;
   }
 
   #Define action
-  public function newKennelAjaxPreAction(Request $request, Application $app) {
+  public function newKennelAjaxPreAction(Request $request) {
 
     $kennelValue['KENNEL_NAME'] = "";
     $kennelValue['KENNEL_ABBREVIATION'] = "";
@@ -253,17 +257,17 @@ class SuperAdminController extends BaseController {
 
     $awardLevels = "10,25,50,69,100,200,300,400,500,600,700,800,900,1000";
 
-    $hareTypes = $app['db']->fetchAll("
+    $hareTypes = $this->app['db']->fetchAll("
       SELECT *, false AS SELECTED
         FROM HARE_TYPES
        ORDER BY SEQ", array());
 
-    $hashTypes = $app['db']->fetchAll("
+    $hashTypes = $this->app['db']->fetchAll("
       SELECT *, false AS SELECTED
         FROM HASH_TYPES
        ORDER BY SEQ", array());
 
-    $returnValue = $this->render($app, 'edit_kennel_form_ajax.twig', array(
+    $returnValue = $this->render('edit_kennel_form_ajax.twig', array(
       'pageTitle' => 'Add a Kennel!',
       'kennel_abbreviation' => '_none',
       'kennelValue' => $kennelValue,
@@ -276,7 +280,7 @@ class SuperAdminController extends BaseController {
     return $returnValue;
   }
 
-  public function newKennelAjaxPostAction(Request $request, Application $app) {
+  public function newKennelAjaxPostAction(Request $request) {
 
     $theKennelName = trim(strip_tags($request->request->get('kennelName')));
     $theKennelAbbreviation = trim(strip_tags($request->request->get('kennelAbbreviation')));
@@ -312,7 +316,7 @@ class SuperAdminController extends BaseController {
             SITE_ADDRESS, IN_RECORD_KEEPING, HASH_TYPE_MASK, HARE_TYPE_MASK)
         VALUES(?, ?, ?, ?, ?, ?, ?)";
 
-      $app['dbs']['mysql_write']->executeUpdate($sql,array(
+      $this->app['dbs']['mysql_write']->executeUpdate($sql,array(
         $theKennelName,
         $theKennelAbbreviation,
         $theKennelDescription,
@@ -328,25 +332,25 @@ class SuperAdminController extends BaseController {
       $kennelAwards = preg_split("/,/", $theAwardLevels);
 
       foreach($kennelAwards as $kennelAward) {
-        $app['dbs']['mysql_write']->executeUpdate($sql,array($theKennelAbbreviation, (int) $kennelAward));
+        $this->app['dbs']['mysql_write']->executeUpdate($sql,array($theKennelAbbreviation, (int) $kennelAward));
       }
 
       #Audit this activity
       $actionType = "Kennel Modification (Ajax)";
       $actionDescription = "Modified kennel $kennel_abbreviation";
-      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+      $this->auditTheThings($request, $actionType, $actionDescription);
 
       // Establish the return value message
       $returnMessage = "Success! Great, it worked";
     }
 
     #Set the return value
-    $returnValue =  $app->json($returnMessage, 200);
+    $returnValue =  $this->app->json($returnMessage, 200);
     return $returnValue;
   }
 
   #Define action
-  public function modifyHareTypeAjaxPreAction(Request $request, Application $app, int $hare_type) {
+  public function modifyHareTypeAjaxPreAction(Request $request, int $hare_type) {
 
     # Declare the SQL used to retrieve this information
     $sql = "
@@ -355,9 +359,9 @@ class SuperAdminController extends BaseController {
        WHERE HARE_TYPE = ?";
 
     # Make a database call to obtain the hasher information
-    $hareTypeValue = $app['db']->fetchAssoc($sql, array($hare_type));
+    $hareTypeValue = $this->app['db']->fetchAssoc($sql, array($hare_type));
 
-    $returnValue = $this->render($app, 'edit_hare_type_form_ajax.twig', array(
+    $returnValue = $this->render('edit_hare_type_form_ajax.twig', array(
       'pageTitle' => 'Modify a Hare Type!',
       'hareTypeValue' => $hareTypeValue,
       'hare_type' => $hare_type
@@ -367,7 +371,7 @@ class SuperAdminController extends BaseController {
     return $returnValue;
   }
 
-  public function modifyHareTypeAjaxPostAction(Request $request, Application $app, int $hare_type) {
+  public function modifyHareTypeAjaxPostAction(Request $request, int $hare_type) {
 
     $theHareTypeName = trim(strip_tags($request->request->get('hareTypeName')));
     $theSequence = trim(strip_tags($request->request->get('sequence')));
@@ -389,7 +393,7 @@ class SuperAdminController extends BaseController {
             CHART_COLOR = ?
          WHERE HARE_TYPE = ?";
 
-        $app['dbs']['mysql_write']->executeUpdate($sql,array(
+        $this->app['dbs']['mysql_write']->executeUpdate($sql,array(
           $theHareTypeName,
           (int) $theSequence,
           $theChartColor,
@@ -399,19 +403,19 @@ class SuperAdminController extends BaseController {
       #Audit this activity
       $actionType = "Hare Type Modification (Ajax)";
       $actionDescription = "Modified hare type $theHareTypeName";
-      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+      $this->auditTheThings($request, $actionType, $actionDescription);
 
       // Establish the return value message
       $returnMessage = "Success! Great, it worked";
     }
 
     #Set the return value
-    $returnValue =  $app->json($returnMessage, 200);
+    $returnValue =  $this->app->json($returnMessage, 200);
     return $returnValue;
   }
 
   #Define action
-  public function newHareTypeAjaxPreAction(Request $request, Application $app) {
+  public function newHareTypeAjaxPreAction(Request $request) {
 
     # Declare the SQL used to retrieve this information
     $sql = "
@@ -419,9 +423,9 @@ class SuperAdminController extends BaseController {
         FROM HARE_TYPES";
 
     # Make a database call to obtain the hasher information
-    $hareTypeValue = $app['db']->fetchAssoc($sql, array($hare_type));
+    $hareTypeValue = $this->app['db']->fetchAssoc($sql, array($hare_type));
 
-    $returnValue = $this->render($app, 'edit_hare_type_form_ajax.twig', array(
+    $returnValue = $this->render('edit_hare_type_form_ajax.twig', array(
       'pageTitle' => 'Create a Hare Type!',
       'hareTypeValue' => $hareTypeValue,
       'hare_type' => -1
@@ -431,7 +435,7 @@ class SuperAdminController extends BaseController {
     return $returnValue;
   }
 
-  public function newHareTypeAjaxPostAction(Request $request, Application $app) {
+  public function newHareTypeAjaxPostAction(Request $request) {
 
     $theHareTypeName = trim(strip_tags($request->request->get('hareTypeName')));
     $theSequence = trim(strip_tags($request->request->get('sequence')));
@@ -448,7 +452,7 @@ class SuperAdminController extends BaseController {
       $hare_type = 1;
       $sql = "SELECT HARE_TYPE FROM HARE_TYPES WHERE HARE_TYPE = ?";
       while(true) {
-        if(!$app['db']->fetchOne($sql, array($hare_type))) break;
+        if(!$this->app['db']->fetchOne($sql, array($hare_type))) break;
         $hare_type *= 2;
       }
 
@@ -456,7 +460,7 @@ class SuperAdminController extends BaseController {
         INSERT INTO HARE_TYPES(HARE_TYPE_NAME, SEQ, CHART_COLOR, HARE_TYPE)
          VALUES(?, ?, ?, ?)";
 
-        $app['dbs']['mysql_write']->executeUpdate($sql,array(
+        $this->app['dbs']['mysql_write']->executeUpdate($sql,array(
           $theHareTypeName,
           (int) $theSequence,
           $theChartColor,
@@ -465,19 +469,19 @@ class SuperAdminController extends BaseController {
       #Audit this activity
       $actionType = "Hare Type Creation (Ajax)";
       $actionDescription = "Created hare type $theHareTypeName";
-      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+      $this->auditTheThings($request, $actionType, $actionDescription);
 
       // Establish the return value message
       $returnMessage = "Success! Great, it worked";
     }
 
     #Set the return value
-    $returnValue =  $app->json($returnMessage, 200);
+    $returnValue =  $this->app->json($returnMessage, 200);
     return $returnValue;
   }
 
   #Define action
-  public function modifyHashTypeAjaxPreAction(Request $request, Application $app, int $hash_type) {
+  public function modifyHashTypeAjaxPreAction(Request $request, int $hash_type) {
 
     # Declare the SQL used to retrieve this information
     $sql = "
@@ -486,9 +490,9 @@ class SuperAdminController extends BaseController {
        WHERE HASH_TYPE = ?";
 
     # Make a database call to obtain the hasher information
-    $hashTypeValue = $app['db']->fetchAssoc($sql, array($hash_type));
+    $hashTypeValue = $this->app['db']->fetchAssoc($sql, array($hash_type));
 
-    $hareTypes = $app['db']->fetchAll("
+    $hareTypes = $this->app['db']->fetchAll("
       SELECT *, (
         COALESCE((SELECT true
           FROM HASH_TYPES
@@ -497,7 +501,7 @@ class SuperAdminController extends BaseController {
         FROM HARE_TYPES
        ORDER BY SEQ", array($hash_type));
 
-    $returnValue = $this->render($app, 'edit_hash_type_form_ajax.twig', array(
+    $returnValue = $this->render('edit_hash_type_form_ajax.twig', array(
       'pageTitle' => 'Modify a Hash Type!',
       'hashTypeValue' => $hashTypeValue,
       'hash_type' => $hash_type,
@@ -508,7 +512,7 @@ class SuperAdminController extends BaseController {
     return $returnValue;
   }
 
-  public function modifyHashTypeAjaxPostAction(Request $request, Application $app, int $hash_type) {
+  public function modifyHashTypeAjaxPostAction(Request $request, int $hash_type) {
 
     $theHashTypeName = trim(strip_tags($request->request->get('hashTypeName')));
     $theSequence = trim(strip_tags($request->request->get('sequence')));
@@ -537,7 +541,7 @@ class SuperAdminController extends BaseController {
             HARE_TYPE_MASK = ?
          WHERE HASH_TYPE = ?";
 
-        $app['dbs']['mysql_write']->executeUpdate($sql,array(
+        $this->app['dbs']['mysql_write']->executeUpdate($sql,array(
           $theHashTypeName,
           (int) $theSequence,
           $theHareTypeMask,
@@ -547,33 +551,33 @@ class SuperAdminController extends BaseController {
       #Audit this activity
       $actionType = "Hash Type Modification (Ajax)";
       $actionDescription = "Modified hash type $theHashTypeName";
-      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+      $this->auditTheThings($request, $actionType, $actionDescription);
 
       // Establish the return value message
       $returnMessage = "Success! Great, it worked";
     }
 
     #Set the return value
-    $returnValue =  $app->json($returnMessage, 200);
+    $returnValue =  $this->app->json($returnMessage, 200);
     return $returnValue;
   }
 
   #Define action
-  public function newHashTypeAjaxPreAction(Request $request, Application $app) {
+  public function newHashTypeAjaxPreAction(Request $request) {
 
     $sql = "
       SELECT MAX(SEQ)+10 AS SEQ, NULL AS HASH_TYPE_NAME
         FROM HASH_TYPES";
 
     # Make a database call to obtain the hasher information
-    $hashTypeValue = $app['db']->fetchAssoc($sql, array($hash_type));
+    $hashTypeValue = $this->app['db']->fetchAssoc($sql, array($hash_type));
 
-    $hareTypes = $app['db']->fetchAll("
+    $hareTypes = $this->app['db']->fetchAll("
       SELECT *, false AS SELECTED
         FROM HARE_TYPES
        ORDER BY SEQ", array());
 
-    $returnValue = $this->render($app, 'edit_hash_type_form_ajax.twig', array(
+    $returnValue = $this->render('edit_hash_type_form_ajax.twig', array(
       'pageTitle' => 'Create a Hash Type!',
       'hashTypeValue' => $hashTypeValue,
       'hash_type' => -1,
@@ -584,7 +588,7 @@ class SuperAdminController extends BaseController {
     return $returnValue;
   }
 
-  public function newHashTypeAjaxPostAction(Request $request, Application $app) {
+  public function newHashTypeAjaxPostAction(Request $request) {
 
     $theHashTypeName = trim(strip_tags($request->request->get('hashTypeName')));
     $theSequence = trim(strip_tags($request->request->get('sequence')));
@@ -608,7 +612,7 @@ class SuperAdminController extends BaseController {
       $hash_type = 1;
       $sql = "SELECT HASH_TYPE FROM HASH_TYPES WHERE HASH_TYPE = ?";
       while(true) {
-        if(!$app['db']->fetchOne($sql, array($hash_type))) break;
+        if(!$this->app['db']->fetchOne($sql, array($hash_type))) break;
         $hash_type *= 2;
       }
 
@@ -616,7 +620,7 @@ class SuperAdminController extends BaseController {
         INSERT INTO HASH_TYPES(HASH_TYPE, HASH_TYPE_NAME, SEQ, HARE_TYPE_MASK)
         VALUES(?, ?, ?, ?)";
 
-        $app['dbs']['mysql_write']->executeUpdate($sql,array(
+        $this->app['dbs']['mysql_write']->executeUpdate($sql,array(
           $hash_type,
           $theHashTypeName,
           (int) $theSequence,
@@ -625,19 +629,19 @@ class SuperAdminController extends BaseController {
       #Audit this activity
       $actionType = "Hash Type Creation (Ajax)";
       $actionDescription = "Created hash type $theHashTypeName";
-      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+      $this->auditTheThings($request, $actionType, $actionDescription);
 
       // Establish the return value message
       $returnMessage = "Success! Great, it worked";
     }
 
     #Set the return value
-    $returnValue =  $app->json($returnMessage, 200);
+    $returnValue =  $this->app->json($returnMessage, 200);
     return $returnValue;
   }
 
   #Define action
-  public function modifyUserAjaxPreAction(Request $request, Application $app, int $user_id) {
+  public function modifyUserAjaxPreAction(Request $request, int $user_id) {
 
     # Declare the SQL used to retrieve this information
     $sql = "
@@ -646,9 +650,9 @@ class SuperAdminController extends BaseController {
        WHERE ID = ?";
 
     # Make a database call to obtain the hasher information
-    $userValue = $app['db']->fetchAssoc($sql, array($user_id));
+    $userValue = $this->app['db']->fetchAssoc($sql, array($user_id));
 
-    $returnValue = $this->render($app, 'edit_user_form_ajax.twig', array(
+    $returnValue = $this->render('edit_user_form_ajax.twig', array(
       'pageTitle' => 'Modify a User!',
       'userValue' => $userValue,
       'user_id' => $user_id
@@ -658,7 +662,7 @@ class SuperAdminController extends BaseController {
     return $returnValue;
   }
 
-  public function modifyUserAjaxPostAction(Request $request, Application $app, int $user_id) {
+  public function modifyUserAjaxPostAction(Request $request, int $user_id) {
 
     $theUsername = trim(strip_tags($request->request->get('username')));
     $thePassword = trim(strip_tags($request->request->get('password')));
@@ -682,7 +686,7 @@ class SuperAdminController extends BaseController {
       $user = new User($theUsername, null, array("ROLE_USER"), true, true, true, true);
 
       // find the encoder for a UserInterface instance
-      $encoder = $app['security.encoder_factory']->getEncoder($user);
+      $encoder = $this->app['security.encoder_factory']->getEncoder($user);
 
       // compute the encoded password for the new password
       $encodedNewPassword = $encoder->encodePassword($thePassword, $user->getSalt());
@@ -703,7 +707,7 @@ class SuperAdminController extends BaseController {
             roles = ?
          WHERE id = ?";
 
-        $app['dbs']['mysql_write']->executeUpdate($sql,array(
+        $this->app['dbs']['mysql_write']->executeUpdate($sql,array(
           $theUsername,
           $roles,
           $user_id
@@ -716,7 +720,7 @@ class SuperAdminController extends BaseController {
               password = ?
            WHERE id = ?";
 
-          $app['dbs']['mysql_write']->executeUpdate($sql,array(
+          $this->app['dbs']['mysql_write']->executeUpdate($sql,array(
             $encodedNewPassword,
             $user_id
           ));
@@ -725,28 +729,28 @@ class SuperAdminController extends BaseController {
       #Audit this activity
       $actionType = "User Modification (Ajax)";
       $actionDescription = "Modified user $theUsername";
-      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+      $this->auditTheThings($request, $actionType, $actionDescription);
 
       // Establish the return value message
       $returnMessage = "Success! Great, it worked";
     }
 
     #Set the return value
-    $returnValue =  $app->json($returnMessage, 200);
+    $returnValue =  $this->app->json($returnMessage, 200);
     return $returnValue;
   }
 
   #Define action
-  public function modifySiteConfigAjaxPreAction(Request $request, Application $app, string $name) {
+  public function modifySiteConfigAjaxPreAction(Request $request, string $name) {
 
     # Declare the SQL used to retrieve this information
     $sql = "
       SELECT * FROM SITE_CONFIG WHERE NAME = ?";
 
     # Make a database call to obtain the hasher information
-    $item = $app['db']->fetchAssoc($sql, array($name));
+    $item = $this->app['db']->fetchAssoc($sql, array($name));
 
-    $returnValue = $this->render($app, 'edit_site_config_form_ajax.twig', array(
+    $returnValue = $this->render('edit_site_config_form_ajax.twig', array(
       'pageTitle' => 'Modify a Configuration Variable: '.$name,
       'item' => $item
     ));
@@ -755,7 +759,7 @@ class SuperAdminController extends BaseController {
     return $returnValue;
   }
 
-  public function modifySiteConfigAjaxPostAction(Request $request, Application $app, string $name) {
+  public function modifySiteConfigAjaxPostAction(Request $request, string $name) {
 
     $theValue = trim($request->request->get('value'));
 
@@ -773,34 +777,34 @@ class SuperAdminController extends BaseController {
          WHERE NAME = ?
            AND DESCRIPTION IS NOT NULL";
 
-      $app['dbs']['mysql_write']->executeUpdate($sql,array(
+      $this->app['dbs']['mysql_write']->executeUpdate($sql,array(
         $theValue,
         $name));
 
       #Audit this activity
       $actionType = "SITE CONFIG Modification (Ajax)";
       $actionDescription = "Modified site config $name";
-      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+      $this->auditTheThings($request, $actionType, $actionDescription);
 
       // Establish the return value message
       $returnMessage = "Success! Great, it worked";
     }
 
     #Set the return value
-    $returnValue =  $app->json($returnMessage, 200);
+    $returnValue =  $this->app->json($returnMessage, 200);
     return $returnValue;
   }
 
   #Define action
-  public function modifyRidiculousAjaxPreAction(Request $request, Application $app, string $ridiculous) {
+  public function modifyRidiculousAjaxPreAction(Request $request, string $ridiculous) {
 
     # Declare the SQL used to retrieve this information
     $sql = "SELECT NAME, VALUE FROM SITE_CONFIG WHERE NAME = ?";
 
     # Make a database call to obtain the hasher information
-    $item = $app['db']->fetchAssoc($sql, array($ridiculous));
+    $item = $this->app['db']->fetchAssoc($sql, array($ridiculous));
 
-    $returnValue = $this->render($app, 'edit_ridiculous_form_ajax.twig', array(
+    $returnValue = $this->render('edit_ridiculous_form_ajax.twig', array(
       'pageTitle' => 'Edit Ridiculous Stat',
       'item' => $item
     ));
@@ -809,7 +813,7 @@ class SuperAdminController extends BaseController {
     return $returnValue;
   }
 
-  public function modifyRidiculousAjaxPostAction(Request $request, Application $app, string $ridiculous) {
+  public function modifyRidiculousAjaxPostAction(Request $request, string $ridiculous) {
 
     $theValue = trim($request->request->get('value'));
 
@@ -832,31 +836,31 @@ class SuperAdminController extends BaseController {
          WHERE NAME = ?
            AND DESCRIPTION IS NULL";
 
-      $app['dbs']['mysql_write']->executeUpdate($sql,array(
+      $this->app['dbs']['mysql_write']->executeUpdate($sql,array(
         $theValue,
         $ridiculous));
 
       #Audit this activity
       $actionType = "SITE CONFIG Modification (Ajax)";
       $actionDescription = "Modified site config $name";
-      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+      $this->auditTheThings($request, $actionType, $actionDescription);
 
       // Establish the return value message
       $returnMessage = "Success! Great, it worked";
     }
 
     #Set the return value
-    $returnValue =  $app->json($returnMessage, 200);
+    $returnValue =  $this->app->json($returnMessage, 200);
     return $returnValue;
   }
 
   #Define action
-  public function newRidiculousAjaxPreAction(Request $request, Application $app) {
+  public function newRidiculousAjaxPreAction(Request $request) {
 
     $item['NAME']='new';
     $item['VALUE']="";
 
-    $returnValue = $this->render($app, 'edit_ridiculous_form_ajax.twig', array(
+    $returnValue = $this->render('edit_ridiculous_form_ajax.twig', array(
       'pageTitle' => 'Create New Ridiculous Stat',
       'item' => $item
     ));
@@ -865,7 +869,7 @@ class SuperAdminController extends BaseController {
     return $returnValue;
   }
 
-  public function newRidiculousAjaxPostAction(Request $request, Application $app) {
+  public function newRidiculousAjaxPostAction(Request $request) {
 
     $theValue = trim($request->request->get('value'));
 
@@ -882,7 +886,7 @@ class SuperAdminController extends BaseController {
       for($i=0; $i<999; $i++) {
         try {
           $name = "ridiculous".$i;
-          $app['dbs']['mysql_write']->executeUpdate($sql,array($name, $theValue));
+          $this->app['dbs']['mysql_write']->executeUpdate($sql,array($name, $theValue));
         } catch(\Exception $e) {
           continue;
         }
@@ -892,24 +896,24 @@ class SuperAdminController extends BaseController {
       #Audit this activity
       $actionType = "SITE CONFIG Modification (Ajax)";
       $actionDescription = "New site config $name";
-      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+      $this->auditTheThings($request, $actionType, $actionDescription);
 
       // Establish the return value message
       $returnMessage = "Success! Great, it worked";
     }
 
     #Set the return value
-    $returnValue =  $app->json($returnMessage, 200);
+    $returnValue =  $this->app->json($returnMessage, 200);
     return $returnValue;
   }
 
   #Define action
-  public function newUserAjaxPreAction(Request $request, Application $app) {
+  public function newUserAjaxPreAction(Request $request) {
 
     $userValue['username']='';
     $userValue['SUPERADMIN']=false;
 
-    $returnValue = $this->render($app, 'edit_user_form_ajax.twig', array(
+    $returnValue = $this->render('edit_user_form_ajax.twig', array(
       'pageTitle' => 'Add a User!',
       'userValue' => $userValue,
       'user_id' => -1
@@ -919,7 +923,7 @@ class SuperAdminController extends BaseController {
     return $returnValue;
   }
 
-  public function newUserAjaxPostAction(Request $request, Application $app) {
+  public function newUserAjaxPostAction(Request $request) {
 
     $theUsername = trim(strip_tags($request->request->get('username')));
     $thePassword = trim(strip_tags($request->request->get('password')));
@@ -943,7 +947,7 @@ class SuperAdminController extends BaseController {
       $user = new User($theUsername, null, array("ROLE_USER"), true, true, true, true);
 
       // find the encoder for a UserInterface instance
-      $encoder = $app['security.encoder_factory']->getEncoder($user);
+      $encoder = $this->app['security.encoder_factory']->getEncoder($user);
 
       // compute the encoded password for the new password
       $encodedPassword = $encoder->encodePassword($thePassword, $user->getSalt());
@@ -958,7 +962,7 @@ class SuperAdminController extends BaseController {
       $sql = "INSERT INTO USERS(username, roles, password)
         VALUES(?, ?, ?)";
 
-      $app['dbs']['mysql_write']->executeUpdate($sql,array(
+      $this->app['dbs']['mysql_write']->executeUpdate($sql,array(
         $theUsername,
         $roles,
         $encodedPassword));
@@ -966,125 +970,125 @@ class SuperAdminController extends BaseController {
       #Audit this activity
       $actionType = "User Creation (Ajax)";
       $actionDescription = "Created user $theUsername";
-      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+      $this->auditTheThings($request, $actionType, $actionDescription);
 
       // Establish the return value message
       $returnMessage = "Success! Great, it worked";
     }
 
     #Set the return value
-    $returnValue =  $app->json($returnMessage, 200);
+    $returnValue =  $this->app->json($returnMessage, 200);
     return $returnValue;
   }
 
-  public function deleteRidiculous(Request $request, Application $app, string $ridiculous) {
+  public function deleteRidiculous(Request $request, string $ridiculous) {
     if(substr($ridiculous, 0, strlen("ridiculous")) == "ridiculous") {
 
       $sql = "DELETE FROM SITE_CONFIG WHERE NAME = ?";
-      $app['dbs']['mysql_write']->executeUpdate($sql,array($ridiculous));
+      $this->app['dbs']['mysql_write']->executeUpdate($sql,array($ridiculous));
 
       $actionType = "Site Config Deletion (Ajax)";
       $actionDescription = "Deleted site config key $ridiculous";
 
-      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+      $this->auditTheThings($request, $actionType, $actionDescription);
     }
 
     header("Location: /superadmin/hello");
-    return $app->json("", 302);
+    return $this->app->json("", 302);
   }
 
-  public function deleteUser(Request $request, Application $app, int $user_id) {
-    if($user_id != $app['user'].username) {
+  public function deleteUser(Request $request, int $user_id) {
+    if($user_id != $this->app['user'].username) {
 
       $sql = "SELECT username FROM USERS WHERE ID = ?";
-      $username = $app['db']->fetchOne($sql, array($user_id));
+      $username = $this->app['db']->fetchOne($sql, array($user_id));
 
       $sql = "DELETE FROM USERS WHERE id = ?";
-      $app['dbs']['mysql_write']->executeUpdate($sql,array($user_id));
+      $this->app['dbs']['mysql_write']->executeUpdate($sql,array($user_id));
 
       $actionType = "User Deletion (Ajax)";
       $actionDescription = "Deleted user $username";
 
-      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+      $this->auditTheThings($request, $actionType, $actionDescription);
     }
 
     header("Location: /superadmin/hello");
-    return $app->json("", 302);
+    return $this->app->json("", 302);
   }
 
-  public function deleteKennel(Request $request, Application $app, int $kennel_ky) {
+  public function deleteKennel(Request $request, int $kennel_ky) {
 
     $sql = "SELECT KENNEL_ABBREVIATION FROM KENNELS WHERE KENNEL_KY = ?";
-    $kennel = $app['db']->fetchOne($sql, array($kennel_ky));
+    $kennel = $this->app['db']->fetchOne($sql, array($kennel_ky));
 
     $sql = "DELETE FROM KENNELS WHERE KENNEL_KY = ?";
-    $app['dbs']['mysql_write']->executeUpdate($sql,array($kennel_ky));
+    $this->app['dbs']['mysql_write']->executeUpdate($sql,array($kennel_ky));
 
     $actionType = "Kennel Deletion (Ajax)";
     $actionDescription = "Deleted kennel $kennel";
 
-    AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+    $this->auditTheThings($request, $actionType, $actionDescription);
 
     header("Location: /superadmin/hello");
-    return $app->json("", 302);
+    return $this->app->json("", 302);
   }
 
-  public function deleteHashType(Request $request, Application $app, int $hash_type) {
+  public function deleteHashType(Request $request, int $hash_type) {
 
     $sql = "SELECT EXISTS(SELECT 1 FROM HASHES_TABLE WHERE HASHES_TABLE.HASH_TYPE & ? = HASHES_TABLE.HASH_TYPE) AS IN_USE";
-    $in_use = $app['db']->fetchOne($sql, array($hash_type));
+    $in_use = $this->app['db']->fetchOne($sql, array($hash_type));
 
     if(!$in_use) {
       $sql = "SELECT HASH_TYPE_NAME FROM HASH_TYPES WHERE HASH_TYPE = ?";
-      $hash_type_name = $app['db']->fetchOne($sql, array($hash_type));
+      $hash_type_name = $this->app['db']->fetchOne($sql, array($hash_type));
 
       $sql = "DELETE FROM HASH_TYPES WHERE HASH_TYPE = ?";
-      $app['dbs']['mysql_write']->executeUpdate($sql,array($hash_type));
+      $this->app['dbs']['mysql_write']->executeUpdate($sql,array($hash_type));
 
       $actionType = "Hash Type Deletion (Ajax)";
       $actionDescription = "Deleted hash type $hash_type_name";
 
-      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+      $this->auditTheThings($request, $actionType, $actionDescription);
     }
 
     header("Location: /superadmin/hello");
-    return $app->json("", 302);
+    return $this->app->json("", 302);
   }
 
-  public function deleteHareType(Request $request, Application $app, int $hare_type) {
+  public function deleteHareType(Request $request, int $hare_type) {
 
     $sql = "SELECT EXISTS(SELECT 1 FROM HARINGS WHERE HARINGS.HARE_TYPE & ? = HARINGS.HARE_TYPE) AS IN_USE";
-    $in_use = $app['db']->fetchOne($sql, array($hare_type));
+    $in_use = $this->app['db']->fetchOne($sql, array($hare_type));
 
     if(!$in_use) {
       $sql = "SELECT HARE_TYPE_NAME FROM HARE_TYPES WHERE HARE_TYPE = ?";
-      $hare_type_name = $app['db']->fetchOne($sql, array($hare_type));
+      $hare_type_name = $this->app['db']->fetchOne($sql, array($hare_type));
 
       $sql = "DELETE FROM HARE_TYPES WHERE HARE_TYPE = ?";
-      $app['dbs']['mysql_write']->executeUpdate($sql,array($hare_type));
+      $this->app['dbs']['mysql_write']->executeUpdate($sql,array($hare_type));
 
       $actionType = "Hare Type Deletion (Ajax)";
       $actionDescription = "Deleted hare type $hare_type_name";
 
-      AdminController::auditTheThings($request, $app, $actionType, $actionDescription);
+      $this->auditTheThings($request, $actionType, $actionDescription);
     }
 
     header("Location: /superadmin/hello");
-    return $app->json("", 302);
+    return $this->app->json("", 302);
   }
 
-  public function integrityChecks(Request $request, Application $app) {
+  public function integrityChecks(Request $request) {
 
     $sql = "SELECT KENNEL_NAME, KENNEL_KY FROM KENNELS WHERE IN_RECORD_KEEPING = 1 ORDER BY KENNEL_NAME";
-    $reports = $app['db']->fetchAll($sql, array());
+    $reports = $this->app['db']->fetchAll($sql, array());
 
     foreach($reports as &$report) {
       $messages = [];
       $sql = "SELECT EVENT_DATE FROM HASHES_TABLE WHERE KENNEL_KY = ? GROUP BY EVENT_DATE HAVING COUNT(*) > 1 ORDER BY EVENT_DATE";
-      $event_dates = $app['db']->fetchAll($sql, array($report['KENNEL_KY']));
+      $event_dates = $this->app['db']->fetchAll($sql, array($report['KENNEL_KY']));
       foreach($event_dates as &$event_date) {
         $sql = "SELECT KENNEL_EVENT_NUMBER, SPECIAL_EVENT_DESCRIPTION AS EVENT_NAME FROM HASHES_TABLE WHERE KENNEL_KY = ? AND EVENT_DATE = ? ORDER BY KENNEL_EVENT_NUMBER";
-        $results = $app['db']->fetchAll($sql, array($report['KENNEL_KY'], $event_date['EVENT_DATE']));
+        $results = $this->app['db']->fetchAll($sql, array($report['KENNEL_KY'], $event_date['EVENT_DATE']));
         foreach($results as $result) {
           array_push($messages, 'Event number '.$result['KENNEL_EVENT_NUMBER'].' ('.$result['EVENT_NAME'].') has duplicate event date: '.$event_date['EVENT_DATE'].'.');
         }
@@ -1098,7 +1102,7 @@ class SuperAdminController extends BaseController {
       }
     }
 
-    return $this->render($app, 'superadmin_integrity_checks.twig', array(
+    return $this->render('superadmin_integrity_checks.twig', array(
       'pageTitle' => 'Database Integrity Checks: Results',
       'reports' => $reports
     ));

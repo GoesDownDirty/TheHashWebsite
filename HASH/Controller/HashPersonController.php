@@ -110,7 +110,7 @@ class HashPersonController extends BaseController
       $haringCount = count($haringsList);
 
       #If the hasher exists
-      if($hasherValue != $null){
+      if($hasherValue != null){
 
         #Set the name of the hasher
         $hasherName = $hasherValue['HASHER_NAME'];

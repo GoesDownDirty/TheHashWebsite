@@ -105,6 +105,15 @@ class BaseController {
     $kennelValue = $this->app['db']->fetchAssoc($sql,
       array((string) $kennel_abbreviation));
 
+    if(!$kennelValue) {
+      // don't fail after initial install when kennel abbrev might not yet
+      // be set
+      if($kennel_abbreviation != "**NEEDS UPDATED**") {
+        throw new \Exception("Bad kennel abbreviation");
+      }
+      return 0;
+    }
+
     #Obtain the kennel ky from the returned object
     $returnValue = $kennelValue['KENNEL_KY'];
 

@@ -29,7 +29,11 @@
         {
           "data": "NAME",
           "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-            $(nTd).html("<a href='/{{kennel_abbreviation}}/hashers/"+oData.THE_KEY+"?name="+ rfc3986EncodeURIComponent(oData.NAME)+"'>"+oData.NAME+"</a>");
+            {% if google_analytics_id != 'none' %}
+              $(nTd).html("<a href='/{{kennel_abbreviation}}/hashers/"+oData.THE_KEY+"?name="+ rfc3986EncodeURIComponent(oData.NAME)+"'>"+oData.NAME+"</a>");
+            {% else %}
+              $(nTd).html("<a href='/{{kennel_abbreviation}}/hashers/"+oData.THE_KEY+"'>"+oData.NAME+"</a>");
+            {% endif %}
           }
 
        },

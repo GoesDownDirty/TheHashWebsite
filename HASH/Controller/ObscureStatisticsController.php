@@ -25,12 +25,12 @@ class ObscureStatisticsController extends BaseController {
     # Obtain the hashes
     $sqlTheHashes = "SELECT HASHES.* FROM HASHES
     WHERE KENNEL_KY = ? and LAT is not null and LNG is not null";
-    $theHashes = $this->app['db']->fetchAll($sqlTheHashes, array((int) $kennelKy));
+    $theHashes = $this->fetchAll($sqlTheHashes, array((int) $kennelKy));
 
     #Obtain the average lat
     $sqlTheAverageLatLong = "SELECT AVG(LAT) AS THE_LAT, AVG(LNG) AS THE_LNG FROM HASHES
     WHERE KENNEL_KY = ? and LAT is not null and LNG is not null";
-    $theAverageLatLong = $this->app['db']->fetchAssoc($sqlTheAverageLatLong, array((int) $kennelKy));
+    $theAverageLatLong = $this->fetchAssoc($sqlTheAverageLatLong, array((int) $kennelKy));
     $avgLat = $theAverageLatLong['THE_LAT'];
     $avgLng = $theAverageLatLong['THE_LNG'];
 
@@ -59,12 +59,12 @@ class ObscureStatisticsController extends BaseController {
     # Obtain the hashes
     $sqlTheHashes = "SELECT HASHES.* FROM HASHES
     WHERE KENNEL_KY = ? and LAT is not null and LNG is not null";
-    $theHashes = $this->app['db']->fetchAll($sqlTheHashes, array((int) $kennelKy));
+    $theHashes = $this->fetchAll($sqlTheHashes, array((int) $kennelKy));
 
     #Obtain the average lat
     $sqlTheAverageLatLong = "SELECT AVG(LAT) AS THE_LAT, AVG(LNG) AS THE_LNG FROM HASHES
     WHERE KENNEL_KY = ? and LAT is not null and LNG is not null";
-    $theAverageLatLong = $this->app['db']->fetchAssoc($sqlTheAverageLatLong, array((int) $kennelKy));
+    $theAverageLatLong = $this->fetchAssoc($sqlTheAverageLatLong, array((int) $kennelKy));
     $avgLat = $theAverageLatLong['THE_LAT'];
     $avgLng = $theAverageLatLong['THE_LNG'];
 
@@ -93,12 +93,12 @@ class ObscureStatisticsController extends BaseController {
     # Obtain the hashes
     $sqlTheHashes = "SELECT HASHES.* FROM HASHES
     WHERE KENNEL_KY = ? and LAT is not null and LNG is not null";
-    $theHashes = $this->app['db']->fetchAll($sqlTheHashes, array((int) $kennelKy));
+    $theHashes = $this->fetchAll($sqlTheHashes, array((int) $kennelKy));
 
     #Obtain the average lat
     $sqlTheAverageLatLong = "SELECT AVG(LAT) AS THE_LAT, AVG(LNG) AS THE_LNG FROM HASHES
     WHERE KENNEL_KY = ? and LAT is not null and LNG is not null";
-    $theAverageLatLong = $this->app['db']->fetchAssoc($sqlTheAverageLatLong, array((int) $kennelKy));
+    $theAverageLatLong = $this->fetchAssoc($sqlTheAverageLatLong, array((int) $kennelKy));
     $avgLat = $theAverageLatLong['THE_LAT'];
     $avgLng = $theAverageLatLong['THE_LNG'];
 
@@ -132,36 +132,36 @@ class ObscureStatisticsController extends BaseController {
       $pageTitle = "$year_value: Year in review";
 
       #Obtain number of hashes
-      $hashCount = ($this->app['db']->fetchAssoc(PER_KENNEL_HASH_COUNTS_BY_YEAR,array((int)$year_value, (int) $kennelKy)))['THE_COUNT'];
+      $hashCount = ($this->fetchAssoc(PER_KENNEL_HASH_COUNTS_BY_YEAR,array((int)$year_value, (int) $kennelKy)))['THE_COUNT'];
 
       foreach($hashTypes as &$hashType) {
         #Obtain number of hashtype hashes
-        $hashCounts[$hashType['HASH_TYPE_NAME']] = ($this->app['db']->fetchAssoc(PER_KENNEL_HASH_COUNTS_BY_YEAR . " AND HASHES.HASH_TYPE = ?",
+        $hashCounts[$hashType['HASH_TYPE_NAME']] = ($this->fetchAssoc(PER_KENNEL_HASH_COUNTS_BY_YEAR . " AND HASHES.HASH_TYPE = ?",
           array((int)$year_value, (int) $kennelKy, $hashType['HASH_TYPE'])))['THE_COUNT'];
       }
 
       #Obtain number of hashers
-      $hasherCount = ($this->app['db']->fetchAssoc(PER_KENNEL_HASHERS_COUNT_BY_YEAR,array((int)$year_value, (int) $kennelKy)))['THE_COUNT'];
+      $hasherCount = ($this->fetchAssoc(PER_KENNEL_HASHERS_COUNT_BY_YEAR,array((int)$year_value, (int) $kennelKy)))['THE_COUNT'];
 
       #Obtain number of overall hares
-      $overallHareCount = ($this->app['db']->fetchAssoc(PER_KENNEL_HARES_COUNT_BY_YEAR,array((int)$year_value, (int) $kennelKy)))['THE_COUNT'];
+      $overallHareCount = ($this->fetchAssoc(PER_KENNEL_HARES_COUNT_BY_YEAR,array((int)$year_value, (int) $kennelKy)))['THE_COUNT'];
 
       foreach($hareTypes as &$hareType) {
-        $hareCounts[$hareType['HARE_TYPE_NAME']] = ($this->app['db']->fetchAssoc(PER_KENNEL_HARES_COUNT_BY_YEAR . "AND HARINGS.HARE_TYPE & ? != 0",
+        $hareCounts[$hareType['HARE_TYPE_NAME']] = ($this->fetchAssoc(PER_KENNEL_HARES_COUNT_BY_YEAR . "AND HARINGS.HARE_TYPE & ? != 0",
           array((int)$year_value, (int) $kennelKy, $hareType['HARE_TYPE'])))['THE_COUNT'];
       }
 
       # Obtain the number of newbie hashers
-      $newHashers = $this->app['db']->fetchAll(NEW_HASHERS_FOR_THIS_YEAR, array((int) $kennelKy,(int) $kennelKy, (int)$year_value));
+      $newHashers = $this->fetchAll(NEW_HASHERS_FOR_THIS_YEAR, array((int) $kennelKy,(int) $kennelKy, (int)$year_value));
       $newHashersCount = count($newHashers);
 
       foreach($hareTypes as &$hareType) {
-        $newHareCounts[$hareType['HARE_TYPE_NAME']] = count($this->app['db']->fetchAll(NEW_HARES_FOR_THIS_YEAR_BY_HARE_TYPE,
+        $newHareCounts[$hareType['HARE_TYPE_NAME']] = count($this->fetchAll(NEW_HARES_FOR_THIS_YEAR_BY_HARE_TYPE,
           array($hareType['HARE_TYPE'],(int) $kennelKy,$hareType['HARE_TYPE'],(int) $kennelKy, $hareType['HARE_TYPE'],(int)$year_value)));
       }
 
       # Obtain the number of new overall hares
-      $newOverallHares = $this->app['db']->fetchAll(NEW_HARES_FOR_THIS_YEAR, array((int) $kennelKy,(int) $kennelKy,(int)$year_value));
+      $newOverallHares = $this->fetchAll(NEW_HARES_FOR_THIS_YEAR, array((int) $kennelKy,(int) $kennelKy,(int)$year_value));
       $newOverallHaresCount = count($newOverallHares);
 
       #Establish the return value
@@ -198,7 +198,7 @@ class ObscureStatisticsController extends BaseController {
       $hasherCountSQL = HASHER_COUNTS_BY_YEAR;
 
       #Obtain the hare list
-      $hasherCountList = $this->app['db']->fetchAll($hasherCountSQL,array((int)$theYear, (int) $kennelKy));
+      $hasherCountList = $this->fetchAll($hasherCountSQL,array((int)$theYear, (int) $kennelKy));
 
       #Set the return value
       $returnValue =  $this->app->json($hasherCountList, 200);
@@ -218,7 +218,7 @@ class ObscureStatisticsController extends BaseController {
       $hareCountSQL = TOTAL_HARE_COUNTS_BY_YEAR;
 
       #Obtain the hare list
-      $hareCountList = $this->app['db']->fetchAll($hareCountSQL,array((int)$theYear, (int) $kennelKy));
+      $hareCountList = $this->fetchAll($hareCountSQL,array((int)$theYear, (int) $kennelKy));
 
       #Set the return value
       $returnValue =  $this->app->json($hareCountList, 200);
@@ -239,7 +239,7 @@ class ObscureStatisticsController extends BaseController {
       $hareCountSQL = HARE_COUNTS_BY_YEAR_BY_HARE_TYPE;
 
       #Obtain the hare list
-      $hareCountList = $this->app['db']->fetchAll($hareCountSQL,array((int)$theYear, $hare_type, (int) $kennelKy));
+      $hareCountList = $this->fetchAll($hareCountSQL,array((int)$theYear, $hare_type, (int) $kennelKy));
 
       #Set the return value
       $returnValue =  $this->app->json($hareCountList, 200);
@@ -260,7 +260,7 @@ class ObscureStatisticsController extends BaseController {
       $hareCountSQL = NEW_HASHERS_FOR_THIS_YEAR;
 
       #Obtain the hare list
-      $hareCountList = $this->app['db']->fetchAll($hareCountSQL,array((int) $kennelKy,(int) $kennelKy,(int)$theYear));
+      $hareCountList = $this->fetchAll($hareCountSQL,array((int) $kennelKy,(int) $kennelKy,(int)$theYear));
 
       #Set the return value
       $returnValue =  $this->app->json($hareCountList, 200);
@@ -280,7 +280,7 @@ class ObscureStatisticsController extends BaseController {
       $hareCountSQL = NEW_HARES_FOR_THIS_YEAR_BY_HARE_TYPE;
 
       #Obtain the hare list
-      $hareCountList = $this->app['db']->fetchAll($hareCountSQL,array(
+      $hareCountList = $this->fetchAll($hareCountSQL,array(
         $hare_type, (int) $kennelKy, $hare_type, (int) $kennelKy, $hare_type, (int)$theYear));
 
       #Set the return value
@@ -300,7 +300,7 @@ class ObscureStatisticsController extends BaseController {
       $hareCountSQL = NEW_HARES_FOR_THIS_YEAR;
 
       #Obtain the hare list
-      $hareCountList = $this->app['db']->fetchAll($hareCountSQL,array(
+      $hareCountList = $this->fetchAll($hareCountSQL,array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $theYear));
@@ -324,7 +324,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = SELECT_HASHERS_VIRGIN_HASH;
 
       #Query the database
-      $theirVirginHash = $this->app['db']->fetchAssoc($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theirVirginHash = $this->fetchAssoc($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
       $returnValue = $this->app->json($theirVirginHash,200);
@@ -341,7 +341,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = SELECT_KENNELS_VIRGIN_HASH;
 
       #Query the database
-      $theirVirginHash = $this->app['db']->fetchAssoc($theSql, array((int) $kennelKy));
+      $theirVirginHash = $this->fetchAssoc($theSql, array((int) $kennelKy));
 
       #Set the return value
       $returnValue = $this->app->json($theirVirginHash,200);
@@ -362,7 +362,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = SELECT_HASHERS_MOST_RECENT_HASH;
 
       #Query the database
-      $theirLatestHash = $this->app['db']->fetchAssoc($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theirLatestHash = $this->fetchAssoc($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
       $returnValue = $this->app->json($theirLatestHash,200);
@@ -379,7 +379,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = SELECT_KENNELS_MOST_RECENT_HASH;
 
       #Query the database
-      $theirLatestHash = $this->app['db']->fetchAssoc($theSql, array((int) $kennelKy));
+      $theirLatestHash = $this->fetchAssoc($theSql, array((int) $kennelKy));
 
       #Set the return value
       $returnValue = $this->app->json($theirLatestHash,200);
@@ -401,7 +401,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = HASHER_HASH_COUNTS_BY_YEAR;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
       $returnValue = $this->app->json($theResults,200);
@@ -422,7 +422,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = HASHER_HASH_COUNTS_BY_QUARTER;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
       $returnValue = $this->app->json($theResults,200);
@@ -444,7 +444,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = HASHER_HASH_COUNTS_BY_MONTH;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
       $returnValue = $this->app->json($theResults,200);
@@ -466,7 +466,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = HASHER_HASH_COUNTS_BY_DAYNAME;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
       $returnValue = $this->app->json($theResults,200);
@@ -487,7 +487,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = HASHER_HASH_COUNTS_BY_STATE;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
       $returnValue = $this->app->json($theResults,200);
@@ -508,7 +508,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = HASHER_HASH_COUNTS_BY_CITY;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
       $returnValue = $this->app->json($theResults,200);
@@ -525,7 +525,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = KENNEL_HASH_COUNTS_BY_CITY;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $kennelKy));
+      $theResults = $this->fetchAll($theSql, array((int) $kennelKy));
 
       #Set the return value
       $returnValue = $this->app->json($theResults,200);
@@ -542,7 +542,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = KENNEL_HASH_COUNTS_BY_COUNTY;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $kennelKy));
+      $theResults = $this->fetchAll($theSql, array((int) $kennelKy));
 
       #Set the return value
       $returnValue = $this->app->json($theResults,200);
@@ -559,7 +559,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = KENNEL_HASH_COUNTS_BY_POSTAL_CODE;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $kennelKy));
+      $theResults = $this->fetchAll($theSql, array((int) $kennelKy));
 
       #Set the return value
       $returnValue = $this->app->json($theResults,200);
@@ -580,7 +580,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = HASHER_ALL_HARING_COUNTS_BY_YEAR;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
       $returnValue = $this->app->json($theResults,200);
@@ -600,7 +600,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = HASHER_ALL_HARING_COUNTS_BY_QUARTER;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
       $returnValue = $this->app->json($theResults,200);
@@ -620,7 +620,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = HASHER_ALL_HARING_COUNTS_BY_MONTH;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
       $returnValue = $this->app->json($theResults,200);
@@ -640,7 +640,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = HASHER_ALL_HARING_COUNTS_BY_DAYNAME;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
       $returnValue = $this->app->json($theResults,200);
@@ -660,7 +660,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = HASHER_ALL_HARING_COUNTS_BY_STATE;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
       $returnValue = $this->app->json($theResults,200);
@@ -680,7 +680,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = HASHER_ALL_HARING_COUNTS_BY_CITY;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
+      $theResults = $this->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy));
 
       #Set the return value
       $returnValue = $this->app->json($theResults,200);
@@ -702,7 +702,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = HASHER_HARING_COUNTS_BY_YEAR;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
+      $theResults = $this->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
 
       #Set the return value
       $returnValue = $this->app->json($theResults,200);
@@ -722,7 +722,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = HASHER_HARING_COUNTS_BY_QUARTER;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
+      $theResults = $this->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
 
       #Set the return value
       $returnValue = $this->app->json($theResults,200);
@@ -742,7 +742,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = HASHER_HARING_COUNTS_BY_MONTH;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
+      $theResults = $this->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
 
       #Set the return value
       $returnValue = $this->app->json($theResults,200);
@@ -762,7 +762,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = HASHER_HARING_COUNTS_BY_DAYNAME;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
+      $theResults = $this->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
 
       #Set the return value
       $returnValue = $this->app->json($theResults,200);
@@ -782,7 +782,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = HASHER_HARING_COUNTS_BY_STATE;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
+      $theResults = $this->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
 
       #Set the return value
       $returnValue = $this->app->json($theResults,200);
@@ -803,7 +803,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = HASHER_HARING_COUNTS_BY_CITY;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
+      $theResults = $this->fetchAll($theSql, array((int) $theHasherKey, (int) $kennelKy, (int) $hare_type));
 
       #Set the return value
       $returnValue = $this->app->json($theResults,200);
@@ -823,7 +823,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = COHARE_COUNT_BY_HARE;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array(
+      $theResults = $this->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $theHasherKey,
         (int) $theHasherKey,
@@ -848,7 +848,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = OVERALL_COHARE_COUNT_BY_HARE;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array(
+      $theResults = $this->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $theHasherKey,
         (int) $theHasherKey));
@@ -879,7 +879,7 @@ class ObscureStatisticsController extends BaseController {
             $theSql = str_replace("XORDERCOLUMNX","DAYS_TO_REACH_ANALVERSARY",$theSql);
 
             #Query the database
-            $theResults = $this->app['db']->fetchAll($theSql, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy));
+            $theResults = $this->fetchAll($theSql, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy));
 
             #Define the page title
             $pageTitle = "Quickest to reach $analversary_number hashes";
@@ -916,7 +916,7 @@ class ObscureStatisticsController extends BaseController {
                   $theSql = str_replace("XORDERCOLUMNX","ANALVERSARY_DATE",$theSql);
 
                   #Query the database
-                  $theResults = $this->app['db']->fetchAll($theSql, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy));
+                  $theResults = $this->fetchAll($theSql, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy));
 
                   #Define the page title
                   $pageTitle = "Chronological order of analversaries";
@@ -956,7 +956,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = str_replace("XORDERCOLUMNX","DAYS_TO_REACH_ANALVERSARY",$theSql);
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy));
+      $theResults = $this->fetchAll($theSql, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy));
 
       #Define the page title
       $pageTitle = "Slowest to reach $analversary_number hashes";
@@ -990,7 +990,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = THE_LONGEST_STREAKS;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array((int) $kennelKy));
+      $theResults = $this->fetchAll($theSql, array((int) $kennelKy));
 
       #Define the page title
       $pageTitle = "The longest streaks";
@@ -1024,7 +1024,7 @@ class ObscureStatisticsController extends BaseController {
       $minHashingCount = 4;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array(
+      $theResults = $this->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $kennelKy,
@@ -1073,7 +1073,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = str_replace("XUPORDOWNX","DESC",$theSql);
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array(
+      $theResults = $this->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $kennelKy,
@@ -1120,7 +1120,7 @@ class ObscureStatisticsController extends BaseController {
       $theSql = str_replace("XUPORDOWNX","DESC",$theSql);
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array(
+      $theResults = $this->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $kennelKy,
@@ -1170,7 +1170,7 @@ class ObscureStatisticsController extends BaseController {
       $minHashingCount = 2;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array(
+      $theResults = $this->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $kennelKy,
@@ -1221,7 +1221,7 @@ class ObscureStatisticsController extends BaseController {
       $minHashingCount = 6;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array(
+      $theResults = $this->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $kennelKy,
@@ -1273,7 +1273,7 @@ class ObscureStatisticsController extends BaseController {
       $minHaringCount = 2;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array(
+      $theResults = $this->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $kennelKy,
@@ -1316,7 +1316,7 @@ class ObscureStatisticsController extends BaseController {
       $minHaringCount = 2;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array(
+      $theResults = $this->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $kennelKy,
@@ -1363,7 +1363,7 @@ class ObscureStatisticsController extends BaseController {
       $minHaringCount = 5;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array(
+      $theResults = $this->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $kennelKy,
@@ -1413,7 +1413,7 @@ class ObscureStatisticsController extends BaseController {
       $minHaringCount = 2;
 
       #Query the database
-      $theResults = $this->app['db']->fetchAll($theSql, array(
+      $theResults = $this->fetchAll($theSql, array(
         (int) $kennelKy,
         (int) $kennelKy,
         (int) $kennelKy,
@@ -1469,7 +1469,7 @@ class ObscureStatisticsController extends BaseController {
         		GROUP BY HASHES.HASH_KY
             ) TEMPORARY_TABLE
         GROUP BY YEAR(THE_DATE)";
-      $avgTotalEvtParticipationByYear = $this->app['db']->fetchAll($sqlAvgTotalEvtParticipationByYear, array((int) $kennelKy));
+      $avgTotalEvtParticipationByYear = $this->fetchAll($sqlAvgTotalEvtParticipationByYear, array((int) $kennelKy));
 
       # Obtain the average event attendance per (year/month)
       $sqlAvgEvtParticipationByYearMonth = "SELECT
@@ -1485,7 +1485,7 @@ class ObscureStatisticsController extends BaseController {
             GROUP BY HASHES.HASH_KY
             ) TEMPORARY_TABLE
         GROUP BY DATE_FORMAT(THE_DATE,'%Y/%m')";
-      $avgEvtParticipationByYearMonth = $this->app['db']->fetchAll($sqlAvgEvtParticipationByYearMonth, array((int) $kennelKy));
+      $avgEvtParticipationByYearMonth = $this->fetchAll($sqlAvgEvtParticipationByYearMonth, array((int) $kennelKy));
 
       # Obtain the average event attendance per (year/quarter)
       $sqlAvgEvtParticipationByYearQuarter = "SELECT
@@ -1501,7 +1501,7 @@ class ObscureStatisticsController extends BaseController {
             GROUP BY HASHES.HASH_KY
             ) TEMPORARY_TABLE
         GROUP BY CONCAT_WS('/',YEAR(THE_DATE),QUARTER(THE_DATE))";
-      $avgEvtParticipationByYearQuarter = $this->app['db']->fetchAll($sqlAvgEvtParticipationByYearQuarter, array((int) $kennelKy));
+      $avgEvtParticipationByYearQuarter = $this->fetchAll($sqlAvgEvtParticipationByYearQuarter, array((int) $kennelKy));
 
 
       # Obtain the average event attendance per (year/month)
@@ -1518,7 +1518,7 @@ class ObscureStatisticsController extends BaseController {
             GROUP BY HASHES.HASH_KY
             ) TEMPORARY_TABLE
         GROUP BY DATE_FORMAT(THE_DATE,'%m')";
-      $avgEvtParticipationByMonth = $this->app['db']->fetchAll($sqlAvgEvtParticipationByMonth, array((int) $kennelKy));
+      $avgEvtParticipationByMonth = $this->fetchAll($sqlAvgEvtParticipationByMonth, array((int) $kennelKy));
 
       # Establish and set the return value
       $returnValue = $this->render('event_participation_charts.twig',array(
@@ -1545,20 +1545,20 @@ class ObscureStatisticsController extends BaseController {
 
       # Obtain the average event attendance per year
       $sqlNewComersByYear = NEWCOMERS_BY_YEAR;
-      $newComersByYear = $this->app['db']->fetchAll($sqlNewComersByYear, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy, $min_hash_count));
+      $newComersByYear = $this->fetchAll($sqlNewComersByYear, array((int) $kennelKy, (int) $kennelKy,(int) $kennelKy, $min_hash_count));
 
       # Obtain the average event attendance per (year/month)
       $sqlNewComersByYearQuarter = NEWCOMERS_BY_YEAR_QUARTER;
-      $newComersByYearQuarter = $this->app['db']->fetchAll($sqlNewComersByYearQuarter, array((int) $kennelKy, (int) $kennelKy, $min_hash_count));
+      $newComersByYearQuarter = $this->fetchAll($sqlNewComersByYearQuarter, array((int) $kennelKy, (int) $kennelKy, $min_hash_count));
 
       # Obtain the average event attendance per (year/quarter)
       $sqlNewComersByYearMonth = NEWCOMERS_BY_YEAR_MONTH;
-      $newComersByYearMonth = $this->app['db']->fetchAll($sqlNewComersByYearMonth, array((int) $kennelKy, (int) $kennelKy, $min_hash_count));
+      $newComersByYearMonth = $this->fetchAll($sqlNewComersByYearMonth, array((int) $kennelKy, (int) $kennelKy, $min_hash_count));
 
 
       # Obtain the average event attendance per (year/month)
       $sqlNewComersByMonth = NEWCOMERS_BY_MONTH;
-      $newComersByMonth = $this->app['db']->fetchAll($sqlNewComersByMonth, array((int) $kennelKy,(int) $kennelKy, $min_hash_count));
+      $newComersByMonth = $this->fetchAll($sqlNewComersByMonth, array((int) $kennelKy,(int) $kennelKy, $min_hash_count));
 
       # Establish and set the return value
       $returnValue = $this->render('newcomers_charts.twig',array(
@@ -1590,19 +1590,19 @@ class ObscureStatisticsController extends BaseController {
 
           # Obtain the average event attendance per year
           $sqlByYear = VIRGIN_HARINGS_BY_YEAR;
-          $listByYear = $this->app['db']->fetchAll($sqlByYear, array((int) $kennelKy, (int) $kennelKy,$hare_type));
+          $listByYear = $this->fetchAll($sqlByYear, array((int) $kennelKy, (int) $kennelKy,$hare_type));
 
           # Obtain the average event attendance per (year/month)
           $sqlByYearQuarter = VIRGIN_HARINGS_BY_YEAR_QUARTER;
-          $listByYearQuarter = $this->app['db']->fetchAll($sqlByYearQuarter, array((int) $kennelKy,$hare_type));
+          $listByYearQuarter = $this->fetchAll($sqlByYearQuarter, array((int) $kennelKy,$hare_type));
 
           # Obtain the average event attendance per (year/quarter)
           $sqlByYearMonth = VIRGIN_HARINGS_BY_YEAR_MONTH;
-          $listByYearMonth = $this->app['db']->fetchAll($sqlByYearMonth, array((int) $kennelKy,$hare_type));
+          $listByYearMonth = $this->fetchAll($sqlByYearMonth, array((int) $kennelKy,$hare_type));
 
           # Obtain the average event attendance per (year/month)
           $sqlByMonth = VIRGIN_HARINGS_BY_MONTH;
-          $listByMonth = $this->app['db']->fetchAll($sqlByMonth, array((int) $kennelKy,$hare_type));
+          $listByMonth = $this->fetchAll($sqlByMonth, array((int) $kennelKy,$hare_type));
 
           # Establish and set the return value
           $returnValue = $this->render('generic_charts_template.twig',array(
@@ -1636,20 +1636,20 @@ class ObscureStatisticsController extends BaseController {
 
       # Obtain the average event attendance per year
       $sqlByYear = DISTINCT_HASHERS_BY_YEAR;
-      $listByYear = $this->app['db']->fetchAll($sqlByYear, array((int) $kennelKy));
+      $listByYear = $this->fetchAll($sqlByYear, array((int) $kennelKy));
 
       # Obtain the average event attendance per (year/month)
       $sqlByYearQuarter = DISTINCT_HASHERS_BY_YEAR_QUARTER;
-      $listByYearQuarter = $this->app['db']->fetchAll($sqlByYearQuarter, array((int) $kennelKy));
+      $listByYearQuarter = $this->fetchAll($sqlByYearQuarter, array((int) $kennelKy));
 
       # Obtain the average event attendance per (year/quarter)
       $sqlByYearMonth = DISTINCT_HASHERS_BY_YEAR_MONTH;
-      $listByYearMonth = $this->app['db']->fetchAll($sqlByYearMonth, array((int) $kennelKy));
+      $listByYearMonth = $this->fetchAll($sqlByYearMonth, array((int) $kennelKy));
 
 
       # Obtain the average event attendance per (year/month)
       $sqlByMonth = DISTINCT_HASHERS_BY_MONTH;
-      $listByMonth = $this->app['db']->fetchAll($sqlByMonth, array((int) $kennelKy));
+      $listByMonth = $this->fetchAll($sqlByMonth, array((int) $kennelKy));
 
       # Establish and set the return value
       $returnValue = $this->render('generic_charts_template.twig',array(
@@ -1686,19 +1686,19 @@ class ObscureStatisticsController extends BaseController {
 
           # Obtain the average event attendance per year
           $sqlByYear = DISTINCT_HARES_BY_YEAR;
-          $listByYear = $this->app['db']->fetchAll($sqlByYear, array((int) $kennelKy,$hare_type));
+          $listByYear = $this->fetchAll($sqlByYear, array((int) $kennelKy,$hare_type));
 
           # Obtain the average event attendance per (year/month)
           $sqlByYearQuarter = DISTINCT_HARES_BY_YEAR_QUARTER;
-          $listByYearQuarter = $this->app['db']->fetchAll($sqlByYearQuarter, array((int) $kennelKy,$hare_type));
+          $listByYearQuarter = $this->fetchAll($sqlByYearQuarter, array((int) $kennelKy,$hare_type));
 
           # Obtain the average event attendance per (year/quarter)
           $sqlByYearMonth = DISTINCT_HARES_BY_YEAR_MONTH;
-          $listByYearMonth = $this->app['db']->fetchAll($sqlByYearMonth, array((int) $kennelKy,$hare_type));
+          $listByYearMonth = $this->fetchAll($sqlByYearMonth, array((int) $kennelKy,$hare_type));
 
           # Obtain the average event attendance per (year/month)
           $sqlByMonth = DISTINCT_HARES_BY_MONTH;
-          $listByMonth = $this->app['db']->fetchAll($sqlByMonth, array((int) $kennelKy,$hare_type));
+          $listByMonth = $this->fetchAll($sqlByMonth, array((int) $kennelKy,$hare_type));
 
           # Establish and set the return value
           $returnValue = $this->render('generic_charts_template.twig',array(
@@ -1731,20 +1731,20 @@ class ObscureStatisticsController extends BaseController {
 
       # Obtain the average event attendance per year
       $sqlLastComersByYear = DEPARTERS_BY_YEAR;
-      $lastComersByYear = $this->app['db']->fetchAll($sqlLastComersByYear, array((int) $kennelKy,(int) $kennelKy, $min_hash_count, $month_count));
+      $lastComersByYear = $this->fetchAll($sqlLastComersByYear, array((int) $kennelKy,(int) $kennelKy, $min_hash_count, $month_count));
 
       # Obtain the average event attendance per (year/month)
       $sqlLastComersByYearQuarter = DEPARTERS_BY_YEAR_QUARTER;
-      $lastComersByYearQuarter = $this->app['db']->fetchAll($sqlLastComersByYearQuarter, array((int) $kennelKy, (int) $kennelKy, $min_hash_count, $month_count));
+      $lastComersByYearQuarter = $this->fetchAll($sqlLastComersByYearQuarter, array((int) $kennelKy, (int) $kennelKy, $min_hash_count, $month_count));
 
       # Obtain the average event attendance per (year/quarter)
       $sqlLastComersByYearMonth = DEPARTERS_BY_YEAR_MONTH;
-      $lastComersByYearMonth = $this->app['db']->fetchAll($sqlLastComersByYearMonth, array((int) $kennelKy, (int) $kennelKy, $min_hash_count, $month_count));
+      $lastComersByYearMonth = $this->fetchAll($sqlLastComersByYearMonth, array((int) $kennelKy, (int) $kennelKy, $min_hash_count, $month_count));
 
 
       # Obtain the average event attendance per (year/month)
       $sqlLastComersByMonth = DEPARTERS_BY_MONTH;
-      $lastComersByMonth = $this->app['db']->fetchAll($sqlLastComersByMonth, array((int) $kennelKy,(int) $kennelKy, $min_hash_count, $month_count));
+      $lastComersByMonth = $this->fetchAll($sqlLastComersByMonth, array((int) $kennelKy,(int) $kennelKy, $min_hash_count, $month_count));
 
       # Establish and set the return value
       $returnValue = $this->render('lastcomers_charts.twig',array(
@@ -1789,7 +1789,7 @@ class ObscureStatisticsController extends BaseController {
         GROUP BY HASHERS.HASHER_NAME
         ORDER BY THE_COUNT DESC
         LIMIT $rowLimit";
-      $trendingHashersList = $this->app['db']->fetchAll($sqlTrendingHashers, array((int) $kennelKy, (int) $day_count));
+      $trendingHashersList = $this->fetchAll($sqlTrendingHashers, array((int) $kennelKy, (int) $day_count));
 
       # Establish and set the return value
       $returnValue = $this->render('trending_hashers_charts.twig',array(
@@ -1829,7 +1829,7 @@ class ObscureStatisticsController extends BaseController {
          GROUP BY HASHERS.HASHER_NAME
          ORDER BY THE_COUNT DESC
          LIMIT $rowLimit";
-      $trendingTrueHaresList = $this->app['db']->fetchAll($sqlTrendingTrueHares, array((int) $kennelKy, $hare_type, (int) $day_count));
+      $trendingTrueHaresList = $this->fetchAll($sqlTrendingTrueHares, array((int) $kennelKy, $hare_type, (int) $day_count));
 
       # Establish and set the return value
       $returnValue = $this->render('trending_true_hares_charts.twig',array(
@@ -1914,7 +1914,7 @@ class ObscureStatisticsController extends BaseController {
          ORDER BY HARING_TO_HASHING_PERCENTAGE, HASH_COUNT DESC
          LIMIT $row_limit";
 
-      $unTrendingTrueHaresList = $this->app['db']->fetchAll(
+      $unTrendingTrueHaresList = $this->fetchAll(
         $sqlUnTrendingTrueHares,
         array(
           (int) $kennelKy,
@@ -1981,7 +1981,7 @@ class ObscureStatisticsController extends BaseController {
           HASHER_NAME NOT LIKE '%NHN%' AND HASHER_NAME NOT LIKE 'JUST %'";
 
       #Obtain the hare list
-      $hasherNameList = $this->app['db']->fetchAll($SQL,array((int) $kennelKy));
+      $hasherNameList = $this->fetchAll($SQL,array((int) $kennelKy));
       $tokenizerString = " -\'&,!?().";
 
       #Create an array that will be used to store the sub strings
@@ -2089,60 +2089,60 @@ class ObscureStatisticsController extends BaseController {
 
         #Obtain the kennel value
         $kennelValueSql = "SELECT KENNELS.* FROM KENNELS WHERE KENNEL_KY = ?";
-        $kennelValue = $this->app['db']->fetchAssoc($kennelValueSql, array((int) $kennelKy));
+        $kennelValue = $this->fetchAssoc($kennelValueSql, array((int) $kennelKy));
 
         # Obtain their hashes
         $sqlTheHashes = "SELECT HASHES.* FROM HASHES
         WHERE KENNEL_KY = ? and LAT is not null and LNG is not null";
-        $theHashes = $this->app['db']->fetchAll($sqlTheHashes, array((int) $kennelKy));
+        $theHashes = $this->fetchAll($sqlTheHashes, array((int) $kennelKy));
 
         #Obtain the average lat
         $sqlTheAverageLatLong = "SELECT AVG(LAT) AS THE_LAT, AVG(LNG) AS THE_LNG FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
         WHERE KENNEL_KY = ? and LAT is not null and LNG is not null";
-        $theAverageLatLong = $this->app['db']->fetchAssoc($sqlTheAverageLatLong, array((int) $kennelKy));
+        $theAverageLatLong = $this->fetchAssoc($sqlTheAverageLatLong, array((int) $kennelKy));
         $avgLat = $theAverageLatLong['THE_LAT'];
         $avgLng = $theAverageLatLong['THE_LNG'];
 
         #Obtain the number of hashes for this kennel
         $sqlHashCountForKennel = "SELECT COUNT(*) AS THE_COUNT FROM HASHES WHERE KENNEL_KY = ?";
-        $hashCountValueForKennel = $this->app['db']->fetchAssoc($sqlHashCountForKennel, array((int) $kennelKy));
+        $hashCountValueForKennel = $this->fetchAssoc($sqlHashCountForKennel, array((int) $kennelKy));
         $hashCountForKennel = $hashCountValueForKennel['THE_COUNT'];
 
         #Obtain the number of distinct hashers
-        $distinctHasherCountValueForKennel = $this->app['db']->fetchAssoc(KENNEL_NUM_OF_DISTINCT_HASHERS, array((int) $kennelKy));
+        $distinctHasherCountValueForKennel = $this->fetchAssoc(KENNEL_NUM_OF_DISTINCT_HASHERS, array((int) $kennelKy));
         $distinctHasherCountForKennel = $distinctHasherCountValueForKennel['THE_COUNT'];
 
         #Obtain the number of distinct overall hares
-        $distinctOverallHareCountValueForKennel = $this->app['db']->fetchAssoc(KENNEL_NUM_OF_DISTINCT_OVERALL_HARES, array((int) $kennelKy));
+        $distinctOverallHareCountValueForKennel = $this->fetchAssoc(KENNEL_NUM_OF_DISTINCT_OVERALL_HARES, array((int) $kennelKy));
         $distinctOverallHareCountForKennel = $distinctOverallHareCountValueForKennel['THE_COUNT'];
 
         #Obtain the number of distinct hares by type
         $distinctHareCounts = array();
         foreach($hareTypes as &$hareType) {
-          $distinctHareCountValueForKennel = $this->app['db']->fetchAssoc(KENNEL_NUM_OF_DISTINCT_HARES, array((int) $kennelKy, $hareType['HARE_TYPE']));
+          $distinctHareCountValueForKennel = $this->fetchAssoc(KENNEL_NUM_OF_DISTINCT_HARES, array((int) $kennelKy, $hareType['HARE_TYPE']));
           $distinctHareCounts[$hareType['HARE_TYPE_NAME']] = $distinctHareCountValueForKennel['THE_COUNT'];
         }
 
         # Obtain the number of hashings
-        #$hashCountValue = $this->app['db']->fetchAssoc($this->getPersonsHashingCountQuery(), array((int) $hasher_id, (int) $kennelKy));
+        #$hashCountValue = $this->fetchAssoc($this->getPersonsHashingCountQuery(), array((int) $hasher_id, (int) $kennelKy));
 
         # Obtain the hashes by month (name)
-        $theHashesByMonthNameList = $this->app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_MONTH_NAME, array((int) $kennelKy));
+        $theHashesByMonthNameList = $this->fetchAll(KENNEL_HASH_COUNTS_BY_MONTH_NAME, array((int) $kennelKy));
 
         # Obtain the hashes by quarter
-        $theHashesByQuarterList = $this->app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_QUARTER, array((int) $kennelKy));
+        $theHashesByQuarterList = $this->fetchAll(KENNEL_HASH_COUNTS_BY_QUARTER, array((int) $kennelKy));
 
         # Obtain the hashes by quarter
-        $theHashesByStateList = $this->app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_STATE, array((int) $kennelKy));
+        $theHashesByStateList = $this->fetchAll(KENNEL_HASH_COUNTS_BY_STATE, array((int) $kennelKy));
 
         # Obtain the hashes by county
-        $theHashesByCountyList = $this->app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_COUNTY, array((int) $kennelKy));
+        $theHashesByCountyList = $this->fetchAll(KENNEL_HASH_COUNTS_BY_COUNTY, array((int) $kennelKy));
 
         # Obtain the hashes by postal code
-        $theHashesByPostalCodeList = $this->app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_POSTAL_CODE, array((int) $kennelKy));
+        $theHashesByPostalCodeList = $this->fetchAll(KENNEL_HASH_COUNTS_BY_POSTAL_CODE, array((int) $kennelKy));
 
         # Obtain the hashes by day name
-        $theHashesByDayNameList = $this->app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_DAYNAME, array((int) $kennelKy));
+        $theHashesByDayNameList = $this->fetchAll(KENNEL_HASH_COUNTS_BY_DAYNAME, array((int) $kennelKy));
 
         #Obtain the hashes by year
         $sqlHashesByYear = "SELECT YEAR(EVENT_DATE) AS THE_VALUE, COUNT(*) AS THE_COUNT
@@ -2152,10 +2152,10 @@ class ObscureStatisticsController extends BaseController {
             HASHES.KENNEL_KY = ?
         GROUP BY YEAR(EVENT_DATE)
         ORDER BY YEAR(EVENT_DATE)";
-        $hashesByYearList = $this->app['db']->fetchAll($sqlHashesByYear, array((int) $kennelKy));
+        $hashesByYearList = $this->fetchAll($sqlHashesByYear, array((int) $kennelKy));
 
         #Query the database
-        $cityHashingsCountList = $this->app['db']->fetchAll(KENNEL_HASH_COUNTS_BY_CITY, array((int) $kennelKy));
+        $cityHashingsCountList = $this->fetchAll(KENNEL_HASH_COUNTS_BY_CITY, array((int) $kennelKy));
 
         #Obtain largest entry from the list
         $cityHashingsCountMax = 1;
@@ -2189,7 +2189,7 @@ class ObscureStatisticsController extends BaseController {
         ORDER BY THE_COUNT DESC";
 
         #1. Query the db
-        $locationBreakdownValues = $this->app['db']->fetchAll($locationBreakdownSql, array((int) $kennelKy));
+        $locationBreakdownValues = $this->fetchAll($locationBreakdownSql, array((int) $kennelKy));
         #4. Create the formatted data for the sunburst graph
         $locationBreakdownFormattedData = convertToFormattedHiarchyV2($locationBreakdownValues);
 
@@ -2245,7 +2245,7 @@ class ObscureStatisticsController extends BaseController {
       $SQL = "SELECT HASHER_NAME, HASHER_KY FROM HASHERS WHERE HASHER_NAME NOT LIKE '%NHN%' AND HASHER_NAME NOT LIKE 'JUST %'";
 
       #Obtain the hare list
-      $hasherNameList = $this->app['db']->fetchAll($SQL,array((int) $kennelKy));
+      $hasherNameList = $this->fetchAll($SQL,array((int) $kennelKy));
       $tokenizerString = " -\'&,!?().";
 
       #Create an array that will be used to store the sub strings
@@ -2342,7 +2342,7 @@ class ObscureStatisticsController extends BaseController {
       $SQL = "SELECT HASHER_NAME, HASHER_KY FROM HASHERS WHERE HASHER_NAME NOT LIKE '%NHN%' AND HASHER_NAME NOT LIKE 'JUST %'";
 
       #Obtain the hare list
-      $hasherNameList = $this->app['db']->fetchAll($SQL,array((int) $kennelKy));
+      $hasherNameList = $this->fetchAll($SQL,array((int) $kennelKy));
       $tokenizerString = " -\'&,!?().";
 
       #Create an array that will be used to store the sub strings

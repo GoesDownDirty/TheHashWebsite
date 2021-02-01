@@ -37,7 +37,7 @@ class HashEventController extends BaseController {
              ORDER BY HARE_TYPES.SEQ";
 
     #Query the database
-    $hareTypes = $this->app['db']->fetchAll($sql, array((int) $kennelKy, (int) $hashType));
+    $hareTypes = $this->fetchAll($sql, array((int) $kennelKy, (int) $hashType));
 
     #return the return value
     return $hareTypes;
@@ -51,7 +51,7 @@ class HashEventController extends BaseController {
              ORDER BY SEQ";
 
     #Query the database
-    $hashTypes = $this->app['db']->fetchAll($sql);
+    $hashTypes = $this->fetchAll($sql);
 
     #return the return value
     return $hashTypes;
@@ -243,7 +243,7 @@ class HashEventController extends BaseController {
          WHERE HASH_KY = ?";
 
       # Make a database call to obtain the hasher information
-      $hashValue = $this->app['db']->fetchAssoc($sql, array((int) $hash_id));
+      $hashValue = $this->fetchAssoc($sql, array((int) $hash_id));
 
       $returnValue = $this->render('edit_hash_form_ajax.twig', array(
         'pageTitle' => 'Modify an Event!',
@@ -386,7 +386,7 @@ class HashEventController extends BaseController {
           $sqlOriginal = "SELECT * FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
           # Make a database call to obtain the hasher information
-          $hashValue = $this->app['db']->fetchAssoc($sqlOriginal, array((int) $hash_id));
+          $hashValue = $this->fetchAssoc($sqlOriginal, array((int) $hash_id));
 
         #Audit this activity
         $tempEventNumber = $hashValue['KENNEL_EVENT_NUMBER'];
@@ -423,9 +423,9 @@ class HashEventController extends BaseController {
       $hashEventInfoSQL = "SELECT *, EVENT_DATE < NOW() AS SHOW_EVENT_LINK FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
       #Execute the SQL statement; create an array of rows
-      $hasherList = $this->app['db']->fetchAll($hasherListSQL,array((int)$hash_id));
-      $hareList = $this->app['db']->fetchAll($hareListSQL,array((int)$hash_id));
-      $hashEvent = $this->app['db']->fetchAssoc($hashEventInfoSQL,array((int)$hash_id));
+      $hasherList = $this->fetchAll($hasherListSQL,array((int)$hash_id));
+      $hareList = $this->fetchAll($hareListSQL,array((int)$hash_id));
+      $hashEvent = $this->fetchAssoc($hashEventInfoSQL,array((int)$hash_id));
 
       $kennelAbbreviation = $hashEvent['KENNEL_ABBREVIATION'];
       $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennelAbbreviation);
@@ -469,7 +469,7 @@ class HashEventController extends BaseController {
         $hasherIdentitySql = "SELECT * FROM HASHERS WHERE HASHERS.HASHER_KY = ? ;";
 
         # Make a database call to obtain the hasher information
-        $hasherValue = $this->app['db']->fetchAssoc($hasherIdentitySql, array((int) $hasherKey));
+        $hasherValue = $this->fetchAssoc($hasherIdentitySql, array((int) $hasherKey));
 
         #Obtain the object from the database results
         $data = array(
@@ -493,7 +493,7 @@ class HashEventController extends BaseController {
           WHERE HASHERS.HASHER_KY = ? AND HASH_KY = ?;";
 
         #Retrieve the existing record
-        $hasherToAdd = $this->app['db']->fetchAll($existsSql,array((int)$hasherKey,(int)$hashKey));
+        $hasherToAdd = $this->fetchAll($existsSql,array((int)$hasherKey,(int)$hashKey));
         if(count($hasherToAdd) < 1){
 
           #Define the sql insert statement
@@ -508,7 +508,7 @@ class HashEventController extends BaseController {
           $sql = "SELECT * FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
           # Make a database call to obtain the hasher information
-          $hashValue = $this->app['db']->fetchAssoc($sql, array((int) $hashKey));
+          $hashValue = $this->fetchAssoc($sql, array((int) $hashKey));
           $tempKennelEventNumber = $hashValue['KENNEL_EVENT_NUMBER'];
           $tempKennelAbbreviation = $hashValue['KENNEL_ABBREVIATION'];
 
@@ -551,7 +551,7 @@ class HashEventController extends BaseController {
         $hasherIdentitySql = "SELECT * FROM HASHERS WHERE HASHERS.HASHER_KY = ? ;";
 
         # Make a database call to obtain the hasher information
-        $hasherValue = $this->app['db']->fetchAssoc($hasherIdentitySql, array((int) $hasherKey));
+        $hasherValue = $this->fetchAssoc($hasherIdentitySql, array((int) $hasherKey));
 
         #Obtain the object from the database results
         $data = array(
@@ -575,7 +575,7 @@ class HashEventController extends BaseController {
           WHERE HASHERS.HASHER_KY = ? AND HARINGS.HARINGS_HASH_KY = ? AND HARINGS.HARE_TYPE = ?;";
 
         #Retrieve the existing record
-        $hareToAdd = $this->app['db']->fetchAll($existsSql,array((int)$hasherKey, (int)$hashKey, (int)$hareType));
+        $hareToAdd = $this->fetchAll($existsSql,array((int)$hasherKey, (int)$hashKey, (int)$hareType));
         if(count($hareToAdd) < 1){
 
           #Define the sql insert statement
@@ -589,7 +589,7 @@ class HashEventController extends BaseController {
           $sql = "SELECT * FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
           # Make a database call to obtain the hasher information
-          $hashValue = $this->app['db']->fetchAssoc($sql, array((int) $hashKey));
+          $hashValue = $this->fetchAssoc($sql, array((int) $hashKey));
           $tempKennelEventNumber = $hashValue['KENNEL_EVENT_NUMBER'];
           $tempKennelAbbreviation = $hashValue['KENNEL_ABBREVIATION'];
 
@@ -637,7 +637,7 @@ class HashEventController extends BaseController {
           WHERE HASHERS.HASHER_KY = ? AND HASH_KY = ?;";
 
         #Retrieve the existing record
-        $hasherToDelete = $this->app['db']->fetchAll($existsSql,array((int)$hasherKey,(int)$hashKey));
+        $hasherToDelete = $this->fetchAll($existsSql,array((int)$hasherKey,(int)$hashKey));
         if(count($hasherToDelete) > 0){
 
           #Obtain the name of the person being deleted
@@ -656,7 +656,7 @@ class HashEventController extends BaseController {
           $sql = "SELECT * FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
           # Make a database call to obtain the hasher information
-          $hashValue = $this->app['db']->fetchAssoc($sql, array((int) $hashKey));
+          $hashValue = $this->fetchAssoc($sql, array((int) $hashKey));
           $tempKennelEventNumber = $hashValue['KENNEL_EVENT_NUMBER'];
           $tempKennelAbbreviation = $hashValue['KENNEL_ABBREVIATION'];
 
@@ -698,7 +698,7 @@ class HashEventController extends BaseController {
           WHERE HARINGS.HARINGS_HASHER_KY = ? AND HARINGS.HARINGS_HASH_KY = ?;";
 
         #Retrieve the existing record
-        $hareToDelete = $this->app['db']->fetchAll($existsSql,array((int)$hasherKey,(int)$hashKey));
+        $hareToDelete = $this->fetchAll($existsSql,array((int)$hasherKey,(int)$hashKey));
         if(count($hareToDelete) > 0){
 
           #Obtain the name of the person being deleted
@@ -717,7 +717,7 @@ class HashEventController extends BaseController {
           $sql = "SELECT * FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
 
           # Make a database call to obtain the hasher information
-          $hashValue = $this->app['db']->fetchAssoc($sql, array((int) $hashKey));
+          $hashValue = $this->fetchAssoc($sql, array((int) $hashKey));
           $tempKennelEventNumber = $hashValue['KENNEL_EVENT_NUMBER'];
           $tempKennelAbbreviation = $hashValue['KENNEL_ABBREVIATION'];
 
@@ -756,7 +756,7 @@ class HashEventController extends BaseController {
        WHERE HARINGS.HARINGS_HASH_KY = ? ";
 
       #Obtain the hare list
-      $hareList = $this->app['db']->fetchAll($hareListSQL,array((int)$hashKey));
+      $hareList = $this->fetchAll($hareListSQL,array((int)$hashKey));
 
       #Set the return value
       $returnValue =  $this->app->json($hareList, 200);
@@ -776,7 +776,7 @@ class HashEventController extends BaseController {
         WHERE HASHINGS.HASH_KY = ? ";
 
       #Obtain the hare list
-      $hareList = $this->app['db']->fetchAll($hareListSQL,array((int)$hashKey));
+      $hareList = $this->fetchAll($hareListSQL,array((int)$hashKey));
 
       #Set the return value
       $returnValue =  $this->app->json($hareList, 200);
@@ -919,7 +919,7 @@ class HashEventController extends BaseController {
 
       #-------------- Begin: Query the database   --------------------------------
       #Perform the filtered search
-      $theResults = $this->app['db']->fetchAll($sql,array(
+      $theResults = $this->fetchAll($sql,array(
         (string) $inputSearchValueModified,
         (string) $inputSearchValueModified,
         (string) $inputSearchValueModified,
@@ -927,10 +927,10 @@ class HashEventController extends BaseController {
         (string) $inputSearchValueModified));
 
       #Perform the untiltered count
-      $theUnfilteredCount = ($this->app['db']->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
+      $theUnfilteredCount = ($this->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
 
       #Perform the filtered count
-      $theFilteredCount = ($this->app['db']->fetchAssoc($sqlFilteredCount,array(
+      $theFilteredCount = ($this->fetchAssoc($sqlFilteredCount,array(
         (string) $inputSearchValueModified,
         (string) $inputSearchValueModified,
         (string) $inputSearchValueModified,

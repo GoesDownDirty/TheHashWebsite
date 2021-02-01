@@ -17,13 +17,62 @@ class BaseController {
   // used in slashaction2 to allow the home page to render even if there
   // are integrity issues in the database (currently having duplicate event
   // date/times causes issues)
-  protected function fetchAllIgnoreErrors(string $sql, array $args) {
+  protected function fetchAllIgnoreErrors(string $sql, array $args = null) {
     try {
-      return $this->app['db']->fetchAll($sql, $args);
+      return $this->fetchAll($sql, $args);
     } catch(\Exception $e) {
       // ignore
     }
     return [];
+  }
+
+  protected function fetchAll(string $sql, array $args = null) {
+    if($args == null) {
+      $result = $this->app['db']->fetchAll($sql);
+    } else {
+      $result = $this->app['db']->fetchAll($sql, $args);
+    }
+    if(defined('SHOW_WARNINGS')) {
+      $this->show_warnings($sql);
+    }
+    return $result;
+  }
+
+  protected function fetchOne(string $sql, array $args = null) {
+    if($args == null) {
+      $result = $this->app['db']->fetchOne($sql);
+    } else {
+      $result = $this->app['db']->fetchOne($sql, $args);
+    }
+    if(defined('SHOW_WARNINGS')) {
+      $this->show_warnings($sql);
+    }
+    return $result;
+  }
+
+  protected function fetchAssoc(string $sql, array $args = null) {
+    if($args == null) {
+      $result = $this->app['db']->fetchAssoc($sql);
+    } else {
+      $result = $this->app['db']->fetchAssoc($sql, $args);
+    }
+    if(defined('SHOW_WARNINGS')) {
+      $this->show_warnings($sql);
+    }
+    return $result;
+  }
+
+  private function show_warnings(string $sql) {
+    if(SHOW_WARNINGS) {
+      $warnings = $this->app['db']->fetchAll("SHOW WARNINGS");
+      foreach($warnings as $warning) {
+        print("WARNING:");
+        foreach($warning as $message) {
+          print($message);
+        }
+        print("($sql)");
+      }
+    }
   }
 
   // Add common page arguments, then dispatch to twig to render page
@@ -40,43 +89,43 @@ class BaseController {
 
   protected function hasLegacyHashCounts() {
     $sql = "SELECT value FROM SITE_CONFIG WHERE name='has_legacy_hash_counts'";
-    return $this->app['db']->fetchOne($sql, array()) == "true";
+    return $this->fetchOne($sql) == "true";
   }
 
   protected function getSiteBanner() {
     $sql = "SELECT value FROM SITE_CONFIG WHERE name='site_banner'";
-    return $this->app['db']->fetchOne($sql, array());
+    return $this->fetchOne($sql);
   }
 
   protected function getAdministratorEmail() {
     $sql = "SELECT value FROM SITE_CONFIG WHERE name='administrator_email'";
-    return $this->app['db']->fetchOne($sql, array());
+    return $this->fetchOne($sql);
   }
 
   protected function getDefaultKennel() {
     $sql = "SELECT value FROM SITE_CONFIG WHERE name='default_kennel'";
-    return $this->app['db']->fetchOne($sql, array());
+    return $this->fetchOne($sql);
   }
 
   protected function getGoogleAnalyticsId() {
     $sql = "SELECT value FROM SITE_CONFIG WHERE name='google_analytics_id'";
-    return $this->app['db']->fetchOne($sql, array());
+    return $this->fetchOne($sql);
   }
 
   protected function getGooglePlacesApiWebServiceKey() {
     $sql = "SELECT value FROM SITE_CONFIG WHERE name='google_places_api_web_service_key'";
-    return $this->app['db']->fetchOne($sql, array());
+    return $this->fetchOne($sql);
   }
 
   protected function getGoogleMapsJavascriptApiKey() {
     $sql = "SELECT value FROM SITE_CONFIG WHERE name='google_maps_javascript_api_key'";
-    return $this->app['db']->fetchOne($sql, array());
+    return $this->fetchOne($sql);
   }
 
   protected function getSiteConfigItemAsInt(string $name, int $defaultValue) {
     $sql = "SELECT VALUE FROM SITE_CONFIG WHERE NAME = ?";
 
-    $value = (int) $this->app['db']->fetchOne($sql, array($name));
+    $value = (int) $this->fetchOne($sql, array($name));
     if(!$value) {
       $value = $defaultValue;
     }
@@ -87,7 +136,7 @@ class BaseController {
   protected function getSiteConfigItem(string $name, string $defaultValue) {
     $sql = "SELECT VALUE FROM SITE_CONFIG WHERE NAME = ?";
 
-    $value = $this->app['db']->fetchOne($sql, array($name));
+    $value = $this->fetchOne($sql, array($name));
     if(!$value) {
       $value = $defaultValue;
     }
@@ -102,7 +151,7 @@ class BaseController {
     $sql = "SELECT KENNEL_KY FROM KENNELS WHERE KENNEL_ABBREVIATION = ?";
 
     #Query the database
-    $kennelValue = $this->app['db']->fetchAssoc($sql,
+    $kennelValue = $this->fetchAssoc($sql,
       array((string) $kennel_abbreviation));
 
     if(!$kennelValue) {
@@ -132,7 +181,7 @@ class BaseController {
              ORDER BY HARE_TYPES.SEQ";
 
     #Query the database
-    $hareTypes = $this->app['db']->fetchAll($sql, array((int) $kennelKy));
+    $hareTypes = $this->fetchAll($sql, array((int) $kennelKy));
 
     #return the return value
     return $hareTypes;
@@ -152,7 +201,7 @@ class BaseController {
     #Query the database
     $args = array((int) $kennelKy);
     if($hare_type != 0) array_push($args, $hare_type);
-    $hashTypes = $this->app['db']->fetchAll($sql, $args);
+    $hashTypes = $this->fetchAll($sql, $args);
 
     #return the return value
     return $hashTypes;
@@ -164,7 +213,7 @@ class BaseController {
              WHERE HARE_TYPES.HARE_TYPE = ?";
 
     #Query the database
-    $result = $this->app['db']->fetchAssoc($sql, array((int) $hare_type));
+    $result = $this->fetchAssoc($sql, array((int) $hare_type));
 
     #return the return value
     return $result['HARE_TYPE_NAME'];

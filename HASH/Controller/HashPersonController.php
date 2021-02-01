@@ -27,7 +27,7 @@ class HashPersonController extends BaseController
 
     # Make a database call to obtain the hasher information
     $sql = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
-    $hasherValue = $this->app['db']->fetchAssoc($sql, array((int) $hasher_id));
+    $hasherValue = $this->fetchAssoc($sql, array((int) $hasher_id));
 
     #Determine if the hasher exists
     if(!$hasherValue){
@@ -39,10 +39,10 @@ class HashPersonController extends BaseController
     }
 
     # Obtain all of their hashings (all kennels)
-    $allHashings = $this->app['db']->fetchAll(ALL_HASHINGS_IN_ALL_KENNELS_FOR_HASHER, array((int)$hasher_id));
+    $allHashings = $this->fetchAll(ALL_HASHINGS_IN_ALL_KENNELS_FOR_HASHER, array((int)$hasher_id));
 
     # Obtain all of their harings (all kennels)
-    $allHarings = $this->app['db']->fetchAll(ALL_HARINGS_IN_ALL_KENNELS_FOR_HASHER, array((int)$hasher_id));
+    $allHarings = $this->fetchAll(ALL_HARINGS_IN_ALL_KENNELS_FOR_HASHER, array((int)$hasher_id));
 
     # Obtain the number of newbie hyper hares
     # $newOverallHaresCount = count($newOverallHares);
@@ -96,17 +96,17 @@ class HashPersonController extends BaseController
       $hasherIdentitySql = "SELECT * FROM HASHERS WHERE HASHERS.HASHER_KY = ? ;";
 
       # Make a database call to obtain the hasher information
-      $hasherValue = $this->app['db']->fetchAssoc($hasherIdentitySql, array((int) $hasherKey));
+      $hasherValue = $this->fetchAssoc($hasherIdentitySql, array((int) $hasherKey));
 
       #2. Ensure they have no hashings
       $hasHashingsSQL = "SELECT * FROM HASHINGS JOIN HASHERS ON HASHINGS.HASHER_KY = HASHERS.HASHER_KY WHERE HASHERS.HASHER_KY = ?";
-      $hashingsList = $this->app['db']->fetchAll($hasHashingsSQL,array((int)$hasherKey));
+      $hashingsList = $this->fetchAll($hasHashingsSQL,array((int)$hasherKey));
       $hashingCount = count($hashingsList);
 
 
       #3. Ensure they have no harings
       $hasHaringsSQL = "SELECT * FROM HARINGS JOIN HASHERS ON HARINGS.HARINGS_HASHER_KY = HASHERS.HASHER_KY WHERE HASHERS.HASHER_KY = ?";
-      $haringsList = $this->app['db']->fetchAll($hasHaringsSQL,array((int)$hasherKey));
+      $haringsList = $this->fetchAll($hasHaringsSQL,array((int)$hasherKey));
       $haringCount = count($haringsList);
 
       #If the hasher exists
@@ -177,7 +177,7 @@ class HashPersonController extends BaseController
     $sql = "SELECT * FROM HASHERS WHERE HASHER_KY = ?";
 
     # Make a database call to obtain the hasher information
-    $hasherValue = $this->app['db']->fetchAssoc($sql, array((int) $hasher_id));
+    $hasherValue = $this->fetchAssoc($sql, array((int) $hasher_id));
 
     $data = array(
         'HASHER_KY' => $hasherValue['HASHER_KY'],
@@ -373,7 +373,7 @@ class HashPersonController extends BaseController
         $hasherIdentitySql = "SELECT * FROM HASHERS WHERE HASHERS.HASHER_KY = ? ;";
 
         # Make a database call to obtain the hasher information
-        $hasherValue = $this->app['db']->fetchAssoc($hasherIdentitySql, array((int) $hasherKey));
+        $hasherValue = $this->fetchAssoc($hasherIdentitySql, array((int) $hasherKey));
 
         #Obtain the hasher name from the object
         $tempHasherName = $hasherValue['HASHER_NAME'];

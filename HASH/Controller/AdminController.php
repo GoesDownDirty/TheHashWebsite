@@ -78,7 +78,7 @@ class AdminController extends BaseController
       }
 
       #Execute the SQL statement; create an array of rows
-      $theList = $this->app['db']->fetchAll($sql);
+      $theList = $this->fetchAll($sql);
 
       # Establish and set the return value
       $returnValue = $this->render('admin_orphaned_hashers.twig',array(
@@ -106,12 +106,12 @@ class AdminController extends BaseController
 
     #Obtain the number of hounds
     $houndCountSQL = HOUND_COUNT_BY_HASH_KEY;
-    $theHoundCountValue = $this->app['db']->fetchAssoc($houndCountSQL, array((int) $hash_id));
+    $theHoundCountValue = $this->fetchAssoc($houndCountSQL, array((int) $hash_id));
     $theHoundCount = $theHoundCountValue['THE_COUNT'];
 
     #Obtain the number of hares
     $hareCountSQL = HARE_COUNT_BY_HASH_KEY;
-    $theHareCountValue = $this->app['db']->fetchAssoc($hareCountSQL, array((int) $hash_id));
+    $theHareCountValue = $this->fetchAssoc($hareCountSQL, array((int) $hash_id));
     $theHareCount = $theHareCountValue['THE_COUNT'];
 
     # Establish and set the return value
@@ -192,7 +192,7 @@ class AdminController extends BaseController
           $sql = "SELECT * FROM USERS WHERE USERNAME = ? AND PASSWORD = ?";
 
           # Make a database call to obtain the hasher information
-          $retrievedUserValue = $this->app['db']->fetchAssoc($sql, array((string) $userid, (string) $encodedCurrentPassword));
+          $retrievedUserValue = $this->fetchAssoc($sql, array((string) $userid, (string) $encodedCurrentPassword));
           $sizeOfRetrievedUserValueArray = sizeof($retrievedUserValue);
 
 
@@ -383,7 +383,7 @@ class AdminController extends BaseController
 
     #-------------- Begin: Query the database   --------------------------------
     #Perform the filtered search
-    $theResults = $this->app['db']->fetchAll($sql,array(
+    $theResults = $this->fetchAll($sql,array(
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
@@ -391,11 +391,11 @@ class AdminController extends BaseController
       (string) $inputSearchValueModified));
 
     #Perform the untiltered count
-    $theUnfilteredCount = ($this->app['db']->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
+    $theUnfilteredCount = ($this->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
     #$this->app['monolog']->addDebug("theUnfilteredCount: $theUnfilteredCount");
 
     #Perform the filtered count
-    $theFilteredCount = ($this->app['db']->fetchAssoc($sqlFilteredCount,array(
+    $theFilteredCount = ($this->fetchAssoc($sqlFilteredCount,array(
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
@@ -444,13 +444,13 @@ class AdminController extends BaseController
     $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHES_TABLE WHERE KENNEL_KY = ?";
 
     #Perform the untiltered count
-    $theUnfilteredCount = ($this->app['db']->fetchAssoc($sqlUnfilteredCount,array($kennelKy)))['THE_COUNT'];
+    $theUnfilteredCount = ($this->fetchAssoc($sqlUnfilteredCount,array($kennelKy)))['THE_COUNT'];
 
     #Define the sql that gets the overall counts
     $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHES_TABLE WHERE PLACE_ID is null AND KENNEL_KY = ?";
 
     #Perform the untiltered count
-    $theFilteredCount = ($this->app['db']->fetchAssoc($sqlFilteredCount,array($kennelKy)))['THE_COUNT'];
+    $theFilteredCount = ($this->fetchAssoc($sqlFilteredCount,array($kennelKy)))['THE_COUNT'];
 
     # Establish and set the return value
     $returnValue = $this->render('admin_hash_list_json.twig',array(
@@ -569,7 +569,7 @@ class AdminController extends BaseController
 
     #-------------- Begin: Query the database   --------------------------------
     #Perform the filtered search
-    $theResults = $this->app['db']->fetchAll($sql,array(
+    $theResults = $this->fetchAll($sql,array(
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
@@ -577,10 +577,10 @@ class AdminController extends BaseController
       $kennelKy));
 
     #Perform the untiltered count
-    $theUnfilteredCount = ($this->app['db']->fetchAssoc($sqlUnfilteredCount,array($kennelKy)))['THE_COUNT'];
+    $theUnfilteredCount = ($this->fetchAssoc($sqlUnfilteredCount,array($kennelKy)))['THE_COUNT'];
 
     #Perform the filtered count
-    $theFilteredCount = ($this->app['db']->fetchAssoc($sqlFilteredCount,array(
+    $theFilteredCount = ($this->fetchAssoc($sqlFilteredCount,array(
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
@@ -716,17 +716,17 @@ class AdminController extends BaseController
 
     #-------------- Begin: Query the database   --------------------------------
     #Perform the filtered search
-    $theResults = $this->app['db']->fetchAll($sql,array(
+    $theResults = $this->fetchAll($sql,array(
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified));
 
     #Perform the untiltered count
-    $theUnfilteredCount = ($this->app['db']->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
+    $theUnfilteredCount = ($this->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
 
     #Perform the filtered count
-    $theFilteredCount = ($this->app['db']->fetchAssoc($sqlFilteredCount,array(
+    $theFilteredCount = ($this->fetchAssoc($sqlFilteredCount,array(
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
       (string) $inputSearchValueModified,
@@ -756,13 +756,13 @@ class AdminController extends BaseController
 
     #Obtain the kennels that are being tracked in this website instance
     $listOfKennelsSQL = "SELECT * FROM KENNELS WHERE IN_RECORD_KEEPING = 1";
-    $kennelValues = $this->app['db']->fetchAll($listOfKennelsSQL);
+    $kennelValues = $this->fetchAll($listOfKennelsSQL);
 
     # Declare the SQL used to retrieve this information
     $sql_for_hasher_lookup = "SELECT HASHER_NAME FROM HASHERS WHERE HASHER_KY = ?";
 
     # Make a database call to obtain the hasher information
-    $hasher = $this->app['db']->fetchAssoc($sql_for_hasher_lookup, array((int) $hasher_id));
+    $hasher = $this->fetchAssoc($sql_for_hasher_lookup, array((int) $hasher_id));
 
     # Derive the hasher name
     $hasherName = $hasher['HASHER_NAME'];
@@ -820,7 +820,7 @@ class AdminController extends BaseController
            ORDER BY HASHER_NAME";
 
         #Execute the SQL statement; create an array of rows
-        $theList = $this->app['db']->fetchAll($sql, array($i * 6, (int) $kennelKy, $j));
+        $theList = $this->fetchAll($sql, array($i * 6, (int) $kennelKy, $j));
 
         if(count($theList) > 15) break;
       }
@@ -842,7 +842,7 @@ class AdminController extends BaseController
        WHERE IN_RECORD_KEEPING = 1
        ORDER BY KENNEL_ABBREVIATION";
 
-    return $this->app['db']->fetchAll($sql, array());
+    return $this->fetchAll($sql, array());
   }
 
   public function awards(Request $request, string $kennel_abbreviation = null, string $type) {
@@ -884,7 +884,7 @@ class AdminController extends BaseController
         ORDER BY VALUE DESC, NAME";
 
     #Execute the SQL statement; create an array of rows
-    $hasherList = $this->app['db']->fetchAll($sql, array((int) $kennelKy, (int) $kennelKy));
+    $hasherList = $this->fetchAll($sql, array((int) $kennelKy, (int) $kennelKy));
 
     # Establish and set the return value
     $returnValue = $this->render('admin_awards.twig',array(
@@ -930,7 +930,7 @@ class AdminController extends BaseController
 
       $sql = "SELECT 1 FROM HASHER_AWARDS WHERE HASHER_KY = ? AND KENNEL_KY = ?";
 
-      $exists = $this->app['db']->fetchAssoc($sql, array((int) $hasherKey, (int) $kennelKey));
+      $exists = $this->fetchAssoc($sql, array((int) $hasherKey, (int) $kennelKey));
 
       if($exists) {
         $sql = "UPDATE HASHER_AWARDS SET LAST_AWARD_LEVEL_RECOGNIZED = ? WHERE HASHER_KY = ? AND KENNEL_KY = ?";

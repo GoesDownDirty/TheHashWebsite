@@ -37,25 +37,25 @@ class SuperAdminController extends BaseController {
   public function helloAction(Request $request){
 
       #Establish the list of admin users
-      $userList = $this->app['db']->fetchAll("SELECT id, username, roles FROM USERS ORDER BY username ASC");
+      $userList = $this->fetchAll("SELECT id, username, roles FROM USERS ORDER BY username ASC");
 
       #Establish the list of kennels
-      $kennelList = $this->app['db']->fetchAll("SELECT KENNEL_NAME, KENNEL_DESCRIPTION,
+      $kennelList = $this->fetchAll("SELECT KENNEL_NAME, KENNEL_DESCRIPTION,
          KENNEL_ABBREVIATION, IN_RECORD_KEEPING, SITE_ADDRESS, KENNEL_KY,
          EXISTS(SELECT 1 FROM HASHES WHERE HASHES.KENNEL_KY = KENNELS.KENNEL_KY) AS IN_USE
          FROM KENNELS ORDER BY IN_RECORD_KEEPING DESC, SITE_ADDRESS DESC");
 
-      $hareTypes = $this->app['db']->fetchAll("SELECT *,
+      $hareTypes = $this->fetchAll("SELECT *,
         EXISTS(SELECT 1 FROM HARINGS WHERE HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE) AS IN_USE
         FROM HARE_TYPES ORDER BY SEQ");
 
-      $hashTypes = $this->app['db']->fetchAll("SELECT *,
+      $hashTypes = $this->fetchAll("SELECT *,
         EXISTS(SELECT 1 FROM HASHES_TABLE WHERE HASHES_TABLE.HASH_TYPE & HASH_TYPES.HASH_TYPE = HASH_TYPES.HASH_TYPE) AS IN_USE
         FROM HASH_TYPES ORDER BY SEQ");
 
-      $siteConfig = $this->app['db']->fetchAll("SELECT NAME, VALUE FROM SITE_CONFIG WHERE DESCRIPTION IS NOT NULL ORDER BY NAME");
+      $siteConfig = $this->fetchAll("SELECT NAME, VALUE FROM SITE_CONFIG WHERE DESCRIPTION IS NOT NULL ORDER BY NAME");
 
-      $ridiculous = $this->app['db']->fetchAll("SELECT NAME, VALUE FROM SITE_CONFIG WHERE NAME LIKE 'ridiculous%' ORDER BY NAME");
+      $ridiculous = $this->fetchAll("SELECT NAME, VALUE FROM SITE_CONFIG WHERE NAME LIKE 'ridiculous%' ORDER BY NAME");
 
       #return $this->app->redirect('/');
       return $this->render('superadmin_landing.twig', array (
@@ -113,7 +113,7 @@ class SuperAdminController extends BaseController {
        WHERE KENNEL_ABBREVIATION = ?";
 
     # Make a database call to obtain the hasher information
-    $kennelValue = $this->app['db']->fetchAssoc($sql, array($kennel_abbreviation));
+    $kennelValue = $this->fetchAssoc($sql, array($kennel_abbreviation));
 
     $sql = "
       SELECT GROUP_CONCAT(AWARD_LEVEL ORDER BY AWARD_LEVEL)
@@ -123,9 +123,9 @@ class SuperAdminController extends BaseController {
                             FROM KENNELS
                            WHERE KENNEL_ABBREVIATION = ?)";
 
-    $awardLevels = $this->app['db']->fetchOne($sql, array($kennel_abbreviation));
+    $awardLevels = $this->fetchOne($sql, array($kennel_abbreviation));
 
-    $hareTypes = $this->app['db']->fetchAll("
+    $hareTypes = $this->fetchAll("
       SELECT *, (
         COALESCE((SELECT true
           FROM KENNELS
@@ -134,7 +134,7 @@ class SuperAdminController extends BaseController {
         FROM HARE_TYPES
        ORDER BY SEQ", array($kennel_abbreviation));
 
-    $hashTypes = $this->app['db']->fetchAll("
+    $hashTypes = $this->fetchAll("
       SELECT *, (
         COALESCE((SELECT true
           FROM KENNELS
@@ -257,12 +257,12 @@ class SuperAdminController extends BaseController {
 
     $awardLevels = "10,25,50,69,100,200,300,400,500,600,700,800,900,1000";
 
-    $hareTypes = $this->app['db']->fetchAll("
+    $hareTypes = $this->fetchAll("
       SELECT *, false AS SELECTED
         FROM HARE_TYPES
        ORDER BY SEQ", array());
 
-    $hashTypes = $this->app['db']->fetchAll("
+    $hashTypes = $this->fetchAll("
       SELECT *, false AS SELECTED
         FROM HASH_TYPES
        ORDER BY SEQ", array());
@@ -359,7 +359,7 @@ class SuperAdminController extends BaseController {
        WHERE HARE_TYPE = ?";
 
     # Make a database call to obtain the hasher information
-    $hareTypeValue = $this->app['db']->fetchAssoc($sql, array($hare_type));
+    $hareTypeValue = $this->fetchAssoc($sql, array($hare_type));
 
     $returnValue = $this->render('edit_hare_type_form_ajax.twig', array(
       'pageTitle' => 'Modify a Hare Type!',
@@ -423,7 +423,7 @@ class SuperAdminController extends BaseController {
         FROM HARE_TYPES";
 
     # Make a database call to obtain the hasher information
-    $hareTypeValue = $this->app['db']->fetchAssoc($sql, array());
+    $hareTypeValue = $this->fetchAssoc($sql, array());
 
     $returnValue = $this->render('edit_hare_type_form_ajax.twig', array(
       'pageTitle' => 'Create a Hare Type!',
@@ -452,7 +452,7 @@ class SuperAdminController extends BaseController {
       $hare_type = 1;
       $sql = "SELECT HARE_TYPE FROM HARE_TYPES WHERE HARE_TYPE = ?";
       while(true) {
-        if(!$this->app['db']->fetchOne($sql, array($hare_type))) break;
+        if(!$this->fetchOne($sql, array($hare_type))) break;
         $hare_type *= 2;
       }
 
@@ -490,9 +490,9 @@ class SuperAdminController extends BaseController {
        WHERE HASH_TYPE = ?";
 
     # Make a database call to obtain the hasher information
-    $hashTypeValue = $this->app['db']->fetchAssoc($sql, array($hash_type));
+    $hashTypeValue = $this->fetchAssoc($sql, array($hash_type));
 
-    $hareTypes = $this->app['db']->fetchAll("
+    $hareTypes = $this->fetchAll("
       SELECT *, (
         COALESCE((SELECT true
           FROM HASH_TYPES
@@ -570,9 +570,9 @@ class SuperAdminController extends BaseController {
         FROM HASH_TYPES";
 
     # Make a database call to obtain the hasher information
-    $hashTypeValue = $this->app['db']->fetchAssoc($sql, array());
+    $hashTypeValue = $this->fetchAssoc($sql, array());
 
-    $hareTypes = $this->app['db']->fetchAll("
+    $hareTypes = $this->fetchAll("
       SELECT *, false AS SELECTED
         FROM HARE_TYPES
        ORDER BY SEQ", array());
@@ -612,7 +612,7 @@ class SuperAdminController extends BaseController {
       $hash_type = 1;
       $sql = "SELECT HASH_TYPE FROM HASH_TYPES WHERE HASH_TYPE = ?";
       while(true) {
-        if(!$this->app['db']->fetchOne($sql, array($hash_type))) break;
+        if(!$this->fetchOne($sql, array($hash_type))) break;
         $hash_type *= 2;
       }
 
@@ -650,7 +650,7 @@ class SuperAdminController extends BaseController {
        WHERE ID = ?";
 
     # Make a database call to obtain the hasher information
-    $userValue = $this->app['db']->fetchAssoc($sql, array($user_id));
+    $userValue = $this->fetchAssoc($sql, array($user_id));
 
     $returnValue = $this->render('edit_user_form_ajax.twig', array(
       'pageTitle' => 'Modify a User!',
@@ -748,7 +748,7 @@ class SuperAdminController extends BaseController {
       SELECT * FROM SITE_CONFIG WHERE NAME = ?";
 
     # Make a database call to obtain the hasher information
-    $item = $this->app['db']->fetchAssoc($sql, array($name));
+    $item = $this->fetchAssoc($sql, array($name));
 
     $returnValue = $this->render('edit_site_config_form_ajax.twig', array(
       'pageTitle' => 'Modify a Configuration Variable: '.$name,
@@ -802,7 +802,7 @@ class SuperAdminController extends BaseController {
     $sql = "SELECT NAME, VALUE FROM SITE_CONFIG WHERE NAME = ?";
 
     # Make a database call to obtain the hasher information
-    $item = $this->app['db']->fetchAssoc($sql, array($ridiculous));
+    $item = $this->fetchAssoc($sql, array($ridiculous));
 
     $returnValue = $this->render('edit_ridiculous_form_ajax.twig', array(
       'pageTitle' => 'Edit Ridiculous Stat',
@@ -1001,7 +1001,7 @@ class SuperAdminController extends BaseController {
     if($user_id != $this->app['user'].username) {
 
       $sql = "SELECT username FROM USERS WHERE ID = ?";
-      $username = $this->app['db']->fetchOne($sql, array($user_id));
+      $username = $this->fetchOne($sql, array($user_id));
 
       $sql = "DELETE FROM USERS WHERE id = ?";
       $this->app['dbs']['mysql_write']->executeUpdate($sql,array($user_id));
@@ -1019,7 +1019,7 @@ class SuperAdminController extends BaseController {
   public function deleteKennel(Request $request, int $kennel_ky) {
 
     $sql = "SELECT KENNEL_ABBREVIATION FROM KENNELS WHERE KENNEL_KY = ?";
-    $kennel = $this->app['db']->fetchOne($sql, array($kennel_ky));
+    $kennel = $this->fetchOne($sql, array($kennel_ky));
 
     $sql = "DELETE FROM KENNELS WHERE KENNEL_KY = ?";
     $this->app['dbs']['mysql_write']->executeUpdate($sql,array($kennel_ky));
@@ -1036,11 +1036,11 @@ class SuperAdminController extends BaseController {
   public function deleteHashType(Request $request, int $hash_type) {
 
     $sql = "SELECT EXISTS(SELECT 1 FROM HASHES_TABLE WHERE HASHES_TABLE.HASH_TYPE & ? = HASHES_TABLE.HASH_TYPE) AS IN_USE";
-    $in_use = $this->app['db']->fetchOne($sql, array($hash_type));
+    $in_use = $this->fetchOne($sql, array($hash_type));
 
     if(!$in_use) {
       $sql = "SELECT HASH_TYPE_NAME FROM HASH_TYPES WHERE HASH_TYPE = ?";
-      $hash_type_name = $this->app['db']->fetchOne($sql, array($hash_type));
+      $hash_type_name = $this->fetchOne($sql, array($hash_type));
 
       $sql = "DELETE FROM HASH_TYPES WHERE HASH_TYPE = ?";
       $this->app['dbs']['mysql_write']->executeUpdate($sql,array($hash_type));
@@ -1058,11 +1058,11 @@ class SuperAdminController extends BaseController {
   public function deleteHareType(Request $request, int $hare_type) {
 
     $sql = "SELECT EXISTS(SELECT 1 FROM HARINGS WHERE HARINGS.HARE_TYPE & ? = HARINGS.HARE_TYPE) AS IN_USE";
-    $in_use = $this->app['db']->fetchOne($sql, array($hare_type));
+    $in_use = $this->fetchOne($sql, array($hare_type));
 
     if(!$in_use) {
       $sql = "SELECT HARE_TYPE_NAME FROM HARE_TYPES WHERE HARE_TYPE = ?";
-      $hare_type_name = $this->app['db']->fetchOne($sql, array($hare_type));
+      $hare_type_name = $this->fetchOne($sql, array($hare_type));
 
       $sql = "DELETE FROM HARE_TYPES WHERE HARE_TYPE = ?";
       $this->app['dbs']['mysql_write']->executeUpdate($sql,array($hare_type));
@@ -1080,36 +1080,36 @@ class SuperAdminController extends BaseController {
   public function integrityChecks(Request $request) {
 
     $sql = "SELECT KENNEL_NAME, KENNEL_KY FROM KENNELS WHERE IN_RECORD_KEEPING = 1 ORDER BY KENNEL_NAME";
-    $reports = $this->app['db']->fetchAll($sql, array());
+    $reports = $this->fetchAll($sql, array());
 
     foreach($reports as &$report) {
       $messages = [];
 
       $sql = "SELECT EVENT_DATE FROM HASHES_TABLE WHERE KENNEL_KY = ? GROUP BY EVENT_DATE HAVING COUNT(*) > 1 ORDER BY EVENT_DATE";
-      $dup_items = $this->app['db']->fetchAll($sql, array($report['KENNEL_KY']));
+      $dup_items = $this->fetchAll($sql, array($report['KENNEL_KY']));
       foreach($dup_items as &$dup_item) {
         $sql = "SELECT KENNEL_EVENT_NUMBER, SPECIAL_EVENT_DESCRIPTION AS EVENT_NAME FROM HASHES_TABLE WHERE KENNEL_KY = ? AND EVENT_DATE = ? ORDER BY KENNEL_EVENT_NUMBER";
-        $results = $this->app['db']->fetchAll($sql, array($report['KENNEL_KY'], $dup_item['EVENT_DATE']));
+        $results = $this->fetchAll($sql, array($report['KENNEL_KY'], $dup_item['EVENT_DATE']));
         foreach($results as $result) {
           array_push($messages, 'Event number '.$result['KENNEL_EVENT_NUMBER'].' ('.$result['EVENT_NAME'].') has duplicate event date: '.$dup_item['EVENT_DATE'].'.');
         }
       }
 
       $sql = "SELECT KENNEL_EVENT_NUMBER FROM HASHES_TABLE WHERE KENNEL_KY = ? GROUP BY KENNEL_EVENT_NUMBER HAVING COUNT(*) > 1 ORDER BY KENNEL_EVENT_NUMBER";
-      $dup_items = $this->app['db']->fetchAll($sql, array($report['KENNEL_KY']));
+      $dup_items = $this->fetchAll($sql, array($report['KENNEL_KY']));
       foreach($dup_items as &$dup_item) {
         $sql = "SELECT KENNEL_EVENT_NUMBER, SPECIAL_EVENT_DESCRIPTION AS EVENT_NAME FROM HASHES_TABLE WHERE KENNEL_KY = ? AND KENNEL_EVENT_NUMBER = ? ORDER BY KENNEL_EVENT_NUMBER";
-        $results = $this->app['db']->fetchAll($sql, array($report['KENNEL_KY'], $dup_item['KENNEL_EVENT_NUMBER']));
+        $results = $this->fetchAll($sql, array($report['KENNEL_KY'], $dup_item['KENNEL_EVENT_NUMBER']));
         foreach($results as $result) {
           array_push($messages, 'Event number '.$result['KENNEL_EVENT_NUMBER'].' ('.$result['EVENT_NAME'].') has duplicate event number: '.$dup_item['KENNEL_EVENT_NUMBER'].'.');
         }
       }
 
       $sql = "SELECT SPECIAL_EVENT_DESCRIPTION FROM HASHES_TABLE WHERE KENNEL_KY = ? GROUP BY SPECIAL_EVENT_DESCRIPTION HAVING COUNT(*) > 1 ORDER BY SPECIAL_EVENT_DESCRIPTION";
-      $dup_items = $this->app['db']->fetchAll($sql, array($report['KENNEL_KY']));
+      $dup_items = $this->fetchAll($sql, array($report['KENNEL_KY']));
       foreach($dup_items as &$dup_item) {
         $sql = "SELECT KENNEL_EVENT_NUMBER, SPECIAL_EVENT_DESCRIPTION AS EVENT_NAME FROM HASHES_TABLE WHERE KENNEL_KY = ? AND SPECIAL_EVENT_DESCRIPTION = ? ORDER BY KENNEL_EVENT_NUMBER";
-        $results = $this->app['db']->fetchAll($sql, array($report['KENNEL_KY'], $dup_item['SPECIAL_EVENT_DESCRIPTION']));
+        $results = $this->fetchAll($sql, array($report['KENNEL_KY'], $dup_item['SPECIAL_EVENT_DESCRIPTION']));
         foreach($results as $result) {
           array_push($messages, 'Event number '.$result['KENNEL_EVENT_NUMBER'].' ('.$result['EVENT_NAME'].') has duplicate event name: '.$dup_item['SPECIAL_EVENT_DESCRIPTION'].'.');
         }

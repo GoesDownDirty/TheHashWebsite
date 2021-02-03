@@ -2,20 +2,22 @@
 
 // web/index.php
 require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__.'/config/ProdConfig.php';
 require_once __DIR__.'/HASH/Controller/DatabaseUpdater.php';
 require_once __DIR__.'/HASH/Controller/HashController.php';
 require_once __DIR__.'/HASH/Controller/TagController.php';
 require_once __DIR__.'/HASH/Controller/HashEventController.php';
 require_once __DIR__.'/HASH/Controller/HashPersonController.php';
 require_once __DIR__.'/HASH/Controller/AdminController.php';
-require_once __DIR__.'/config/ProdConfig.php';
 require_once __DIR__.'/vendor/twig/twig/lib/Twig/Autoloader.php';
 require_once __DIR__.'/HASH/Controller/SuperAdminController.php';
 require_once __DIR__.'/HASH/Controller/ObscureStatisticsController.php';
 
+
 require_once './HASH/UserProvider.php';
 
 use Doctrine\DBAL\Schema\Table;
+
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;

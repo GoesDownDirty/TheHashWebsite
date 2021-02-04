@@ -184,6 +184,8 @@ class HashController extends BaseController
 
     $currentStreakers = $this->fetchAll(STREAKERS_LIST." LIMIT 10", array($lastEvent, (int) $kennelKy));
 
+    $tableColors = array( "#d1f2eb", "#d6eaf8", "#d7bde2", "#eaeded", "#fad7a0", "#fdedec" );
+
     #Set the return value
     $returnValue = $this->render('slash2.twig',array(
       'pageTitle' => $pageTitle,
@@ -216,7 +218,8 @@ class HashController extends BaseController
       'overall_hares_title' =>
         count($hareTypes) > 1 ? "Top 10 (Overall) Hares" : "Top 10 Hares",
       'overall_haring_counts_title' =>
-        count($hareTypes) > 1 ? "Overall Haring Counts" : "Haring Counts"
+        count($hareTypes) > 1 ? "Overall Haring Counts" : "Haring Counts",
+      'table_colors' => $tableColors
     ));
 
     #Return the return value

@@ -2,6 +2,9 @@
 
 {% block main_page_content %}
 
+{% set headerColor = "#d3d3d3" %}
+{% set colorNum = 0 %}
+
 {#
 <style>
   .list-group-item-analversaries.active{
@@ -9,9 +12,6 @@
   }
 </style>
 #}
-
-
-
 
       <div class="row marketing">
         <div class="col-lg-6">
@@ -90,8 +90,8 @@
         {% if top_alltime_hashers|length == 10 %}
           <div class="col-lg-3"><div style="padding:2">
             <h4><a href="/{{kennel_abbreviation}}/hashingCounts">Top 10 Hounds</a></h4>
-              {% set bgcolor = "#d1f2eb" %}
-              {% set headerColor = "#d3d3d3" %}
+              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+              {% set colorNum = colorNum + 1 %}
               <div class="row" >
                 <div class="col-xs-4 col-md-4 visible-xs"  style="background-color:{{headerColor}};">Ct.</div>
                 <div class="col-xs-8 col-md-8 visible-xs"  style="background-color:{{headerColor}};">Name</div>
@@ -120,8 +120,8 @@
 	  {% if hares|length == 10 %}
 	    <div class="col-lg-3" ><div style="padding:2">
 	      <h4><a href="/{{kennel_abbreviation}}/haringCounts/{{ top_hare_data.hare_type }}">Top 10 ({{ top_hare_data.label }}) Hares</a></h4>
-		{% set bgcolor = "#d7bde2" %}
-		{% set headerColor = "#d3d3d3" %}
+                {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+                {% set colorNum = colorNum + 1 %}
 		<div class="row">
 		  <div class="col-xs-4 col-md-4 visible-xs"  style="background-color:{{headerColor}};">Ct.</div>
 		  <div class="col-xs-8 col-md-8 visible-xs"  style="background-color:{{headerColor}};">Name</div>
@@ -149,8 +149,8 @@
         {% if top_overall_hares|length == 10 %}
           <div class="col-lg-3" ><div style="padding:2">
             <h4><a href="/{{kennel_abbreviation}}/haringCounts">{{overall_hares_title}}</a></h4>
-              {% set bgcolor = "#eaeded" %}
-              {% set headerColor = "#d3d3d3" %}
+              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+              {% set colorNum = colorNum + 1 %}
               <div class="row">
                 <div class="col-xs-4 col-md-4 visible-xs"  style="background-color:{{headerColor}};">Ct.</div>
                 <div class="col-xs-8 col-md-8 visible-xs"  style="background-color:{{headerColor}};">Hare</div>
@@ -183,8 +183,8 @@
           {% if hares|length == 10 %}
             <div class="col-lg-3" ><div style="padding:2">
               <h4>Quickest To {{the_quickest_to_x_harings_number}} {{ quickest_hare_data.label }} Harings</a></h4>
-                {% set bgcolor = "#fad7a0" %}
-                {% set headerColor = "#d3d3d3" %}
+                {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+                {% set colorNum = colorNum + 1 %}
                 <div class="row">
                   <div class="col-xs-4 col-md-4 visible-xs"  style="background-color:{{headerColor}};">Days</div>
                   <div class="col-xs-8 col-md-8 visible-xs"  style="background-color:{{headerColor}};">hasher</div>
@@ -212,8 +212,8 @@
         {% if the_slowest_to_x_results|length == 10 %}
           <div class="col-lg-3" ><div style="padding:2">
             <h4><a href="/{{kennel_abbreviation}}/{{the_quickest_to_x_number}}/slowest/to/reach/bydays">Slowest To Reach {{the_slowest_to_x_number}} Hashes</a></h4>
-              {% set bgcolor = "#fdedec" %}
-              {% set headerColor = "#d3d3d3" %}
+              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+              {% set colorNum = colorNum + 1 %}
               <div class="row">
                 <div class="col-xs-4 col-md-4 visible-xs"  style="background-color:{{headerColor}};">Days</div>
                 <div class="col-xs-8 col-md-8 visible-xs"  style="background-color:{{headerColor}};">hasher</div>
@@ -240,8 +240,8 @@
         {% if the_quickest_to_x_results|length == 10 %}
           <div class="col-lg-3" ><div style="padding:2">
             <h4><a href="/{{kennel_abbreviation}}/{{the_quickest_to_x_number}}/quickest/to/reach/bydays">Quickest To Reach {{the_quickest_to_x_number}} Hashes</a></h4>
-              {% set bgcolor = "#d1f2eb" %}
-              {% set headerColor = "#d3d3d3" %}
+              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+              {% set colorNum = colorNum + 1 %}
               <div class="row">
                 <div class="col-xs-4 col-md-4 visible-xs"  style="background-color:{{headerColor}};">Days</div>
                 <div class="col-xs-8 col-md-8 visible-xs"  style="background-color:{{headerColor}};">hasher</div>
@@ -269,8 +269,8 @@
         {% if the_quickest_to_y_results|length == 10 %}
           <div class="col-lg-3" ><div style="padding:2">
             <h4><a href="/{{kennel_abbreviation}}/{{the_quickest_to_y_number}}/quickest/to/reach/bydays">Quickest To Reach {{the_quickest_to_y_number}} Hashes</a></h4>
-              {% set bgcolor = "#d6eaf8" %}
-              {% set headerColor = "#d3d3d3" %}
+              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+              {% set colorNum = colorNum + 1 %}
               <div class="row">
                 <div class="col-xs-4 col-md-4 visible-xs"  style="background-color:{{headerColor}};">Days</div>
                 <div class="col-xs-8 col-md-8 visible-xs"  style="background-color:{{headerColor}};">hasher</div>
@@ -297,8 +297,8 @@
         {% if top_hashers_this_year|length == 10 %}
           <div class="col-lg-3"><div style="padding:2">
             <h4><a href="/{{kennel_abbreviation}}/hashingCounts">Top 10 Hounds This Year</a></h4>
-              {% set bgcolor = "#d1f2eb" %}
-              {% set headerColor = "#d3d3d3" %}
+              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+              {% set colorNum = colorNum + 1 %}
               <div class="row" >
                 <div class="col-xs-4 col-md-4 visible-xs"  style="background-color:{{headerColor}};">Ct.</div>
                 <div class="col-xs-8 col-md-8 visible-xs"  style="background-color:{{headerColor}};">Name</div>
@@ -325,8 +325,8 @@
         {% if top_hashers_last_year|length == 10 %}
           <div class="col-lg-3"><div style="padding:2">
             <h4><a href="/{{kennel_abbreviation}}/hashingCounts">Top 10 Hounds Last Year</a></h4>
-              {% set bgcolor = "#d7bde2" %}
-              {% set headerColor = "#d3d3d3" %}
+              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+              {% set colorNum = colorNum + 1 %}
               <div class="row" >
                 <div class="col-xs-4 col-md-4 visible-xs"  style="background-color:{{headerColor}};">Ct.</div>
                 <div class="col-xs-8 col-md-8 visible-xs"  style="background-color:{{headerColor}};">Name</div>
@@ -353,8 +353,8 @@
         {% if top_hares_this_year|length == 10 %}
           <div class="col-lg-3"><div style="padding:2">
             <h4><a href="/{{kennel_abbreviation}}/haringCounts">Top 10 Hares This Year</a></h4>
-              {% set bgcolor = "#d6eaf8" %}
-              {% set headerColor = "#d3d3d3" %}
+              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+              {% set colorNum = colorNum + 1 %}
               <div class="row" >
                 <div class="col-xs-4 col-md-4 visible-xs"  style="background-color:{{headerColor}};">Ct.</div>
                 <div class="col-xs-8 col-md-8 visible-xs"  style="background-color:{{headerColor}};">Name</div>
@@ -381,8 +381,8 @@
         {% if top_hares_last_year|length == 10 %}
           <div class="col-lg-3"><div style="padding:2">
             <h4><a href="/{{kennel_abbreviation}}/haringCounts">Top 10 Hares Last Year</a></h4>
-              {% set bgcolor = "#eaeded" %}
-              {% set headerColor = "#d3d3d3" %}
+              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+              {% set colorNum = colorNum + 1 %}
               <div class="row" >
                 <div class="col-xs-4 col-md-4 visible-xs"  style="background-color:{{headerColor}};">Ct.</div>
                 <div class="col-xs-8 col-md-8 visible-xs"  style="background-color:{{headerColor}};">Name</div>
@@ -409,8 +409,8 @@
         {% if top_streakers|length == 10 %}
           <div class="col-lg-3"><div style="padding:2">
             <h4><a href="/{{kennel_abbreviation}}/longestStreaks">Top 10 Streakers</a></h4>
-              {% set bgcolor = "#eaeded" %}
-              {% set headerColor = "#d3d3d3" %}
+              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+              {% set colorNum = colorNum + 1 %}
               <div class="row" >
                 <div class="col-xs-4 col-md-4 visible-xs"  style="background-color:{{headerColor}};">Ct.</div>
                 <div class="col-xs-8 col-md-8 visible-xs"  style="background-color:{{headerColor}};">Name</div>
@@ -437,8 +437,8 @@
         {% if current_streakers|length == 10 %}
           <div class="col-lg-3"><div style="padding:2">
             <h4><a href="/{{kennel_abbreviation}}/listStreakers/byhash/{{lastEvent}}">Current Streakers</a></h4>
-              {% set bgcolor = "#eaeded" %}
-              {% set headerColor = "#d3d3d3" %}
+              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+              {% set colorNum = colorNum + 1 %}
               <div class="row" >
                 <div class="col-xs-4 col-md-4 visible-xs"  style="background-color:{{headerColor}};">Ct.</div>
                 <div class="col-xs-8 col-md-8 visible-xs"  style="background-color:{{headerColor}};">Name</div>

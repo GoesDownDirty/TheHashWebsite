@@ -178,6 +178,12 @@ class HashController extends BaseController
       ORDER BY THE_COUNT DESC";
     $eventTagSummaries = $this->fetchAll($eventTagSql, array((int) $kennelKy));
 
+    $topStreakers = $this->fetchAll(THE_LONGEST_STREAKS." LIMIT 10", array((int) $kennelKy));
+
+    $lastEvent = $this->fetchOne("SELECT HASH_KY FROM HASHES WHERE KENNEL_KY=? ORDER BY EVENT_DATE DESC LIMIT 1", array((int) $kennelKy));
+
+    $currentStreakers = $this->fetchAll(STREAKERS_LIST." LIMIT 10", array($lastEvent, (int) $kennelKy));
+
     #Set the return value
     $returnValue = $this->render('slash2.twig',array(
       'pageTitle' => $pageTitle,
@@ -203,6 +209,9 @@ class HashController extends BaseController
       'top_hashers_last_year' => $topHashersLastYear,
       'top_hares_this_year' => $topHaresThisYear,
       'top_hares_last_year' => $topHaresLastYear,
+      'top_streakers' => $topStreakers,
+      'current_streakers' => $currentStreakers,
+      'lastEvent' => $lastEvent,
       'event_tag_summaries' => $eventTagSummaries,
       'overall_hares_title' =>
         count($hareTypes) > 1 ? "Top 10 (Overall) Hares" : "Top 10 Hares",

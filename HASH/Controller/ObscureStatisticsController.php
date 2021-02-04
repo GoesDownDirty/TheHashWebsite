@@ -987,7 +987,7 @@ class ObscureStatisticsController extends BaseController {
       $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
       #Define the sql statement to execute
-      $theSql = THE_LONGEST_STREAKS;
+      $theSql = THE_LONGEST_STREAKS." LIMIT 25";
 
       #Query the database
       $theResults = $this->fetchAll($theSql, array((int) $kennelKy));

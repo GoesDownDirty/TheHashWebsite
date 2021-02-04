@@ -406,11 +406,62 @@
           </div></div>
         {% endif %}
 
+        {% if top_streakers|length == 10 %}
+          <div class="col-lg-3"><div style="padding:2">
+            <h4><a href="/{{kennel_abbreviation}}/longestStreaks">Top 10 Streakers</a></h4>
+              {% set bgcolor = "#eaeded" %}
+              {% set headerColor = "#d3d3d3" %}
+              <div class="row" >
+                <div class="col-xs-4 col-md-4 visible-xs"  style="background-color:{{headerColor}};">Ct.</div>
+                <div class="col-xs-8 col-md-8 visible-xs"  style="background-color:{{headerColor}};">Name</div>
 
+                <div class="col-xs-4 col-md-4 hidden-xs"  style="background-color:{{headerColor}};">Count</div>
+                <div class="col-xs-8 col-md-8 hidden-xs"  style="background-color:{{headerColor}};">Hasher</div>
+              </div>
 
+              {% for item in top_streakers %}
+                <div class="row">
+                  <div class="col-xs-4 col-md-4 visible-xs"    style="background-color:{{bgcolor}};">{{item.VALUE}}</div>
+                  <div class="col-xs-8 col-md-8 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}">{{item.NAME}}</a>
+                  </div>
+                  <div class="col-xs-4 col-md-4 hidden-xs"    style="background-color:{{bgcolor}};">{{item.VALUE}}</div>
+                  <div class="col-xs-8 col-md-8 hidden-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}">{{item.NAME}}</a>
+                  </div>
+                </div>
+              {% endfor %}
+          </div></div>
+        {% endif %}
 
+        {% if current_streakers|length == 10 %}
+          <div class="col-lg-3"><div style="padding:2">
+            <h4><a href="/{{kennel_abbreviation}}/listStreakers/byhash/{{lastEvent}}">Current Streakers</a></h4>
+              {% set bgcolor = "#eaeded" %}
+              {% set headerColor = "#d3d3d3" %}
+              <div class="row" >
+                <div class="col-xs-4 col-md-4 visible-xs"  style="background-color:{{headerColor}};">Ct.</div>
+                <div class="col-xs-8 col-md-8 visible-xs"  style="background-color:{{headerColor}};">Name</div>
+
+                <div class="col-xs-4 col-md-4 hidden-xs"  style="background-color:{{headerColor}};">Count</div>
+                <div class="col-xs-8 col-md-8 hidden-xs"  style="background-color:{{headerColor}};">Hasher</div>
+              </div>
+
+              {% for item in current_streakers %}
+                <div class="row">
+                  <div class="col-xs-4 col-md-4 visible-xs"    style="background-color:{{bgcolor}};">{{item.THE_STREAK_IN_EVENTS}}</div>
+                  <div class="col-xs-8 col-md-8 visible-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_HASHER_KY}}">{{item.THE_HASHER_NAME}}</a>
+                  </div>
+                  <div class="col-xs-4 col-md-4 hidden-xs"    style="background-color:{{bgcolor}};">{{item.THE_STREAK_IN_EVENTS}}</div>
+                  <div class="col-xs-8 col-md-8 hidden-xs"    style="background-color:{{bgcolor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_HASHER_KY}}">{{item.THE_HASHER_NAME}}</a>
+                  </div>
+                </div>
+              {% endfor %}
+          </div></div>
+        {% endif %}
 
       </div>
-
 
 {% endblock %}

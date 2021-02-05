@@ -1841,7 +1841,8 @@ class HashController extends BaseController
       'theHoundCount' => $theHoundCount,
       'theHareCount' => $theHareCount,
       'nextHashId' => $nextHashId,
-      'previousHashId' => $previousHashId
+      'previousHashId' => $previousHashId,
+      'showOmniAnalversaryPage' => $this->showOmniAnalversaryPage()
     ));
 
     # Return the return value

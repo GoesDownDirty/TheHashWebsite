@@ -14,7 +14,7 @@ class DatabaseUpdater {
 
     $databaseVersion = $this->getDatabaseVersion();
 
-    if($databaseVersion != 17) {
+    if($databaseVersion != 18) {
 
       $has_semaphones = true;
 
@@ -100,6 +100,9 @@ class DatabaseUpdater {
             case 16:
               $this->loadRidiculousStatistics();
               $this->setDatabaseVersion(17);
+            case 17:
+              $this->addOmniOptionToSiteConfig();
+              $this->setDatabaseVersion(18);
             default:
               // Overkill, but guarantees the view is up to date with the
               // current database structure.
@@ -181,6 +184,10 @@ class DatabaseUpdater {
       $hlhc = "false";
     }
     $this->insertIntoSiteConfig('has_legacy_hash_counts', $hlhc, 'Set to "true" if the LEGACY_HASH_COUNTS table exists and is used on this site.  Leave to set to "false" if you are not using this feature.');
+  }
+
+  private function addOmniOptionToSiteConfig() {
+    $this->insertIntoSiteConfig('show_omni_analversary_page', "true", 'Set to "true" to show the legacy omni analversary page link on the hash details page.');
   }
 
   private function moveSiteBannerToSiteConfig() {

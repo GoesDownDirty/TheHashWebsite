@@ -93,7 +93,9 @@
       <div class="col-sm-6">
         <a href="#" class="list-group-item active">Analversaries, Streakers, and Backsliders</a>
         <a class="list-group-item" href='/{{kennel_abbreviation}}/consolidatedEventAnalversaries/{{hashValue.HASH_KY}}'>Consolidated Analversaries</a>
-        <a class="list-group-item" href='/{{kennel_abbreviation}}/omniAnalversariesForEvent/{{hashValue.HASH_KY}}'>OmniAnalversary List</a>
+        {% if showOmniAnalversaryPage %}
+          <a class="list-group-item" href='/{{kennel_abbreviation}}/omniAnalversariesForEvent/{{hashValue.HASH_KY}}'>OmniAnalversary List</a>
+        {% endif %}
         <a class="list-group-item" href='/{{kennel_abbreviation}}/listStreakers/byhash/{{hashValue.HASH_KY}}'>Streakers By Events, Days, and Date</a>
         <a class="list-group-item" href='/{{kennel_abbreviation}}/backSlidersForEventV2/{{hashValue.HASH_KY}}'>Backsliders</a>
         <br>

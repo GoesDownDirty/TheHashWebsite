@@ -92,6 +92,11 @@ class BaseController {
     return $this->fetchOne($sql) == "true";
   }
 
+  protected function showOmniAnalversaryPage() {
+    $sql = "SELECT value FROM SITE_CONFIG WHERE name='show_omni_analversary_page'";
+    return $this->fetchOne($sql) == "true";
+  }
+
   protected function getSiteBanner() {
     $sql = "SELECT value FROM SITE_CONFIG WHERE name='site_banner'";
     return $this->fetchOne($sql);

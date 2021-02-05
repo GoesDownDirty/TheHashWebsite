@@ -216,7 +216,7 @@ class HashController extends BaseController
       'lastEvent' => $lastEvent,
       'event_tag_summaries' => $eventTagSummaries,
       'overall_hares_title' =>
-        count($hareTypes) > 1 ? "Top 10 (Overall) Hares" : "Top 10 Hares",
+        count($hareTypes) > 1 ? "Top 10 Overall Hares" : "Top 10 Hares",
       'overall_haring_counts_title' =>
         count($hareTypes) > 1 ? "Overall Haring Counts" : "Haring Counts",
       'table_colors' => $tableColors

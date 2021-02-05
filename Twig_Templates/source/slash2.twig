@@ -119,7 +119,7 @@
           {% set hares = top_hare_data.data %}
 	  {% if hares|length == 10 %}
 	    <div class="col-lg-3" ><div style="padding:2">
-	      <h4><a href="/{{kennel_abbreviation}}/haringCounts/{{ top_hare_data.hare_type }}">Top 10 ({{ top_hare_data.label }}) Hares</a></h4>
+	      <h4><a href="/{{kennel_abbreviation}}/haringCounts/{{ top_hare_data.hare_type }}">Top 10 {{ top_hare_data.label }} Hares</a></h4>
                 {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
                 {% set colorNum = colorNum + 1 %}
 		<div class="row">

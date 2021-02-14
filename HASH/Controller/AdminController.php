@@ -420,6 +420,25 @@ class AdminController extends BaseController
     return $returnValue;
   }
 
+  public function deleteHash(Request $request, int $hash_id) {
+
+    $sql = "SELECT KENNEL_EVENT_NUMBER, KENNEL_ABBREVIATION FROM HASHES_TABLE JOIN KENNELS ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY WHERE HASH_KY = ?";
+    $eventDetails = $this->fetchAssoc($sql, array($hash_id));
+    $kennel_event_number = $eventDetails['KENNEL_EVENT_NUMBER'];
+    $kennel_abbreviation = $eventDetails['KENNEL_ABBREVIATION'];
+
+    $sql = "DELETE FROM HASHES_TABLE WHERE HASH_KY = ?";
+    $this->app['dbs']['mysql_write']->executeUpdate($sql, array($hash_id));
+
+    $actionType = "Event Deletion (Ajax)";
+    $actionDescription = "Deleted event ($kennel_abbreviation # $kennel_event_number)";
+
+    $this->auditTheThings($request, $actionType, $actionDescription);
+
+    header("Location: /admin/hello");
+    return $this->app->json("", 302);
+  }
+
   #Define the action
   public function listHashesPreActionJson(Request $request, string $kennel_abbreviation = null) {
 
@@ -538,7 +557,11 @@ class AdminController extends BaseController
         DATE_FORMAT(EVENT_DATE,\"%Y/%m/%d\") AS EVENT_DATE,
         EVENT_LOCATION,
         SPECIAL_EVENT_DESCRIPTION,
-        PLACE_ID
+        PLACE_ID,
+        COALESCE(
+          (SELECT 0 FROM HARINGS WHERE HARINGS.HARINGS_HASH_KY = HASHES_TABLE.HASH_KY LIMIT 1),
+          (SELECT 0 FROM HASHINGS WHERE HASHINGS.HASH_KY = HASHES_TABLE.HASH_KY LIMIT 1),
+          1) AS CAN_DELETE
       FROM HASHES_TABLE
       WHERE
         (

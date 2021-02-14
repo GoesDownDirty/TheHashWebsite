@@ -27,7 +27,7 @@ class HashEventController extends BaseController {
 
     #Define the SQL to RuntimeException
     $sql = "SELECT HARE_TYPE, HARE_TYPE_NAME, CHART_COLOR
-              FROM HARE_TYPES 
+              FROM HARE_TYPES
               JOIN KENNELS
                 ON KENNELS.HARE_TYPE_MASK & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE
               JOIN HASH_TYPES
@@ -46,8 +46,8 @@ class HashEventController extends BaseController {
   protected function getAllHashTypes() {
 
     #Define the SQL to RuntimeException
-    $sql = "SELECT HASH_TYPE, HASH_TYPE_NAME 
-              FROM HASH_TYPES 
+    $sql = "SELECT HASH_TYPE, HASH_TYPE_NAME
+              FROM HASH_TYPES
              ORDER BY SEQ";
 
     #Query the database
@@ -55,6 +55,34 @@ class HashEventController extends BaseController {
 
     #return the return value
     return $hashTypes;
+  }
+
+  public function adminDuplicateHash(Request $request, int $hash_id) {
+
+    $sql = "SELECT HASHES_TABLE.*, KENNEL_ABBREVIATION,
+                   DATE_FORMAT(EVENT_DATE, '%Y-%m-%d') AS THE_EVENT_DATE,
+                   DATE_FORMAT(EVENT_DATE, '%H:%i:%s') AS THE_EVENT_TIME
+              FROM HASHES_TABLE
+              JOIN KENNELS
+                ON HASHES_TABLE.KENNEL_KY = KENNELS.KENNEL_KY
+             WHERE HASH_KY = ?";
+
+    $eventDetails = $this->fetchAssoc($sql, array($hash_id));
+
+    $kennelKy = $eventDetails['KENNEL_KY'];
+    $kennel_abbreviation = $eventDetails['KENNEL_ABBREVIATION'];
+
+    $returnValue = $this->render('duplicate_hash_form_ajax.twig', array(
+      'pageTitle' => 'Duplicate an Event!',
+      'pageHeader' => 'Page Header',
+      'kennel_abbreviation' => $kennel_abbreviation,
+      'hashTypes' => $this->getHashTypes($kennelKy, 0),
+      'geocode_api_value' => $this->getGooglePlacesApiWebServiceKey(),
+      'eventDetails' => $eventDetails
+    ));
+
+    #Return the return value
+    return $returnValue;
   }
 
   #Define action
@@ -72,7 +100,6 @@ class HashEventController extends BaseController {
 
     #Return the return value
     return $returnValue;
-
   }
 
     public function adminCreateHashAjaxPostAction(Request $request, $kennel_abbreviation) {
@@ -101,6 +128,8 @@ class HashEventController extends BaseController {
       $theLng= trim(strip_tags($request->request->get('lng')));
       $theFormatted_address= trim(strip_tags($request->request->get('formatted_address')));
       $thePlace_id= trim(strip_tags($request->request->get('place_id')));
+
+      $theEventToCopy= trim(strip_tags($request->request->get('eventToCopy')));
 
       // Establish a "passed validation" variable
       $passedValidation = TRUE;
@@ -198,35 +227,44 @@ class HashEventController extends BaseController {
             $theLng
           ));
 
+        if($theEventToCopy != null) {
 
+          // Get the hash key for the event that was just created
+          $hashKy = $this->app['dbs']['mysql_write']->lastInsertId();
+
+          $sql = "INSERT INTO HASHINGS(HASH_KY, HASHER_KY)
+                  SELECT ?, HASHER_KY
+                    FROM HASHINGS
+                   WHERE HASH_KY = ?";
+
+          $this->app['dbs']['mysql_write']->executeUpdate($sql,array($hashKy, (int)$theEventToCopy));
+
+          $sql = "INSERT INTO HARINGS(HARINGS_HASH_KY, HARINGS_HASHER_KY, HARE_TYPE)
+                  SELECT ?, HARINGS_HASHER_KY, HARE_TYPE
+                    FROM HARINGS
+                   WHERE HARINGS_HASH_KY = ?";
+
+          $this->app['dbs']['mysql_write']->executeUpdate($sql,array($hashKy, (int)$theEventToCopy));
+
+          $auditAddl = " from event key ".$theEventToCopy;
+        } else {
+          $auditAddl = "";
+        }
 
         #Audit this activity
         $actionType = "Event Creation (Ajax)";
-        $actionDescription = "Created event ($kennel_abbreviation # $theHashEventNumber)";
+        $actionDescription = "Created event ($kennel_abbreviation # $theHashEventNumber)".$auditAddl;
         $this->auditTheThings($request, $actionType, $actionDescription);
 
 
         // Establish the return value message
         $returnMessage = "Success! Great, it worked";
-
       }
 
       #Set the return value
       $returnValue =  $this->app->json($returnMessage, 200);
       return $returnValue;
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
     #Define action
     public function adminModifyHashAjaxPreAction(Request $request, int $hash_id){
@@ -751,7 +789,7 @@ class HashEventController extends BaseController {
         FROM HARE_TYPES
        WHERE HARINGS.HARE_TYPE & HARE_TYPES.HARE_TYPE = HARE_TYPES.HARE_TYPE) AS HARE_TYPE_NAMES
         FROM HARINGS
-        JOIN HASHERS 
+        JOIN HASHERS
           ON HASHERS.HASHER_KY = HARINGS.HARINGS_HASHER_KY
        WHERE HARINGS.HARINGS_HASH_KY = ? ";
 

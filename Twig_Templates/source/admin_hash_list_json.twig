@@ -27,11 +27,14 @@ $(document).ready(function() {
         "data": "HASH_KY",
         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
           $(nTd).html("<a href='/admin/edithash/ajaxform/"+oData.HASH_KY+"'>Event </a> | <a href='/admin/event/manageparticipation2/"+oData.HASH_KY+"'>Participation</a> | " +
-          {% if showBudgetPage %}
-            "<a href='/admin/eventBudget/"+oData.HASH_KY+"'>Budget</a> | " +
-          {% endif %}
-          "<a href='/admin/tags/eventscreen/"+oData.HASH_KY+"'>Tagging!</a>" +
-          (oData.CAN_DELETE == 1 ? " | <a href='javascript:doDeleteHash(\"" + oData.KENNEL_EVENT_NUMBER + "\", " + oData.HASH_KY + ")'>Delete</a>" : ""));
+            {% if showBudgetPage %}
+              "<a href='/admin/eventBudget/"+oData.HASH_KY+"'>Budget</a> | " +
+            {% endif %}
+            "<a href='/admin/tags/eventscreen/"+oData.HASH_KY+"'>Tagging!</a> | " +
+            (oData.CAN_DELETE == 1 ?
+              "<a href='javascript:doDeleteHash(\"" + oData.KENNEL_EVENT_NUMBER + "\", " + oData.HASH_KY + ")'>Delete</a>" :
+              "<a href='javascript:doDuplicateHash(" + oData.HASH_KY + ")'>Duplicate</a>")
+          );
         }
 
      },
@@ -41,6 +44,10 @@ $(document).ready(function() {
     ]
   });
 });
+
+function doDuplicateHash(id) {
+  document.location="/admin/" + id + "/duplicateHash";
+}
 
 function doDeleteHash(eventNumber, id) {
   if(window.confirm("Danger! Danger! Danger!  This cannot be undone!  Click OK to permanently remove event " + eventNumber + ".")) {

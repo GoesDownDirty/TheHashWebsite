@@ -270,6 +270,7 @@ $app->post('/superadmin/newharetype/ajaxform',                      'SuperAdminC
 
 $app->get('/admin/{kennel_abbreviation}/newhash/ajaxform', 'HashEventController:adminCreateHashAjaxPreAction');
 $app->post('/admin/{kennel_abbreviation}/newhash/ajaxform', 'HashEventController:adminCreateHashAjaxPostAction');
+$app->get('/admin/{hash_id}/duplicateHash',                 'HashEventController:adminDuplicateHash');
 
 # Hash event modification (ajaxified)
 $app->get('/admin/edithash/ajaxform/{hash_id}', 'HashEventController:adminModifyHashAjaxPreAction');

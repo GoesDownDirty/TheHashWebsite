@@ -26,7 +26,11 @@ $(document).ready(function() {
       {
         "data": "HASH_KY",
         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-          $(nTd).html("<a href='/admin/edithash/ajaxform/"+oData.HASH_KY+"'>Event </a> | <a href='/admin/event/manageparticipation2/"+oData.HASH_KY+"'>Participation</a> | <a href='/admin/eventBudget/"+oData.HASH_KY+"'>Budget</a> | <a href='/admin/tags/eventscreen/"+oData.HASH_KY+"'>Tagging!</a>");
+          $(nTd).html("<a href='/admin/edithash/ajaxform/"+oData.HASH_KY+"'>Event </a> | <a href='/admin/event/manageparticipation2/"+oData.HASH_KY+"'>Participation</a> | " +
+          {% if showBudgetPage %}
+            "<a href='/admin/eventBudget/"+oData.HASH_KY+"'>Budget</a> | " +
+          {% endif %}
+          "<a href='/admin/tags/eventscreen/"+oData.HASH_KY+"'>Tagging!</a>");
         }
 
      },

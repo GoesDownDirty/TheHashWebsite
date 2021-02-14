@@ -460,7 +460,8 @@ class AdminController extends BaseController
       'tableCaption' => "",
       'kennel_abbreviation' => $kennel_abbreviation,
       'totalHashes' => $theUnfilteredCount,
-      'totalHashesToUpdate' => $theFilteredCount
+      'totalHashesToUpdate' => $theFilteredCount,
+      'showBudgetPage' => $this->showBudgetPage()
     ));
 
     #Return the return value

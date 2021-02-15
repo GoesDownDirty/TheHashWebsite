@@ -412,11 +412,18 @@ class BaseController {
                                UNION
                               SELECT 69
                                UNION
-                              SELECT THE_NUMBER FROM (
+                              SELECT THE_NUMBER FROM (".
+                              ((defined('MYSQL8') && MYSQL8) ? "
+                                     SELECT 100 * ROW_NUMBER() OVER() AS THE_NUMBER
+                                       FROM (SELECT null FROM HASHINGS LIMIT 10) AS CART1,
+                                            (SELECT null FROM HASHINGS LIMIT 10) AS CART2
+                              " : "
                                      SELECT @NUMBERX:=@NUMBERX+100 AS THE_NUMBER
                                        FROM (SELECT null FROM HASHINGS LIMIT 10) AS CART1,
                                             (SELECT null FROM HASHINGS LIMIT 10) AS CART2,
-                                            (SELECT @NUMBERX:=0) NUMBERX) DERIVEDX) DERIVEDY
+                                            (SELECT @NUMBERX:=0) NUMBERX
+                              ")."
+                                            ) DERIVEDX) DERIVEDY
                                WHERE MILESTONE > TOTAL_HASH_COUNT
                                  AND KENNEL_KY=?) AS NEXT_MILESTONE
                  FROM (SELECT HASHERS.*, HASHERS.HASHER_KY AS OUTER_HASHER_KY, (
@@ -457,12 +464,18 @@ class BaseController {
                       (SELECT MIN(MILESTONE)
                          FROM (SELECT 100 AS MILESTONE
                                 UNION
-                               SELECT THE_NUMBER
-                                 FROM (SELECT @NUMBERX:=@NUMBERX+100 AS THE_NUMBER
-                                         FROM (SELECT null FROM HASHINGS LIMIT 10) AS CART1,
-                                              (SELECT null FROM HASHINGS LIMIT 10) AS CART2,
-                                              (SELECT @NUMBERX:=0) NUMBERX
-                                      ) DERIVEDX) DERIVEDY
+                              SELECT THE_NUMBER FROM (".
+                              ((defined('MYSQL8') && MYSQL8) ? "
+                                     SELECT 100 * ROW_NUMBER() OVER() AS THE_NUMBER
+                                       FROM (SELECT null FROM HASHINGS LIMIT 10) AS CART1,
+                                            (SELECT null FROM HASHINGS LIMIT 10) AS CART2
+                              " : "
+                                     SELECT @NUMBERX:=@NUMBERX+100 AS THE_NUMBER
+                                       FROM (SELECT null FROM HASHINGS LIMIT 10) AS CART1,
+                                            (SELECT null FROM HASHINGS LIMIT 10) AS CART2,
+                                            (SELECT @NUMBERX:=0) NUMBERX
+                              ")."
+                                            ) DERIVEDX) DERIVEDY
                                 WHERE MILESTONE > TOTAL_HASH_COUNT
                                   AND KENNEL_KY=?) AS NEXT_MILESTONE
                  FROM (SELECT HASHERS.*, HASHERS.HASHER_KY AS OUTER_HASHER_KY, (

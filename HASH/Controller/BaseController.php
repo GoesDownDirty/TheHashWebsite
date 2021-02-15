@@ -266,7 +266,7 @@ class BaseController {
                FROM HASHERS
                JOIN LEGACY_HASHINGS ON HASHERS.HASHER_KY = LEGACY_HASHINGS.HASHER_KY
               WHERE LEGACY_HASHINGS.KENNEL_KY = ?) AS HASH_COUNTS_INNER
-              GROUP BY THE_KEY, NAME
+              GROUP BY THE_KEY, NAME, KENNEL_KY
               ORDER BY VALUE DESC";
    }
 

@@ -102,6 +102,11 @@ class BaseController {
     return $this->fetchOne($sql) == "true";
   }
 
+  protected function showAwardsPage() {
+    $sql = "SELECT value FROM SITE_CONFIG WHERE name='show_awards_page'";
+    return $this->fetchOne($sql) == "true";
+  }
+
   protected function getSiteBanner() {
     $sql = "SELECT value FROM SITE_CONFIG WHERE name='site_banner'";
     return $this->fetchOne($sql);

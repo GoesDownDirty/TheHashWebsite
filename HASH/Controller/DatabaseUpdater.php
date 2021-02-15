@@ -14,7 +14,7 @@ class DatabaseUpdater {
 
     $databaseVersion = $this->getDatabaseVersion();
 
-    $currentDatabaseVersion = 19;
+    $currentDatabaseVersion = 20;
 
     if($databaseVersion != $currentDatabaseVersion) {
 
@@ -108,6 +108,9 @@ class DatabaseUpdater {
             case 18:
               $this->addBudgetOptionToSiteConfig();
               $this->setDatabaseVersion(19);
+            case 19:
+              $this->addAwardsOptionToSiteConfig();
+              $this->setDatabaseVersion(20);
             default:
               // Overkill, but guarantees the view is up to date with the
               // current database structure.
@@ -193,6 +196,10 @@ class DatabaseUpdater {
 
   private function addBudgetOptionToSiteConfig() {
     $this->insertIntoSiteConfig('show_budget_page', "true", 'Set to "true" to show the link to the budget page on the manage event page.');
+  }
+
+  private function addAwardsOptionToSiteConfig() {
+    $this->insertIntoSiteConfig('show_awards_page', "true", 'Set to "true" to show the link to the awards pages on the admin landing page.');
   }
 
   private function addOmniOptionToSiteConfig() {

@@ -40,26 +40,8 @@ class AdminController extends BaseController
       return $this->render('admin_landing.twig', array (
         'pageTitle' => 'This is the admin landing screen',
         'subTitle1' => 'This is the admin landing screen',
+        'showAwardsPage' => $this->showAwardsPage()
     ));
-  }
-
-  #Define the action
-  public function adminHelloAction(Request $request){
-
-      return $this->render('admin_landing.twig', array (
-        'pageTitle' => 'Site Administration',
-        'subTitle1' => 'This is the admin hello landing screen (sub title 1)',
-      ));
-  }
-
-
-  #Define the action
-  public function userHelloAction(Request $request){
-
-      return $this->render('admin_landing.twig', array (
-        'pageTitle' => 'This is the user hello landing screen (page title)',
-        'subTitle1' => 'This is the user hello landing screen (sub title 1)',
-      ));
   }
 
     public function listOrphanedHashersAction(Request $request){

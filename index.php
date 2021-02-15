@@ -343,9 +343,6 @@ $app->get('/admin/{hash_id}/deleteHash',                            'AdminContro
 #The per event budget screen
 $app->get('/admin/eventBudget/{hash_id}','AdminController:eventBudgetPreAction');
 
-
-$app->get('/user/hello',                                          'AdminController:userHelloAction');
-
 $app->get('/{kennel_abbreviation}/mia',                                       'HashController:miaPreActionJson');
 $app->post('/{kennel_abbreviation}/mia',                                       'HashController:miaPostActionJson');
 

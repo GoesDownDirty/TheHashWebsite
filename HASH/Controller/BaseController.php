@@ -381,7 +381,7 @@ class BaseController {
 
   protected function getPendingHasherAnalversariesQuery() {
     return
-      "SELECT HASHERS.HASHER_NAME AS HASHER_NAME,
+      "SELECT HASHERS.HASHER_NAME AS HASHER_NAME, HASHERS.HASHER_KY,
               COUNT(0) + ? + ".$this->getLegacyHashingsCountSubquery().
               " AS THE_COUNT_INCREMENTED,
               TIMESTAMPDIFF(YEAR, MAX(HASHES.EVENT_DATE), CURDATE()) AS YEARS_ABSENCE
@@ -529,6 +529,20 @@ class BaseController {
       $actionDescription,
       $theClientIP
     ));
+  }
 
+  protected function getMostRecentHash(int $kennelKy) {
+    # Declare the SQL to get the most recent hash
+    $sqlMostRecentHash = "SELECT KENNEL_EVENT_NUMBER, EVENT_LOCATION
+      FROM HASHES
+      WHERE HASHES.KENNEL_KY = ?
+      ORDER BY HASHES.EVENT_DATE DESC
+      LIMIT 1";
+
+    # Execute the SQL to get the most recent hash
+    $theMostRecentHashValue = $this->fetchAssoc($sqlMostRecentHash, array($kennelKy));
+
+    return "The most recent hash was: $theMostRecentHashValue[KENNEL_EVENT_NUMBER]
+      at $theMostRecentHashValue[EVENT_LOCATION]";
   }
 }

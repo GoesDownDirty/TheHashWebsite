@@ -2654,22 +2654,9 @@ public function pendingHasherAnalversariesAction(Request $request, string $kenne
   $yearsAbsenceLimit = 7;
 
   #Execute the SQL statement; create an array of rows
-  $hasherList = $this->fetchAll($sql, array((int) $fastForwardValue, (int) $kennelKy, (int) $yearsAbsenceLimit));
+  $hasherList = $this->fetchAll($sql, array($fastForwardValue, $kennelKy, $yearsAbsenceLimit));
 
-  # Declare the SQL to get the most recent hash
-  $sqlMostRecentHash = "SELECT KENNEL_EVENT_NUMBER, EVENT_DATE, EVENT_LOCATION, SPECIAL_EVENT_DESCRIPTION
-    FROM HASHES
-    WHERE HASHES.EVENT_DATE = (
-        SELECT MAX(HASHES.EVENT_DATE) AS MAX_EVENT_DATE
-        FROM HASHES
-        WHERE HASHES.KENNEL_KY = ?)
-    AND HASHES.KENNEL_KY = ?";
-
-  # Execute the SQL to get the most recent hash
-  $theMostRecentHashValue = $this->fetchAssoc($sqlMostRecentHash, array((int) $kennelKy,(int) $kennelKy));
-
-  $tableCaption = "The most recent hash was: $theMostRecentHashValue[KENNEL_EVENT_NUMBER]
-  at $theMostRecentHashValue[EVENT_LOCATION]";
+  $tableCaption = $this->getMostRecentHash($kennelKy);
 
   # Establish the return value
   $returnValue = $this->render('pending_analversary_list.twig',array(
@@ -2683,10 +2670,8 @@ public function pendingHasherAnalversariesAction(Request $request, string $kenne
     'kennel_abbreviation' => $kennel_abbreviation
   ));
 
-
   #Return the return value
   return $returnValue;
-
 }
 
 
@@ -2767,22 +2752,9 @@ public function pendingHareAnalversariesAction(Request $request, string $kennel_
   $yearsAbsenceLimit = 7;
 
   #Execute the SQL statement; create an array of rows
-  $hasherList = $this->fetchAll($sql, array((int) $fastForwardValue, (int) $kennelKy, (int) $yearsAbsenceLimit));
+  $hasherList = $this->fetchAll($sql, array($fastForwardValue, $kennelKy, $yearsAbsenceLimit));
 
-  # Declare the SQL to get the most recent hash
-  $sqlMostRecentHash = "SELECT KENNEL_EVENT_NUMBER, EVENT_DATE, EVENT_LOCATION, SPECIAL_EVENT_DESCRIPTION
-    FROM HASHES
-    WHERE HASHES.EVENT_DATE = (
-        SELECT MAX(HASHES.EVENT_DATE) AS MAX_EVENT_DATE
-        FROM HASHES
-        WHERE HASHES.KENNEL_KY = ?)
-    AND HASHES.KENNEL_KY = ?";
-
-  # Execute the SQL to get the most recent hash
-  $theMostRecentHashValue = $this->fetchAssoc($sqlMostRecentHash, array((int) $kennelKy, (int) $kennelKy));
-
-  $tableCaption = "The most recent hash was: $theMostRecentHashValue[KENNEL_EVENT_NUMBER]
-  at $theMostRecentHashValue[EVENT_LOCATION]";
+  $tableCaption = $this->getMostRecentHash($kennelKy);
 
   # Establish the return value
   $returnValue = $this->render('pending_analversary_list.twig',array(
@@ -2798,7 +2770,6 @@ public function pendingHareAnalversariesAction(Request $request, string $kennel_
 
   #Return the return value
   return $returnValue;
-
 }
 
 public function haringPercentageAllHashesAction(Request $request, string $kennel_abbreviation){

@@ -526,7 +526,6 @@ $app->post('/{kennel_abbreviation}/coharecount/byhare/{hare_type}','ObscureStati
 
 
 $app->get('/{kennel_abbreviation}/basic/stats',         'HashController:basicStatsAction');
-$app->get('/{kennel_abbreviation}/analversary/stats',   'HashController:analversaryStatsAction');
 $app->get('/{kennel_abbreviation}/cautionary/stats',    'HashController:cautionaryStatsAction');
 $app->get('/{kennel_abbreviation}/miscellaneous/stats', 'HashController:miscellaneousStatsAction');
 

@@ -245,8 +245,8 @@ class BaseController {
     return "0";
   }
 
-  protected function getHashingCountsQuery() {
-   if($this->hasLegacyHashCounts()) {
+  protected function getHashingCountsQuery(bool $considerLegacyRuns = true) {
+   if($this->hasLegacyHashCounts() && $considerLegacyRuns) {
      return "SELECT THE_KEY, NAME, SUM(VALUE) AS VALUE, KENNEL_KY
                FROM (
              SELECT HASHERS.HASHER_KY AS THE_KEY,

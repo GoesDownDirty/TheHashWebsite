@@ -3506,13 +3506,13 @@ public function peopleStatsAction(Request $request, string $kennel_abbreviation)
 }
 
 
-public function analversariesStatsAction(Request $request, string $kennel_abbreviation){
+public function analversariesStatsAction(string $kennel_abbreviation) {
 
   #Obtain the kennel key
   $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
   #Determine the number of hashes already held for this kennel
-  $sql2 = $this->getHashingCountsQuery();
+  $sql2 = $this->getHashingCountsQuery(false);
   $sql2 = "$sql2 LIMIT 1";
   $theCount2 = $this->fetchAssoc($sql2, array((int) $kennelKy, (int) $kennelKy));
   $theCount2 = $theCount2['VALUE'];
@@ -3526,7 +3526,6 @@ public function analversariesStatsAction(Request $request, string $kennel_abbrev
 
   #Return the return value
   return $returnValue;
-
 }
 
 public function yearByYearStatsAction(Request $request, string $kennel_abbreviation){
@@ -3603,20 +3602,6 @@ public function kennelGeneralInfoStatsAction(Request $request, string $kennel_ab
     'first_hash' => $firstHashValue,
     'latest_hash' => $mostRecentHashValue,
     'hare_types' => $hareTypes
-  ));
-
-  #Return the return value
-  return $returnValue;
-
-}
-
-
-public function analversaryStatsAction(Request $request, string $kennel_abbreviation){
-
-  # Establish and set the return value
-  $returnValue = $this->render('analversary_stats.twig',array(
-    'pageTitle' => 'Analversary Statistics',
-    'kennel_abbreviation' => $kennel_abbreviation
   ));
 
   #Return the return value

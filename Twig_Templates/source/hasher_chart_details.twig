@@ -369,13 +369,13 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
         <div class="col-sm-7" style="background-color:silver;">
           <h3>Their hashings</h3>
           <dl class="dl-horizontal">
+            {% if legacy_run_count > 0 %}
+              Number of runs before electronic record keeping: {{legacy_run_count}}<br/>
+            {% endif %}
             <a href='/{{kennel_abbreviation}}/listhashes/byhasher/{{hasherValue.HASHER_KY}}'>Their hashings</a><br>
             <a href='/{{kennel_abbreviation}}/getHasherAnalversaries/{{hasherValue.HASHER_KY}}'>Their hashing analversaries</a><br>
             <a href='/{{kennel_abbreviation}}/getProjectedHasherAnalversaries/{{hasherValue.HASHER_KY}}'>Their *predicted* hashing analversaries</a><br>
             <a href='/{{kennel_abbreviation}}/hashedWith/{{hasherValue.HASHER_KY}}'>Hounds who have hashed with them<br>
-            {#
-            <a href='/{{kennel_abbreviation}}/getHasherCountsByHound/{{hasherValue.HASHER_KY}}'>Hounds who have hashed with them (Not written yet)</a><br>
-            #}
             <a href='/{{kennel_abbreviation}}/attendanceRecordForHasher/{{hasherValue.HASHER_KY}}'>Attendance Record</a>
           </dl>
         </div>

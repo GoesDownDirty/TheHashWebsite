@@ -1560,7 +1560,7 @@ class HashController extends BaseController
   }
 
 
-  public function viewHasherChartsAction(Request $request, int $hasher_id, string $kennel_abbreviation){
+  public function viewHasherChartsAction(int $hasher_id, string $kennel_abbreviation) {
 
     # Declare the SQL used to retrieve this information
     $sql = "SELECT HASHER_KY, HASHER_NAME, HASHER_ABBREVIATION, FIRST_NAME, LAST_NAME, DECEASED FROM HASHERS WHERE HASHER_KY = ?";
@@ -1569,43 +1569,43 @@ class HashController extends BaseController
     $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
 
     # Make a database call to obtain the hasher information
-    $hasher = $this->fetchAssoc($sql, array((int) $hasher_id));
+    $hasher = $this->fetchAssoc($sql, array($hasher_id));
 
     # Obtain their hashes
     $sqlTheHashes = "SELECT KENNEL_EVENT_NUMBER, LAT, LNG, SPECIAL_EVENT_DESCRIPTION, EVENT_LOCATION, EVENT_DATE, HASHINGS.HASH_KY FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
     WHERE HASHER_KY = ? AND KENNEL_KY = ? and LAT is not null and LNG is not null";
-    $theHashes = $this->fetchAll($sqlTheHashes, array((int) $hasher_id, (int) $kennelKy));
+    $theHashes = $this->fetchAll($sqlTheHashes, array($hasher_id, $kennelKy));
 
     #Obtain the average lat
     $sqlTheAverageLatLong = "SELECT AVG(LAT) AS THE_LAT, AVG(LNG) AS THE_LNG FROM HASHINGS JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
     WHERE HASHER_KY = ? AND KENNEL_KY = ? and LAT is not null and LNG is not null";
-    $theAverageLatLong = $this->fetchAssoc($sqlTheAverageLatLong, array((int) $hasher_id, (int) $kennelKy));
+    $theAverageLatLong = $this->fetchAssoc($sqlTheAverageLatLong, array($hasher_id, $kennelKy));
     $avgLat = $theAverageLatLong['THE_LAT'];
     $avgLng = $theAverageLatLong['THE_LNG'];
 
     # Obtain the number of hashings
-    $hashCountValue = $this->fetchAssoc($this->getPersonsHashingCountQuery(), array((int) $hasher_id, (int) $kennelKy, (int) $hasher_id, (int) $kennelKy));
+    $hashCountValue = $this->fetchAssoc($this->getPersonsHashingCountQuery(), array($hasher_id, $kennelKy, $hasher_id, $kennelKy));
 
     # Obtain the number of harings
-    $hareCountValue = $this->fetchAssoc(PERSONS_HARING_COUNT, array((int) $hasher_id, (int) $kennelKy));
+    $hareCountValue = $this->fetchAssoc(PERSONS_HARING_COUNT, array($hasher_id, $kennelKy));
 
     # Obtain the hashes by month (name)
-    $theHashesByMonthNameList = $this->fetchAll(HASHER_HASH_COUNTS_BY_MONTH_NAME, array((int) $hasher_id, (int) $kennelKy));
+    $theHashesByMonthNameList = $this->fetchAll(HASHER_HASH_COUNTS_BY_MONTH_NAME, array($hasher_id, $kennelKy));
 
     # Obtain the hashes by quarter
-    $theHashesByQuarterList = $this->fetchAll(HASHER_HASH_COUNTS_BY_QUARTER, array((int) $hasher_id, (int) $kennelKy));
+    $theHashesByQuarterList = $this->fetchAll(HASHER_HASH_COUNTS_BY_QUARTER, array($hasher_id, $kennelKy));
 
     # Obtain the hashes by quarter
-    $theHashesByStateList = $this->fetchAll(HASHER_HASH_COUNTS_BY_STATE, array((int) $hasher_id, (int) $kennelKy));
+    $theHashesByStateList = $this->fetchAll(HASHER_HASH_COUNTS_BY_STATE, array($hasher_id, $kennelKy));
 
     # Obtain the hashes by county
-    $theHashesByCountyList = $this->fetchAll(HASHER_HASH_COUNTS_BY_COUNTY, array((int) $hasher_id, (int) $kennelKy));
+    $theHashesByCountyList = $this->fetchAll(HASHER_HASH_COUNTS_BY_COUNTY, array($hasher_id, $kennelKy));
 
     # Obtain the hashes by postal code
-    $theHashesByPostalCodeList = $this->fetchAll(HASHER_HASH_COUNTS_BY_POSTAL_CODE, array((int) $hasher_id, (int) $kennelKy));
+    $theHashesByPostalCodeList = $this->fetchAll(HASHER_HASH_COUNTS_BY_POSTAL_CODE, array($hasher_id, $kennelKy));
 
     # Obtain the hashes by day name
-    $theHashesByDayNameList = $this->fetchAll(HASHER_HASH_COUNTS_BY_DAYNAME, array((int) $hasher_id, (int) $kennelKy));
+    $theHashesByDayNameList = $this->fetchAll(HASHER_HASH_COUNTS_BY_DAYNAME, array($hasher_id, $kennelKy));
 
     #Obtain the hashes by year
     $sqlHashesByYear = "SELECT YEAR(EVENT_DATE) AS THE_VALUE, COUNT(*) AS THE_COUNT
@@ -1617,7 +1617,7 @@ class HashController extends BaseController
         HASHES.KENNEL_KY = ?
     GROUP BY YEAR(EVENT_DATE)
     ORDER BY YEAR(EVENT_DATE)";
-    $hashesByYearList = $this->fetchAll($sqlHashesByYear, array((int) $hasher_id,(int) $kennelKy));
+    $hashesByYearList = $this->fetchAll($sqlHashesByYear, array($hasher_id, $kennelKy));
 
     #Obtain the harings by year
     $sqlHaringsByYear = "SELECT
@@ -1631,10 +1631,10 @@ class HashController extends BaseController
         HASHES.KENNEL_KY = ?
     GROUP BY YEAR(EVENT_DATE)
     ORDER BY YEAR(EVENT_DATE)";
-    $haringsByYearList = $this->fetchAll($sqlHaringsByYear, array((int) $hasher_id,(int) $kennelKy));
+    $haringsByYearList = $this->fetchAll($sqlHaringsByYear, array($hasher_id, $kennelKy));
 
     #Query the database
-    $cityHashingsCountList = $this->fetchAll(HASHER_HASH_COUNTS_BY_CITY, array((int) $hasher_id, (int) $kennelKy));
+    $cityHashingsCountList = $this->fetchAll(HASHER_HASH_COUNTS_BY_CITY, array($hasher_id, $kennelKy));
 
     #Obtain largest entry from the list
     $cityHashingsCountMax = 1;
@@ -1643,7 +1643,7 @@ class HashController extends BaseController
     }
 
     #Obtain their largest streak
-    $longestStreakValue = $this->fetchAssoc(THE_LONGEST_STREAKS_FOR_HASHER, array((int) $kennelKy , (int) $hasher_id));
+    $longestStreakValue = $this->fetchAssoc(THE_LONGEST_STREAKS_FOR_HASHER, array($kennelKy, $hasher_id));
 
     #By Quarter/ Month ---------------------------------------------------
     $quarterMonthSql = "SELECT CONCAT (THE_QUARTER,'/',MONTH_NAME,'/',THE_COUNT) AS THE_VALUE, THE_COUNT
@@ -1687,7 +1687,7 @@ class HashController extends BaseController
 
 
     #Query the db
-    $quarterMonthValues = $this->fetchAll($quarterMonthSql, array((int) $hasher_id , (int) $kennelKy));
+    $quarterMonthValues = $this->fetchAll($quarterMonthSql, array($hasher_id, $kennelKy));
     $quarterMonthFormattedData = convertToFormattedHiarchy($quarterMonthValues);
 
     # End by Quarter Month ------------------------------------------------
@@ -1709,10 +1709,23 @@ class HashController extends BaseController
     	  EVENT_CITY IS NOT NULL AND EVENT_CITY != ''";
 
     #Obtain their sunburst data
-    $sunburstValuesA = $this->fetchAll($sunburstSqlA, array((int) $hasher_id , (int) $kennelKy));
+    $sunburstValuesA = $this->fetchAll($sunburstSqlA, array($hasher_id, $kennelKy));
     $sunburstFormattedData = convertToFormattedHiarchy($sunburstValuesA);
 
     $hareTypes = $this->getHareTypes($kennelKy);
+
+    if($this->hasLegacyHashCounts()) {
+      $sql = "SELECT LEGACY_HASHINGS_COUNT
+                FROM LEGACY_HASHINGS
+               WHERE HASHER_KY = ?
+                 AND KENNEL_KY = ?";
+      $legacy_run_count = $this->fetchOne($sql, array($hasher_id, $kennelKy));
+      if(!$legacy_run_count) {
+        $legacy_run_count = 0;
+      }
+    } else {
+      $legacy_run_count = 0;
+    }
 
     # Establish and set the return value
     $returnValue = $this->render('hasher_chart_details.twig',array(
@@ -1743,12 +1756,11 @@ class HashController extends BaseController
       'avg_lat' => $avgLat,
       'avg_lng' => $avgLng,
       'longest_streak' => $longestStreakValue['MAX_STREAK'],
-      //'sunburst_values_a' => $sunburstValuesA
+      'legacy_run_count' => $legacy_run_count
     ));
 
     # Return the return value
     return $returnValue;
-
   }
 
 

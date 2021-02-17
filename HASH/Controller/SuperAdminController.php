@@ -4,6 +4,7 @@ namespace HASH\Controller;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 
 use Symfony\Component\Form\Extension\Core\Type\FormType;
@@ -15,10 +16,30 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Security\Core\User\User;
 
+use Ifsnop\Mysqldump\Mysqldump;
+
 class SuperAdminController extends BaseController {
 
   public function __construct(Application $app) {
     parent::__construct($app);
+  }
+
+  public function exportDatabaseAction(Request $request) {
+    $username = DB_USER;
+    $password = DB_PASSWORD;
+    $host = DB_HOST;
+    $port = DB_PORT;
+    $dbname = DB_NAME;
+
+    $tmpfilebasename = $dbname."_backup.".date(DATE_ATOM);
+    $tmpfile = tempnam("/tmp", $tmpfilebasename);
+
+    $dump = new Mysqldump("mysql:host=$host;port=$port;dbname=$dbname", $username, $password);
+    $dump->start($tmpfile);
+
+    return $this->app->sendFile($tmpfile)
+      ->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $tmpfilebasename)
+      ->deleteFileAfterSend(true);
   }
 
   private function convertInputToMask($input) {

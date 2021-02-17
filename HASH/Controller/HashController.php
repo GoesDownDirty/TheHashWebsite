@@ -87,7 +87,7 @@ class HashController extends BaseController
     $pageTitle = "$kennel_abbreviation Stats";
 
     #Get hound counts
-    $baseSql = $this->getHashingCountsQuery($this->app);
+    $baseSql = $this->getHashingCountsQuery();
     $sql = "$baseSql  LIMIT 10";
 
     $baseSql = HARE_TYPE_HARING_COUNTS;

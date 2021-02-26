@@ -894,8 +894,10 @@ class AdminController extends BaseController
 
     # Establish and set the return value
     $returnValue = $this->render('admin_awards.twig',array(
-      'pageTitle' => 'Hasher Awards',
-      'tableCaption' => 'Hashers, awards due, and last awards given.  Click the checkbox when a hasher receives their next award.',
+      'pageTitle' => ($type=="pending" ? 'Pending' : 'All')." Hasher Awards",
+      'tableCaption' => $type=="pending" ? 'Hashers, awards due, and last awards given.  Click the checkbox when a hasher receives the award they are due.' :
+        'All hashers and the last award they received.',
+      'subTitle' => $type=="pending" ? "All hashers that are due to receive an award." : "All hashers and the last award they have received.",
       'theList' => $hasherList,
       'kennel_abbreviation' => $kennel_abbreviation,
       'kennel_key' => $kennelKy,

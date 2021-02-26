@@ -851,7 +851,8 @@ class AdminController extends BaseController
     return $this->fetchAll($sql, array());
   }
 
-  public function awards(Request $request, string $kennel_abbreviation = null, string $type) {
+
+  public function awards(Request $request, string $kennel_abbreviation = null, string $type, int $horizon = -1) {
 
     if($kennel_abbreviation) {
       $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
@@ -870,6 +871,10 @@ class AdminController extends BaseController
       }
     }
 
+    if($horizon == -1) {
+      $horizon = $this->getDefaultAwardEventHorizon();
+    }
+
     # Declare the SQL used to retrieve this information
     $sql =
       "SELECT THE_KEY, NAME, VALUE,
@@ -883,14 +888,15 @@ class AdminController extends BaseController
            ON AWARD_LEVELS.KENNEL_KY = HASHER_COUNTS.KENNEL_KY
         WHERE AWARD_LEVELS.AWARD_LEVEL > COALESCE(HASHER_AWARDS.LAST_AWARD_LEVEL_RECOGNIZED, 0)".
               ($type == "pending" ? "
-          AND (VALUE + 5) > AWARD_LEVELS.AWARD_LEVEL" : "
+          AND (VALUE + ?) > AWARD_LEVELS.AWARD_LEVEL" : "
+          AND ? != -1
           AND VALUE <= AWARD_LEVELS.AWARD_LEVEL
           AND AWARD_LEVELS.AWARD_LEVEL > COALESCE(HASHER_AWARDS.LAST_AWARD_LEVEL_RECOGNIZED, 0)")."
         GROUP BY THE_KEY, NAME, VALUE, HASHER_AWARDS.LAST_AWARD_LEVEL_RECOGNIZED
         ORDER BY VALUE DESC, NAME";
 
     #Execute the SQL statement; create an array of rows
-    $hasherList = $this->fetchAll($sql, array((int) $kennelKy, (int) $kennelKy));
+    $hasherList = $this->fetchAll($sql, array($kennelKy, $kennelKy, $horizon));
 
     # Establish and set the return value
     $returnValue = $this->render('admin_awards.twig',array(
@@ -902,7 +908,8 @@ class AdminController extends BaseController
       'kennel_abbreviation' => $kennel_abbreviation,
       'kennel_key' => $kennelKy,
       'pageTracking' => 'Hasher Awards',
-      'type' => $type
+      'type' => $type,
+      'horizon' => $horizon
     ));
 
     #Return the return value

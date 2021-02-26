@@ -98,4 +98,30 @@
 </table>
 </div>
 
+{% if type == "pending" %}
+<div>
+Showing hashers within {{ horizon }} events of being due their next award,
+and hashers who have not yet received awards that are due.
+
+<form action="#" onSubmit="return false;">
+Update event horizon:
+
+<input id="horizon" type="text" value="{{ horizon }}" size="5" onChange="updateHorizon()"/>
+</form>
+
+</div>
+
+<script>
+function updateHorizon() {
+  var newHorizon = Number(document.getElementById("horizon").value);
+
+  if(Number.isInteger(newHorizon) && (newHorizon >=0)) {
+    window.location = "/admin/{{ kennel_abbreviation }}/awards/pending/" + newHorizon;
+  } else {
+    alert("Invalid value - must be non-negative integer.  Dork.");
+  }
+}
+</script>
+{% endif %}
+
 {% endblock %}

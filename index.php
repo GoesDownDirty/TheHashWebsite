@@ -195,6 +195,7 @@ $app['controllers']
   ->assert("analversary_number","\d+")
   ->assert("row_limit","\d+")
   ->assert("kennel_ky","\d+")
+  ->assert("horizon","\d+")
   ->assert("kennel_abbreviation","^[A-Za-z0-9]+$")
   ->assert("name","^[a-z_]+$")
   ->assert("ridiculous","^ridiculous\d+$")
@@ -329,6 +330,7 @@ $app->get('/admin/roster',                                          'AdminContro
 $app->get('/admin/{kennel_abbreviation}/roster',                    'AdminController:roster');
 $app->get('/admin/awards/{type}',                                   'AdminController:awards');
 $app->get('/admin/{kennel_abbreviation}/awards/{type}',             'AdminController:awards');
+$app->get('/admin/{kennel_abbreviation}/awards/{type}/{horizon}',   'AdminController:awards');
 $app->post('/admin/updateHasherAward',                              'AdminController:updateHasherAwardAjaxAction');
 
 $app->get('/admin/listhashes2',                                    'AdminController:listHashesPreActionJson');

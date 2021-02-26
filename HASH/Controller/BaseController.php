@@ -137,6 +137,11 @@ class BaseController {
     return $this->fetchOne($sql);
   }
 
+  protected function getDefaultAwardEventHorizon() {
+    $sql = "SELECT value FROM SITE_CONFIG WHERE name='default_award_event_horizon'";
+    return (int)$this->fetchOne($sql);
+  }
+
   protected function getSiteConfigItemAsInt(string $name, int $defaultValue) {
     $sql = "SELECT VALUE FROM SITE_CONFIG WHERE NAME = ?";
 

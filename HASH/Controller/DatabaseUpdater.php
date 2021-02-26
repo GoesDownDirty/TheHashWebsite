@@ -14,7 +14,7 @@ class DatabaseUpdater {
 
     $databaseVersion = $this->getDatabaseVersion();
 
-    $currentDatabaseVersion = 20;
+    $currentDatabaseVersion = 21;
 
     if($databaseVersion != $currentDatabaseVersion) {
 
@@ -111,6 +111,9 @@ class DatabaseUpdater {
             case 19:
               $this->addAwardsOptionToSiteConfig();
               $this->setDatabaseVersion(20);
+            case 20:
+              $this->addDefaultAwardEventHorizonToSiteConfig();
+              $this->setDatabaseVersion(21);
             default:
               // Overkill, but guarantees the view is up to date with the
               // current database structure.
@@ -196,6 +199,10 @@ class DatabaseUpdater {
 
   private function addBudgetOptionToSiteConfig() {
     $this->insertIntoSiteConfig('show_budget_page', "true", 'Set to "true" to show the link to the budget page on the manage event page.');
+  }
+
+  private function addDefaultAwardEventHorizonToSiteConfig() {
+    $this->insertIntoSiteConfig('default_award_event_horizon', "5", 'Default number of events before being due an award that a hasher is required to have before they will appear on the pending awards page.');
   }
 
   private function addAwardsOptionToSiteConfig() {

@@ -210,7 +210,7 @@ class DatabaseUpdater {
   }
 
   private function addOmniOptionToSiteConfig() {
-    $this->insertIntoSiteConfig('show_omni_analversary_page', "true", 'Set to "true" to show the legacy omni analversary page link on the hash details page.');
+    $this->insertIntoSiteConfig('show_omni_analversary_page', "false", 'Set to "true" to show the legacy omni analversary page link on the hash details page.');
   }
 
   private function moveSiteBannerToSiteConfig() {

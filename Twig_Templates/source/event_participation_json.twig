@@ -239,8 +239,12 @@ $(document).ready(function() {
     "processing": true,
     "serverSide": true,
     "ajax": {
-        "url": "/admin/listhashers2",
-        "type": "POST"
+        "url": "/admin/listhashers3",
+        "type": "POST",
+        "data": { 
+            "kennel_abbreviation" : "{{kennel_abbreviation}}",
+            "hash_key" : {{hash_key}}
+        }
     },
     "columns": [
       {

@@ -340,6 +340,8 @@ $app->post('/admin/{kennel_abbreviation}/listhashes2',             'AdminControl
 $app->get('/admin/listhashers2',                                    'AdminController:listHashersPreActionJson');
 $app->post('/admin/listhashers2',                                   'AdminController:getHashersListJson');
 
+$app->post('/admin/listhashers3',                                   'AdminController:getHashersParticipationListJson');
+
 $app->get('/admin/hasherDetailsKennelSelection/{hasher_id}',        'AdminController:hasherDetailsKennelSelection');
 $app->get('/admin/{hash_id}/deleteHash',                            'AdminController:deleteHash');
 

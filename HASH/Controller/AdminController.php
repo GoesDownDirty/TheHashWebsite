@@ -628,10 +628,7 @@ class AdminController extends BaseController
 
   public function getHashersListJson(Request $request){
 
-    #$this->app['monolog']->addDebug("Entering the function------------------------");
-
     #Obtain the post parameters
-    #$inputDraw = $_POST['draw'] ;
     $inputStart = $_POST['start'] ;
     $inputLength = $_POST['length'] ;
     $inputColumns = $_POST['columns'];
@@ -641,17 +638,14 @@ class AdminController extends BaseController
     #-------------- Begin: Validate the post parameters ------------------------
     #Validate input start
     if(!is_numeric($inputStart)){
-      #$this->app['monolog']->addDebug("input start is not numeric: $inputStart");
       $inputStart = 0;
     }
 
     #Validate input length
     if(!is_numeric($inputLength)){
-      #$this->app['monolog']->addDebug("input length is not numeric");
       $inputStart = "0";
       $inputLength = "50";
     } else if($inputLength == "-1"){
-      #$this->app['monolog']->addDebug("input length is negative one (all rows selected)");
       $inputStart = "0";
       $inputLength = "1000000000";
     }
@@ -671,15 +665,9 @@ class AdminController extends BaseController
     $inputOrderColumnIncremented = "2";
     $inputOrderDirectionExtracted = "desc";
     if(!is_null($inputOrderRaw)){
-      #$this->app['monolog']->addDebug("inside inputOrderRaw not null");
       $inputOrderColumnExtracted = $inputOrderRaw[0]['column'];
       $inputOrderColumnIncremented = $inputOrderColumnExtracted + 1;
       $inputOrderDirectionExtracted = $inputOrderRaw[0]['dir'];
-      #$this->app['monolog']->addDebug("inputOrderColumnExtracted $inputOrderColumnExtracted");
-      #$this->app['monolog']->addDebug("inputOrderColumnIncremented $inputOrderColumnIncremented");
-      #$this->app['monolog']->addDebug("inputOrderDirectionExtracted $inputOrderDirectionExtracted");
-    }else{
-      #$this->app['monolog']->addDebug("inside inputOrderRaw is null");
     }
 
     #-------------- End: Modify the input parameters  --------------------------
@@ -703,7 +691,6 @@ class AdminController extends BaseController
           HASHER_ABBREVIATION LIKE ?)
       ORDER BY $inputOrderColumnIncremented $inputOrderDirectionExtracted
       LIMIT $inputStart,$inputLength";
-      #$this->app['monolog']->addDebug("sql: $sql");
 
     #Define the SQL that gets the count for the filtered results
     $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT
@@ -754,8 +741,128 @@ class AdminController extends BaseController
     return $returnValue;
   }
 
+  public function getHashersParticipationListJson(Request $request){
+
+    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($_POST['kennel_abbreviation']);
+    $hashKy = $_POST['hash_key'];
+
+    #Obtain the post parameters
+    $inputStart = $_POST['start'] ;
+    $inputLength = $_POST['length'] ;
+    $inputSearch = $_POST['search'];
+    $inputSearchValue = $inputSearch['value'];
+
+    #-------------- Begin: Validate the post parameters ------------------------
+    #Validate input start
+    if(!is_numeric($inputStart)){
+      $inputStart = 0;
+    }
+
+    #Validate input length
+    if(!is_numeric($inputLength)){
+      $inputStart = "0";
+      $inputLength = "50";
+    } else if($inputLength == "-1"){
+      $inputStart = "0";
+      $inputLength = "1000000000";
+    }
+
+    #Validate input search
+    #We are using database parameterized statements, so we are good already...
+
+    #---------------- End: Validate the post parameters ------------------------
+
+    #-------------- Begin: Modify the input parameters  ------------------------
+    #Modify the search string
+    $inputSearchValueModified = "%$inputSearchValue%";
+
+    #-------------- End: Modify the input parameters  --------------------------
 
 
+    #-------------- Begin: Define the SQL used here   --------------------------
+
+    #Define the sql that performs the filtering
+    $sql = "SELECT
+        HASHER_NAME AS NAME,
+        HASHER_KY AS THE_KEY,
+        FIRST_NAME,
+        LAST_NAME,
+        HASHER_ABBREVIATION,
+        (SELECT COUNT(*)
+           FROM HASHINGS
+          WHERE HASHINGS.HASHER_KY = HASHERS.HASHER_KY
+            AND HASHINGS.HASH_KY != ?
+            AND HASHINGS.HASH_KY IN (
+            SELECT HASH_KY
+              FROM HASHES_TABLE
+             WHERE KENNEL_KY = ?
+               AND EVENT_DATE > DATE_SUB((SELECT EVENT_DATE FROM HASHES_TABLE WHERE HASH_KY = ?), INTERVAL 3 MONTH)
+               AND EVENT_DATE < DATE_ADD((SELECT EVENT_DATE FROM HASHES_TABLE WHERE HASH_KY = ?), INTERVAL 3 MONTH))) AS RECENT_HASH_COUNT,
+        (SELECT COUNT(*)
+           FROM HASHINGS
+          WHERE HASHINGS.HASHER_KY = HASHERS.HASHER_KY
+            AND HASHINGS.HASH_KY != ?
+            AND HASHINGS.HASH_KY IN (
+            SELECT HASH_KY
+              FROM HASHES_TABLE
+             WHERE KENNEL_KY = ?
+               AND EVENT_DATE > DATE_SUB((SELECT EVENT_DATE FROM HASHES_TABLE WHERE HASH_KY = ?), INTERVAL 1 YEAR)
+               AND EVENT_DATE < DATE_ADD((SELECT EVENT_DATE FROM HASHES_TABLE WHERE HASH_KY = ?), INTERVAL 1 YEAR))) AS SORTA_RECENT_HASH_COUNT
+      FROM HASHERS
+      WHERE
+        (
+          HASHER_NAME LIKE ? OR
+          FIRST_NAME LIKE ? OR
+          LAST_NAME LIKE ? OR
+          HASHER_ABBREVIATION LIKE ?)
+      ORDER BY RECENT_HASH_COUNT DESC, SORTA_RECENT_HASH_COUNT DESC
+      LIMIT $inputStart,$inputLength";
+
+    #Define the SQL that gets the count for the filtered results
+    $sqlFilteredCount = "SELECT COUNT(*) AS THE_COUNT
+    FROM HASHERS
+    WHERE
+      (
+        HASHER_NAME LIKE ? OR
+        FIRST_NAME LIKE ? OR
+        LAST_NAME LIKE ? OR
+        HASHER_ABBREVIATION LIKE ?)";
+
+    #Define the sql that gets the overall counts
+    $sqlUnfilteredCount = "SELECT COUNT(*) AS THE_COUNT FROM HASHERS";
+
+    #-------------- End: Define the SQL used here   ----------------------------
+
+    #-------------- Begin: Query the database   --------------------------------
+    #Perform the filtered search
+    $theResults = $this->fetchAll($sql,array(
+      $hashKy, $kennelKy, $hashKy, $hashKy,
+      $hashKy, $kennelKy, $hashKy, $hashKy,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified));
+
+    #Perform the untiltered count
+    $theUnfilteredCount = ($this->fetchAssoc($sqlUnfilteredCount,array()))['THE_COUNT'];
+
+    #Perform the filtered count
+    $theFilteredCount = ($this->fetchAssoc($sqlFilteredCount,array(
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified,
+      (string) $inputSearchValueModified)))['THE_COUNT'];
+    #-------------- End: Query the database   --------------------------------
+
+    #Establish the output
+    $output = array(
+      "iTotalRecords" => $theUnfilteredCount,
+      "iTotalDisplayRecords" => $theFilteredCount,
+      "aaData" => $theResults
+    );
+
+    return $this->app->json($output,200);
+  }
 
   public function hasherDetailsKennelSelection(Request $request, int $hasher_id){
 

@@ -4,6 +4,7 @@ namespace App\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 class AuthSubscriber implements EventSubscriberInterface
@@ -12,6 +13,13 @@ class AuthSubscriber implements EventSubscriberInterface
   }
 
   public function onKernelController(ControllerEvent $event): void {
+    $user_agent = $_SERVER['HTTP_USER_AGENT'];
+    if(isset($user_agent)) {
+      if(stripos($user_agent, "Bot") !== false) {
+        throw new AccessDeniedHttpException('Access denied');
+      }
+    }
+
     $controller = $event->getController();
 
     // when a controller class defines multiple action methods, the controller

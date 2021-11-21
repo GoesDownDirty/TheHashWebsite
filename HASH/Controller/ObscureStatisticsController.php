@@ -1530,7 +1530,7 @@ class ObscureStatisticsController extends BaseController {
             GROUP BY HASHERS.HASHER_NAME
             HAVING COUNT(*) > 5
             ORDER BY 2,1";
-      $totEvtParticipationByHasher = $app['db']->fetchAll($sqlTotEvtParticipationByHasher, array((int) $kennelKy));
+      $totEvtParticipationByHasher = $this->fetchAll($sqlTotEvtParticipationByHasher, array((int) $kennelKy));
 
       # Establish and set the return value
       $returnValue = $this->render('event_participation_charts.twig',array(

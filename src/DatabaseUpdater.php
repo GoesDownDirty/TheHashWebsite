@@ -239,7 +239,7 @@ class DatabaseUpdater {
   }
 
   private function addConsolidatedSwitchKennelPreferenceToSiteConfig() {
-    $this->insertIntoSiteConfig('use_consolidated_switch_kennel_page', "false", 'If true, use the consolidated switch kennel page at hashstats.org');
+    $this->insertIntoSiteConfig('use_consolidated_switch_kennel_page', "true", 'If true, use the consolidated switch kennel page at hashstats.org');
   }
 
   private function addAwardsOptionToSiteConfig() {

@@ -7,7 +7,7 @@
         "monolog/monolog": "^1.18",
         "symfony/twig-bridge": "^3.0",
         "symfony/form": "^3.0",
-        "symfony/validator": "^3.0",
+        "symfony/validator": "^4.1",
         "symfony/config": "^3.0",
         "symfony/translation": "^3.0",
         "symfony/security-csrf": "^3.0",

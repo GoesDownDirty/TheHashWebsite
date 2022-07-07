@@ -1,16 +1,16 @@
 <?php
 
-use Silex\Application;
+use Doctrine\DBAL\Connection;
 
 class DatabaseUpdater {
 
-  private Application $app;
+  private Connection $conn;
   private string $db;
 
-  function __construct(Application $app, string $db) {
+  function __construct(Connection $conn, string $db_name) {
 
-    $this->app = $app;
-    $this->db = $db;
+    $this->conn = $conn;
+    $this->db_name = $db_name;
 
     $databaseVersion = $this->getDatabaseVersion();
 
@@ -141,19 +141,19 @@ class DatabaseUpdater {
 
   private function createLockTable() {
     $sql = "CREATE TABLE DATABASE_UPGRADE_IN_PROGRESS (`A` INT)";
-    $this->app['dbs']['mysql_write']->executeStatement($sql, array());
+    $this->conn->executeStatement($sql, array());
   }
 
   private function dropLockTable() {
     $sql = "DROP TABLE DATABASE_UPGRADE_IN_PROGRESS";
-    $this->app['dbs']['mysql_write']->executeStatement($sql, array());
+    $this->conn->executeStatement($sql, array());
   }
 
   private function insertIntoSiteConfig(string $name, string $value, string $description) {
     if ($description == "") {
-      $this->app['dbs']['mysql_write']->executeStatement("INSERT INTO SITE_CONFIG(NAME, VALUE) VALUES(?, ?)", array($name, $value));
+      $this->conn->executeStatement("INSERT INTO SITE_CONFIG(NAME, VALUE) VALUES(?, ?)", array($name, $value));
     } else {
-      $this->app['dbs']['mysql_write']->executeStatement("INSERT INTO SITE_CONFIG(NAME, VALUE, DESCRIPTION) VALUES(?, ?, ?)", array($name, $value, $description));
+      $this->conn->executeStatement("INSERT INTO SITE_CONFIG(NAME, VALUE, DESCRIPTION) VALUES(?, ?, ?)", array($name, $value, $description));
     }
   }
 
@@ -302,7 +302,7 @@ class DatabaseUpdater {
 
   private function addDescriptionColumnToSiteConfig() {
     $sql = "ALTER TABLE SITE_CONFIG ADD DESCRIPTION VARCHAR(4000)";
-    $this->app['dbs']['mysql_write']->executeStatement($sql, array());
+    $this->conn->executeStatement($sql, array());
 
     // ignore error, entry may already exist in table
     $this->executeStatementIgnoreError("INSERT INTO SITE_CONFIG(NAME, VALUE) VALUES('site_domain_name', '-none-')");
@@ -312,7 +312,7 @@ class DatabaseUpdater {
 
   private function renameStatsConfigToSiteConfig() {
     $sql = "ALTER TABLE STATS_CONFIG RENAME TO SITE_CONFIG";
-    $this->app['dbs']['mysql_write']->executeStatement($sql, array());
+    $this->conn->executeStatement($sql, array());
   }
 
   private function fixStatsConfigKey() {
@@ -424,15 +424,15 @@ class DatabaseUpdater {
   }
 
   private function executeStatement(string $sql) {
-    $this->app['dbs']['mysql_write']->executeStatement($sql, array());
+    $this->conn->executeStatement($sql, array());
   }
 
   private function createHashesView() {
     $sql = "ALTER TABLE HASHES RENAME TO HASHES_TABLE";
-    $this->app['dbs']['mysql_write']->executeStatement($sql, array());
+    $this->conn->executeStatement($sql, array());
 
     $sql = "CREATE VIEW HASHES AS SELECT * FROM HASHES_TABLE WHERE EVENT_DATE <= NOW()";
-    $this->app['dbs']['mysql_write']->executeStatement($sql, array());
+    $this->conn->executeStatement($sql, array());
   }
 
   private function recreateHashesView() {
@@ -441,7 +441,7 @@ class DatabaseUpdater {
     $this->executeStatementIgnoreError($sql);
 
     $sql = "CREATE VIEW HASHES AS SELECT * FROM HASHES_TABLE WHERE EVENT_DATE <= NOW()";
-    $this->app['dbs']['mysql_write']->executeStatement($sql, array());
+    $this->conn->executeStatement($sql, array());
   }
 
   private function setDatabaseVersion(int $version) {
@@ -450,7 +450,7 @@ class DatabaseUpdater {
     } else {
       $sql = "UPDATE SITE_CONFIG SET VALUE=? WHERE NAME='database_version'";
     }
-    $this->app['dbs']['mysql_write']->executeStatement($sql, array(strval($version)));
+    $this->conn->executeStatement($sql, array(strval($version)));
   }
 
   private function createCompositeIndexes() {
@@ -467,7 +467,7 @@ class DatabaseUpdater {
 
   private function executeStatementIgnoreError(string $sql) {
     try {
-      $this->app['dbs']['mysql_write']->executeStatement($sql,array());
+      $this->conn->executeStatement($sql,array());
     } catch(Exception $e) {
     }
   }
@@ -598,9 +598,9 @@ class DatabaseUpdater {
          WHERE table_schema = ?
            AND table_name = ?)";
 
-    $table_exists = $this->app['db']->fetchOne($checkSql, array($this->db, $tableName));
+    $table_exists = $this->conn->fetchOne($checkSql, array($this->db_name, $tableName));
     if(!$table_exists) {
-      $this->app['dbs']['mysql_write']->executeStatement($createTableSql,array());
+      $this->conn->executeStatement($createTableSql,array());
     }
 
     return $table_exists;
@@ -610,7 +610,7 @@ class DatabaseUpdater {
 
     $sql = "SELECT value FROM SITE_CONFIG WHERE name='database_version'";
     try {
-      return $this->app['db']->fetchOne($sql, array());
+      return $this->conn->fetchOne($sql, array());
     } catch(Exception $e) {
       // ignore - table may not exist
     }
@@ -618,7 +618,7 @@ class DatabaseUpdater {
     // former table name before db version 9
     $sql = "SELECT value FROM STATS_CONFIG WHERE name='database_version'";
     try {
-      return $this->app['db']->fetchOne($sql, array());
+      return $this->conn->fetchOne($sql, array());
     } catch(Exception $e) {
       // ignore - table may not exist
     }
@@ -630,9 +630,9 @@ class DatabaseUpdater {
         KEY `NAME_idx` (`NAME`)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8")) {
       $insertSql = "INSERT INTO STATS_CONFIG VALUES('database_version', '0')";
-      $this->app['dbs']['mysql_write']->executeStatement($insertSql,array());
+      $this->conn->executeStatement($insertSql,array());
     }
 
-    return $this->app['db']->fetchOne($sql, array());
+    return $this->conn->fetchOne($sql, array());
   }
 }

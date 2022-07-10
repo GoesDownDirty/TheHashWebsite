@@ -21,6 +21,7 @@ require_once 'Provider/SessionServiceProvider.php';
 require_once 'Provider/TwigServiceProvider.php';
 require_once 'Provider/SecurityServiceProvider.php';
 require_once 'Provider/RoutingServiceProvider.php';
+require_once 'Provider/ValidatorServiceProvider.php';
 
 use Doctrine\DBAL\Schema\Table;
 
@@ -98,7 +99,7 @@ $app['security.access_rules'] = array(
 $ssp = new Provider\SecurityServiceProvider();
 $app->register(new Provider\RoutingServiceProvider());
 $app->register($ssp);
-$app->register(new Silex\Provider\ValidatorServiceProvider());
+$app->register(new Provider\ValidatorServiceProvider());
 #-------------------------------------------------------------------------------
 
 #Set your global assertions and stuff ------------------------------------------

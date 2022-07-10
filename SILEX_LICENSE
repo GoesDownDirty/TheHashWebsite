@@ -6,6 +6,7 @@ Listener/SessionListener.php
 Provider/CsrfServiceProvider.php
 Provider/DoctrineServiceProvider.php
 Provider/FormServiceProvider.php
+Provider/RoutingServiceProvider.php
 Provider/SecurityServiceProvider.php
 Provider/SessionServiceProvider.php
 Provider/TranslationServiceProvider.php

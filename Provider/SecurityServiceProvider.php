@@ -5,7 +5,6 @@ namespace Provider;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Silex\Application;
-use Silex\Api\BootableProviderInterface;
 use Silex\Api\ControllerProviderInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RequestMatcher;
@@ -59,7 +58,7 @@ use Symfony\Component\Security\Guard\Provider\GuardAuthenticationProvider;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class SecurityServiceProvider implements ServiceProviderInterface, ControllerProviderInterface, BootableProviderInterface
+class SecurityServiceProvider implements ServiceProviderInterface, ControllerProviderInterface
 {
     protected $fakeRoutes;
 

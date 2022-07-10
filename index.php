@@ -526,7 +526,7 @@ $app->post('/{kennel_abbreviation}/hashers/retrieve',                         'H
 # kennel home page
 $app->get('/{kennel_abbreviation}',                               'HashController:slashKennelAction2');
 
-$ssp->boot($app);
+$ssp->boot($app['controllers'], $app['controllers_factory']);
 new DatabaseUpdater($app['dbs']['mysql_write'], DB_NAME);
 
 $app->run();

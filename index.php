@@ -19,12 +19,12 @@ require_once 'Provider/TranslationServiceProvider.php';
 require_once 'Provider/DoctrineServiceProvider.php';
 require_once 'Provider/SessionServiceProvider.php';
 require_once 'Provider/TwigServiceProvider.php';
+require_once 'Provider/SecurityServiceProvider.php';
 
 use Doctrine\DBAL\Schema\Table;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
-use Silex\Provider\SecurityServiceProvider;
 
 use Rabus\Psr11ServiceProvider\Psr11ServiceProvider;
 
@@ -65,33 +65,28 @@ $app['ObscureStatisticsController'] = function() use($app) { return new \HASH\Co
 
 # Begin: Set the security firewalls --------------------------------------------
 
-$app->register(new Silex\Provider\SecurityServiceProvider(), array(
-    'security.firewalls' => array(
-        'login' => array(
-            'pattern' => '^/logonscreen$',
-        ),
-        'supersecured' => array(
-            'pattern' => '^/superadmin',
-            'form' => array('login_path' => '/logonscreen/sa', 'check_path' => '/superadmin/login_check'),
-            'logout' => array('logout_path' => '/superadmin/logoutaction'),
-            'users' => function () use ($app) {return new UserProvider($app['db']);},
-            'logout' => array('logout_path' => '/superadmin/logoutaction', 'invalidate_session' => true),
-          ),
-        'secured' => array(
-            'pattern' => '^/admin',
-            'form' => array('login_path' => '/logonscreen', 'check_path' => '/admin/login_check'),
-            'logout' => array('logout_path' => '/logoutaction'),
-            'users' => function () use ($app) {return new UserProvider($app['db']);},
-            'logout' => array('logout_path' => '/admin/logoutaction', 'invalidate_session' => true),
-        ),
-        'unsecured' => array(
-          'pattern' => '^.*$',
-        )
+$app['security.firewalls'] = array(
+    'login' => array(
+        'pattern' => '^/logonscreen$',
+    ),
+    'supersecured' => array(
+        'pattern' => '^/superadmin',
+        'form' => array('login_path' => '/logonscreen/sa', 'check_path' => '/superadmin/login_check'),
+        'logout' => array('logout_path' => '/superadmin/logoutaction'),
+        'users' => function () use ($app) {return new UserProvider($app['db']);},
+        'logout' => array('logout_path' => '/superadmin/logoutaction', 'invalidate_session' => true),
+      ),
+    'secured' => array(
+        'pattern' => '^/admin',
+        'form' => array('login_path' => '/logonscreen', 'check_path' => '/admin/login_check'),
+        'logout' => array('logout_path' => '/logoutaction'),
+        'users' => function () use ($app) {return new UserProvider($app['db']);},
+        'logout' => array('logout_path' => '/admin/logoutaction', 'invalidate_session' => true),
+    ),
+    'unsecured' => array(
+      'pattern' => '^.*$',
     )
-));
-
-// Fallback to default password encoder used in SILEX 1.3
-$app['security.default_encoder'] = $app['security.encoder.digest'];
+);
 
 $app['security.access_rules'] = array(
     array('^/superadmin',   'ROLE_SUPERADMIN',),
@@ -100,6 +95,7 @@ $app['security.access_rules'] = array(
 
 
 $app->register(new Silex\Provider\RoutingServiceProvider());
+$app->register(new Provider\SecurityServiceProvider());
 $app->register(new Silex\Provider\ValidatorServiceProvider());
 #-------------------------------------------------------------------------------
 

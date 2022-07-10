@@ -94,8 +94,9 @@ $app['security.access_rules'] = array(
 );
 
 
+$ssp = new Provider\SecurityServiceProvider();
 $app->register(new Silex\Provider\RoutingServiceProvider());
-$app->register(new Provider\SecurityServiceProvider());
+$app->register($ssp);
 $app->register(new Silex\Provider\ValidatorServiceProvider());
 #-------------------------------------------------------------------------------
 
@@ -525,6 +526,7 @@ $app->post('/{kennel_abbreviation}/hashers/retrieve',                         'H
 # kennel home page
 $app->get('/{kennel_abbreviation}',                               'HashController:slashKennelAction2');
 
+$ssp->boot($app);
 new DatabaseUpdater($app['dbs']['mysql_write'], DB_NAME);
 
 $app->run();

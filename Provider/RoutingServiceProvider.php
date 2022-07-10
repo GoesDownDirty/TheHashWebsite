@@ -5,13 +5,13 @@ namespace Provider;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Silex\ControllerCollection;
-use Silex\Provider\Routing\RedirectableUrlMatcher;
-use Silex\Provider\Routing\LazyRequestMatcher;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\HttpKernel\EventListener\RouterListener;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+require_once 'Routing/RedirectableUrlMatcher.php';
+require_once 'Routing/LazyRequestMatcher.php';
 
 class RoutingServiceProvider implements ServiceProviderInterface
 {
@@ -35,7 +35,7 @@ class RoutingServiceProvider implements ServiceProviderInterface
         };
 
         $app['request_matcher'] = function ($app) {
-            return new RedirectableUrlMatcher($app['routes'], $app['request_context']);
+            return new Routing\RedirectableUrlMatcher($app['routes'], $app['request_context']);
         };
 
         $app['request_context'] = function ($app) {
@@ -57,7 +57,7 @@ class RoutingServiceProvider implements ServiceProviderInterface
         $app['controllers_factory'] = $app->factory($controllers_factory);
 
         $app['routing.listener'] = function ($app) {
-            $urlMatcher = new LazyRequestMatcher(function () use ($app) {
+            $urlMatcher = new Routing\LazyRequestMatcher(function () use ($app) {
                 return $app['request_matcher'];
             });
 

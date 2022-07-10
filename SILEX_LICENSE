@@ -11,6 +11,7 @@ Provider/SecurityServiceProvider.php
 Provider/SessionServiceProvider.php
 Provider/TranslationServiceProvider.php
 Provider/TwigServiceProvider.php
+Provider/ValidatorServiceProvider.php
 Provider/Routing/LazyRequestMatcher.php
 Provider/Routing/RedirectableUrlMatcher.php
 

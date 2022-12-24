@@ -2,7 +2,7 @@
     "require": {
         "doctrine/dbal": "~3.5",
         "twig/twig": "^3.0",
-        "symfony/security-http": "^4.4",
+        "symfony/security-http": "^5.1",
         "symfony/routing": "^4.4",
         "symfony/twig-bridge": "^4.4",
         "symfony/form": "^4.4",

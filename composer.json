@@ -9,7 +9,7 @@
         "symfony/validator": "^4.4",
         "symfony/config": "^4.4",
         "symfony/translation": "^4.4",
-        "symfony/security-csrf": "^4.4",
+        "symfony/security-csrf": "^5.4",
         "symfony/doctrine-bridge": "^4.4",
         "symfony/mime": "^4.4",
         "symfony/monolog-bridge": "^4.4",

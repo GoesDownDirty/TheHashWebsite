@@ -31,10 +31,11 @@ use Symfony\Bridge\Twig\Extension\HttpFoundationExtension as TwigHttpFoundationE
 use Symfony\Bridge\Twig\Extension\HttpKernelExtension;
 use Symfony\Bridge\Twig\Extension\HttpKernelRuntime;
 use Symfony\Bridge\Twig\Extension\RoutingExtension;
-use Symfony\Bridge\Twig\Extension\SecurityExtension;
+use Symfony\Bridge\Twig\Extension\SecurityExtension as TwigSecurityExtension;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Symfony\Bridge\Twig\Extension\WebLinkExtension;
 use Symfony\Bridge\Twig\Form\TwigRendererEngine;
+use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\ErrorHandler\Debug;
@@ -487,6 +488,46 @@ $app['ObscureStatisticsController'] = function() use($app) { return new \HASH\Co
 
 $app['UserProvider'] = function() use($app) { return new UserProvider($app['db']); };
 
+$app->registerExtension(new SecurityExtension());
+$app->loadFromExtension('security', [
+  'enable_authenticator_manager' => true,
+  'providers' => [
+    'app_user_provider' => [
+      'entity' => [
+        'class' => User::class,
+        'property' => 'userIdentifier'
+      ]
+    ],
+    'encoders' => [
+      User::class => [
+        'algorithm' => 'messageDigest'
+      ]
+    ],
+    'firewalls' => [
+      'supersecured' => [
+        'pattern' => '^/superadmin',
+        'form_login' => ['login_path' => '/logonscreen/sa', 'check_path' => '/superadmin/login_check'],
+        'logout' => ['logout_path' => '/superadmin/logoutaction', 'invalidate_session' => true],
+      ],
+      'secured' => [
+        'pattern' => '^/admin',
+        'form_login' => ['login_path' => '/logonscreen', 'check_path' => '/admin/login_check'],
+        'logout' => ['logout_path' => '/admin/logoutaction', 'invalidate_session' => true],
+      ],
+      'main' => [
+        'anonymous' => true,
+        'lazy' => true
+      ]
+    ],
+    'access_control' => [
+      ['path' => '^/superadmin', 'roles' => 'ROLE_SUPERADMIN'],
+      ['path' => '^/admin',      'roles' => 'ROLE_ADMIN']
+    ]
+  ]
+]);
+
+
+/*
 $app['security.firewalls'] = array(
   'login' => array(
     'pattern' => '^/logonscreen$',
@@ -521,11 +562,13 @@ $app['security.hide_user_not_found'] = true;
 $app['security.authorization_checker'] = function ($app) {
   return new AuthorizationChecker($app['security.token_storage'], $app['security.authentication_manager'], $app['security.access_manager']);
 };
+*/
 
 $app['security.token_storage'] = function ($app) {
   return new TokenStorage();
 };
 
+/*
 $app['security.authentication_manager'] = function ($app) {
   $manager = new AuthenticationProviderManager($app['security.authentication_providers']);
   $manager->setEventDispatcher($app['dispatcher']);
@@ -949,6 +992,7 @@ $app['security.authentication_provider.dao._proto'] = $app->protect(function ($n
 });
 
 $app['dispatcher']->addSubscriber($app['security.firewall']);
+*/
 
 #-------------------------------------------------------------------------------
 
@@ -1020,7 +1064,7 @@ $app['twig'] = function ($app) {
   $twig->addExtension(new RoutingExtension($app['url_generator']));
   $twig->addExtension(new WebLinkExtension($app['request_stack']));
   $twig->addExtension(new TranslationExtension($app['translator']));
-  $twig->addExtension(new SecurityExtension($app['security.authorization_checker']));
+  //$twig->addExtension(new TwigSecurityExtension($app['security.authorization_checker']));
 
   $app['twig.form.engine'] = function ($app) use ($twig) {
     return new TwigRendererEngine($app['twig.form.templates'], $twig);

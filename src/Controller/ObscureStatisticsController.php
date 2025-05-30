@@ -24,46 +24,6 @@ class ObscureStatisticsController extends BaseController {
     $this->helper = $helper;
   }
 
-  #[Route('/{kennel_abbreviation}/eventsHeatMap',
-    methods: ['GET'],
-    requirements: [
-      'kennel_abbreviation' => '%app.pattern.kennel_abbreviation%']
-  )]
-  public function kennelEventsHeatMap(string $kennel_abbreviation){
-
-    $kennelKy = $this->obtainKennelKeyFromKennelAbbreviation($kennel_abbreviation);
-
-    # Obtain the hashes
-    $sqlTheHashes = "
-      SELECT HASHES.*
-        FROM HASHES
-       WHERE KENNEL_KY = ?
-         AND LAT IS NOT NULL
-         AND LNG IS NOT NULL";
-    $theHashes = $this->fetchAll($sqlTheHashes, [ $kennelKy ]);
-
-    #Obtain the average lat
-    $sqlTheAverageLatLong = "
-      SELECT AVG(LAT) AS THE_LAT, AVG(LNG) AS THE_LNG
-        FROM HASHES
-       WHERE KENNEL_KY = ?
-         AND LAT IS NOT NULL
-         AND LNG IS NOT NULL";
-    $theAverageLatLong = $this->fetchAssoc($sqlTheAverageLatLong, [ $kennelKy ]);
-    $avgLat = $theAverageLatLong['THE_LAT'];
-    $avgLng = $theAverageLatLong['THE_LNG'];
-
-    # Establish and set the return value
-    return $this->render('generic_heat_map_page.twig', [
-      'pageTitle' => 'The Kennel Heat Map',
-      'pageSubTitle' => 'Location of all the hashes',
-      'kennel_abbreviation' => $kennel_abbreviation,
-      'the_hashes' => $theHashes,
-      'geocode_api_value' => $this->getGoogleMapsJavascriptApiKey(),
-      'avg_lat' => $avgLat,
-      'avg_lng' => $avgLng ]);
-  }
-
   #[Route('/{kennel_abbreviation}/eventsClusterMap',
     methods: ['GET'],
     requirements: [

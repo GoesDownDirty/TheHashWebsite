@@ -142,20 +142,20 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
           <i><a href='/{{kennel_abbreviation}}/hashers/{{hasherValue.HASHER_KY}}'>View Hound Details</a></i> |
         {% endif %}
         {% for hare_type in hare_types %}
-	  {% for harings in hareCounts %}
+          {% for harings in hareCounts %}
           {% if harings.type == hare_type.HARE_TYPE_NAME %}
           {% if harings.total > 0 %}
-	  {% if hare_type.HARE_TYPE_NAME == hare_type_name %}
-	    <i>{{hare_type.HARE_TYPE_NAME}} Hare Details</i> |
-	  {% else %}
+          {% if hare_type.HARE_TYPE_NAME == hare_type_name %}
+            <i>{{hare_type.HARE_TYPE_NAME}} Hare Details</i> |
+          {% else %}
             {% if google_analytics_id != 'none' %}
               <i><a href='/{{kennel_abbreviation}}/hares/{{hare_type.HARE_TYPE}}/{{hasherValue.HASHER_KY}}?name={{hasherValue.HASHER_NAME|url_encode}}'>{{hare_type.HARE_TYPE_NAME}} Hare Details</a></i> |
             {% else %}
               <i><a href='/{{kennel_abbreviation}}/hares/{{hare_type.HARE_TYPE}}/{{hasherValue.HASHER_KY}}'>{{hare_type.HARE_TYPE_NAME}} Hare Details</a></i> |
             {% endif %}
-	  {% endif %}
-	  {% endif %}
-	  {% endif %}
+          {% endif %}
+          {% endif %}
+          {% endif %}
           {% endfor %}
         {% endfor %}
         {% if google_analytics_id != 'none' %}
@@ -179,7 +179,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
                 {% endif %}
 
                 <dt>Total Haring Count</dt><dd> {{overallHareCount}}</dd>
-	        {% for harings in hareCounts %}
+                {% for harings in hareCounts %}
                   <dt>{{harings.type}} Haring Count</dt><dd>{{harings.total}}</dd>
                 {% endfor %}
               {% endautoescape %}
@@ -194,7 +194,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
             <a href='/{{kennel_abbreviation}}/getHareAnalversaries/{{hare_type}}/{{hasherValue.HASHER_KY}}'>All of their {{ hare_type_name }} Haring Analversaries</a><br>
             <a href='/{{kennel_abbreviation}}/getHasherCountsByHare/{{hasherValue.HASHER_KY}}/{{hare_type}}'>Hounds who have hashed their {{ hare_type_name }} harings</a><br>
             <span class="hidden-sm hidden-xs">
-	    {% for harings in hareCounts %}
+            {% for harings in hareCounts %}
             &nbsp;<br>
             {% endfor %}
             &nbsp;<br>
@@ -600,82 +600,6 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
             <!--  ------------------------------------------------------------------------->
 
-
-
-            <div class="row"><h2>Heat Map</h2>
-              <div id="TheMap2" class="col-sm-10"></div>
-                <style>
-                #TheMap2{
-                  height: 600px;
-                }
-                </style>
-            </div>
-            <br><br><br><br><br><br><br>
-
-            <script>
-              var map2,heatmap;
-              function initMap2(){
-                map2 = new google.maps.Map(document.getElementById('TheMap2'),{
-                  zoom: 11,
-                  center: new google.maps.LatLng( {{avg_lat}}, {{avg_lng}} ),
-                  mapTypeId: 'terrain'
-                });
-
-                heatmap = new google.maps.visualization.HeatmapLayer({
-                  data: getPoints2(),
-                  map: map2
-                });
-
-                changeGradient();
-                changeRadius();
-              }
-
-              function getPoints2() {
-                return [
-                  {% for hashEventValue in the_hashes %}
-                  new google.maps.LatLng(
-                    {{hashEventValue.LAT}}, {{hashEventValue.LNG}}
-                  ),
-                  {% endfor %}
-                ];
-              }
-
-              function toggleHeatmap() {
-                heatmap.setMap(heatmap.getMap() ? null : map2);
-              }
-
-              function changeGradient() {
-                var gradient = [
-                  'rgba(0, 255, 255, 0)',
-                  'rgba(0, 255, 255, 1)',
-                  'rgba(0, 191, 255, 1)',
-                  'rgba(0, 127, 255, 1)',
-                  'rgba(0, 63, 255, 1)',
-                  'rgba(0, 0, 255, 1)',
-                  'rgba(0, 0, 223, 1)',
-                  'rgba(0, 0, 191, 1)',
-                  'rgba(0, 0, 159, 1)',
-                  'rgba(0, 0, 127, 1)',
-                  'rgba(63, 0, 91, 1)',
-                  'rgba(127, 0, 63, 1)',
-                  'rgba(191, 0, 31, 1)',
-                  'rgba(255, 0, 0, 1)'
-                ]
-                heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
-              }
-
-              function changeRadius() {
-                heatmap.set('radius', heatmap.get('radius') ? null : 30);
-              }
-
-              function changeOpacity() {
-                heatmap.set('opacity', heatmap.get('opacity') ? null : 0.2);
-              }
-            </script>
-
-
-            <!--  ------------------------------------------------------------------------->
-
               <div class="row"><h2>Cluster Map</h2>
                 <div id="TheMap3" class="col-sm-10"></div>
                   <style>
@@ -726,19 +650,11 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
               <script>
                 function initMapX(){
                   initMap1();
-                  initMap2();
                   initMap3();
                 }
               </script>
               <script async defer src="https://maps.googleapis.com/maps/api/js?key={{geocode_api_value}}&callback=initMapX&libraries=visualization">
               </script>
-
-
-
-
           </div>
-
-
-    
 
 {% endblock %}

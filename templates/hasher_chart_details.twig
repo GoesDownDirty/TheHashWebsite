@@ -262,7 +262,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
           },
       },
       tooltip: {
-	  formatter: '{b}'
+          formatter: '{b}'
       },
       series: [{
           type: 'treemap',
@@ -305,7 +305,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
       <h5>
         Hound Details |
         {% for hare_type in hare_types %}
-	  {% for harings in hareCounts %}
+          {% for harings in hareCounts %}
           {% if harings.type == hare_type.HARE_TYPE_NAME %}
           {% if harings.total > 0 %}
           {% if google_analytics_id != 'none' %}
@@ -414,50 +414,46 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
           <div class="col-sm-12">
 
             <canvas id="chartXX" width="50" height="50"></canvas>
-	      <script>
-	      var ctx = document.getElementById("chartXX");
-	      new Chart(ctx, {
-		  type: 'bar',
-		  data: {
-		      labels: [
-			{% for individualValue in hashes_by_year_list %}
-			  "{{individualValue.THE_VALUE}}",
-			{% endfor %}
-		      ],
-		      datasets: [{
-			  label: '# of Hashes',
-			  data: [
-			    {% for individualValue in hashes_by_year_list %}
-			      {{individualValue.THE_COUNT}},
-			    {% endfor %}
+              <script>
+              var ctx = document.getElementById("chartXX");
+              new Chart(ctx, {
+                  type: 'bar',
+                  data: {
+                      labels: [
+                        {% for individualValue in hashes_by_year_list %}
+                          "{{individualValue.THE_VALUE}}",
+                        {% endfor %}
+                      ],
+                      datasets: [{
+                          label: '# of Hashes',
+                          data: [
+                            {% for individualValue in hashes_by_year_list %}
+                              {{individualValue.THE_COUNT}},
+                            {% endfor %}
 
-			  ],
-			  fillColor:'rgba(75, 192, 192, 0.2)',
-			  backgroundColor:'rgba(0, 0, 200, 0.2)',
-			  borderColor:'rgba(0, 0, 200, 1)',
-			  borderWidth: 1
-		      }]
-		  },
-		  options: {
-		      scales: {
-			  y: {
-				beginAtZero:true
-			  }
-		      },
-		      title: {
-			display: true,
-			text: 'Hashes By Year'
-		      }
-		  }
-	      });
-	      </script>
+                          ],
+                          fillColor:'rgba(75, 192, 192, 0.2)',
+                          backgroundColor:'rgba(0, 0, 200, 0.2)',
+                          borderColor:'rgba(0, 0, 200, 1)',
+                          borderWidth: 1
+                      }]
+                  },
+                  options: {
+                      scales: {
+                          y: {
+                                beginAtZero:true
+                          }
+                      },
+                      title: {
+                        display: true,
+                        text: 'Hashes By Year'
+                      }
+                  }
+              });
+              </script>
 
           </div>
         </div>
-
-
-
-
 
         <div class="row">
           <div class="col-sm-8">
@@ -502,42 +498,38 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
           </script>
         </div>
 
-
-
-
-
         <div class="row">
 
           <div class="col-sm-6">
             <canvas id="chartBB" width="50" height="50"></canvas>
             <script>
-	      var ctx = document.getElementById("chartBB");
-	      new Chart(ctx, {
-		  type: 'pie',
-		  data: {
-		      labels: [
-			{% for individualValue in hashes_by_state_list %}
-			  "{{individualValue.THE_VALUE}}",
-			{% endfor %}
-		      ],
-		      datasets: [{
-			  label: '# of Hashes',
-			  data: [
-			    {% for individualValue in hashes_by_state_list %}
-			      {{individualValue.THE_COUNT}},
-			    {% endfor %}
+              var ctx = document.getElementById("chartBB");
+              new Chart(ctx, {
+                  type: 'pie',
+                  data: {
+                      labels: [
+                        {% for individualValue in hashes_by_state_list %}
+                          "{{individualValue.THE_VALUE}}",
+                        {% endfor %}
+                      ],
+                      datasets: [{
+                          label: '# of Hashes',
+                          data: [
+                            {% for individualValue in hashes_by_state_list %}
+                              {{individualValue.THE_COUNT}},
+                            {% endfor %}
 
-			  ],
-			  borderWidth: 1
-		      }]
-		  },
-		  options: {
-		      title: {
-			display: true,
-			text: 'Hashes By State'
-		      }
-		  }
-	      });
+                          ],
+                          borderWidth: 1
+                      }]
+                  },
+                  options: {
+                      title: {
+                        display: true,
+                        text: 'Hashes By State'
+                      }
+                  }
+              });
 
             </script>
 
@@ -572,7 +564,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
                 options: {
                     scales: {
                         y: {
-			    beginAtZero:true
+                            beginAtZero:true
                         }
                     },
                     title: {
@@ -585,11 +577,6 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
           </div>
         </div>
-
-
-
-
-
 
   <!--  ------------------------------------------------------------------------->
 
@@ -641,7 +628,7 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
 
 
 
-        <div class="row"><h2>Heat Map</h2>
+        <div class="row"><h2>Cluster Map</h2>
           <div id="TheMap2" class="col-sm-10"></div>
             <style>
             #TheMap2{
@@ -652,85 +639,46 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
         <br><br><br><br><br><br><br>
 
         <script>
-          var map2,heatmap;
-          function initMap2(){
+          var map2;
+          function initMap2() {
             map2 = new google.maps.Map(document.getElementById('TheMap2'),{
               zoom: 11,
               center: new google.maps.LatLng( {{avg_lat}}, {{avg_lng}} ),
               mapTypeId: 'terrain'
             });
 
-            heatmap = new google.maps.visualization.HeatmapLayer({
-              data: getPoints2(),
-              map: map2
+            var locations = getPoints2();
+
+            // Add some markers to the map.
+            var markers = locations.map(function(location, i) {
+              return new google.maps.Marker({ position: location });
             });
 
-            changeGradient();
-            changeRadius();
+            // Add a marker clusterer to manage the markers.
+            var markerCluster = new MarkerClusterer(map2, markers,
+              {imagePath: '/web/images/google_map_cluster_map/m'});
           }
 
-          function getPoints2() {
-            return [
-              {% for hashEventValue in the_hashes %}
-              new google.maps.LatLng(
-                {{hashEventValue.LAT}}, {{hashEventValue.LNG}}
-              ),
-              {% endfor %}
-            ];
-          }
-
-          function toggleHeatmap() {
-            heatmap.setMap(heatmap.getMap() ? null : map2);
-          }
-
-          function changeGradient() {
-            var gradient = [
-              'rgba(0, 255, 255, 0)',
-              'rgba(0, 255, 255, 1)',
-              'rgba(0, 191, 255, 1)',
-              'rgba(0, 127, 255, 1)',
-              'rgba(0, 63, 255, 1)',
-              'rgba(0, 0, 255, 1)',
-              'rgba(0, 0, 223, 1)',
-              'rgba(0, 0, 191, 1)',
-              'rgba(0, 0, 159, 1)',
-              'rgba(0, 0, 127, 1)',
-              'rgba(63, 0, 91, 1)',
-              'rgba(127, 0, 63, 1)',
-              'rgba(191, 0, 31, 1)',
-              'rgba(255, 0, 0, 1)'
-            ]
-            heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
-          }
-
-          function changeRadius() {
-            heatmap.set('radius', heatmap.get('radius') ? null : 30);
-          }
-
-          function changeOpacity() {
-            heatmap.set('opacity', heatmap.get('opacity') ? null : 0.2);
-          }
+	  function getPoints2() {
+	    return [
+	      {% for hashEventValue in the_hashes %}
+	      new google.maps.LatLng(
+		{{hashEventValue.LAT}}, {{hashEventValue.LNG}}
+	      ),
+	      {% endfor %}
+	    ];
+	  }
         </script>
 
-
-        <!--  ------------------------------------------------------------------------->
-
-
-
           <script src="/web/javascript/markerclusterer/markerclusterer.js"></script>
-
           <script>
             function initMapX(){
               initMap1();
               initMap2();
-              //initMap3();
             }
           </script>
           <script async defer src="https://maps.googleapis.com/maps/api/js?key={{geocode_api_value}}&callback=initMapX&libraries=visualization">
           </script>
-
-
-
 
       </div>
 

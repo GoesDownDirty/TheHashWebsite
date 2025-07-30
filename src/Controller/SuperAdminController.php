@@ -12,14 +12,15 @@ use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class SuperAdminController extends BaseController {
 
-  public function __construct(ManagerRegistry $doctrine) {
-    parent::__construct($doctrine);
+  public function __construct(ManagerRegistry $doctrine, RequestStack $requestStack) {
+    parent::__construct($doctrine, $requestStack);
   }
 
   protected function render(string $template, array $args = [], Response $response = null) : Response {

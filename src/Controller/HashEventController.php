@@ -12,12 +12,13 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 
 class HashEventController extends BaseController {
 
-  public function __construct(ManagerRegistry $doctrine) {
-    parent::__construct($doctrine);
+  public function __construct(ManagerRegistry $doctrine, RequestStack $requestStack) {
+    parent::__construct($doctrine, $requestStack);
   }
 
   protected function getHareTypesForHashType(int $kennelKy, int $hashType) {

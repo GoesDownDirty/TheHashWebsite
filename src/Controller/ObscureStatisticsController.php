@@ -9,6 +9,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 use Wamania\Snowball\StemmerFactory;
@@ -18,8 +19,8 @@ class ObscureStatisticsController extends BaseController {
   private SqlQueries $sqlQueries;
   private Helper $helper;
 
-  public function __construct(ManagerRegistry $doctrine, SqlQueries $sqlQueries, Helper $helper) {
-    parent::__construct($doctrine);
+  public function __construct(ManagerRegistry $doctrine, RequestStack $requestStack, SqlQueries $sqlQueries, Helper $helper) {
+    parent::__construct($doctrine, $requestStack);
     $this->sqlQueries = $sqlQueries;
     $this->helper = $helper;
   }

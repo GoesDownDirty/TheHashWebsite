@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,8 +24,8 @@ class AdminController extends BaseController
 {
   private SqlQueries $sqlQueries;
 
-  public function __construct(ManagerRegistry $doctrine, SqlQueries $sqlQueries) {
-    parent::__construct($doctrine);
+  public function __construct(ManagerRegistry $doctrine, RequestStack $requestStack, SqlQueries $sqlQueries) {
+    parent::__construct($doctrine, $requestStack);
     $this->sqlQueries = $sqlQueries;
   }
 

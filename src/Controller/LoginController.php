@@ -5,14 +5,15 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class LoginController extends BaseController {
 
-  public function __construct(ManagerRegistry $doctrine) {
-    parent::__construct($doctrine);
+  public function __construct(ManagerRegistry $doctrine, RequestStack $requestStack) {
+    parent::__construct($doctrine, $requestStack);
   }
 
   #[Route('/logonscreen', name: 'app_login')]

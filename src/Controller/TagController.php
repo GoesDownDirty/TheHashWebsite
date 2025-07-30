@@ -12,14 +12,15 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 use Symfony\Component\Validator\ConstraintValidator;
 
 class TagController extends BaseController
 {
-  public function __construct(ManagerRegistry $doctrine) {
-    parent::__construct($doctrine);
+  public function __construct(ManagerRegistry $doctrine, RequestStack $requestStack) {
+    parent::__construct($doctrine, $requestStack);
   }
 
   #[Route('/admin/tags/manageeventtags',

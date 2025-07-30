@@ -359,6 +359,9 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
             {% if legacy_run_count == 0 %}
               &nbsp;<br/>
             {% endif %}
+	    {% if hasherValue.DECEASED == "0000000001" %}
+              &nbsp;<br/>
+            {% endif %}
             &nbsp;<br/>
             &nbsp;<br/>
             </span>

@@ -190,6 +190,9 @@ function getListData(hasher_id,url_value,div_value, column_one_header, column_tw
             {% for harings in hareCounts %}
             &nbsp;<br>
             {% endfor %}
+	    {% if hasherValue.DECEASED == "0000000001" %}
+              &nbsp;<br/>
+            {% endif %}
             </span>
           </dl>
         </div>

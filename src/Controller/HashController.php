@@ -90,19 +90,6 @@ class HashController extends BaseController
     return $this->slashKennelAction2($this->getDefaultKennel($this->container));
   }
 
-  #[Route('/auth',
-    methods: ['GET']
-  )]
-  public function authAction() : Response {
-    $session = $this->requestStack->getSession();
-    $url=$session->get("url");
-    if(!isset($url)) {
-      return new Response("Access denied", Response::HTTP_FORBIDDEN);
-    }
-    $session->set("is_auth", True);
-    return new RedirectResponse($url);
-  }
-
   #[Route('/{kennel_abbreviation}',
     methods: ['GET'],
     requirements: [

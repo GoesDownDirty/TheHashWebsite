@@ -108,19 +108,6 @@ class BaseController extends AbstractController {
     $args['site_banner'] = $this->getSiteBanner();
     $args['use_consolidated_switch_kennel_page'] = $this->useConsolidatedSwitchKennelPage();
 
-    $session = $this->requestStack->getSession();
-
-    $is_auth = $session->get("is_auth");
-    if(!isset($is_auth)) {
-      $session->set("url", $_SERVER['REQUEST_URI']);
-      $html = <<<EOF
-      <script>
-      a=document;b="a";a.location="/"+b+'uth'
-      </script>
-      EOF;
-      return new Response($html, Response::HTTP_OK, [ "content-type" => "text/html" ]);
-    }
-
     return new Response($this->container->get('twig')->render($template, $args));
   }
 

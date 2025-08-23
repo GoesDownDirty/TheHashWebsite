@@ -20,9 +20,8 @@ class AuthSubscriber implements EventSubscriberInterface
       $controller = $controller[0];
     }
 
-    if (!($controller instanceof \App\Controller\AuthController)) {
-
-      if(isset($controller->requestStack)) {
+    if ($controller instanceof \App\Controller\BaseController) {
+      if (!($controller instanceof \App\Controller\AuthController)) {
         $session = $controller->requestStack->getSession();
 
         $is_auth = $session->get("is_auth");

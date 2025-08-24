@@ -193,6 +193,10 @@ class HashController extends BaseController
 
     $tableColors = array( "#d1f2eb", "#d7bde2", "#eaeded", "#fad7a0", "#fdedec" );
 
+    $sql = $this->addHasherStatusToQueryImpl(
+      $this->getHashingCountsQuery(true, true), true, false, false);
+    $activeHashers = $this->fetchAll($sql, [$kennelKy, $kennelKy]);
+
     #Set the return value
     return array(
       'pageTitle' => $pageTitle,
@@ -203,6 +207,7 @@ class HashController extends BaseController
       'subTitle4' => 'Other Statistics',
       'kennel_abbreviation' => $kennel_abbreviation,
       'hare_types' => count($hareTypes) == 1 ? array() : $hareTypes,
+      'active_hashers' => $activeHashers,
       'top_alltime_hashers' =>$topHashersList,
       'top_hares' => $top_hares,
       'top_overall_hares' => $topOverallHareList,
@@ -2718,6 +2723,14 @@ class HashController extends BaseController
   }
 
   function addHasherStatusToQuery(string $query) {
+    return $this->addHasherStatusToQueryImpl($query, 
+      !(array_key_exists("active", $_GET) && $_GET["active"] == "false"),
+      !(array_key_exists("inactive", $_GET) && $_GET["inactive"] == "false"),
+      !(array_key_exists("deceased", $_GET) && $_GET["deceased"] == "false"));
+  }
+
+  function addHasherStatusToQueryImpl(string $query, bool $active,
+      bool $inactive, bool $deceased) {
     return "
       SELECT *
         FROM (SELECT iq.*,
@@ -2730,9 +2743,9 @@ class HashController extends BaseController
                 JOIN HASHERS
                   ON HASHERS.HASHER_KY = iq.THE_KEY) iq2
        WHERE 1=1 ".
-             (array_key_exists("active", $_GET) && $_GET["active"] == "false" ? " AND STATUS != ' ' " : "").
-             (array_key_exists("inactive", $_GET) && $_GET["inactive"] == "false" ? " AND STATUS != ' (inactive)' " : "").
-             (array_key_exists("deceased", $_GET) && $_GET["deceased"] == "false" ? " AND STATUS != ' (RIP)' " : "")."
+             ($active ? "" : " AND STATUS != ' ' ").
+             ($inactive ? "" : " AND STATUS != ' (inactive)' ").
+             ($deceased ? "" : " AND STATUS != ' (RIP)' ")."
        ORDER BY VALUE DESC";
   }
 

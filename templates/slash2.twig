@@ -383,7 +383,7 @@ h4 {
         var options = {
           list: [
             {% for item in active_hashers %}
-              ["{% autoescape 'js' %}{{item.NAME}}{% endautoescape %}", "{{min(80,item.VALUE * 5)}}"],
+              ["{% autoescape 'js' %}{{item.NAME}}{% endautoescape %}", {{min(40, 200 * (item.VALUE / active_hashers[0].VALUE))}}],
             {% endfor %}
           ],
           drawMask: false,

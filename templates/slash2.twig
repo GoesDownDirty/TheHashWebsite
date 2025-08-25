@@ -22,374 +22,374 @@ h4 {
 
 <script type = "text/javascript" src = "/node_modules/wordcloud/src/wordcloud2.js"></script>
 
-      <div class="row marketing">
-        <div class="col-lg-6">
-          <div class="list-group">
-            <a href="/{{kennel_abbreviation}}/basic/stats"  class="list-group-item active"><h4 class="list-group-item-heading">Quick Links</h4></a>
-	    <a class="list-group-item" href='/{{kennel_abbreviation}}/hashingCounts'><h4 class="list-group-item-heading">The Hashers</h4></a>
-            <a class="list-group-item" href='/{{kennel_abbreviation}}/listhashes2'><h4 class="list-group-item-heading">The Events</h4>
-            <a class="list-group-item" href='/{{kennel_abbreviation}}/haringCounts'><h4 class="list-group-item-heading">The Hares</h4></a>
-	    {% for hare_type in hare_types %}
-		<a class="list-group-item" href='/{{kennel_abbreviation}}/haringCounts/{{ hare_type.HARE_TYPE}}'><h4 class="list-group-item-heading">The {{ hare_type.HARE_TYPE_NAME }} Hares</h4></a>
-            {% endfor %}
-            <a class="list-group-item" href='/{{kennel_abbreviation}}/cautionary/stats'><h4 class="list-group-item-heading">Cautionary Stats</h4></a>
-            <a class="list-group-item" href='/{{kennel_abbreviation}}/aboutContact'><h4 class="list-group-item-heading">About / Contact</h4></a>
-          </div>
+<div class="row marketing">
+  <div class="col-lg-6">
+    <div class="list-group">
+      <a href="/{{kennel_abbreviation}}/basic/stats"  class="list-group-item active"><h4 class="list-group-item-heading">Quick Links</h4></a>
+      <a class="list-group-item" href='/{{kennel_abbreviation}}/hashingCounts'><h4 class="list-group-item-heading">The Hashers</h4></a>
+      <a class="list-group-item" href='/{{kennel_abbreviation}}/listhashes2'><h4 class="list-group-item-heading">The Events</h4>
+      <a class="list-group-item" href='/{{kennel_abbreviation}}/haringCounts'><h4 class="list-group-item-heading">The Hares</h4></a>
+      {% for hare_type in hare_types %}
+          <a class="list-group-item" href='/{{kennel_abbreviation}}/haringCounts/{{ hare_type.HARE_TYPE}}'><h4 class="list-group-item-heading">The {{ hare_type.HARE_TYPE_NAME }} Hares</h4></a>
+      {% endfor %}
+      <a class="list-group-item" href='/{{kennel_abbreviation}}/cautionary/stats'><h4 class="list-group-item-heading">Cautionary Stats</h4></a>
+      <a class="list-group-item" href='/{{kennel_abbreviation}}/aboutContact'><h4 class="list-group-item-heading">About / Contact</h4></a>
+    </div>
 
-          <div id = "active_hashers_div" class="list-group">
-            <a href="#" class="list-group-item active"><h4 class="list-group-item-heading">Active Hashers</h4></a>
-            <canvas id="active_hashers" class="wordcloud list-group-item" style="width: 100%; display: block; margin-left: auto; margin-right: auto;"></canvas>
-          </div>
-        </div>
+    <div id = "active_hashers_div" class="list-group">
+      <a href="#" class="list-group-item active"><h4 class="list-group-item-heading">Active Hashers</h4></a>
+      <canvas id="active_hashers" class="wordcloud list-group-item" style="width: 100%; display: block; margin-left: auto; margin-right: auto;"></canvas>
+    </div>
+  </div>
 
-        <div class="col-lg-6">
-            <div class="list-group">
-              <a href="#" class="list-group-item active">
-                <h4 class="list-group-item-heading">Categories</h4>
-              </a>
+  <div class="col-lg-6">
+      <div class="list-group">
+        <a href="#" class="list-group-item active">
+          <h4 class="list-group-item-heading">Categories</h4>
+        </a>
 
-              <a href="/{{kennel_abbreviation}}/people/stats" class="list-group-item ">
-                <h4 class="list-group-item-heading">People</h4>
-                <p class="list-group-item-text">Hounds, hares, counts, and percentages. And stuff.</p>
-              </a>
+        <a href="/{{kennel_abbreviation}}/people/stats" class="list-group-item">
+          <h4 class="list-group-item-heading">People</h4>
+          <p class="list-group-item-text">Hounds, hares, counts, and percentages. And stuff.</p>
+        </a>
 
-              <a href="/{{kennel_abbreviation}}/analversaries/stats" class="list-group-item ">
-                <h4 class="list-group-item-heading">Analversaries</h4>
-                <p class="list-group-item-text">Upcoming analversaries, quickest to milestones, slowest to milestones, chronological order of milestones. And things.</p>
-              </a>
+        <a href="/{{kennel_abbreviation}}/analversaries/stats" class="list-group-item">
+          <h4 class="list-group-item-heading">Analversaries</h4>
+          <p class="list-group-item-text">Upcoming analversaries, quickest to milestones, slowest to milestones, chronological order of milestones. And things.</p>
+        </a>
 
-              <a href="/{{kennel_abbreviation}}/year_by_year/stats" class="list-group-item ">
-                <h4 class="list-group-item-heading">Yearly Breakdowns</h4>
-                <p class="list-group-item-text">Most active hares / hounds by year, year by year summaries. And junk.</p>
-              </a>
+        <a href="/{{kennel_abbreviation}}/year_by_year/stats" class="list-group-item">
+          <h4 class="list-group-item-heading">Yearly Breakdowns</h4>
+          <p class="list-group-item-text">Most active hares / hounds by year, year by year summaries. And junk.</p>
+        </a>
 
-              <a href="/{{kennel_abbreviation}}/kennel/records" class="list-group-item ">
-                <h4 class="list-group-item-heading">Kennel Records</h4>
-                <p class="list-group-item-text">Most and least active hares, longest streaks, records that deserve recognition and mockery. And what not.</p>
-              </a>
+        <a href="/{{kennel_abbreviation}}/kennel/records" class="list-group-item">
+          <h4 class="list-group-item-heading">Kennel Records</h4>
+          <p class="list-group-item-text">Most and least active hares, longest streaks, records that deserve recognition and mockery. And what not.</p>
+        </a>
 
-              <a href="/{{kennel_abbreviation}}/kennel/general_info" class="list-group-item ">
-                <h4 class="list-group-item-heading">Kennel General Data</h4>
-                <p class="list-group-item-text">Geographical breakdowns, kennel trends, best and worst attended events, and hasher name substring analysis. And other stuff.</p>
-              </a>
-            </div>
-
-	    {% if event_tag_summaries is not empty %}
-            <div class="panel panel-primary">
-              <div class="panel-heading">
-                Event Tags
-              </div>
-              <div class="panel-body">
-                {% for event_tag_summary in event_tag_summaries %}
-                  <a href = "/{{kennel_abbreviation}}/chartsGraphs/byeventtag/{{event_tag_summary.HASHES_TAGS_KY}}">
-                    {{event_tag_summary.TAG_TEXT}}
-                  </a>
-                  <span class="badge"> {{event_tag_summary.THE_COUNT}}</span>
-                {% endfor %}
-              </div>
-            </div>
-            {% endif %}
-        </div>
+        <a href="/{{kennel_abbreviation}}/kennel/general_info" class="list-group-item">
+          <h4 class="list-group-item-heading">Kennel General Data</h4>
+          <p class="list-group-item-text">Geographical breakdowns, kennel trends, best and worst attended events, and hasher name substring analysis. And other stuff.</p>
+        </a>
       </div>
 
-      <div class="row marketing">
-        {% if top_alltime_hashers|length == 10 %}
-          <div class="col-lg-3"><div style="padding:2">
-            <h4><a href="/{{kennel_abbreviation}}/hashingCounts">Top 10 Hounds</a></h4>
-              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
-              {% set colorNum = colorNum + 1 %}
-              <div class="row" >
-                <div class="col-xs-3 col-md-3 h">Count</div>
-                <div class="col-xs-9 col-md-9 h">Hasher</div>
-              </div>
-
-              {% for item in top_alltime_hashers %}
-                <div class="row" style="background-color:{{bgcolor}};">
-                  <div class="col-xs-3 col-md-3 s">{{item.VALUE}}</div>
-                  <div class="col-xs-9 col-md-9 s">
-                    <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}">{{item.NAME}}</a>
-                  </div>
-                </div>
-              {% endfor %}
-          </div></div>
-        {% endif %}
-
-        {% for top_hare_data in top_hares %}
-          {% set hares = top_hare_data.data %}
-	  {% if hares|length == 10 %}
-	    <div class="col-lg-3" ><div style="padding:2">
-	      <h4><a href="/{{kennel_abbreviation}}/haringCounts/{{ top_hare_data.hare_type }}">Top 10 {{ top_hare_data.label }} Hares</a></h4>
-                {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
-                {% set colorNum = colorNum + 1 %}
-		<div class="row">
-		  <div class="col-xs-3 col-md-3 h">Count</div>
-		  <div class="col-xs-9 col-md-9 h">Hasher</div>
-		</div>
-
-		{% for item in hares %}
-		  <div class="row" style="background-color:{{bgcolor}};">
-		    <div class="col-xs-3 col-md-3 s">{{item.VALUE}}</div>
-		    <div class="col-xs-9 col-md-9 s">
-		      <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}">{{item.NAME}}</a>
-		    </div>
-		  </div>
-		{% endfor %}
-	    </div></div>
-	  {% endif %}
-        {% endfor %}
-
-        {% if top_overall_hares|length == 10 %}
-          <div class="col-lg-3" ><div style="padding:2">
-            <h4><a href="/{{kennel_abbreviation}}/haringCounts">{{overall_hares_title}}</a></h4>
-              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
-              {% set colorNum = colorNum + 1 %}
-              <div class="row">
-                <div class="col-xs-3 col-md-3 h">Count</div>
-                <div class="col-xs-9 col-md-9 h">Hare</div>
-              </div>
-
-              {% for item in top_overall_hares %}
-                <div class="row" style="background-color:{{bgcolor}};">
-                  <div class="col-xs-3 col-md-3 s">{{item.VALUE}}</div>
-                  <div class="col-xs-9 col-md-9 s">
-                    <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}">{{item.NAME}}</a>
-                  </div>
-                </div>
-              {% endfor %}
-          </div></div>
-        {% endif %}
-
-        {% for quickest_hare_data in quickest_hares %}
-          {% set hares = quickest_hare_data.data %}
-          {% if hares|length == 10 %}
-            <div class="col-lg-3" ><div style="padding:2">
-              <h4>Fastest To {{the_quickest_to_x_harings_number}} {{ quickest_hare_data.label }} Harings</a></h4>
-                {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
-                {% set colorNum = colorNum + 1 %}
-                <div class="row">
-                  <div class="col-xs-3 col-md-3 h">Days</div>
-                  <div class="col-xs-9 col-md-9 h">Hasher</div>
-                </div>
-
-                {% for item in hares %}
-                  <div class="row" style="background-color:{{bgcolor}};">
-                    <div class="col-xs-3 col-md-3 s">{{item.DAYS_TO_REACH_ANALVERSARY}}</div>
-                    <div class="col-xs-9 col-md-9 s">
-                      <a href="/{{kennel_abbreviation}}/hashers/{{item.HASHER_KY}}">{{item.HASHER_NAME}}</a>
-                    </div>
-                  </div>
-                {% endfor %}
-            </div></div>
-          {% endif %}
-        {% endfor %}
-
-        {% if the_slowest_to_x_results|length == 10 %}
-          <div class="col-lg-3" ><div style="padding:2">
-            <h4><a href="/{{kennel_abbreviation}}/{{the_quickest_to_x_number}}/slowest/to/reach/bydays">Slowest To {{the_slowest_to_x_number}} Hashes</a></h4>
-              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
-              {% set colorNum = colorNum + 1 %}
-              <div class="row">
-                <div class="col-xs-3 col-md-3 h">Days</div>
-                <div class="col-xs-9 col-md-9 h">Hasher</div>
-              </div>
-
-              {% for item in the_slowest_to_x_results %}
-                <div class="row" style="background-color:{{bgcolor}};">
-                  <div class="col-xs-3 col-md-3 s">{{item.DAYS_TO_REACH_ANALVERSARY}}</div>
-                  <div class="col-xs-9 col-md-9 s">
-                    <a href="/{{kennel_abbreviation}}/hashers/{{item.HASHER_KY}}">{{item.HASHER_NAME}}</a>
-                  </div>
-                </div>
-              {% endfor %}
-          </div></div>
-        {% endif %}
-
-        {% if the_quickest_to_x_results|length == 10 %}
-          <div class="col-lg-3" ><div style="padding:2">
-            <h4><a href="/{{kennel_abbreviation}}/{{the_quickest_to_x_number}}/quickest/to/reach/bydays">Quickest To {{the_quickest_to_x_number}} Hashes</a></h4>
-              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
-              {% set colorNum = colorNum + 1 %}
-              <div class="row">
-                <div class="col-xs-3 col-md-3 h">Days</div>
-                <div class="col-xs-9 col-md-9 h">Hasher</div>
-              </div>
-
-              {% for item in the_quickest_to_x_results %}
-                <div class="row" style="background-color:{{bgcolor}};">
-                  <div class="col-xs-3 col-md-3 s">{{item.DAYS_TO_REACH_ANALVERSARY}}</div>
-                  <div class="col-xs-9 col-md-9 s">
-                    <a href="/{{kennel_abbreviation}}/hashers/{{item.HASHER_KY}}">{{item.HASHER_NAME}}</a>
-                  </div>
-                </div>
-              {% endfor %}
-          </div></div>
-        {% endif %}
-
-        {% if the_quickest_to_y_results|length == 10 %}
-          <div class="col-lg-3" ><div style="padding:2">
-            <h4><a href="/{{kennel_abbreviation}}/{{the_quickest_to_y_number}}/quickest/to/reach/bydays">Quickest To {{the_quickest_to_y_number}} Hashes</a></h4>
-              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
-              {% set colorNum = colorNum + 1 %}
-              <div class="row">
-                <div class="col-xs-3 col-md-3 h">Days</div>
-                <div class="col-xs-9 col-md-9 h">Hasher</div>
-              </div>
-
-              {% for item in the_quickest_to_y_results %}
-                <div class="row" style="background-color:{{bgcolor}};">
-                  <div class="col-xs-3 col-md-3 s">{{item.DAYS_TO_REACH_ANALVERSARY}}</div>
-                  <div class="col-xs-9 col-md-9 s">
-                    <a href="/{{kennel_abbreviation}}/hashers/{{item.HASHER_KY}}">{{item.HASHER_NAME}}</a>
-                  </div>
-                </div>
-              {% endfor %}
-          </div></div>
-        {% endif %}
-
-        {% if top_hashers_this_year|length == 10 %}
-          <div class="col-lg-3"><div style="padding:2">
-            <h4><a href="/{{kennel_abbreviation}}/hashingCounts">Top 10 Hounds This Year</a></h4>
-              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
-              {% set colorNum = colorNum + 1 %}
-              <div class="row" >
-                <div class="col-xs-3 col-md-3 h">Count</div>
-                <div class="col-xs-9 col-md-9 h">Hasher</div>
-              </div>
-
-              {% for item in top_hashers_this_year %}
-                <div class="row" style="background-color:{{bgcolor}};">
-                  <div class="col-xs-3 col-md-3 s">{{item.VALUE}}</div>
-                  <div class="col-xs-9 col-md-9 s">
-                    <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}">{{item.NAME}}</a>
-                  </div>
-                </div>
-              {% endfor %}
-          </div></div>
-        {% endif %}
-
-        {% if top_hashers_last_year|length == 10 %}
-          <div class="col-lg-3"><div style="padding:2">
-            <h4><a href="/{{kennel_abbreviation}}/hashingCounts">Top 10 Hounds Last Year</a></h4>
-              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
-              {% set colorNum = colorNum + 1 %}
-              <div class="row" >
-                <div class="col-xs-3 col-md-3 h">Count</div>
-                <div class="col-xs-9 col-md-9 h">Hasher</div>
-              </div>
-
-              {% for item in top_hashers_last_year %}
-                <div class="row" style="background-color:{{bgcolor}};">
-                  <div class="col-xs-3 col-md-3 s">{{item.VALUE}}</div>
-                  <div class="col-xs-9 col-md-9 s">
-                    <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}">{{item.NAME}}</a>
-                  </div>
-                </div>
-              {% endfor %}
-          </div></div>
-        {% endif %}
-
-        {% if top_hares_this_year|length == 10 %}
-          <div class="col-lg-3"><div style="padding:2">
-            <h4><a href="/{{kennel_abbreviation}}/haringCounts">Top 10 Hares This Year</a></h4>
-              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
-              {% set colorNum = colorNum + 1 %}
-              <div class="row" >
-                <div class="col-xs-3 col-md-3 h">Count</div>
-                <div class="col-xs-9 col-md-9 h">Hasher</div>
-              </div>
-
-              {% for item in top_hares_this_year %}
-                <div class="row" style="background-color:{{bgcolor}};">
-                  <div class="col-xs-3 col-md-3 s">{{item.VALUE}}</div>
-                  <div class="col-xs-9 col-md-9 s">
-                    <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}">{{item.NAME}}</a>
-                  </div>
-                </div>
-              {% endfor %}
-          </div></div>
-        {% endif %}
-
-        {% if top_hares_last_year|length == 10 %}
-          <div class="col-lg-3"><div style="padding:2">
-            <h4><a href="/{{kennel_abbreviation}}/haringCounts">Top 10 Hares Last Year</a></h4>
-              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
-              {% set colorNum = colorNum + 1 %}
-              <div class="row" >
-                <div class="col-xs-3 col-md-3 h">Count</div>
-                <div class="col-xs-9 col-md-9 h">Hasher</div>
-              </div>
-
-              {% for item in top_hares_last_year %}
-                <div class="row" style="background-color:{{bgcolor}};">
-                  <div class="col-xs-3 col-md-3 s">{{item.VALUE}}</div>
-                  <div class="col-xs-9 col-md-9 s">
-                    <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}">{{item.NAME}}</a>
-                  </div>
-                </div>
-              {% endfor %}
-          </div></div>
-        {% endif %}
-
-        {% if top_streakers|length == 10 %}
-          <div class="col-lg-3"><div style="padding:2">
-            <h4><a href="/{{kennel_abbreviation}}/longestStreaks">Top 10 Streakers</a></h4>
-              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
-              {% set colorNum = colorNum + 1 %}
-              <div class="row" >
-                <div class="col-xs-3 col-md-3 h">Count</div>
-                <div class="col-xs-9 col-md-9 h">Hasher</div>
-              </div>
-
-              {% for item in top_streakers %}
-                <div class="row" style="background-color:{{bgcolor}};">
-                  <div class="col-xs-3 col-md-3 s">{{item.VALUE}}</div>
-                  <div class="col-xs-9 col-md-9 s">
-                    <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}">{{item.NAME}}</a>
-                  </div>
-                </div>
-              {% endfor %}
-          </div></div>
-        {% endif %}
-
-        {% if current_streakers|length == 10 %}
-          <div class="col-lg-3"><div style="padding:2">
-            <h4><a href="/{{kennel_abbreviation}}/listStreakers/byhash/{{lastEvent}}">Current Streakers</a></h4>
-              {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
-              {% set colorNum = colorNum + 1 %}
-              <div class="row" >
-                <div class="col-xs-3 col-md-3 h">Count</div>
-                <div class="col-xs-9 col-md-9 h">Hasher</div>
-              </div>
-
-              {% for item in current_streakers %}
-                <div class="row" style="background-color:{{bgcolor}};">
-                  <div class="col-xs-3 col-md-3 s">{{item.THE_STREAK_IN_EVENTS}}</div>
-                  <div class="col-xs-9 col-md-9 s">
-                    <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_HASHER_KY}}">{{item.THE_HASHER_NAME}}</a>
-                  </div>
-                </div>
-              {% endfor %}
-          </div></div>
-        {% endif %}
-
+      {% if event_tag_summaries is not empty %}
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          Event Tags
+        </div>
+        <div class="panel-body">
+          {% for event_tag_summary in event_tag_summaries %}
+            <a href = "/{{kennel_abbreviation}}/chartsGraphs/byeventtag/{{event_tag_summary.HASHES_TAGS_KY}}">
+              {{event_tag_summary.TAG_TEXT}}
+            </a>
+            <span class="badge"> {{event_tag_summary.THE_COUNT}}</span>
+          {% endfor %}
+        </div>
       </div>
+      {% endif %}
+  </div>
+</div>
 
-      <script type = "text/javascript" language = "javascript">
-        canvas = document.getElementById("active_hashers");
-        parent = document.getElementById("active_hashers_div");
-        canvas.width = parent.offsetWidth;
-        canvas.height = parent.offsetHeight;
+<div class="row marketing">
+  {% if top_alltime_hashers|length == 10 %}
+    <div class="col-lg-3"><div style="padding:2">
+      <h4><a href="/{{kennel_abbreviation}}/hashingCounts">Top 10 Hounds</a></h4>
+        {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+        {% set colorNum = colorNum + 1 %}
+        <div class="row" >
+          <div class="col-xs-3 col-md-3 h">Count</div>
+          <div class="col-xs-9 col-md-9 h">Hasher</div>
+        </div>
 
-        var options = {
-          list: [
-            {% for item in active_hashers %}
-              ["{% autoescape 'js' %}{{item.NAME}}{% endautoescape %}", {{min(40, 200 * (item.VALUE / active_hashers[0].VALUE))}}],
-            {% endfor %}
-          ],
-          drawMask: false,
-          shape: "circle",
-          gridSize: 5
-        };
-        WordCloud(canvas, options );
-      </script>
+        {% for item in top_alltime_hashers %}
+          <div class="row" style="background-color:{{bgcolor}};">
+            <div class="col-xs-3 col-md-3 s">{{item.VALUE}}</div>
+            <div class="col-xs-9 col-md-9 s">
+              <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}">{{item.NAME}}</a>
+            </div>
+          </div>
+        {% endfor %}
+    </div></div>
+  {% endif %}
+
+  {% for top_hare_data in top_hares %}
+    {% set hares = top_hare_data.data %}
+    {% if hares|length == 10 %}
+      <div class="col-lg-3" ><div style="padding:2">
+        <h4><a href="/{{kennel_abbreviation}}/haringCounts/{{ top_hare_data.hare_type }}">Top 10 {{ top_hare_data.label }} Hares</a></h4>
+          {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+          {% set colorNum = colorNum + 1 %}
+          <div class="row">
+            <div class="col-xs-3 col-md-3 h">Count</div>
+            <div class="col-xs-9 col-md-9 h">Hasher</div>
+          </div>
+
+          {% for item in hares %}
+            <div class="row" style="background-color:{{bgcolor}};">
+              <div class="col-xs-3 col-md-3 s">{{item.VALUE}}</div>
+              <div class="col-xs-9 col-md-9 s">
+                <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}">{{item.NAME}}</a>
+              </div>
+            </div>
+          {% endfor %}
+      </div></div>
+    {% endif %}
+  {% endfor %}
+
+  {% if top_overall_hares|length == 10 %}
+    <div class="col-lg-3" ><div style="padding:2">
+      <h4><a href="/{{kennel_abbreviation}}/haringCounts">{{overall_hares_title}}</a></h4>
+        {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+        {% set colorNum = colorNum + 1 %}
+        <div class="row">
+          <div class="col-xs-3 col-md-3 h">Count</div>
+          <div class="col-xs-9 col-md-9 h">Hare</div>
+        </div>
+
+        {% for item in top_overall_hares %}
+          <div class="row" style="background-color:{{bgcolor}};">
+            <div class="col-xs-3 col-md-3 s">{{item.VALUE}}</div>
+            <div class="col-xs-9 col-md-9 s">
+              <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}">{{item.NAME}}</a>
+            </div>
+          </div>
+        {% endfor %}
+    </div></div>
+  {% endif %}
+
+  {% for quickest_hare_data in quickest_hares %}
+    {% set hares = quickest_hare_data.data %}
+    {% if hares|length == 10 %}
+      <div class="col-lg-3" ><div style="padding:2">
+        <h4>Fastest To {{the_quickest_to_x_harings_number}} {{ quickest_hare_data.label }} Harings</a></h4>
+          {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+          {% set colorNum = colorNum + 1 %}
+          <div class="row">
+            <div class="col-xs-3 col-md-3 h">Days</div>
+            <div class="col-xs-9 col-md-9 h">Hasher</div>
+          </div>
+
+          {% for item in hares %}
+            <div class="row" style="background-color:{{bgcolor}};">
+              <div class="col-xs-3 col-md-3 s">{{item.DAYS_TO_REACH_ANALVERSARY}}</div>
+              <div class="col-xs-9 col-md-9 s">
+                <a href="/{{kennel_abbreviation}}/hashers/{{item.HASHER_KY}}">{{item.HASHER_NAME}}</a>
+              </div>
+            </div>
+          {% endfor %}
+      </div></div>
+    {% endif %}
+  {% endfor %}
+
+  {% if the_slowest_to_x_results|length == 10 %}
+    <div class="col-lg-3" ><div style="padding:2">
+      <h4><a href="/{{kennel_abbreviation}}/{{the_quickest_to_x_number}}/slowest/to/reach/bydays">Slowest To {{the_slowest_to_x_number}} Hashes</a></h4>
+        {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+        {% set colorNum = colorNum + 1 %}
+        <div class="row">
+          <div class="col-xs-3 col-md-3 h">Days</div>
+          <div class="col-xs-9 col-md-9 h">Hasher</div>
+        </div>
+
+        {% for item in the_slowest_to_x_results %}
+          <div class="row" style="background-color:{{bgcolor}};">
+            <div class="col-xs-3 col-md-3 s">{{item.DAYS_TO_REACH_ANALVERSARY}}</div>
+            <div class="col-xs-9 col-md-9 s">
+              <a href="/{{kennel_abbreviation}}/hashers/{{item.HASHER_KY}}">{{item.HASHER_NAME}}</a>
+            </div>
+          </div>
+        {% endfor %}
+    </div></div>
+  {% endif %}
+
+  {% if the_quickest_to_x_results|length == 10 %}
+    <div class="col-lg-3" ><div style="padding:2">
+      <h4><a href="/{{kennel_abbreviation}}/{{the_quickest_to_x_number}}/quickest/to/reach/bydays">Quickest To {{the_quickest_to_x_number}} Hashes</a></h4>
+        {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+        {% set colorNum = colorNum + 1 %}
+        <div class="row">
+          <div class="col-xs-3 col-md-3 h">Days</div>
+          <div class="col-xs-9 col-md-9 h">Hasher</div>
+        </div>
+
+        {% for item in the_quickest_to_x_results %}
+          <div class="row" style="background-color:{{bgcolor}};">
+            <div class="col-xs-3 col-md-3 s">{{item.DAYS_TO_REACH_ANALVERSARY}}</div>
+            <div class="col-xs-9 col-md-9 s">
+              <a href="/{{kennel_abbreviation}}/hashers/{{item.HASHER_KY}}">{{item.HASHER_NAME}}</a>
+            </div>
+          </div>
+        {% endfor %}
+    </div></div>
+  {% endif %}
+
+  {% if the_quickest_to_y_results|length == 10 %}
+    <div class="col-lg-3" ><div style="padding:2">
+      <h4><a href="/{{kennel_abbreviation}}/{{the_quickest_to_y_number}}/quickest/to/reach/bydays">Quickest To {{the_quickest_to_y_number}} Hashes</a></h4>
+        {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+        {% set colorNum = colorNum + 1 %}
+        <div class="row">
+          <div class="col-xs-3 col-md-3 h">Days</div>
+          <div class="col-xs-9 col-md-9 h">Hasher</div>
+        </div>
+
+        {% for item in the_quickest_to_y_results %}
+          <div class="row" style="background-color:{{bgcolor}};">
+            <div class="col-xs-3 col-md-3 s">{{item.DAYS_TO_REACH_ANALVERSARY}}</div>
+            <div class="col-xs-9 col-md-9 s">
+              <a href="/{{kennel_abbreviation}}/hashers/{{item.HASHER_KY}}">{{item.HASHER_NAME}}</a>
+            </div>
+          </div>
+        {% endfor %}
+    </div></div>
+  {% endif %}
+
+  {% if top_hashers_this_year|length == 10 %}
+    <div class="col-lg-3"><div style="padding:2">
+      <h4><a href="/{{kennel_abbreviation}}/hashingCounts">Top 10 Hounds This Year</a></h4>
+        {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+        {% set colorNum = colorNum + 1 %}
+        <div class="row" >
+          <div class="col-xs-3 col-md-3 h">Count</div>
+          <div class="col-xs-9 col-md-9 h">Hasher</div>
+        </div>
+
+        {% for item in top_hashers_this_year %}
+          <div class="row" style="background-color:{{bgcolor}};">
+            <div class="col-xs-3 col-md-3 s">{{item.VALUE}}</div>
+            <div class="col-xs-9 col-md-9 s">
+              <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}">{{item.NAME}}</a>
+            </div>
+          </div>
+        {% endfor %}
+    </div></div>
+  {% endif %}
+
+  {% if top_hashers_last_year|length == 10 %}
+    <div class="col-lg-3"><div style="padding:2">
+      <h4><a href="/{{kennel_abbreviation}}/hashingCounts">Top 10 Hounds Last Year</a></h4>
+        {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+        {% set colorNum = colorNum + 1 %}
+        <div class="row" >
+          <div class="col-xs-3 col-md-3 h">Count</div>
+          <div class="col-xs-9 col-md-9 h">Hasher</div>
+        </div>
+
+        {% for item in top_hashers_last_year %}
+          <div class="row" style="background-color:{{bgcolor}};">
+            <div class="col-xs-3 col-md-3 s">{{item.VALUE}}</div>
+            <div class="col-xs-9 col-md-9 s">
+              <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}">{{item.NAME}}</a>
+            </div>
+          </div>
+        {% endfor %}
+    </div></div>
+  {% endif %}
+
+  {% if top_hares_this_year|length == 10 %}
+    <div class="col-lg-3"><div style="padding:2">
+      <h4><a href="/{{kennel_abbreviation}}/haringCounts">Top 10 Hares This Year</a></h4>
+        {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+        {% set colorNum = colorNum + 1 %}
+        <div class="row" >
+          <div class="col-xs-3 col-md-3 h">Count</div>
+          <div class="col-xs-9 col-md-9 h">Hasher</div>
+        </div>
+
+        {% for item in top_hares_this_year %}
+          <div class="row" style="background-color:{{bgcolor}};">
+            <div class="col-xs-3 col-md-3 s">{{item.VALUE}}</div>
+            <div class="col-xs-9 col-md-9 s">
+              <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}">{{item.NAME}}</a>
+            </div>
+          </div>
+        {% endfor %}
+    </div></div>
+  {% endif %}
+
+  {% if top_hares_last_year|length == 10 %}
+    <div class="col-lg-3"><div style="padding:2">
+      <h4><a href="/{{kennel_abbreviation}}/haringCounts">Top 10 Hares Last Year</a></h4>
+        {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+        {% set colorNum = colorNum + 1 %}
+        <div class="row" >
+          <div class="col-xs-3 col-md-3 h">Count</div>
+          <div class="col-xs-9 col-md-9 h">Hasher</div>
+        </div>
+
+        {% for item in top_hares_last_year %}
+          <div class="row" style="background-color:{{bgcolor}};">
+            <div class="col-xs-3 col-md-3 s">{{item.VALUE}}</div>
+            <div class="col-xs-9 col-md-9 s">
+              <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}">{{item.NAME}}</a>
+            </div>
+          </div>
+        {% endfor %}
+    </div></div>
+  {% endif %}
+
+  {% if top_streakers|length == 10 %}
+    <div class="col-lg-3"><div style="padding:2">
+      <h4><a href="/{{kennel_abbreviation}}/longestStreaks">Top 10 Streakers</a></h4>
+        {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+        {% set colorNum = colorNum + 1 %}
+        <div class="row" >
+          <div class="col-xs-3 col-md-3 h">Count</div>
+          <div class="col-xs-9 col-md-9 h">Hasher</div>
+        </div>
+
+        {% for item in top_streakers %}
+          <div class="row" style="background-color:{{bgcolor}};">
+            <div class="col-xs-3 col-md-3 s">{{item.VALUE}}</div>
+            <div class="col-xs-9 col-md-9 s">
+              <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_KEY}}">{{item.NAME}}</a>
+            </div>
+          </div>
+        {% endfor %}
+    </div></div>
+  {% endif %}
+
+  {% if current_streakers|length == 10 %}
+    <div class="col-lg-3"><div style="padding:2">
+      <h4><a href="/{{kennel_abbreviation}}/listStreakers/byhash/{{lastEvent}}">Current Streakers</a></h4>
+        {% set bgcolor = table_colors[colorNum % table_colors|length ] %}
+        {% set colorNum = colorNum + 1 %}
+        <div class="row" >
+          <div class="col-xs-3 col-md-3 h">Count</div>
+          <div class="col-xs-9 col-md-9 h">Hasher</div>
+        </div>
+
+        {% for item in current_streakers %}
+          <div class="row" style="background-color:{{bgcolor}};">
+            <div class="col-xs-3 col-md-3 s">{{item.THE_STREAK_IN_EVENTS}}</div>
+            <div class="col-xs-9 col-md-9 s">
+              <a href="/{{kennel_abbreviation}}/hashers/{{item.THE_HASHER_KY}}">{{item.THE_HASHER_NAME}}</a>
+            </div>
+          </div>
+        {% endfor %}
+    </div></div>
+  {% endif %}
+
+</div>
+
+<script type = "text/javascript" language = "javascript">
+  canvas = document.getElementById("active_hashers");
+  parent = document.getElementById("active_hashers_div");
+  canvas.width = parent.offsetWidth;
+  canvas.height = parent.offsetHeight;
+
+  var options = {
+    list: [
+      {% for item in active_hashers %}
+        ["{% autoescape 'js' %}{{item.NAME}}{% endautoescape %}", {{min(40, 200 * (item.VALUE / active_hashers[0].VALUE))}}],
+      {% endfor %}
+    ],
+    drawMask: false,
+    shape: "circle",
+    gridSize: 5
+  };
+  WordCloud(canvas, options );
+</script>
 {% endblock %}

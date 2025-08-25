@@ -36,10 +36,12 @@ h4 {
       <a class="list-group-item" href='/{{kennel_abbreviation}}/aboutContact'><h4 class="list-group-item-heading">About / Contact</h4></a>
     </div>
 
+    {% if active_hashers is not empty %}
     <div id = "active_hashers_div" class="list-group">
       <a href="#" class="list-group-item active"><h4 class="list-group-item-heading">Active Hashers</h4></a>
       <canvas id="active_hashers" class="wordcloud list-group-item" style="width: 100%; display: block; margin-left: auto; margin-right: auto;"></canvas>
     </div>
+    {% endif %}
   </div>
 
   <div class="col-lg-6">
@@ -374,6 +376,7 @@ h4 {
 
 </div>
 
+{% if active_hashers is not empty %}
 <script type = "text/javascript" language = "javascript">
   canvas = document.getElementById("active_hashers");
   parent = document.getElementById("active_hashers_div");
@@ -392,4 +395,5 @@ h4 {
   };
   WordCloud(canvas, options );
 </script>
+{% endif %}
 {% endblock %}

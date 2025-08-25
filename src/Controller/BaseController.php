@@ -324,6 +324,19 @@ class BaseController extends AbstractController {
      ORDER BY VALUE DESC";
   }
 
+  protected function getActiveHasherHashingCountsQuery() {
+    return "SELECT HASHERS.HASHER_KY AS THE_KEY,
+                  HASHERS.HASHER_NAME AS NAME,
+                  COUNT(0) AS VALUE
+              FROM HASHERS
+              JOIN HASHINGS ON HASHERS.HASHER_KY = HASHINGS.HASHER_KY
+              JOIN HASHES ON HASHINGS.HASH_KY = HASHES.HASH_KY
+             WHERE HASHES.KENNEL_KY = ? AND
+                   DATEDIFF(CURDATE(), HASHES.EVENT_DATE) <= 90
+             GROUP BY HASHERS.HASHER_KY, HASHERS.HASHER_NAME
+             ORDER BY VALUE DESC";
+  }
+
   protected function getHashingCountsQuery(bool $considerLegacyRuns = true, bool $includeLatestEvent = false) {
 
    $le1 = "";

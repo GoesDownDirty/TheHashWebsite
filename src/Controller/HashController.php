@@ -193,9 +193,8 @@ class HashController extends BaseController
 
     $tableColors = array( "#d1f2eb", "#d7bde2", "#eaeded", "#fad7a0", "#fdedec" );
 
-    $sql = $this->addHasherStatusToQueryImpl(
-      $this->getHashingCountsQuery(true, true), true, false, false);
-    $activeHashers = $this->fetchAll($sql, [$kennelKy, $kennelKy]);
+    $sql = $this->getActiveHasherHashingCountsQuery();
+    $activeHashers = $this->fetchAll($sql, [$kennelKy]);
 
     #Set the return value
     return array(

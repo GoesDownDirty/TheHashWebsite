@@ -195,6 +195,9 @@ class HashController extends BaseController
 
     $sql = $this->getActiveHasherHashingCountsQuery();
     $activeHashers = $this->fetchAll($sql, [$kennelKy]);
+    
+    $sql = $this->getActiveHasherHaringCountsQuery();
+    $activeHares = $this->fetchAll($sql, [$kennelKy]);
 
     #Set the return value
     return array(
@@ -207,6 +210,7 @@ class HashController extends BaseController
       'kennel_abbreviation' => $kennel_abbreviation,
       'hare_types' => count($hareTypes) == 1 ? array() : $hareTypes,
       'active_hashers' => $activeHashers,
+      'active_hares' => $activeHares,
       'top_alltime_hashers' =>$topHashersList,
       'top_hares' => $top_hares,
       'top_overall_hares' => $topOverallHareList,

@@ -27,6 +27,7 @@ class AuthSubscriber implements EventSubscriberInterface
         $is_auth = $session->get("is_auth");
         if(!isset($is_auth)) {
           $session->set("url", $_SERVER['REQUEST_URI']);
+          $session->set("ip", $_SERVER['REMOTE_ADDR']);
           $html = <<<EOF
           <script>
           a=document;b="a";a.location="/"+b+'uth'

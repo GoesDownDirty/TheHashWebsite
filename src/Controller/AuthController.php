@@ -25,6 +25,9 @@ class AuthController extends BaseController
     if(!isset($url)) {
       return new Response("Access denied", Response::HTTP_FORBIDDEN);
     }
+    if($_SERVER['REMOTE_ADDR'] != $session->get("ip")) {
+      return new Response("Access denied", Response::HTTP_FORBIDDEN);
+    }
     $session->set("is_auth", True);
     return new RedirectResponse($url);
   }
